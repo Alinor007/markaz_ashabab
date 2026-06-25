@@ -88,11 +88,11 @@ class ReportCard extends StatelessWidget {
                         if (onEdit != null)
                           PopupMenuItem(
                               value: 'edit',
-                              child: Text(context.tr('Edit', 'تعديل'))),
+                              child: Text(context.trRead('Edit', 'تعديل'))),
                         if (onDelete != null)
                           PopupMenuItem(
                               value: 'delete',
-                              child: Text(context.tr('Delete', 'حذف'))),
+                              child: Text(context.trRead('Delete', 'حذف'))),
                       ],
                     ),
                 ],

@@ -459,5 +459,29 @@ void main() {
       await db.close();
       await tester.pump();
     });
+
+    testWidgets('row three-dots menu opens (User Management)', (tester) async {
+      // Regression: popup itemBuilders used context.tr (a listening lookup)
+      // which threw at tap time, so the menu never opened.
+      useTabletSurface(tester);
+      final db = AppDatabase.memory();
+
+      await tester.pumpWidget(MarkazApp(database: db));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Sign In'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('User Management'));
+      await tester.pumpAndSettle();
+
+      // Tap the seeded admin row's three-dots and confirm the menu opens.
+      await tester.tap(find.byIcon(Icons.more_vert).first);
+      await tester.pumpAndSettle();
+      expect(find.text('Edit User'), findsOneWidget);
+      expect(find.text('Delete User'), findsOneWidget);
+
+      await db.close();
+      await tester.pump();
+    });
   });
 }

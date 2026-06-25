@@ -292,7 +292,19 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
       scrollable: true,
       actions: [
         OutlinedButton(
-          onPressed: _saving ? null : () => context.pop(),
+          // The form is reached via context.go (which replaces the route), so
+          // there is usually nothing to pop — fall back to a sensible screen.
+          onPressed: _saving
+              ? null
+              : () {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else if (widget.isEditing) {
+                    context.go('/tarbiya/member/${widget.memberId}');
+                  } else {
+                    context.go('/members');
+                  }
+                },
           child: Text(context.tr('Cancel', 'إلغاء')),
         ),
         FilledButton.icon(
