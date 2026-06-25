@@ -477,9 +477,9 @@ class _ActivityTile extends StatelessWidget {
                 if (v == 'delete') onDelete();
               },
               itemBuilder: (context) => [
-                PopupMenuItem(value: 'edit', child: Text(context.tr('Edit', 'تعديل'))),
+                PopupMenuItem(value: 'edit', child: Text(context.trRead('Edit', 'تعديل'))),
                 PopupMenuItem(
-                    value: 'delete', child: Text(context.tr('Delete', 'حذف'))),
+                    value: 'delete', child: Text(context.trRead('Delete', 'حذف'))),
               ],
             ),
         ],

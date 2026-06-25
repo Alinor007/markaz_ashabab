@@ -439,19 +439,19 @@ class _MemberRow extends StatelessWidget {
                     value: 'view',
                     child: _MenuRow(
                         icon: Icons.visibility_outlined,
-                        label: context.tr('View Profile', 'عرض الملف')),
+                        label: context.trRead('View Profile', 'عرض الملف')),
                   ),
                   PopupMenuItem(
                     value: 'edit',
                     child: _MenuRow(
                         icon: Icons.edit_outlined,
-                        label: context.tr('Edit', 'تعديل')),
+                        label: context.trRead('Edit', 'تعديل')),
                   ),
                   PopupMenuItem(
                     value: 'delete',
                     child: _MenuRow(
                         icon: Icons.delete_outline,
-                        label: context.tr('Delete', 'حذف'),
+                        label: context.trRead('Delete', 'حذف'),
                         danger: true),
                   ),
                 ],

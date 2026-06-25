@@ -86,14 +86,14 @@ class UserCard extends StatelessWidget {
                 value: UserAction.edit,
                 child: _MenuRow(
                     icon: Icons.edit_outlined,
-                    label: context.tr('Edit User', 'تعديل المستخدم')),
+                    label: context.trRead('Edit User', 'تعديل المستخدم')),
               ),
               PopupMenuItem(
                 value: UserAction.resetPassword,
                 child: _MenuRow(
                     icon: Icons.lock_reset_outlined,
                     label:
-                        context.tr('Reset Password', 'إعادة تعيين كلمة المرور')),
+                        context.trRead('Reset Password', 'إعادة تعيين كلمة المرور')),
               ),
               PopupMenuItem(
                 value: UserAction.toggleActive,
@@ -102,15 +102,15 @@ class UserCard extends StatelessWidget {
                       ? Icons.block_outlined
                       : Icons.check_circle_outline,
                   label: user.active
-                      ? context.tr('Disable User', 'تعطيل المستخدم')
-                      : context.tr('Enable User', 'تفعيل المستخدم'),
+                      ? context.trRead('Disable User', 'تعطيل المستخدم')
+                      : context.trRead('Enable User', 'تفعيل المستخدم'),
                 ),
               ),
               PopupMenuItem(
                 value: UserAction.delete,
                 child: _MenuRow(
                     icon: Icons.delete_outline,
-                    label: context.tr('Delete User', 'حذف المستخدم'),
+                    label: context.trRead('Delete User', 'حذف المستخدم'),
                     danger: true),
               ),
             ],

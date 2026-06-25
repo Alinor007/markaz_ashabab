@@ -227,13 +227,13 @@ class _Toolbar extends StatelessWidget {
           itemBuilder: (context) => [
             PopupMenuItem(
                 value: _Sort.nameAsc,
-                child: Text(context.tr('Name A–Z', 'الاسم أ–ي'))),
+                child: Text(context.trRead('Name A–Z', 'الاسم أ–ي'))),
             PopupMenuItem(
                 value: _Sort.nameDesc,
-                child: Text(context.tr('Name Z–A', 'الاسم ي–أ'))),
+                child: Text(context.trRead('Name Z–A', 'الاسم ي–أ'))),
             PopupMenuItem(
                 value: _Sort.statusFirst,
-                child: Text(context.tr('Active first', 'النشط أولاً'))),
+                child: Text(context.trRead('Active first', 'النشط أولاً'))),
           ],
         ),
       ],
