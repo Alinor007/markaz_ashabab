@@ -84,6 +84,19 @@ class Permissions {
     return false;
   }
 
+  /// Whether [role] (belonging to a user in [userDepartmentId]) may create or
+  /// edit an activity owned by [activityDepartmentId]. Executives manage every
+  /// department's activities; a department head manages only their own.
+  bool manageActivityForDepartment(
+      String? userDepartmentId, String? activityDepartmentId) {
+    if (role.isExecutive) return true;
+    if (role == UserRole.departmentHead) {
+      return userDepartmentId != null &&
+          userDepartmentId == activityDepartmentId;
+    }
+    return false;
+  }
+
   // Other content modules (departments, gallery, history) — executives manage,
   // department heads read-only.
   bool get manageContent => role.isExecutive;

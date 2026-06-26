@@ -56,6 +56,9 @@ class Leaders extends Table {
       text().withDefault(const Constant(''))();
   TextColumn get email => text().withDefault(const Constant(''))();
   TextColumn get phone => text().withDefault(const Constant(''))();
+
+  /// Absolute path to the leader's stored profile photo ('' when none).
+  TextColumn get photoPath => text().withDefault(const Constant(''))();
   IntColumn get accent => integer().withDefault(const Constant(0xFF0B5D3B))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
   DateTimeColumn get createdAt =>
@@ -392,7 +395,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.memory() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -401,6 +404,7 @@ class AppDatabase extends _$AppDatabase {
           await _seedAdministrator();
           await _seedDepartments();
           await _seedTarbiyaAreas();
+          await _seedDefaultAccounts();
         },
         beforeOpen: (details) async {
           // Foreign keys are off by default in SQLite and must be enabled per
@@ -437,6 +441,26 @@ class AppDatabase extends _$AppDatabase {
             // Referential integrity added in schema v5: FKs, indexes, the
             // donation UNIQUE key, member_roles.departmentId and audit.userId.
             await _migrateToV5(m);
+          }
+          if (from < 6) {
+            // Default role accounts seeded in schema v6.
+            await _seedDefaultAccounts();
+          }
+          if (from < 7) {
+            // Department overviews + the Youth & Students department added in
+            // schema v7. Insert the new department, backfill overviews and the
+            // display order, then add its head account.
+            await _seedDepartments();
+            await _backfillDepartmentContent();
+            await _seedDefaultAccounts();
+          }
+          if (from < 8) {
+            // Arabic department overviews added in schema v8.
+            await _backfillDepartmentContent();
+          }
+          if (from < 9) {
+            // Leader profile photos added in schema v9.
+            await m.addColumn(leaders, leaders.photoPath);
           }
         },
       );
@@ -521,31 +545,108 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
-  /// Seeds the organization's eight standing departments on first launch.
+  /// Seeds the organization's nine standing departments on first launch,
+  /// including each department's overview. Existing rows are left untouched
+  /// (insertOrIgnore); [_backfillDepartmentContent] fills overviews for installs
+  /// created before the overview text existed.
   Future<void> _seedDepartments() async {
-    const seed = [
-      ('dawah', 'Da‘wah', 'الدعوة', 'dawah', 0xFF0B5D3B),
-      ('tarbiyah', 'Tarbiyah', 'التربية', 'tarbiyah', 0xFF16243D),
-      ('education', 'Education', 'التعليم', 'education', 0xFFA8862F),
-      ('economy', 'Economy and Investments', 'الاقتصاد والاستثمار', 'economy',
-          0xFF0B5D3B),
-      ('charity', 'Charitable Programs', 'البرامج الخيرية', 'charity',
-          0xFF16243D),
-      ('media', 'Public Relations and Information',
-          'العلاقات العامة والإعلام', 'media', 0xFFA8862F),
-      ('politics', 'Politics', 'السياسة', 'politics', 0xFF0B5D3B),
-      ('women', 'Women Affairs', 'شؤون المرأة', 'women', 0xFF16243D),
-    ];
-    var order = 0;
-    for (final (id, name, nameAr, iconKey, accent) in seed) {
+    for (var i = 0; i < _departmentSeed.length; i++) {
+      final d = _departmentSeed[i];
       await into(departments).insert(
         DepartmentsCompanion.insert(
+          id: d.id,
+          name: d.name,
+          nameAr: Value(d.nameAr),
+          description: Value(d.description),
+          descriptionAr: Value(d.descriptionAr),
+          iconKey: Value(d.icon),
+          accent: Value(d.accent),
+          sortOrder: Value(i),
+        ),
+        mode: InsertMode.insertOrIgnore,
+      );
+    }
+  }
+
+  /// Backfills the department overviews (English and Arabic) and display order
+  /// onto installs that already had the departments before this content existed
+  /// (insertOrIgnore in [_seedDepartments] won't touch existing rows). Each
+  /// overview is only written where the admin hasn't entered one, so manual
+  /// edits are preserved; the sort order is always set since it isn't
+  /// user-editable.
+  Future<void> _backfillDepartmentContent() async {
+    for (var i = 0; i < _departmentSeed.length; i++) {
+      final d = _departmentSeed[i];
+      await (update(departments)..where((t) => t.id.equals(d.id)))
+          .write(DepartmentsCompanion(sortOrder: Value(i)));
+      await (update(departments)
+            ..where((t) => t.id.equals(d.id) & t.description.equals('')))
+          .write(DepartmentsCompanion(description: Value(d.description)));
+      await (update(departments)
+            ..where((t) => t.id.equals(d.id) & t.descriptionAr.equals('')))
+          .write(DepartmentsCompanion(descriptionAr: Value(d.descriptionAr)));
+    }
+  }
+
+  /// Seeds one default account for every non-admin role so the system is
+  /// immediately usable without manual account creation. All accounts use the
+  /// temporary password `changeme123` and should be updated before production.
+  /// Uses insertOrIgnore so re-running (e.g. on upgrade) is safe.
+  Future<void> _seedDefaultAccounts() async {
+    final tempHash = PasswordHasher.hash('changeme123');
+
+    // Executive accounts (no department link).
+    const executives = [
+      ('president', 'president', 'President', 'الرئيس', 'president'),
+      ('secretary_general', 'secretary', 'Secretary General', 'الأمين العام',
+          'secretary_general'),
+      ('treasurer', 'treasurer', 'Treasurer', 'أمين الصندوق', 'treasurer'),
+    ];
+    for (final (id, username, name, nameAr, role) in executives) {
+      await into(users).insert(
+        UsersCompanion.insert(
           id: id,
-          name: name,
-          nameAr: Value(nameAr),
-          iconKey: Value(iconKey),
-          accent: Value(accent),
-          sortOrder: Value(order++),
+          fullName: name,
+          fullNameAr: nameAr,
+          username: username,
+          passwordHash: tempHash,
+          roleCode: role,
+        ),
+        mode: InsertMode.insertOrIgnore,
+      );
+    }
+
+    // One department-head account per department (must run after _seedDepartments).
+    const heads = [
+      ('head_dawah', 'head.dawah', "Head of Da'wah", 'رئيس قسم الدعوة',
+          'dawah'),
+      ('head_tarbiyah', 'head.tarbiyah', 'Head of Tarbiyah',
+          'رئيس قسم التربية', 'tarbiyah'),
+      ('head_education', 'head.education', 'Head of Education',
+          'رئيس قسم التعليم', 'education'),
+      ('head_youth', 'head.youth', 'Head of Youth and Students',
+          'رئيس قسم الطلبة والشباب', 'youth'),
+      ('head_economy', 'head.economy', 'Head of Economy',
+          'رئيس قسم الاقتصاد', 'economy'),
+      ('head_charity', 'head.charity', 'Head of Charitable Programs',
+          'رئيس قسم البرامج الخيرية', 'charity'),
+      ('head_media', 'head.media', 'Head of Public Relations',
+          'رئيس قسم العلاقات العامة', 'media'),
+      ('head_politics', 'head.politics', 'Head of Politics',
+          'رئيس قسم السياسة', 'politics'),
+      ('head_women', 'head.women', 'Head of Women Affairs',
+          'رئيس قسم شؤون المرأة', 'women'),
+    ];
+    for (final (id, username, name, nameAr, deptId) in heads) {
+      await into(users).insert(
+        UsersCompanion.insert(
+          id: id,
+          fullName: name,
+          fullNameAr: nameAr,
+          username: username,
+          passwordHash: tempHash,
+          roleCode: UserRole.departmentHead.code,
+          departmentId: Value(deptId),
         ),
         mode: InsertMode.insertOrIgnore,
       );
@@ -589,3 +690,169 @@ LazyDatabase _openOnDevice() {
     return NativeDatabase.createInBackground(file);
   });
 }
+
+/// The organization's standing departments: stable id, bilingual name, icon,
+/// accent colour, and the bilingual overview shown on each department page. The
+/// list order is the display order. Used by both
+/// [AppDatabase._seedDepartments] (insert) and
+/// [AppDatabase._backfillDepartmentContent] (update existing installs).
+const _departmentSeed = <({
+  String id,
+  String name,
+  String nameAr,
+  String icon,
+  int accent,
+  String description,
+  String descriptionAr,
+})>[
+  (
+    id: 'dawah',
+    name: 'Da‘wah',
+    nameAr: 'الدعوة',
+    icon: 'dawah',
+    accent: 0xFF0B5D3B,
+    description:
+        "The Department of Da‘wah serves as the absolute core and essence of "
+        "the organization's mission, commanding the majority of its time, "
+        "effort, and resources. For over four decades, its preachers have "
+        "mobilized across the country, utilizing mosque pulpits, conferences, "
+        "and public gatherings to call people to complete devotion and the "
+        "adoption of Islam as a comprehensive way of life.",
+    descriptionAr:
+        'يُمثّل قسم الدعوة جوهر رسالة المنظمة وأساسها المطلق، إذ يستحوذ على القدر الأكبر من وقتها وجهدها ومواردها. وعلى مدى أكثر من أربعة عقود، انتشر دعاته في أنحاء البلاد مستفيدين من منابر المساجد والمؤتمرات والتجمّعات العامة لدعوة الناس إلى إخلاص العبادة لله واتخاذ الإسلام منهج حياة شاملًا.',
+  ),
+  (
+    id: 'tarbiyah',
+    name: 'Tarbiyah',
+    nameAr: 'التربية',
+    icon: 'tarbiyah',
+    accent: 0xFF16243D,
+    description:
+        "Regarded as the backbone of the organization's internal development "
+        "and societal reform, the Department of Tarbiyyah focuses deeply on "
+        "raising individuals with sound faith, correct worship, and a strong "
+        "dedication to their religion and community. Its methodologies are "
+        "firmly rooted in following the path of early righteous predecessors "
+        "and reformist thinkers to ensure robust character formation.",
+    descriptionAr:
+        'يُعدّ قسم التربية العمود الفقري للتطوير الداخلي للمنظمة وإصلاح المجتمع، فهو يُعنى عناية بالغة بتنشئة أفرادٍ ذوي عقيدة صحيحة وعبادة سليمة وتعلّقٍ راسخ بدينهم ومجتمعهم. وتقوم مناهجه على اتباع نهج السلف الصالح والمفكّرين الإصلاحيين لضمان بناءٍ متينٍ للشخصية.',
+  ),
+  (
+    id: 'education',
+    name: 'Education',
+    nameAr: 'التعليم',
+    icon: 'education',
+    accent: 0xFFA8862F,
+    description:
+        "Operating on the belief that education is the foundation for "
+        "generation-building and societal cohesion, this department oversees a "
+        "widespread network of schools across the Philippines. Its flagship "
+        "institution, the Ibn Sina Integrated School in Marawi City, opened in "
+        "1995 and has been recognized as a model school by both the national "
+        "government and the ARMM Ministry of Education for its integrated "
+        "academic curriculum and outstanding competition record.",
+    descriptionAr:
+        'انطلاقًا من الإيمان بأن التعليم هو أساس بناء الأجيال وتماسك المجتمع، يُشرف هذا القسم على شبكة واسعة من المدارس في أنحاء الفلبين. وقد افتُتحت مؤسسته الرائدة، مدرسة ابن سينا التكاملية في مدينة مراوي، عام 1995م، ونالت اعتراف الحكومة الوطنية ووزارة التعليم في إقليم مينداناو المسلم ذاتيّ الحكم (ARMM) بوصفها مدرسةً نموذجية لما تتميّز به من منهجٍ أكاديميٍّ متكامل وسجلٍّ متميّزٍ في المسابقات.',
+  ),
+  (
+    id: 'youth',
+    name: 'Jihazu Thalaba (Youth and Students)',
+    nameAr: 'جهاز الطلبة والشباب',
+    icon: 'group',
+    accent: 0xFF16243D,
+    description:
+        "Recognizing youth and students as the future hope and essential human "
+        "potential of the nation, this department is dedicated to their "
+        "holistic development. It established the Muslim Students' Union in the "
+        "Philippines shortly after the center's founding and continues to "
+        "oversee various youth associations designed to prepare young people to "
+        "eventually take up the reins of leadership.",
+    descriptionAr:
+        'إيمانًا بأن الشباب والطلاب هم أمل المستقبل والطاقة البشرية الأساسية للأمة، يُكرّس هذا القسم جهوده لتنميتهم تنميةً شاملة. وقد أسّس اتحاد الطلبة المسلمين في الفلبين بُعَيد تأسيس المركز، ولا يزال يُشرف على جمعيات شبابية متنوّعة تهدف إلى إعداد الشباب لتولّي مقاليد القيادة مستقبلًا.',
+  ),
+  (
+    id: 'economy',
+    name: 'Economy and Investments',
+    nameAr: 'الاقتصاد والاستثمار',
+    icon: 'economy',
+    accent: 0xFF0B5D3B,
+    description:
+        "The Department of Economy aims to achieve organizational "
+        "self-sufficiency while assisting the public by making basic "
+        "commodities affordable. While historically known for service-oriented "
+        "projects like the Ranao Pharmacy and the Sahaba rice mill, its modern "
+        "initiatives include regional market integration through the World "
+        "Halal Chamber of Commerce and Industry in the Philippines and the "
+        "recently launched Tabatuj Cooperative Association.",
+    descriptionAr:
+        'يهدف قسم الاقتصاد إلى تحقيق الاكتفاء الذاتي للمنظمة، مع مساعدة الناس عبر توفير السلع الأساسية بأسعارٍ في المتناول. وإلى جانب اشتهاره تاريخيًّا بمشروعات خدمية كصيدلية راناو ومطحنة الصحابة للأرز، تشمل مبادراته الحديثة تكامل الأسواق الإقليمية من خلال الغرفة العالمية للتجارة والصناعة الحلال في الفلبين، وجمعية تباتوج التعاونية التي أُطلقت حديثًا.',
+  ),
+  (
+    id: 'charity',
+    name: 'Charitable Programs',
+    nameAr: 'البرامج الخيرية',
+    icon: 'charity',
+    accent: 0xFF16243D,
+    description:
+        "Functioning as a vital humanitarian bridge between benefactors and "
+        "those in need, this department operates strictly on principles of "
+        "equality, justice, and fairness without tribal or geographic bias. "
+        "Its comprehensive relief efforts include sponsoring orphans and "
+        "students, digging drinking-water wells, and constructing mosques, "
+        "schools, and hospitals in cooperation with various local and "
+        "international relief organizations.",
+    descriptionAr:
+        'يعمل هذا القسم بوصفه جسرًا إنسانيًّا حيويًّا بين المُحسنين والمحتاجين، ملتزمًا التزامًا صارمًا بمبادئ المساواة والعدل والإنصاف دون تحيّزٍ قبليٍّ أو جغرافي. وتشمل جهوده الإغاثية الشاملة كفالة الأيتام والطلاب، وحفر آبار مياه الشرب، وبناء المساجد والمدارس والمستشفيات بالتعاون مع مختلف المنظمات الإغاثية المحلية والدولية.',
+  ),
+  (
+    id: 'media',
+    name: 'Public Relations and Information',
+    nameAr: 'العلاقات العامة والإعلام',
+    icon: 'media',
+    accent: 0xFFA8862F,
+    description:
+        "In a firm rejection of insularity and intellectual bigotry, this "
+        "department actively fosters dialogue and constructive cooperation with "
+        "all societal segments, regardless of political, sectarian, or ethnic "
+        "affiliations. It mobilizes organizational strength to support national "
+        "cohesion and government policies, raising its voice against "
+        "corruption, drugs, and extremism while advocating for human rights and "
+        "virtuous societal values.",
+    descriptionAr:
+        'رفضًا منه للانغلاق والتعصّب الفكري، يحرص هذا القسم على تعزيز الحوار والتعاون البنّاء مع جميع فئات المجتمع، بصرف النظر عن الانتماءات السياسية أو الطائفية أو العرقية. وهو يحشد طاقات المنظمة لدعم التماسك الوطني والسياسات الحكومية، رافعًا صوته ضد الفساد والمخدرات والتطرّف، ومنافحًا عن حقوق الإنسان والقيم الفاضلة في المجتمع.',
+  ),
+  (
+    id: 'politics',
+    name: 'Politics',
+    nameAr: 'السياسة',
+    icon: 'politics',
+    accent: 0xFF0B5D3B,
+    description:
+        "The Department of Politics pursues comprehensive societal reform by "
+        "engaging in the political arena, recognizing it as a challenging but "
+        "necessary path. Operating under the slogan \"Let us reform society and "
+        "save the people,\" it established the Ummah Party in 1998, fielding "
+        "honest candidates and forming strategic alliances, even as it "
+        "continues to navigate and challenge the systemic deterioration of the "
+        "political climate and the spread of corruption.",
+    descriptionAr:
+        'يسعى قسم السياسة إلى إصلاحٍ مجتمعيٍّ شامل عبر الانخراط في الساحة السياسية، مدركًا أنها طريقٌ شاقّ لكنه ضروري. وتحت شعار «لنُصلح المجتمع ونُنقذ الناس»، أسّس حزب الأمة عام 1998م، فدفع بمرشّحين أمناء وأقام تحالفاتٍ استراتيجية، مع استمراره في مواجهة التدهور البنيوي للمناخ السياسي وتفشّي الفساد والتعامل معه.',
+  ),
+  (
+    id: 'women',
+    name: 'Women Affairs',
+    nameAr: 'شؤون المرأة',
+    icon: 'women',
+    accent: 0xFF16243D,
+    description:
+        "Believing that the Filipino Muslim woman is the indispensable "
+        "cornerstone of society, this department strives to empower women as "
+        "essential partners to men in all fields of work, including "
+        "decision-making, planning, and implementation. Through this structural "
+        "support and empowerment, affiliated women have successfully taken on "
+        "vital roles as preachers, educators, volunteers, and frontline "
+        "community workers.",
+    descriptionAr:
+        'إيمانًا بأن المرأة المسلمة الفلبينية ركيزةٌ أساسية لا غنى عنها في المجتمع، يسعى هذا القسم إلى تمكين المرأة بوصفها شريكًا أساسيًّا للرجل في جميع ميادين العمل، بما في ذلك صنع القرار والتخطيط والتنفيذ. وبفضل هذا الدعم المؤسّسي والتمكين، تبوّأت المنتسبات إليه أدوارًا حيوية داعياتٍ ومعلّماتٍ ومتطوّعاتٍ وعاملاتٍ في الصفوف الأمامية لخدمة المجتمع.',
+  ),
+];

@@ -61,7 +61,7 @@ class _NameFormDialogState extends State<NameFormDialog> {
         width: 420,
         child: Form(
           key: _formKey,
-          child: Column(
+          child: SingleChildScrollView(child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
@@ -81,7 +81,7 @@ class _NameFormDialogState extends State<NameFormDialog> {
                     labelText: context.tr('Name (Arabic)', 'الاسم (عربي)')),
               ),
             ],
-          ),
+          )),
         ),
       ),
       actions: [

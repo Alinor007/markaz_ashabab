@@ -40,7 +40,11 @@ class DepartmentsScreen extends StatelessWidget {
         stream: repo.watchAll(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return const LoadingState();
-          final departments = snapshot.data!;
+          // Tarbiyah maps to the executive-only Tarbiya Al-Kawadeer module, so
+          // hide it from department heads (who have no Tarbiya access).
+          final departments = canTarbiya
+              ? snapshot.data!
+              : snapshot.data!.where((d) => d.id != 'tarbiyah').toList();
           if (departments.isEmpty) {
             return EmptyState(
               icon: Icons.account_tree_outlined,

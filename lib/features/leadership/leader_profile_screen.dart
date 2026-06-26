@@ -93,6 +93,7 @@ class _ProfileBody extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           ProfileHeader(
             initials: leader.initials,
+            imagePath: leader.photoPath,
             nameEn: leader.name,
             nameAr: leader.nameAr,
             subtitleEn: leader.position,

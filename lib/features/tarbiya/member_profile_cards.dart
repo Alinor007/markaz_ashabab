@@ -470,7 +470,7 @@ Future<void> _showTasedDialog(BuildContext context, MemberRepository repo,
             : context.tr('Edit Tas\'ed Record', 'تعديل سجل التصعيد')),
         content: SizedBox(
           width: 360,
-          child: Column(
+          child: SingleChildScrollView(child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<int>(
@@ -499,7 +499,7 @@ Future<void> _showTasedDialog(BuildContext context, MemberRepository repo,
                 onChanged: (v) => status = v ?? status,
               ),
             ],
-          ),
+          )),
         ),
         actions: [
           TextButton(
@@ -646,7 +646,7 @@ class _DonationCardState extends State<DonationCard> {
               '${(context.isArabic ? _monthsAr : _months)[month - 1]} $_year'),
           content: SizedBox(
             width: 360,
-            child: Column(
+            child: SingleChildScrollView(child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 SwitchListTile(
@@ -683,7 +683,7 @@ class _DonationCardState extends State<DonationCard> {
                       InputDecoration(labelText: context.tr('Notes', 'ملاحظات')),
                 ),
               ],
-            ),
+            )),
           ),
           actions: [
             TextButton(
@@ -946,7 +946,7 @@ Future<void> _showActivityDialog(
         title: Text(context.tr('Add Activity', 'إضافة نشاط')),
         content: SizedBox(
           width: 380,
-          child: Column(
+          child: SingleChildScrollView(child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
@@ -992,7 +992,7 @@ Future<void> _showActivityDialog(
                   decoration: InputDecoration(
                       labelText: context.tr('Remarks', 'ملاحظات'))),
             ],
-          ),
+          )),
         ),
         actions: [
           TextButton(
@@ -1141,7 +1141,7 @@ Future<void> _showContributionDialog(BuildContext context,
             : context.tr('Edit Contribution', 'تعديل الإسهام')),
         content: SizedBox(
           width: 380,
-          child: Column(
+          child: SingleChildScrollView(child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
@@ -1184,7 +1184,7 @@ Future<void> _showContributionDialog(BuildContext context,
                 onChanged: (v) => status = v ?? status,
               ),
             ],
-          ),
+          )),
         ),
         actions: [
           TextButton(
@@ -1318,7 +1318,7 @@ Future<void> _showRoleDialog(BuildContext context, MemberRepository repo,
             : context.tr('Edit Role', 'تعديل الدور')),
         content: SizedBox(
           width: 380,
-          child: Column(
+          child: SingleChildScrollView(child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
@@ -1377,7 +1377,7 @@ Future<void> _showRoleDialog(BuildContext context, MemberRepository repo,
                 onChanged: (v) => status = v ?? status,
               ),
             ],
-          ),
+          )),
         ),
         actions: [
           TextButton(

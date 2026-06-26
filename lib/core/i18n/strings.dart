@@ -192,7 +192,7 @@ const _Strings _englishStrings = _Strings(
   reports: 'Reports',
   gallery: 'Gallery',
   search: 'Search',
-  membersManagement: 'Members Management',
+  membersManagement: 'Members',
   settings: 'Settings',
   userManagement: 'User Management',
   auditLogs: 'Audit Logs',

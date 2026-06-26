@@ -2,11 +2,13 @@ import 'package:drift/drift.dart';
 
 import '../data/app_database.dart';
 import '../data/models.dart';
+import '../util/photo_service.dart';
 
 /// CRUD for leadership records.
 class LeaderRepository {
-  LeaderRepository(this._db);
+  LeaderRepository(this._db, [this._photos = const PhotoService()]);
   final AppDatabase _db;
+  final PhotoService _photos;
 
   Stream<List<Leader>> watchByCategory(LeadershipCategory category) {
     return (_db.select(_db.leaders)
@@ -36,6 +38,7 @@ class LeaderRepository {
     String responsibilitiesAr = '',
     String email = '',
     String phone = '',
+    String photoPath = '',
     int accent = 0xFF0B5D3B,
   }) async {
     final id = newId('leader');
@@ -56,6 +59,7 @@ class LeaderRepository {
             responsibilitiesAr: Value(responsibilitiesAr),
             email: Value(email),
             phone: Value(phone),
+            photoPath: Value(photoPath),
             accent: Value(accent),
           ),
         );
@@ -78,6 +82,7 @@ class LeaderRepository {
     required String responsibilitiesAr,
     required String email,
     required String phone,
+    String? photoPath,
   }) {
     return (_db.update(_db.leaders)..where((l) => l.id.equals(id))).write(
       LeadersCompanion(
@@ -95,11 +100,15 @@ class LeaderRepository {
         responsibilitiesAr: Value(responsibilitiesAr),
         email: Value(email),
         phone: Value(phone),
+        // Only overwrite the photo when a new value is supplied.
+        photoPath: photoPath == null ? const Value.absent() : Value(photoPath),
       ),
     );
   }
 
-  Future<void> delete(String id) {
-    return (_db.delete(_db.leaders)..where((l) => l.id.equals(id))).go();
+  Future<void> delete(String id) async {
+    final leader = await getById(id);
+    await (_db.delete(_db.leaders)..where((l) => l.id.equals(id))).go();
+    await _photos.deleteStored(leader?.photoPath);
   }
 }

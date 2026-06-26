@@ -27,9 +27,10 @@ void main() {
 
     test('seeds an administrator account on first launch', () async {
       final users = await UserRepository(db).watchAll().first;
-      expect(users, hasLength(1));
-      expect(users.single.username, 'admin');
-      expect(users.single.role, UserRole.administrator);
+      // 1 admin + 3 executives + 9 department heads seeded by default.
+      expect(users, hasLength(13));
+      final admin = users.firstWhere((u) => u.username == 'admin');
+      expect(admin.role, UserRole.administrator);
     });
 
     test('authenticates the seeded admin and rejects bad credentials',
@@ -53,7 +54,7 @@ void main() {
       expect(await repo.usernameExists('a.lomondot'), isTrue);
       expect(await repo.usernameExists('unique.name'), isFalse);
       final users = await repo.watchAll().first;
-      expect(users, hasLength(2));
+      expect(users, hasLength(14)); // 13 seeded + 1 created
     });
 
     test('leadership CRUD by category', () async {
@@ -151,11 +152,17 @@ void main() {
     setUp(() => db = AppDatabase.memory());
     tearDown(() => db.close());
 
-    test('seeds the eight standing departments', () async {
+    test('seeds the nine standing departments with overviews', () async {
       final depts = await DepartmentRepository(db).getAll();
-      expect(depts, hasLength(8));
+      expect(depts, hasLength(9));
       expect(depts.map((d) => d.name), contains('Tarbiyah'));
       expect(depts.map((d) => d.name), contains('Economy and Investments'));
+      // Youth & Students was added in schema v7.
+      final youth = depts.firstWhere((d) => d.id == 'youth');
+      expect(youth.description, isNotEmpty);
+      // Bilingual overviews are seeded (Arabic added in schema v8).
+      expect(youth.descriptionAr, isNotEmpty);
+      expect(depts.firstWhere((d) => d.id == 'dawah').descriptionAr, isNotEmpty);
     });
 
     test('report CRUD + department filtering', () async {
@@ -298,6 +305,26 @@ void main() {
       expect(await members.getMember(id), isNull);
       expect(tmp.existsSync(), isFalse, reason: 'photo cleaned up on delete');
     });
+
+    test('deleting a leader removes its photo file', () async {
+      final leaders = LeaderRepository(db);
+      final tmp = tempImage('leader');
+      addTearDown(() => tmp.existsSync() ? tmp.deleteSync() : null);
+
+      final leader = await leaders.create(
+        name: 'Test Leader',
+        nameAr: 'قائد',
+        position: 'President',
+        positionAr: 'الرئيس',
+        category: LeadershipCategory.officePresident,
+        photoPath: tmp.path,
+      );
+      expect(tmp.existsSync(), isTrue);
+
+      await leaders.delete(leader.id);
+      expect(await leaders.getById(leader.id), isNull);
+      expect(tmp.existsSync(), isFalse, reason: 'photo cleaned up on delete');
+    });
   });
 
   group('permissions matrix', () {
@@ -350,6 +377,17 @@ void main() {
       expect(dh.manageReportForDepartment('media', 'media'), isTrue);
       expect(dh.manageReportForDepartment('media', 'finance'), isFalse);
       expect(UserRole.president.can.manageReportForDepartment('media', 'finance'),
+          isTrue);
+    });
+
+    test('department head manages only their own department activities', () {
+      final dh = UserRole.departmentHead.can;
+      expect(dh.manageActivityForDepartment('media', 'media'), isTrue);
+      expect(dh.manageActivityForDepartment('media', 'finance'), isFalse);
+      // A department head with no assigned department manages none.
+      expect(dh.manageActivityForDepartment(null, 'media'), isFalse);
+      expect(
+          UserRole.president.can.manageActivityForDepartment('media', 'finance'),
           isTrue);
     });
   });
@@ -479,6 +517,56 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Edit User'), findsOneWidget);
       expect(find.text('Delete User'), findsOneWidget);
+
+      await db.close();
+      await tester.pump();
+    });
+
+    testWidgets('login does not overflow when the keyboard shows',
+        (tester) async {
+      // The login Scaffold must not resize for the keyboard (that shifted /
+      // squeezed the split-screen). Simulate a keyboard inset and assert the
+      // landscape layout neither overflows nor loses the credential controls.
+      useTabletSurface(tester);
+      tester.view.viewInsets = const FakeViewPadding(bottom: 360);
+      addTearDown(tester.view.resetViewInsets);
+
+      final db = AppDatabase.memory();
+      await tester.pumpWidget(MarkazApp(database: db));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Sign In'), findsOneWidget);
+      expect(find.byType(TextField), findsWidgets);
+
+      await db.close();
+      await tester.pump();
+    });
+
+    testWidgets('keyboard does not move the sidebar or overflow content',
+        (tester) async {
+      // Regression: with the AppShell resizing for the keyboard, the sidebar
+      // profile card slid up and empty pages overflowed. The shell must keep
+      // full height when the keyboard shows.
+      useTabletSurface(tester);
+      final db = AppDatabase.memory();
+      await tester.pumpWidget(MarkazApp(database: db));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Sign In'));
+      await tester.pumpAndSettle();
+
+      // Open User Management (empty → shows the EmptyState that overflowed).
+      await tester.tap(find.text('User Management'));
+      await tester.pumpAndSettle();
+
+      // Simulate the keyboard appearing.
+      tester.view.viewInsets = const FakeViewPadding(bottom: 360);
+      addTearDown(tester.view.resetViewInsets);
+      await tester.pump();
+
+      expect(tester.takeException(), isNull, reason: 'no overflow');
+      // Sidebar chrome is still present (not clipped/moved off-screen).
+      expect(find.text('System Administrator'), findsOneWidget);
 
       await db.close();
       await tester.pump();

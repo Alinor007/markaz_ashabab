@@ -15,6 +15,10 @@ class AppShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.ivory,
+      // Don't shrink the body for the keyboard — it would squeeze the permanent
+      // sidebar (the profile card slides up) and overflow content. The keyboard
+      // overlays the bottom; search fields live at the top and stay visible.
+      resizeToAvoidBottomInset: false,
       body: Row(
         children: [
           const AppSidebar(),
