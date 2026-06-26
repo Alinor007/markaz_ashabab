@@ -20,6 +20,11 @@ class DepartmentRepository {
       (_db.select(_db.departments)..where((d) => d.id.equals(id)))
           .getSingleOrNull();
 
+  /// Watches a single department so the detail screen reflects edits live.
+  Stream<Department?> watchById(String id) =>
+      (_db.select(_db.departments)..where((d) => d.id.equals(id)))
+          .watchSingleOrNull();
+
   Future<int> count() async => (await getAll()).length;
 
   Future<void> create({

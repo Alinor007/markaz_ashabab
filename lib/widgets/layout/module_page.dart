@@ -56,7 +56,15 @@ class ModulePage extends StatelessWidget {
           header,
           const SizedBox(height: AppSpacing.xl),
           if (scrollable)
-            Expanded(child: SingleChildScrollView(child: child))
+            Expanded(
+              child: SingleChildScrollView(
+                // Headroom so a focused field can scroll clear of the keyboard.
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.viewInsetsOf(context).bottom,
+                ),
+                child: child,
+              ),
+            )
           else
             Expanded(child: child),
         ],

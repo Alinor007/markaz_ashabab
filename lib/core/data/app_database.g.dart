@@ -1544,6 +1544,18 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
+  static const VerificationMeta _photoPathMeta = const VerificationMeta(
+    'photoPath',
+  );
+  @override
+  late final GeneratedColumn<String> photoPath = GeneratedColumn<String>(
+    'photo_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _accentMeta = const VerificationMeta('accent');
   @override
   late final GeneratedColumn<int> accent = GeneratedColumn<int>(
@@ -1595,6 +1607,7 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
     responsibilitiesAr,
     email,
     phone,
+    photoPath,
     accent,
     sortOrder,
     createdAt,
@@ -1725,6 +1738,12 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
         phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta),
       );
     }
+    if (data.containsKey('photo_path')) {
+      context.handle(
+        _photoPathMeta,
+        photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
+      );
+    }
     if (data.containsKey('accent')) {
       context.handle(
         _accentMeta,
@@ -1812,6 +1831,10 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
         DriftSqlType.string,
         data['${effectivePrefix}phone'],
       )!,
+      photoPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}photo_path'],
+      )!,
       accent: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}accent'],
@@ -1851,6 +1874,9 @@ class Leader extends DataClass implements Insertable<Leader> {
   final String responsibilitiesAr;
   final String email;
   final String phone;
+
+  /// Absolute path to the leader's stored profile photo ('' when none).
+  final String photoPath;
   final int accent;
   final int sortOrder;
   final DateTime createdAt;
@@ -1870,6 +1896,7 @@ class Leader extends DataClass implements Insertable<Leader> {
     required this.responsibilitiesAr,
     required this.email,
     required this.phone,
+    required this.photoPath,
     required this.accent,
     required this.sortOrder,
     required this.createdAt,
@@ -1892,6 +1919,7 @@ class Leader extends DataClass implements Insertable<Leader> {
     map['responsibilities_ar'] = Variable<String>(responsibilitiesAr);
     map['email'] = Variable<String>(email);
     map['phone'] = Variable<String>(phone);
+    map['photo_path'] = Variable<String>(photoPath);
     map['accent'] = Variable<int>(accent);
     map['sort_order'] = Variable<int>(sortOrder);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -1915,6 +1943,7 @@ class Leader extends DataClass implements Insertable<Leader> {
       responsibilitiesAr: Value(responsibilitiesAr),
       email: Value(email),
       phone: Value(phone),
+      photoPath: Value(photoPath),
       accent: Value(accent),
       sortOrder: Value(sortOrder),
       createdAt: Value(createdAt),
@@ -1944,6 +1973,7 @@ class Leader extends DataClass implements Insertable<Leader> {
       ),
       email: serializer.fromJson<String>(json['email']),
       phone: serializer.fromJson<String>(json['phone']),
+      photoPath: serializer.fromJson<String>(json['photoPath']),
       accent: serializer.fromJson<int>(json['accent']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -1968,6 +1998,7 @@ class Leader extends DataClass implements Insertable<Leader> {
       'responsibilitiesAr': serializer.toJson<String>(responsibilitiesAr),
       'email': serializer.toJson<String>(email),
       'phone': serializer.toJson<String>(phone),
+      'photoPath': serializer.toJson<String>(photoPath),
       'accent': serializer.toJson<int>(accent),
       'sortOrder': serializer.toJson<int>(sortOrder),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -1990,6 +2021,7 @@ class Leader extends DataClass implements Insertable<Leader> {
     String? responsibilitiesAr,
     String? email,
     String? phone,
+    String? photoPath,
     int? accent,
     int? sortOrder,
     DateTime? createdAt,
@@ -2009,6 +2041,7 @@ class Leader extends DataClass implements Insertable<Leader> {
     responsibilitiesAr: responsibilitiesAr ?? this.responsibilitiesAr,
     email: email ?? this.email,
     phone: phone ?? this.phone,
+    photoPath: photoPath ?? this.photoPath,
     accent: accent ?? this.accent,
     sortOrder: sortOrder ?? this.sortOrder,
     createdAt: createdAt ?? this.createdAt,
@@ -2042,6 +2075,7 @@ class Leader extends DataClass implements Insertable<Leader> {
           : this.responsibilitiesAr,
       email: data.email.present ? data.email.value : this.email,
       phone: data.phone.present ? data.phone.value : this.phone,
+      photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
       accent: data.accent.present ? data.accent.value : this.accent,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
@@ -2066,6 +2100,7 @@ class Leader extends DataClass implements Insertable<Leader> {
           ..write('responsibilitiesAr: $responsibilitiesAr, ')
           ..write('email: $email, ')
           ..write('phone: $phone, ')
+          ..write('photoPath: $photoPath, ')
           ..write('accent: $accent, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('createdAt: $createdAt')
@@ -2090,6 +2125,7 @@ class Leader extends DataClass implements Insertable<Leader> {
     responsibilitiesAr,
     email,
     phone,
+    photoPath,
     accent,
     sortOrder,
     createdAt,
@@ -2113,6 +2149,7 @@ class Leader extends DataClass implements Insertable<Leader> {
           other.responsibilitiesAr == this.responsibilitiesAr &&
           other.email == this.email &&
           other.phone == this.phone &&
+          other.photoPath == this.photoPath &&
           other.accent == this.accent &&
           other.sortOrder == this.sortOrder &&
           other.createdAt == this.createdAt);
@@ -2134,6 +2171,7 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
   final Value<String> responsibilitiesAr;
   final Value<String> email;
   final Value<String> phone;
+  final Value<String> photoPath;
   final Value<int> accent;
   final Value<int> sortOrder;
   final Value<DateTime> createdAt;
@@ -2154,6 +2192,7 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
     this.responsibilitiesAr = const Value.absent(),
     this.email = const Value.absent(),
     this.phone = const Value.absent(),
+    this.photoPath = const Value.absent(),
     this.accent = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -2175,6 +2214,7 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
     this.responsibilitiesAr = const Value.absent(),
     this.email = const Value.absent(),
     this.phone = const Value.absent(),
+    this.photoPath = const Value.absent(),
     this.accent = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -2201,6 +2241,7 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
     Expression<String>? responsibilitiesAr,
     Expression<String>? email,
     Expression<String>? phone,
+    Expression<String>? photoPath,
     Expression<int>? accent,
     Expression<int>? sortOrder,
     Expression<DateTime>? createdAt,
@@ -2222,6 +2263,7 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
       if (responsibilitiesAr != null) 'responsibilities_ar': responsibilitiesAr,
       if (email != null) 'email': email,
       if (phone != null) 'phone': phone,
+      if (photoPath != null) 'photo_path': photoPath,
       if (accent != null) 'accent': accent,
       if (sortOrder != null) 'sort_order': sortOrder,
       if (createdAt != null) 'created_at': createdAt,
@@ -2245,6 +2287,7 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
     Value<String>? responsibilitiesAr,
     Value<String>? email,
     Value<String>? phone,
+    Value<String>? photoPath,
     Value<int>? accent,
     Value<int>? sortOrder,
     Value<DateTime>? createdAt,
@@ -2266,6 +2309,7 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
       responsibilitiesAr: responsibilitiesAr ?? this.responsibilitiesAr,
       email: email ?? this.email,
       phone: phone ?? this.phone,
+      photoPath: photoPath ?? this.photoPath,
       accent: accent ?? this.accent,
       sortOrder: sortOrder ?? this.sortOrder,
       createdAt: createdAt ?? this.createdAt,
@@ -2321,6 +2365,9 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
     if (phone.present) {
       map['phone'] = Variable<String>(phone.value);
     }
+    if (photoPath.present) {
+      map['photo_path'] = Variable<String>(photoPath.value);
+    }
     if (accent.present) {
       map['accent'] = Variable<int>(accent.value);
     }
@@ -2354,6 +2401,7 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
           ..write('responsibilitiesAr: $responsibilitiesAr, ')
           ..write('email: $email, ')
           ..write('phone: $phone, ')
+          ..write('photoPath: $photoPath, ')
           ..write('accent: $accent, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('createdAt: $createdAt, ')
@@ -11399,6 +11447,7 @@ typedef $$LeadersTableCreateCompanionBuilder =
       Value<String> responsibilitiesAr,
       Value<String> email,
       Value<String> phone,
+      Value<String> photoPath,
       Value<int> accent,
       Value<int> sortOrder,
       Value<DateTime> createdAt,
@@ -11421,6 +11470,7 @@ typedef $$LeadersTableUpdateCompanionBuilder =
       Value<String> responsibilitiesAr,
       Value<String> email,
       Value<String> phone,
+      Value<String> photoPath,
       Value<int> accent,
       Value<int> sortOrder,
       Value<DateTime> createdAt,
@@ -11508,6 +11558,11 @@ class $$LeadersTableFilterComposer
 
   ColumnFilters<String> get phone => $composableBuilder(
     column: $table.phone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -11611,6 +11666,11 @@ class $$LeadersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get accent => $composableBuilder(
     column: $table.accent,
     builder: (column) => ColumnOrderings(column),
@@ -11693,6 +11753,9 @@ class $$LeadersTableAnnotationComposer
   GeneratedColumn<String> get phone =>
       $composableBuilder(column: $table.phone, builder: (column) => column);
 
+  GeneratedColumn<String> get photoPath =>
+      $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
   GeneratedColumn<int> get accent =>
       $composableBuilder(column: $table.accent, builder: (column) => column);
 
@@ -11746,6 +11809,7 @@ class $$LeadersTableTableManager
                 Value<String> responsibilitiesAr = const Value.absent(),
                 Value<String> email = const Value.absent(),
                 Value<String> phone = const Value.absent(),
+                Value<String> photoPath = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -11766,6 +11830,7 @@ class $$LeadersTableTableManager
                 responsibilitiesAr: responsibilitiesAr,
                 email: email,
                 phone: phone,
+                photoPath: photoPath,
                 accent: accent,
                 sortOrder: sortOrder,
                 createdAt: createdAt,
@@ -11788,6 +11853,7 @@ class $$LeadersTableTableManager
                 Value<String> responsibilitiesAr = const Value.absent(),
                 Value<String> email = const Value.absent(),
                 Value<String> phone = const Value.absent(),
+                Value<String> photoPath = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -11808,6 +11874,7 @@ class $$LeadersTableTableManager
                 responsibilitiesAr: responsibilitiesAr,
                 email: email,
                 phone: phone,
+                photoPath: photoPath,
                 accent: accent,
                 sortOrder: sortOrder,
                 createdAt: createdAt,

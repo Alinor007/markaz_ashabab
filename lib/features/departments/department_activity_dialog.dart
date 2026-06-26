@@ -69,7 +69,7 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
         width: 420,
         child: Form(
           key: _formKey,
-          child: Column(
+          child: SingleChildScrollView(child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
@@ -140,7 +140,7 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
                 onChanged: (v) => setState(() => _status = v ?? _status),
               ),
             ],
-          ),
+          )),
         ),
       ),
       actions: [

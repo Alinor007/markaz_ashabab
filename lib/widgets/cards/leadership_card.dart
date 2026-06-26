@@ -81,7 +81,10 @@ class LeadershipCard extends StatelessWidget {
             child: Column(
               children: [
                 PortraitAvatar(
-                    initials: leader.initials, accent: accent, size: 80),
+                    initials: leader.initials,
+                    imagePath: leader.photoPath,
+                    accent: accent,
+                    size: 80),
                 const SizedBox(height: AppSpacing.md),
                 Text(
                   isArabic ? leader.nameAr : leader.name,

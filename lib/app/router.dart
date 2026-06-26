@@ -9,6 +9,7 @@ import '../features/departments/department_detail_screen.dart';
 import '../features/departments/departments_screen.dart';
 import '../features/gallery/gallery_screen.dart';
 import '../features/history/history_screen.dart';
+import '../features/leadership/leader_form_screen.dart';
 import '../features/leadership/leader_profile_screen.dart';
 import '../features/leadership/leadership_screen.dart';
 import '../features/login/login_screen.dart';
@@ -56,6 +57,12 @@ GoRouter createRouter(SessionController session) {
       if (loc.startsWith('/members') && !(can?.manageMembers ?? false)) {
         return '/home';
       }
+      // Creating / editing a leader — executives only (viewing stays open).
+      final leaderMutation = loc.startsWith('/leadership/add') ||
+          (loc.startsWith('/leadership/profile/') && loc.endsWith('/edit'));
+      if (leaderMutation && !(can?.manageLeadership ?? false)) {
+        return '/home';
+      }
       return null;
     },
     routes: [
@@ -100,6 +107,19 @@ GoRouter createRouter(SessionController session) {
             path: '/leadership/profile/:id',
             builder: (context, state) => LeaderProfileScreen(
               leaderId: state.pathParameters['id']!,
+            ),
+          ),
+          GoRoute(
+            path: '/leadership/profile/:id/edit',
+            builder: (context, state) => LeaderFormScreen(
+              leaderId: state.pathParameters['id']!,
+            ),
+          ),
+          GoRoute(
+            path: '/leadership/add/:category',
+            builder: (context, state) => LeaderFormScreen(
+              category: LeadershipCategory.fromCode(
+                  state.pathParameters['category']!),
             ),
           ),
           GoRoute(

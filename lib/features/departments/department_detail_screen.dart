@@ -21,6 +21,7 @@ import '../../widgets/feedback/loading_state.dart';
 import '../reports/report_form_dialog.dart';
 import '../tarbiya/widgets/confirm_dialog.dart';
 import 'department_activity_dialog.dart';
+import 'department_form_dialog.dart';
 
 /// Department detail with Overview / Activities / Reports tabs.
 class DepartmentDetailScreen extends StatelessWidget {
@@ -31,10 +32,10 @@ class DepartmentDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final repo = context.read<DepartmentRepository>();
-    return FutureBuilder<Department?>(
-      future: repo.getById(departmentId),
+    return StreamBuilder<Department?>(
+      stream: repo.watchById(departmentId),
       builder: (context, snap) {
-        if (snap.connectionState == ConnectionState.waiting) {
+        if (!snap.hasData && snap.connectionState == ConnectionState.waiting) {
           return const Padding(
               padding: EdgeInsets.all(AppSpacing.xxl), child: LoadingState());
         }
@@ -148,6 +149,12 @@ class _OverviewTab extends StatelessWidget {
     final isArabic = context.isArabic;
     final deptRepo = context.read<DepartmentRepository>();
     final reportRepo = context.read<ReportRepository>();
+    // Admin and executives may edit the department's overview and contact
+    // details; department heads see these cards read-only.
+    final canManage =
+        context.watch<SessionController>().can?.manageContent ?? false;
+    final editAction =
+        canManage ? _EditDepartmentButton(department: department) : null;
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,6 +168,7 @@ class _OverviewTab extends StatelessWidget {
                   child: InfoPanel(
                     icon: Icons.info_outline,
                     title: context.tr('About', 'نبذة'),
+                    action: editAction,
                     child: Text(
                       (isArabic ? department.descriptionAr : department.description)
                               .isEmpty
@@ -183,6 +191,7 @@ class _OverviewTab extends StatelessWidget {
                     icon: Icons.contact_mail_outlined,
                     title: context.tr('Department Head & Contact',
                         'رئيس القسم والتواصل'),
+                    action: editAction,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -254,6 +263,32 @@ class _OverviewTab extends StatelessWidget {
   }
 }
 
+/// A compact edit button (shown to admin/executives) that opens the department
+/// form to update the overview, head, and contact details. The detail screen
+/// streams the department, so saved changes appear immediately.
+class _EditDepartmentButton extends StatelessWidget {
+  const _EditDepartmentButton({required this.department});
+  final Department department;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: context.tr('Edit', 'تعديل'),
+      icon: const Icon(Icons.edit_outlined, size: 18),
+      color: AppColors.emerald,
+      visualDensity: VisualDensity.compact,
+      onPressed: () => _edit(context),
+    );
+  }
+
+  Future<void> _edit(BuildContext context) async {
+    final repo = context.read<DepartmentRepository>();
+    final r = await showDepartmentForm(context, existing: department);
+    if (r == null) return;
+    await repo.update(department.id, departmentUpdateCompanion(r));
+  }
+}
+
 // ════════════════════════════ Activities ════════════════════════════
 
 class _ActivitiesTab extends StatefulWidget {
@@ -270,8 +305,10 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
   @override
   Widget build(BuildContext context) {
     final repo = context.read<DepartmentRepository>();
-    final canManage =
-        context.read<SessionController>().can?.manageContent ?? false;
+    final session = context.watch<SessionController>();
+    final canManage = session.can?.manageActivityForDepartment(
+            session.user?.departmentId, widget.department.id) ??
+        false;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

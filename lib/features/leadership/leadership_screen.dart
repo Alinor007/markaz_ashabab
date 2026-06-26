@@ -14,7 +14,6 @@ import '../../widgets/feedback/empty_state.dart';
 import '../../widgets/feedback/error_state.dart';
 import '../../widgets/feedback/loading_state.dart';
 import '../../widgets/layout/module_page.dart';
-import 'leader_form_dialog.dart';
 
 /// A leadership category page (Office of the President / Board of Trustees /
 /// Consultative Assembly). Lists records from the database; executives can
@@ -29,65 +28,12 @@ class LeadershipScreen extends StatelessWidget {
   String _actor(BuildContext c) =>
       c.read<SessionController>().user?.username ?? 'system';
 
-  Future<void> _create(BuildContext context) async {
-    final result = await showLeaderForm(context, category: category);
-    if (result == null || !context.mounted) return;
-    final leader = await _repo(context).create(
-      name: result.name,
-      nameAr: result.nameAr,
-      position: result.position,
-      positionAr: result.positionAr,
-      category: category,
-      serviceYears: result.serviceYears,
-      bio: result.bio,
-      bioAr: result.bioAr,
-      achievements: result.achievements,
-      achievementsAr: result.achievementsAr,
-      responsibilities: result.responsibilities,
-      responsibilitiesAr: result.responsibilitiesAr,
-      email: result.email,
-      phone: result.phone,
-    );
-    if (!context.mounted) return;
-    await _audit(context).log(
-      username: _actor(context),
-      action: 'Created leader "${leader.name}"',
-      actionAr: 'أضاف قائدًا «${leader.name}»',
-      module: 'Leadership',
-      moduleAr: 'القيادة',
-    );
-  }
+  // Add / edit now open a dedicated full screen instead of a modal dialog.
+  void _create(BuildContext context) =>
+      context.go('/leadership/add/${category.code}');
 
-  Future<void> _edit(BuildContext context, Leader leader) async {
-    final result =
-        await showLeaderForm(context, category: category, existing: leader);
-    if (result == null || !context.mounted) return;
-    await _repo(context).updateLeader(
-      leader.id,
-      name: result.name,
-      nameAr: result.nameAr,
-      position: result.position,
-      positionAr: result.positionAr,
-      category: category,
-      serviceYears: result.serviceYears,
-      bio: result.bio,
-      bioAr: result.bioAr,
-      achievements: result.achievements,
-      achievementsAr: result.achievementsAr,
-      responsibilities: result.responsibilities,
-      responsibilitiesAr: result.responsibilitiesAr,
-      email: result.email,
-      phone: result.phone,
-    );
-    if (!context.mounted) return;
-    await _audit(context).log(
-      username: _actor(context),
-      action: 'Updated leader "${result.name}"',
-      actionAr: 'حدّث قائدًا «${result.name}»',
-      module: 'Leadership',
-      moduleAr: 'القيادة',
-    );
-  }
+  void _edit(BuildContext context, Leader leader) =>
+      context.go('/leadership/profile/${leader.id}/edit');
 
   Future<void> _delete(BuildContext context, Leader leader) async {
     final ok = await showDialog<bool>(

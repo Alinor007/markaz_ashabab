@@ -11,11 +11,15 @@ class InfoPanel extends StatelessWidget {
     required this.title,
     required this.child,
     this.icon,
+    this.action,
   });
 
   final String title;
   final Widget child;
   final IconData? icon;
+
+  /// Optional trailing widget in the header (e.g. an edit button).
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +53,7 @@ class InfoPanel extends StatelessWidget {
               Expanded(
                 child: Text(title, style: theme.textTheme.titleMedium),
               ),
+              ?action,
             ],
           ),
           const SizedBox(height: AppSpacing.lg),

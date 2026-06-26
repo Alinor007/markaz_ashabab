@@ -74,9 +74,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // The brand panel is a fixed split-screen Column; letting the body resize
-      // for the keyboard squeezes it and overflows. Keep the layout at full
-      // height and let the keyboard overlay — the credential panel scrolls.
+      // Don't shrink the split-screen for the keyboard (it shifts/squeezes the
+      // layout). The keyboard overlays the bottom; the credential panel's bottom
+      // inset padding lifts its fields above the keyboard.
       resizeToAvoidBottomInset: false,
       body: Row(
         children: [
@@ -95,7 +95,13 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       color: AppColors.ivory,
       alignment: Alignment.center,
-      padding: const EdgeInsets.all(AppSpacing.xxl),
+      padding: EdgeInsets.only(
+        left: AppSpacing.xxl,
+        right: AppSpacing.xxl,
+        top: AppSpacing.xxl,
+        // Extra room so the focused field clears the keyboard.
+        bottom: AppSpacing.xxl + MediaQuery.viewInsetsOf(context).bottom,
+      ),
       child: SingleChildScrollView(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
@@ -232,57 +238,62 @@ class _BrandPanel extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(AppSpacing.xxxl),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const BrandEmblem(size: 96, onLight: false),
-                const Spacer(),
-                Text(
-                  s.orgNameArabic,
-                  textDirection: TextDirection.rtl,
-                  style: AppTypography.arabic(
-                    fontSize: 40,
-                    color: AppColors.gold,
-                    fontWeight: FontWeight.w700,
-                    height: 1.4,
+            // Scroll instead of overflowing when the keyboard shrinks the panel.
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const BrandEmblem(size: 96, onLight: false),
+                  const SizedBox(height: AppSpacing.xxxl),
+                  Text(
+                    s.orgNameArabic,
+                    textDirection: TextDirection.rtl,
+                    style: AppTypography.arabic(
+                      fontSize: 40,
+                      color: AppColors.gold,
+                      fontWeight: FontWeight.w700,
+                      height: 1.4,
+                    ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  s.orgName,
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        color: AppColors.onEmerald,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                Container(width: 64, height: 3, color: AppColors.gold),
-                const SizedBox(height: AppSpacing.xl),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 460),
-                  child: Text(
-                    s.missionStatement,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.85),
-                          height: 1.7,
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    s.orgName,
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                          color: AppColors.onEmerald,
+                          fontWeight: FontWeight.w600,
                         ),
                   ),
-                ),
-                const Spacer(),
-                Row(
-                  children: [
-                    Icon(Icons.verified_user_outlined,
-                        size: 18, color: Colors.white.withValues(alpha: 0.7)),
-                    const SizedBox(width: AppSpacing.sm),
-                    Text(
-                      '',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: Colors.white.withValues(alpha: 0.7),
+                  const SizedBox(height: AppSpacing.xl),
+                  Container(width: 64, height: 3, color: AppColors.gold),
+                  const SizedBox(height: AppSpacing.xl),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 460),
+                    child: Text(
+                      s.missionStatement,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Colors.white.withValues(alpha: 0.85),
+                            height: 1.7,
                           ),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: AppSpacing.xxxl),
+                  Row(
+                    children: [
+                      Icon(Icons.verified_user_outlined,
+                          size: 18, color: Colors.white.withValues(alpha: 0.7)),
+                      const SizedBox(width: AppSpacing.sm),
+                      Text(
+                        '',
+                        style:
+                            Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: Colors.white.withValues(alpha: 0.7),
+                                ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],

@@ -29,10 +29,14 @@ class ProfileHeader extends StatelessWidget {
     this.meta = const [],
     this.trailing,
     this.leadingIcon,
+    this.imagePath,
   });
 
   /// When set, the avatar shows this icon instead of [initials].
   final IconData? leadingIcon;
+
+  /// Absolute path to a stored profile photo, shown in place of [initials].
+  final String? imagePath;
 
   final String initials;
   final String nameEn;
@@ -81,7 +85,10 @@ class ProfileHeader extends StatelessWidget {
                     )
                   else
                     PortraitAvatar(
-                        initials: initials, accent: AppColors.gold, size: 96),
+                        initials: initials,
+                        imagePath: imagePath,
+                        accent: AppColors.gold,
+                        size: 96),
                   const SizedBox(width: AppSpacing.xl),
                   Expanded(
                     child: Column(
