@@ -861,7 +861,7 @@ class AppDatabase extends _$AppDatabase {
     const seed = [
       (
         'office_president',
-        'The executive leadership of Markaz As-Shabab. It sets the '
+        'The executive leadership of Markazosshabab. It sets the '
             'organization’s direction, oversees all departments and '
             'committees, represents the organization externally, and ensures '
             'its programs serve the mission.',

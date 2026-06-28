@@ -1,12 +1,12 @@
 <#
 .SYNOPSIS
-    Pulls the Markaz As-Shabab on-device SQLite database out of a running
+    Pulls the Markazosshabab on-device SQLite database out of a running
     Android emulator/device into a local folder for inspection in
     DB Browser for SQLite.
 
 .DESCRIPTION
     The app stores its database (drift, WAL mode) in the app-private folder:
-        /data/data/com.example.markaz_ashabab/app_flutter/markaz_archive.sqlite
+        /data/data/com.example.markazosshabab/app_flutter/markaz_archive.sqlite
     plus the WAL sidecars (-wal / -shm) which hold the most recent writes.
 
     This script copies all three out. It first tries `adb root` (works on
@@ -30,7 +30,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$package   = 'com.example.markaz_ashabab'
+$package   = 'com.example.markazosshabab'
 $remoteDir = "/data/data/$package/app_flutter"
 $dbFile    = 'markaz_archive.sqlite'
 $files     = @($dbFile, "$dbFile-wal", "$dbFile-shm")

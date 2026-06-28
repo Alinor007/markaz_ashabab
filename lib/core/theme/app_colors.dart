@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Centralized color tokens for the Markaz As-Shabab archive system.
+/// Centralized color tokens for the Markazosshabab archive system.
 ///
 /// Palette identity: Deep Emerald Green (primary), Deep Navy Blue (secondary),
 /// Islamic Gold (accent), Warm Ivory / Parchment (background), Charcoal (text).

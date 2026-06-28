@@ -172,7 +172,7 @@ class _Strings {
 }
 
 const _Strings _englishStrings = _Strings(
-  orgName: 'Markaz As-Shabab Al-Muslim',
+  orgName: 'Markazosshabab Al-Muslim',
   missionStatement:
       'Preserving the legacy, nurturing the leaders, and serving the Muslim '
       'youth of the Philippines through knowledge, da‘wah, and sincere service.',

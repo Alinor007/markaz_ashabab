@@ -6,8 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
-import 'package:markaz_ashabab/core/i18n/locale_controller.dart';
-import 'package:markaz_ashabab/core/util/validators.dart';
+import 'package:markazosshabab/core/i18n/locale_controller.dart';
+import 'package:markazosshabab/core/util/validators.dart';
 
 void main() {
   testWidgets('Validators enforce required/numeric/email rules', (tester) async {

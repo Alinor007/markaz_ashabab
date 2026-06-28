@@ -1,4 +1,4 @@
-package com.example.markaz_ashabab
+package com.example.markazosshabab
 
 import io.flutter.embedding.android.FlutterActivity
 

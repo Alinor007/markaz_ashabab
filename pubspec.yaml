@@ -1,4 +1,4 @@
-name: markaz_ashabab
+name: markazosshabab
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -61,7 +61,7 @@ dev_dependencies:
   # Code generation for the drift database.
   build_runner: ^2.4.13
 
-  # Generates the app launcher icon (Markaz seal) for Android & iOS.
+  # Generates the app launcher icon (Markazosshabab seal) for Android & iOS.
   flutter_launcher_icons: ^0.14.1
 
   # The "flutter_lints" package below contains a set of recommended lints to

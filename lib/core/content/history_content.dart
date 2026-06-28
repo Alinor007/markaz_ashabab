@@ -32,7 +32,7 @@ typedef Bilingual = ({String en, String ar});
 /// Founding statement shown on the History hero (a concise lead).
 const String kFoundingEn =
     'Founded in 1978 by young Filipino Muslim students abroad and formally '
-    'registered in 1983, Markaz As-Shabab Al-Muslim has grown into one of the '
+    'registered in 1983, Markazosshabab Al-Muslim has grown into one of the '
     'largest Islamic youth organizations in the Philippines, with 64 branches '
     'nationwide.';
 

@@ -6,18 +6,18 @@ import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:markaz_ashabab/app/markaz_app.dart';
-import 'package:markaz_ashabab/core/auth/roles.dart';
-import 'package:markaz_ashabab/core/data/app_database.dart';
-import 'package:markaz_ashabab/core/data/models.dart';
-import 'package:markaz_ashabab/core/repositories/department_repository.dart';
-import 'package:markaz_ashabab/core/repositories/gallery_repository.dart';
-import 'package:markaz_ashabab/core/repositories/leader_repository.dart';
-import 'package:markaz_ashabab/core/repositories/member_repository.dart';
-import 'package:markaz_ashabab/core/repositories/minutes_report_repository.dart';
-import 'package:markaz_ashabab/core/repositories/report_repository.dart';
-import 'package:markaz_ashabab/core/repositories/tarbiya_repository.dart';
-import 'package:markaz_ashabab/core/repositories/user_repository.dart';
+import 'package:markazosshabab/app/markaz_app.dart';
+import 'package:markazosshabab/core/auth/roles.dart';
+import 'package:markazosshabab/core/data/app_database.dart';
+import 'package:markazosshabab/core/data/models.dart';
+import 'package:markazosshabab/core/repositories/department_repository.dart';
+import 'package:markazosshabab/core/repositories/gallery_repository.dart';
+import 'package:markazosshabab/core/repositories/leader_repository.dart';
+import 'package:markazosshabab/core/repositories/member_repository.dart';
+import 'package:markazosshabab/core/repositories/minutes_report_repository.dart';
+import 'package:markazosshabab/core/repositories/report_repository.dart';
+import 'package:markazosshabab/core/repositories/tarbiya_repository.dart';
+import 'package:markazosshabab/core/repositories/user_repository.dart';
 
 void main() {
   group('data layer', () {
