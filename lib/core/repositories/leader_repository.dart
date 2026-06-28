@@ -10,10 +10,21 @@ class LeaderRepository {
   final AppDatabase _db;
   final PhotoService _photos;
 
-  Stream<List<Leader>> watchByCategory(LeadershipCategory category) {
+  Stream<List<Leader>> watchByCategory(LeadershipCategory category) =>
+      watchByCategoryCode(category.code);
+
+  /// Watches the positions in a category by its raw code. The Consultative
+  /// Assembly is split into sub-codes (`assembly_general`, `committee_hayah`,
+  /// `committee_audit`). Ordered by sort order then creation, so a seeded
+  /// position (sort order 0) leads and admin-added ones follow in the order
+  /// they were created — the first is shown prominently.
+  Stream<List<Leader>> watchByCategoryCode(String code) {
     return (_db.select(_db.leaders)
-          ..where((l) => l.category.equals(category.code))
-          ..orderBy([(l) => OrderingTerm(expression: l.sortOrder)]))
+          ..where((l) => l.category.equals(code))
+          ..orderBy([
+            (l) => OrderingTerm(expression: l.sortOrder),
+            (l) => OrderingTerm(expression: l.createdAt),
+          ]))
         .watch();
   }
 
@@ -110,5 +121,71 @@ class LeaderRepository {
     final leader = await getById(id);
     await (_db.delete(_db.leaders)..where((l) => l.id.equals(id))).go();
     await _photos.deleteStored(leader?.photoPath);
+  }
+
+  /// Adds a new (unassigned) position to a category [code]. Custom positions
+  /// use sort order 100 so they land after any seeded ones (ordered among
+  /// themselves by creation time).
+  Future<void> addPosition({
+    required String code,
+    required String title,
+    required String titleAr,
+  }) {
+    return _db.into(_db.leaders).insert(
+          LeadersCompanion.insert(
+            id: newId('position'),
+            name: title,
+            nameAr: titleAr.isEmpty ? title : titleAr,
+            position: title,
+            positionAr: titleAr.isEmpty ? title : titleAr,
+            category: code,
+            sortOrder: const Value(100),
+          ),
+        );
+  }
+
+  /// Renames a position (title in both languages).
+  Future<void> editPosition(String id, String title, String titleAr) {
+    return (_db.update(_db.leaders)..where((l) => l.id.equals(id))).write(
+      LeadersCompanion(
+        name: Value(title),
+        nameAr: Value(titleAr.isEmpty ? title : titleAr),
+        position: Value(title),
+        positionAr: Value(titleAr.isEmpty ? title : titleAr),
+      ),
+    );
+  }
+
+  /// Assigns (or clears, with null) the member who holds a position.
+  Future<void> assignMember(String positionId, String? memberId) {
+    return (_db.update(_db.leaders)..where((l) => l.id.equals(positionId)))
+        .write(LeadersCompanion(memberId: Value(memberId)));
+  }
+
+  /// The member currently assigned to [positionId], or null when unassigned.
+  Stream<Member?> watchAssignedMember(String positionId) {
+    final query = _db.select(_db.members).join([
+      innerJoin(_db.leaders, _db.leaders.memberId.equalsExp(_db.members.id)),
+    ])
+      ..where(_db.leaders.id.equals(positionId));
+    return query.watchSingleOrNull().map((row) => row?.readTable(_db.members));
+  }
+
+  // ── Group descriptions (Office of the President, Board, Assembly groups) ──
+  Stream<LeadershipGroupInfoData?> watchGroupInfo(String code) =>
+      (_db.select(_db.leadershipGroupInfo)..where((g) => g.code.equals(code)))
+          .watchSingleOrNull();
+
+  /// Sets a leadership group's editable function description (creates the row
+  /// if missing).
+  Future<void> setGroupDescription(
+      String code, String description, String descriptionAr) {
+    return _db.into(_db.leadershipGroupInfo).insertOnConflictUpdate(
+          LeadershipGroupInfoCompanion(
+            code: Value(code),
+            description: Value(description),
+            descriptionAr: Value(descriptionAr),
+          ),
+        );
   }
 }

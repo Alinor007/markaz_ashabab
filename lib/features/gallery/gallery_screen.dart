@@ -41,7 +41,9 @@ class _GalleryScreenState extends State<GalleryScreen> {
         photo: photo,
         canManage: canManage,
         onDelete: () async {
-          Navigator.of(context).pop();
+          // Pop the root navigator (where the dialog lives), not the nested
+          // shell navigator this screen's context resolves to.
+          Navigator.of(context, rootNavigator: true).pop();
           await context.read<GalleryRepository>().delete(photo.id);
         },
       ),
@@ -129,7 +131,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
       event: r.event,
       eventAr: r.eventAr,
       iconKey: r.iconKey,
-      imagePath: r.imagePath,
+      imagePaths: r.imagePaths,
       heightHint: 200 + (r.title.length % 5) * 24,
     );
   }
@@ -189,8 +191,7 @@ class _Lightbox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isArabic = context.isArabic;
-    final hasImage =
-        photo.imagePath.isNotEmpty && File(photo.imagePath).existsSync();
+    final images = GalleryRepository.imagesOf(photo);
     return Dialog(
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(borderRadius: AppRadius.panel),
@@ -206,8 +207,20 @@ class _Lightbox extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    if (hasImage)
-                      Image.file(File(photo.imagePath), fit: BoxFit.cover)
+                    if (images.isNotEmpty)
+                      PageView(
+                        children: [
+                          for (final path in images)
+                            Container(
+                              color: Colors.black,
+                              alignment: Alignment.center,
+                              child: File(path).existsSync()
+                                  ? Image.file(File(path), fit: BoxFit.contain)
+                                  : const Icon(Icons.broken_image_outlined,
+                                      color: Colors.white54, size: 64),
+                            ),
+                        ],
+                      )
                     else ...[
                       DecoratedBox(
                         decoration: BoxDecoration(
@@ -310,14 +323,14 @@ class _Lightbox extends StatelessWidget {
 
 class _PhotoFormResult {
   _PhotoFormResult(this.title, this.titleAr, this.year, this.event,
-      this.eventAr, this.iconKey, this.imagePath);
+      this.eventAr, this.iconKey, this.imagePaths);
   final String title;
   final String titleAr;
   final int year;
   final String event;
   final String eventAr;
   final String iconKey;
-  final String imagePath;
+  final List<String> imagePaths;
 }
 
 class _PhotoFormDialog extends StatefulWidget {
@@ -335,7 +348,7 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
   final _eventAr = TextEditingController();
   final _year = TextEditingController(text: '${DateTime.now().year}');
   String _iconKey = 'photo';
-  String _imagePath = '';
+  final List<String> _imagePaths = [];
 
   @override
   void dispose() {
@@ -360,41 +373,82 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Center(
-                  child: Column(
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(context.tr('Images', 'الصور'),
+                          style: Theme.of(context).textTheme.labelMedium),
+                    ),
+                    TextButton.icon(
+                      onPressed: () async {
+                        final paths = await const PhotoService()
+                            .pickMultipleAndStore(subfolder: 'gallery_photos');
+                        if (paths.isNotEmpty && mounted) {
+                          setState(() => _imagePaths.addAll(paths));
+                        }
+                      },
+                      icon: const Icon(Icons.add_photo_alternate_outlined,
+                          size: 18),
+                      label: Text(context.tr('Add Images', 'إضافة صور')),
+                    ),
+                  ],
+                ),
+                if (_imagePaths.isEmpty)
+                  Container(
+                    width: double.infinity,
+                    height: 80,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceAlt,
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Text(
+                        context.tr('No images yet', 'لا توجد صور بعد'),
+                        style: Theme.of(context).textTheme.bodySmall),
+                  )
+                else
+                  Wrap(
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.sm,
                     children: [
-                      if (_imagePath.isNotEmpty && File(_imagePath).existsSync())
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(AppRadius.sm),
-                          child: Image.file(File(_imagePath),
-                              width: 120, height: 90, fit: BoxFit.cover),
-                        )
-                      else
-                        Container(
-                          width: 120,
-                          height: 90,
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceAlt,
-                            borderRadius: BorderRadius.circular(AppRadius.sm),
-                            border: Border.all(color: AppColors.border),
-                          ),
-                          child: const Icon(Icons.image_outlined,
-                              color: AppColors.textFaint),
+                      for (var i = 0; i < _imagePaths.length; i++)
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
+                              child: File(_imagePaths[i]).existsSync()
+                                  ? Image.file(File(_imagePaths[i]),
+                                      width: 76, height: 76, fit: BoxFit.cover)
+                                  : Container(
+                                      width: 76,
+                                      height: 76,
+                                      color: AppColors.surfaceAlt,
+                                      child: const Icon(
+                                          Icons.broken_image_outlined,
+                                          color: AppColors.textFaint)),
+                            ),
+                            Positioned(
+                              top: -8,
+                              right: -8,
+                              child: IconButton(
+                                visualDensity: VisualDensity.compact,
+                                icon: const CircleAvatar(
+                                  radius: 10,
+                                  backgroundColor: AppColors.error,
+                                  child: Icon(Icons.close,
+                                      size: 12, color: Colors.white),
+                                ),
+                                onPressed: () =>
+                                    setState(() => _imagePaths.removeAt(i)),
+                              ),
+                            ),
+                          ],
                         ),
-                      TextButton.icon(
-                        onPressed: () async {
-                          final path = await const PhotoService()
-                              .pickAndStore(subfolder: 'gallery_photos');
-                          if (path != null && mounted) {
-                            setState(() => _imagePath = path);
-                          }
-                        },
-                        icon: const Icon(Icons.upload_outlined, size: 18),
-                        label: Text(context.tr('Choose Image', 'اختر صورة')),
-                      ),
                     ],
                   ),
-                ),
+                const SizedBox(height: AppSpacing.md),
                 TextFormField(
                   controller: _title,
                   decoration:
@@ -475,7 +529,7 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
                 _event.text.trim(),
                 _eventAr.text.trim(),
                 _iconKey,
-                _imagePath,
+                List.of(_imagePaths),
               ),
             );
           },

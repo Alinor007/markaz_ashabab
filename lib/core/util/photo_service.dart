@@ -34,6 +34,32 @@ class PhotoService {
     return dest;
   }
 
+  /// Picks one or more images at full resolution (no size cap) and copies each
+  /// into [subfolder] under the app documents directory. Returns the stored
+  /// paths (empty if cancelled).
+  Future<List<String>> pickMultipleAndStore(
+      {String subfolder = 'gallery_photos'}) async {
+    final picker = ImagePicker();
+    final picked = await picker.pickMultiImage();
+    if (picked.isEmpty) return const [];
+
+    final dir = await getApplicationDocumentsDirectory();
+    final photosDir = Directory(p.join(dir.path, subfolder));
+    if (!photosDir.existsSync()) {
+      photosDir.createSync(recursive: true);
+    }
+    final stored = <String>[];
+    var i = 0;
+    for (final x in picked) {
+      final ext = p.extension(x.path);
+      final dest = p.join(photosDir.path,
+          'photo_${DateTime.now().microsecondsSinceEpoch}_${i++}$ext');
+      await File(x.path).copy(dest);
+      stored.add(dest);
+    }
+    return stored;
+  }
+
   /// Removes a previously stored image file. Safe to call with a null/empty
   /// path or a path that no longer exists; IO errors are swallowed so callers
   /// (e.g. delete flows) never fail because of file cleanup.

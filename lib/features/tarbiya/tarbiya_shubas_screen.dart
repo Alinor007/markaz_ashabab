@@ -4,9 +4,15 @@ import 'package:provider/provider.dart';
 
 import '../../core/auth/session_controller.dart';
 import '../../core/data/app_database.dart';
+import '../../core/data/models.dart';
 import '../../core/i18n/localized.dart';
+import '../../core/repositories/member_repository.dart';
 import '../../core/repositories/tarbiya_repository.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_dimens.dart';
 import '../../widgets/common/hierarchy_breadcrumb.dart';
+import '../../widgets/common/member_picker.dart';
+import '../../widgets/common/portrait_avatar.dart';
 import '../../widgets/feedback/empty_state.dart';
 import '../../widgets/feedback/loading_state.dart';
 import '../../widgets/layout/module_page.dart';
@@ -95,6 +101,7 @@ class TarbiyaShubasScreen extends StatelessWidget {
                       onDelete: canManage
                           ? () => _deleteShuba(context, repo, shuba)
                           : null,
+                      footer: _MasulFooter(shuba: shuba, canManage: canManage),
                     ),
                 ],
               );
@@ -136,5 +143,80 @@ class TarbiyaShubasScreen extends StatelessWidget {
           'سيُحذف الأعضاء التابعون لها نهائيًا.'),
     );
     if (ok) await repo.deleteShuba(shuba.id);
+  }
+}
+
+/// The Mas'ul (Person-in-Charge) row shown at the bottom of a Shu'ba card:
+/// the assigned member's photo + name, or an "Unassigned" placeholder, with an
+/// Assign/Change action for managers.
+class _MasulFooter extends StatelessWidget {
+  const _MasulFooter({required this.shuba, required this.canManage});
+  final Shuba shuba;
+  final bool canManage;
+
+  Future<void> _assign(BuildContext context) async {
+    final memberRepo = context.read<MemberRepository>();
+    final picked = await pickMember(context, memberRepo,
+        title: context.trRead('Assign Mas\'ul', 'تعيين المسؤول'));
+    if (picked == null || !context.mounted) return;
+    await context.read<TarbiyaRepository>().assignMasul(shuba.id, picked.id);
+  }
+
+  Future<void> _clear(BuildContext context) =>
+      context.read<TarbiyaRepository>().assignMasul(shuba.id, null);
+
+  @override
+  Widget build(BuildContext context) {
+    final repo = context.read<TarbiyaRepository>();
+    return StreamBuilder<Member?>(
+      stream: repo.watchMasul(shuba.id),
+      builder: (context, snap) {
+        final masul = snap.data;
+        return Row(
+          children: [
+            if (masul != null)
+              PortraitAvatar(
+                  initials: masul.initials,
+                  imagePath: masul.photoPath,
+                  size: 28,
+                  ring: false)
+            else
+              const Icon(Icons.person_outline,
+                  size: 22, color: AppColors.textFaint),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                masul == null
+                    ? context.tr('Unassigned', 'غير معيّن')
+                    : masul.displayName(context.isArabic),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: masul == null
+                          ? AppColors.textMuted
+                          : AppColors.charcoal,
+                    ),
+              ),
+            ),
+            if (canManage) ...[
+              TextButton.icon(
+                onPressed: () => _assign(context),
+                icon: const Icon(Icons.person_search_outlined, size: 16),
+                label: Text(masul == null
+                    ? context.tr('Assign', 'تعيين')
+                    : context.tr('Change', 'تغيير')),
+              ),
+              if (masul != null)
+                IconButton(
+                  tooltip: context.tr('Clear', 'مسح'),
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.close, size: 16),
+                  onPressed: () => _clear(context),
+                ),
+            ],
+          ],
+        );
+      },
+    );
   }
 }

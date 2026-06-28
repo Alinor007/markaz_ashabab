@@ -10,8 +10,12 @@ class MemberRepository {
   final AppDatabase _db;
   final PhotoService _photos;
 
+  // A monotonic counter guarantees unique ids even when two inserts land in the
+  // same microsecond (the Windows clock resolution is ~1ms, so rapid inserts
+  // would otherwise collide on the timestamp alone).
+  static int _seq = 0;
   String _id(String prefix) =>
-      '${prefix}_${DateTime.now().microsecondsSinceEpoch}';
+      '${prefix}_${DateTime.now().microsecondsSinceEpoch}_${_seq++}';
 
   // ── Member ───────────────────────────────────────────────────────────────
 
@@ -180,23 +184,57 @@ class MemberRepository {
     required int level,
     required String year,
     required String status,
-  }) =>
-      _db.into(_db.memberTased).insert(MemberTasedCompanion.insert(
-            id: _id('tased'),
-            memberId: memberId,
-            level: level,
-            year: Value(year),
-            status: Value(status),
-          ));
+  }) async {
+    await _db.into(_db.memberTased).insert(MemberTasedCompanion.insert(
+          id: _id('tased'),
+          memberId: memberId,
+          level: level,
+          year: Value(year),
+          status: Value(status),
+        ));
+    await _syncLevelFromTased(memberId);
+  }
 
   Future<void> updateTased(String id,
-          {required int level, required String year, required String status}) =>
-      (_db.update(_db.memberTased)..where((t) => t.id.equals(id))).write(
-          MemberTasedCompanion(
-              level: Value(level), year: Value(year), status: Value(status)));
+      {required int level, required String year, required String status}) async {
+    await (_db.update(_db.memberTased)..where((t) => t.id.equals(id))).write(
+        MemberTasedCompanion(
+            level: Value(level), year: Value(year), status: Value(status)));
+    final row = await (_db.select(_db.memberTased)..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    if (row != null) await _syncLevelFromTased(row.memberId);
+  }
 
-  Future<void> deleteTased(String id) =>
-      (_db.delete(_db.memberTased)..where((t) => t.id.equals(id))).go();
+  Future<void> deleteTased(String id) async {
+    final row = await (_db.select(_db.memberTased)..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    await (_db.delete(_db.memberTased)..where((t) => t.id.equals(id))).go();
+    if (row != null) await _syncLevelFromTased(row.memberId);
+  }
+
+  /// Keeps a member's tarbiya level driven by their Tas'ed records: the level
+  /// becomes the level of their *most recent* Tas'ed entry — the highest year,
+  /// or the latest-inserted row when years tie. With no Tas'ed records the level
+  /// is 0 ("no level"). Called after every Tas'ed insert/update/delete.
+  Future<void> _syncLevelFromTased(String memberId) async {
+    final records = await (_db.select(_db.memberTased)
+          ..where((t) => t.memberId.equals(memberId)))
+        .get();
+    var level = 0;
+    if (records.isNotEmpty) {
+      records.sort((a, b) {
+        final yearA = int.tryParse(a.year) ?? 0;
+        final yearB = int.tryParse(b.year) ?? 0;
+        if (yearA != yearB) return yearB.compareTo(yearA); // newest year first
+        // Tie: latest inserted first. The id embeds an insertion timestamp,
+        // so descending id order is a reliable "most recent" tiebreak.
+        return b.id.compareTo(a.id);
+      });
+      level = records.first.level;
+    }
+    await (_db.update(_db.members)..where((m) => m.id.equals(memberId)))
+        .write(MembersCompanion(level: Value(level)));
+  }
 
   // ── Donations ────────────────────────────────────────────────────────────
   Stream<List<MemberDonation>> watchDonations(String memberId, int year) =>
@@ -285,13 +323,72 @@ class MemberRepository {
   Future<void> deleteRole(String id) =>
       (_db.delete(_db.memberRoles)..where((r) => r.id.equals(id))).go();
 
-  // ── Usra members (same usra name, excluding the member itself) ────────────
-  Stream<List<Member>> watchUsraMembers(String memberId, String usraName) {
-    if (usraName.trim().isEmpty) {
-      return Stream.value(const []);
-    }
+  // ── Wives (up to 4 — the cap is enforced in the form) ─────────────────────
+  Stream<List<MemberWife>> watchWives(String memberId) =>
+      (_db.select(_db.memberWives)..where((w) => w.memberId.equals(memberId)))
+          .watch();
+
+  Future<void> addWife(String memberId, String name, String marriageDate) =>
+      _db.into(_db.memberWives).insert(MemberWivesCompanion.insert(
+            id: _id('wife'),
+            memberId: memberId,
+            name: name,
+            marriageDate: Value(marriageDate),
+          ));
+
+  Future<void> deleteWife(String id) =>
+      (_db.delete(_db.memberWives)..where((w) => w.id.equals(id))).go();
+
+  // ── Usra members (explicit links to other members) ────────────────────────
+  /// The members explicitly linked as this member's Usra members.
+  Stream<List<Member>> watchUsraMembers(String memberId) {
+    final query = _db.select(_db.memberUsraLinks).join([
+      innerJoin(_db.members,
+          _db.members.id.equalsExp(_db.memberUsraLinks.usraMemberId)),
+    ])
+      ..where(_db.memberUsraLinks.memberId.equals(memberId));
+    return query
+        .watch()
+        .map((rows) => rows.map((r) => r.readTable(_db.members)).toList());
+  }
+
+  Future<List<MemberUsraLink>> getUsraLinks(String memberId) =>
+      (_db.select(_db.memberUsraLinks)
+            ..where((l) => l.memberId.equals(memberId)))
+          .get();
+
+  Future<void> addUsraMember(String memberId, String usraMemberId) =>
+      _db.into(_db.memberUsraLinks).insert(MemberUsraLinksCompanion.insert(
+            id: _id('usra'),
+            memberId: memberId,
+            usraMemberId: usraMemberId,
+          ));
+
+  Future<void> deleteUsraLink(String id) =>
+      (_db.delete(_db.memberUsraLinks)..where((l) => l.id.equals(id))).go();
+
+  // ── Member search (for the Naqib / Usra-member pickers) ───────────────────
+  /// Members whose name matches [query] (first/middle/last/Arabic), excluding
+  /// [excludeId]. Returns up to [limit] results ordered by first name.
+  Future<List<Member>> searchMembers(String query,
+      {String? excludeId, int limit = 25}) {
+    final q = query.trim();
+    final like = '%$q%';
     return (_db.select(_db.members)
-          ..where((m) => m.usraName.equals(usraName) & m.id.equals(memberId).not()))
-        .watch();
+          ..where((m) {
+            final matches = q.isEmpty
+                ? const Constant(true)
+                : (m.firstName.like(like) |
+                    m.middleName.like(like) |
+                    m.lastName.like(like) |
+                    m.nameAr.like(like));
+            final notSelf = excludeId == null
+                ? const Constant(true)
+                : m.id.equals(excludeId).not();
+            return matches & notSelf;
+          })
+          ..orderBy([(m) => OrderingTerm(expression: m.firstName)])
+          ..limit(limit))
+        .get();
   }
 }

@@ -479,7 +479,7 @@ class _LevelChip extends StatelessWidget {
         border: Border.all(color: AppColors.border),
       ),
       child: Text(
-        context.tr('L$level', 'م$level'),
+        level <= 0 ? '—' : context.tr('L$level', 'م$level'),
         style: Theme.of(context)
             .textTheme
             .labelSmall

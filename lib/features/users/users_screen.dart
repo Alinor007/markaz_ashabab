@@ -103,7 +103,7 @@ class _UsersScreenState extends State<UsersScreen> {
     final controller = TextEditingController();
     final newPassword = await showDialog<String>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(context.tr('Reset Password', 'إعادة تعيين كلمة المرور')),
         content: SizedBox(
           width: 360,
@@ -117,11 +117,11 @@ class _UsersScreenState extends State<UsersScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text(context.tr('Cancel', 'إلغاء')),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text),
+            onPressed: () => Navigator.pop(dialogContext, controller.text),
             child: Text(context.tr('Reset', 'إعادة تعيين')),
           ),
         ],
@@ -153,18 +153,18 @@ class _UsersScreenState extends State<UsersScreen> {
     final ar = context.read<LocaleController>().isArabic;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(context.tr('Delete User', 'حذف المستخدم')),
         content: Text(context.tr(
             'Delete "${user.username}"? This cannot be undone.',
             'حذف «${user.username}»؟ لا يمكن التراجع.')),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: Text(context.tr('Cancel', 'إلغاء')),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(dialogContext, true),
             child: Text(context.tr('Delete', 'حذف')),
           ),
         ],

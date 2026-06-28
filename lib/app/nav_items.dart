@@ -57,6 +57,9 @@ const List<NavItem> kPrimaryNav = [
     icon: Icons.description_outlined,
     activeIcon: Icons.description,
     labelBuilder: _reports,
+    // Minutes/Resolution archive — executives only (Admin, President,
+    // Secretary General, Treasurer).
+    requiresExecutive: true,
   ),
   NavItem(
     route: '/gallery',

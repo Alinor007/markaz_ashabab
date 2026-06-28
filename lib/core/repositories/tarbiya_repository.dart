@@ -87,6 +87,21 @@ class TarbiyaRepository {
   /// Every shu'ba across all areas (used by the Members Management directory).
   Future<List<Shuba>> getAllShubas() => _db.select(_db.shubas).get();
 
+  /// Assigns (or clears, with null) the Shu'ba's Mas'ul (Person-in-Charge).
+  Future<void> assignMasul(String shubaId, String? memberId) =>
+      (_db.update(_db.shubas)..where((s) => s.id.equals(shubaId)))
+          .write(ShubasCompanion(masulMemberId: Value(memberId)));
+
+  /// The member currently assigned as Mas'ul of [shubaId], or null.
+  Stream<Member?> watchMasul(String shubaId) {
+    final query = _db.select(_db.members).join([
+      innerJoin(
+          _db.shubas, _db.shubas.masulMemberId.equalsExp(_db.members.id)),
+    ])
+      ..where(_db.shubas.id.equals(shubaId));
+    return query.watchSingleOrNull().map((row) => row?.readTable(_db.members));
+  }
+
   Future<void> createShuba({
     required String areaId,
     required String name,
