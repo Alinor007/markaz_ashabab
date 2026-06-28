@@ -13,6 +13,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/util/photo_service.dart';
 import '../../widgets/common/info_panel.dart';
+import '../../widgets/common/member_picker.dart';
 import '../../widgets/common/portrait_avatar.dart';
 import '../../widgets/feedback/loading_state.dart';
 import '../../widgets/layout/module_page.dart';
@@ -23,6 +24,14 @@ class _ChildRow {
       : name = TextEditingController(text: name);
   final TextEditingController name;
   String dob;
+}
+
+/// Mutable wife row in the form (max 4 enforced in the UI).
+class _WifeRow {
+  _WifeRow({String name = '', this.marriageDate = ''})
+      : name = TextEditingController(text: name);
+  final TextEditingController name;
+  String marriageDate;
 }
 
 /// Mutable education row in the form.
@@ -93,6 +102,30 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
 
   final List<_ChildRow> _children = [];
   final List<_EduRow> _education = [];
+  final List<_WifeRow> _wives = [];
+
+  /// This member's Naqib (an existing member) and explicit Usra members.
+  Member? _naqib;
+  final List<Member> _usraMembers = [];
+
+  bool get _notSingle => _civil != CivilStatus.single;
+
+  /// A non-single female records a husband/spouse (Family Information card).
+  bool get _showFamilySection => _gender == 'F' && _notSingle;
+
+  /// A non-single male records up to four wives (Wives card).
+  bool get _showWivesSection => _gender == 'M' && _notSingle;
+
+  /// Clears any entered family data so a hidden section never carries stale
+  /// values into a save (e.g. after switching to Single or changing gender).
+  void _clearFamilyData() {
+    _spouseName.clear();
+    _spouseDate = '';
+    for (final w in _wives) {
+      w.name.dispose();
+    }
+    _wives.clear();
+  }
 
   @override
   void initState() {
@@ -115,6 +148,10 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     }
     final children = await repo.watchChildren(m.id).first;
     final education = await repo.watchEducation(m.id).first;
+    final wives = await repo.watchWives(m.id).first;
+    final usra = await repo.watchUsraMembers(m.id).first;
+    final naqib =
+        m.naqibMemberId == null ? null : await repo.getMember(m.naqibMemberId!);
     _first.text = m.firstName;
     _middle.text = m.middleName;
     _last.text = m.lastName;
@@ -151,6 +188,14 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
             program: e.program,
             year: e.yearGraduated,
           )));
+    _wives
+      ..clear()
+      ..addAll(wives
+          .map((w) => _WifeRow(name: w.name, marriageDate: w.marriageDate)));
+    _naqib = naqib;
+    _usraMembers
+      ..clear()
+      ..addAll(usra);
     if (mounted) setState(() => _loading = false);
   }
 
@@ -164,6 +209,9 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
       c.dispose();
     }
     for (final r in _children) {
+      r.name.dispose();
+    }
+    for (final r in _wives) {
       r.name.dispose();
     }
     for (final r in _education) {
@@ -221,25 +269,34 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
       occupation: Value(_occupation.text.trim()),
       photoPath: Value(_photoPath),
       civilStatus: Value(_civil.code),
-      spouseName: Value(_spouseName.text.trim()),
-      spouseDate: Value(_spouseDate),
+      // Persist the spouse only when the Family section applies (non-single
+      // female); otherwise it's cleared so hidden data can't linger.
+      spouseName: Value(_showFamilySection ? _spouseName.text.trim() : ''),
+      spouseDate: Value(_showFamilySection ? _spouseDate : ''),
       status: Value(_status),
       dateJoined: Value(_dateJoined),
       usraName: Value(_usraName.text.trim()),
       usraEstablishedYear: Value(_usraYear.text.trim()),
       usraMeetingSchedule: Value(_usraSchedule.text.trim()),
+      naqibMemberId: Value(_naqib?.id),
     );
 
     String memberId;
     if (widget.isEditing) {
       memberId = widget.memberId!;
       await repo.updateMember(memberId, companion);
-      // Reconcile children & education (delete + re-add).
+      // Reconcile children, education, wives & usra links (delete + re-add).
       for (final c in await repo.watchChildren(memberId).first) {
         await repo.deleteChild(c.id);
       }
       for (final e in await repo.watchEducation(memberId).first) {
         await repo.deleteEducation(e.id);
+      }
+      for (final w in await repo.watchWives(memberId).first) {
+        await repo.deleteWife(w.id);
+      }
+      for (final l in await repo.getUsraLinks(memberId)) {
+        await repo.deleteUsraLink(l.id);
       }
     } else {
       memberId = await repo.insertMember(companion);
@@ -258,6 +315,17 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
         program: e.program.text.trim(),
         yearGraduated: e.year.text.trim(),
       );
+    }
+    // Only a non-single male keeps wives; otherwise none are re-added (the edit
+    // branch above already removed any existing rows).
+    if (_showWivesSection) {
+      for (final w in _wives) {
+        if (w.name.text.trim().isEmpty) continue;
+        await repo.addWife(memberId, w.name.text.trim(), w.marriageDate);
+      }
+    }
+    for (final m in _usraMembers) {
+      await repo.addUsraMember(memberId, m.id);
     }
 
     if (!mounted) return;
@@ -325,8 +393,16 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
           children: [
             _personalSection(),
             const SizedBox(height: AppSpacing.lg),
-            _familySection(),
-            const SizedBox(height: AppSpacing.lg),
+            // Family section shows only for a non-single female (husband/spouse);
+            // the Wives section only for a non-single male (up to 4 wives).
+            if (_showFamilySection) ...[
+              _familySection(),
+              const SizedBox(height: AppSpacing.lg),
+            ],
+            if (_showWivesSection) ...[
+              _wivesSection(),
+              const SizedBox(height: AppSpacing.lg),
+            ],
             _childrenSection(),
             const SizedBox(height: AppSpacing.lg),
             _educationSection(),
@@ -376,7 +452,13 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                           'M': context.tr('Male', 'ذكر'),
                           'F': context.tr('Female', 'أنثى'),
                         },
-                        onChanged: (v) => setState(() => _gender = v),
+                        onChanged: (v) => setState(() {
+                          if (v == _gender) return;
+                          _gender = v;
+                          // Switching gender swaps which family section applies;
+                          // clear the previous one's data.
+                          _clearFamilyData();
+                        }),
                       ),
                     ]),
                   ],
@@ -400,20 +482,20 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
               label: context.tr('Civil Status', 'الحالة الاجتماعية'),
               value: _civil,
               items: {for (final c in CivilStatus.values) c: c.label(context.isArabic)},
-              onChanged: (v) => setState(() => _civil = v),
+              onChanged: (v) => setState(() {
+                _civil = v;
+                // Going back to Single hides the family/wives card and clears it.
+                if (_civil == CivilStatus.single) _clearFamilyData();
+              }),
             ),
           ]),
           _row([
             _field(_ethnicity, context.tr('Ethnicity / Tribe', 'العرق / القبيلة')),
             _field(_occupation, context.tr('Occupation', 'المهنة')),
           ]),
+          // Level is not set here — it is driven by the member's Tas'ed records
+          // (the initial placement level from the route is kept on creation).
           _row([
-            _dropdown<int>(
-              label: context.tr('Level', 'المستوى'),
-              value: _level,
-              items: {for (final l in kTarbiyaLevels) l: 'Level $l'},
-              onChanged: (v) => setState(() => _level = v),
-            ),
             _dropdown<String>(
               label: context.tr('Status', 'الحالة'),
               value: _status,
@@ -423,11 +505,8 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
               },
               onChanged: (v) => setState(() => _status = v),
             ),
-          ]),
-          _row([
             _dateField(context.tr('Date Joined', 'تاريخ الانضمام'), _dateJoined,
                 (v) => setState(() => _dateJoined = v)),
-            const SizedBox.shrink(),
           ]),
         ],
       ),
@@ -440,7 +519,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     }
     final (label, dateLabel) = switch (_civil) {
       CivilStatus.married => (
-          context.tr('Husband / Wife Name', 'اسم الزوج / الزوجة'),
+          context.tr('Husband Name', 'اسم الزوج '),
           context.tr('Date of Marriage', 'تاريخ الزواج')
         ),
       CivilStatus.widowed => (
@@ -461,6 +540,50 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
         _dateField(dateLabel, _spouseDate, (v) => setState(() => _spouseDate = v)),
       ]),
     );
+  }
+
+  Widget _wivesSection() {
+    return InfoPanel(
+      icon: Icons.favorite_outline,
+      title: context.tr('Wives (max 4)', 'الزوجات (4 كحد أقصى)'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (var i = 0; i < _wives.length; i++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+              child: _row([
+                _field(_wives[i].name, context.tr('Wife Name', 'اسم الزوجة')),
+                _dateField(context.tr('Marriage Date', 'تاريخ الزواج'),
+                    _wives[i].marriageDate,
+                    (v) => setState(() => _wives[i].marriageDate = v)),
+                IconButton(
+                  icon: const Icon(Icons.remove_circle_outline,
+                      color: AppColors.error),
+                  onPressed: () => setState(() => _wives.removeAt(i)),
+                ),
+              ]),
+            ),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton.icon(
+              onPressed: _addWife,
+              icon: const Icon(Icons.add, size: 18),
+              label: Text(context.tr('Add Wife', 'إضافة زوجة')),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _addWife() {
+    if (_wives.length >= 4) {
+      _toast(context.trRead(
+          'A member can have at most 4 wives.', 'لا يمكن إضافة أكثر من 4 زوجات.'));
+      return;
+    }
+    setState(() => _wives.add(_WifeRow()));
   }
 
   Widget _childrenSection() {
@@ -555,12 +678,117 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     return InfoPanel(
       icon: Icons.groups_2_outlined,
       title: context.tr('Naqib-Usra Information', 'معلومات النقيب والأسرة'),
-      child: _row([
-        _field(_usraName, context.tr('Name of Usra', 'اسم الأسرة')),
-        _field(_usraYear, context.tr('Established Year', 'سنة التأسيس')),
-        _field(_usraSchedule, context.tr('Meeting Schedule', 'موعد اللقاء')),
-      ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _row([
+            _field(_usraName, context.tr('Name of Usra', 'اسم الأسرة')),
+            _field(_usraYear, context.tr('Established Year', 'سنة التأسيس')),
+            _field(_usraSchedule, context.tr('Meeting Schedule', 'موعد اللقاء')),
+          ]),
+          const SizedBox(height: AppSpacing.md),
+          // Naqib — an existing member, chosen via search.
+          Row(
+            children: [
+              Expanded(
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: context.tr('Naqib', 'النقيب'),
+                    isDense: true,
+                  ),
+                  child: Text(
+                    _naqib == null
+                        ? context.tr('Not selected', 'غير محدد')
+                        : _naqib!.displayName(context.isArabic),
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              TextButton.icon(
+                onPressed: _selectNaqib,
+                icon: const Icon(Icons.person_search_outlined, size: 18),
+                label: Text(_naqib == null
+                    ? context.tr('Select', 'تحديد')
+                    : context.tr('Change', 'تغيير')),
+              ),
+              if (_naqib != null)
+                IconButton(
+                  tooltip: context.tr('Clear', 'مسح'),
+                  icon: const Icon(Icons.clear, size: 18),
+                  onPressed: () => setState(() => _naqib = null),
+                ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          // Usra members — existing members, chosen via search.
+          Row(
+            children: [
+              Expanded(
+                child: Text(context.tr('Usra Members', 'أعضاء الأسرة'),
+                    style: Theme.of(context).textTheme.titleSmall),
+              ),
+              TextButton.icon(
+                onPressed: _addUsraMember,
+                icon: const Icon(Icons.person_add_alt_1_outlined, size: 18),
+                label: Text(context.tr('Add', 'إضافة')),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          if (_usraMembers.isEmpty)
+            Text(context.tr('No usra members added', 'لم تتم إضافة أعضاء'),
+                style: Theme.of(context).textTheme.bodySmall)
+          else
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: [
+                for (final m in _usraMembers)
+                  InputChip(
+                    label: Text(m.displayName(context.isArabic)),
+                    onDeleted: () => setState(
+                        () => _usraMembers.removeWhere((x) => x.id == m.id)),
+                  ),
+              ],
+            ),
+        ],
+      ),
     );
+  }
+
+  Future<void> _selectNaqib() async {
+    // trRead (read), not tr (watch) — this runs in a tap handler, outside build.
+    final title = context.trRead('Select Naqib', 'اختيار النقيب');
+    final picked = await _pickMember(title: title, excludeId: widget.memberId);
+    if (picked != null && mounted) setState(() => _naqib = picked);
+  }
+
+  Future<void> _addUsraMember() async {
+    final title = context.trRead('Add Usra Member', 'إضافة عضو أسرة');
+    final excludeIds = _usraMembers.map((m) => m.id).toSet();
+    final picked = await _pickMember(
+        title: title, excludeId: widget.memberId, excludeIds: excludeIds);
+    if (picked != null && mounted) {
+      setState(() {
+        if (!_usraMembers.any((m) => m.id == picked.id)) {
+          _usraMembers.add(picked);
+        }
+      });
+    }
+  }
+
+  /// Opens the member search dialog and returns the chosen member (or null).
+  /// The repository is captured here (where the provider is in scope) and
+  /// passed in, since dialogs in this app don't read providers themselves.
+  Future<Member?> _pickMember({
+    required String title,
+    String? excludeId,
+    Set<String> excludeIds = const {},
+  }) {
+    final repo = context.read<MemberRepository>();
+    return pickMember(context, repo,
+        title: title, excludeId: excludeId, excludeIds: excludeIds);
   }
 
   // ── Field helpers ──────────────────────────────────────────────────────────

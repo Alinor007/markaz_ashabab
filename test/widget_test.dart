@@ -14,6 +14,7 @@ import 'package:markaz_ashabab/core/repositories/department_repository.dart';
 import 'package:markaz_ashabab/core/repositories/gallery_repository.dart';
 import 'package:markaz_ashabab/core/repositories/leader_repository.dart';
 import 'package:markaz_ashabab/core/repositories/member_repository.dart';
+import 'package:markaz_ashabab/core/repositories/minutes_report_repository.dart';
 import 'package:markaz_ashabab/core/repositories/report_repository.dart';
 import 'package:markaz_ashabab/core/repositories/tarbiya_repository.dart';
 import 'package:markaz_ashabab/core/repositories/user_repository.dart';
@@ -59,19 +60,67 @@ void main() {
 
     test('leadership CRUD by category', () async {
       final repo = LeaderRepository(db);
+      // Board is not seeded, so it cleanly verifies category filtering.
       await repo.create(
         name: 'Dr. Abdullah Macarambon',
         nameAr: 'عبد الله',
-        position: 'President',
+        position: 'Chairman',
         positionAr: 'الرئيس',
-        category: LeadershipCategory.officePresident,
+        category: LeadershipCategory.board,
       );
-      final office =
-          await repo.watchByCategory(LeadershipCategory.officePresident).first;
       final board =
           await repo.watchByCategory(LeadershipCategory.board).first;
+      final assembly =
+          await repo.watchByCategory(LeadershipCategory.assembly).first;
+      expect(board, hasLength(1));
+      expect(assembly, isEmpty);
+    });
+
+    test('seeds leadership positions (Office of the President + Chairman)',
+        () async {
+      final repo = LeaderRepository(db);
+      final office =
+          await repo.watchByCategory(LeadershipCategory.officePresident).first;
+      // Only the President is pre-seeded now (VP/Sec-Gen/Treasurer removed).
       expect(office, hasLength(1));
-      expect(board, isEmpty);
+      expect(office.first.id, 'pos_president');
+      expect(office.single.memberId, isNull);
+
+      // Assembly → General Membership seeds a Chairman; Board has no seeds.
+      final general = await repo.watchByCategoryCode('assembly_general').first;
+      expect(general.map((p) => p.position), contains('Chairman'));
+      expect(await repo.watchByCategoryCode('board').first, isEmpty);
+
+      // Each leadership group has a seeded, editable description.
+      expect((await repo.watchGroupInfo('office_president').first)?.description,
+          isNotEmpty);
+      await repo.setGroupDescription('board', 'Custom', 'مخصص');
+      expect(
+          (await repo.watchGroupInfo('board').first)?.description, 'Custom');
+    });
+
+    test('assigning a member fills a position; clearing vacates it', () async {
+      final tarbiya = TarbiyaRepository(db);
+      final members = MemberRepository(db);
+      final leaders = LeaderRepository(db);
+      await tarbiya.createArea(name: 'Lead Area', nameAr: 'أ');
+      // Tarbiya seeds default areas, so find ours by name rather than .single.
+      final area =
+          (await tarbiya.getAreas()).firstWhere((a) => a.name == 'Lead Area');
+      await tarbiya.createShuba(areaId: area.id, name: 'S', nameAr: 'ش');
+      final shuba = (await tarbiya.watchShubas(area.id).first).single;
+      final memberId = await members.insertMember(MembersCompanion(
+        shubaId: Value(shuba.id),
+        firstName: const Value('Yusuf'),
+        lastName: const Value('Datu'),
+      ));
+
+      await leaders.assignMember('pos_president', memberId);
+      expect((await leaders.watchAssignedMember('pos_president').first)?.id,
+          memberId);
+
+      await leaders.assignMember('pos_president', null);
+      expect(await leaders.watchAssignedMember('pos_president').first, isNull);
     });
   });
 
@@ -145,6 +194,88 @@ void main() {
       expect(await members.getMember(id), isNull);
       expect(await members.watchTased(id).first, isEmpty);
     });
+
+    test("member level is driven by the most recent Tas'ed record", () async {
+      final id = await seedMember();
+
+      await members.addTased(
+          memberId: id, level: 3, year: '2025', status: 'active');
+      expect((await members.getMember(id))!.level, 3);
+
+      // Newest year wins (regardless of active/inactive).
+      await members.addTased(
+          memberId: id, level: 4, year: '2026', status: 'inactive');
+      expect((await members.getMember(id))!.level, 4);
+
+      // An older year is ignored.
+      await members.addTased(
+          memberId: id, level: 2, year: '2024', status: 'active');
+      expect((await members.getMember(id))!.level, 4);
+
+      // Updating the most-recent (2026) record re-syncs.
+      final y2026 =
+          (await members.watchTased(id).first).firstWhere((t) => t.year == '2026');
+      await members.updateTased(y2026.id, level: 5, year: '2026', status: 'active');
+      expect((await members.getMember(id))!.level, 5);
+
+      // Deleting the most-recent falls back to the next most recent (2025 → 3).
+      await members.deleteTased(y2026.id);
+      expect((await members.getMember(id))!.level, 3);
+
+      // Removing every Tas'ed record clears the level to 0.
+      for (final t in await members.watchTased(id).first) {
+        await members.deleteTased(t.id);
+      }
+      expect((await members.getMember(id))!.level, 0);
+    });
+
+    test("Shu'ba Mas'ul can be assigned and cleared", () async {
+      final id = await seedMember();
+      final shubaId = (await members.getMember(id))!.shubaId;
+      await tarbiya.assignMasul(shubaId, id);
+      expect((await tarbiya.watchMasul(shubaId).first)?.id, id);
+      await tarbiya.assignMasul(shubaId, null);
+      expect(await tarbiya.watchMasul(shubaId).first, isNull);
+    });
+
+    test('wives, naqib & usra members', () async {
+      final id1 = await seedMember();
+      final area = await testArea();
+      final shuba = (await tarbiya.watchShubas(area.id).first).single;
+      final id2 = await members.insertMember(MembersCompanion(
+        shubaId: Value(shuba.id),
+        firstName: const Value('Ali'),
+        lastName: const Value('Macarambon'),
+      ));
+
+      // Wives are stored as free-text rows (the 4-max cap is a UI rule).
+      await members.addWife(id1, 'Aisha', '2018-06-01');
+      await members.addWife(id1, 'Khadija', '');
+      expect(await members.watchWives(id1).first, hasLength(2));
+
+      // Member search matches by name and can exclude a given id.
+      expect((await members.searchMembers('Ali')).map((m) => m.id),
+          contains(id2));
+      expect((await members.searchMembers('Ali', excludeId: id2)).map((m) => m.id),
+          isNot(contains(id2)));
+      // An empty query (the picker's initial load) returns all members.
+      final all = await members.searchMembers('');
+      expect(all.map((m) => m.id), containsAll([id1, id2]));
+
+      // Usra members are explicit links to existing members.
+      await members.addUsraMember(id1, id2);
+      expect((await members.watchUsraMembers(id1).first).single.id, id2);
+
+      // Naqib is a self-reference stored on the member.
+      await members.updateMember(
+          id1, MembersCompanion(naqibMemberId: Value(id2)));
+      expect((await members.getMember(id1))!.naqibMemberId, id2);
+
+      // Deleting the linked member cascades the usra link and nulls the naqib.
+      await members.deleteMember(id2);
+      expect(await members.watchUsraMembers(id1).first, isEmpty);
+      expect((await members.getMember(id1))!.naqibMemberId, isNull);
+    });
   });
 
   group('departments & reports data layer', () {
@@ -187,6 +318,52 @@ void main() {
       expect(await deptRepo.totalActivities(), 1);
     });
 
+    test('report stores the Program Completion (P-2) form payload', () async {
+      final deptRepo = DepartmentRepository(db);
+      final reportRepo = ReportRepository(db);
+      final dawah = (await deptRepo.getAll()).firstWhere((d) => d.id == 'dawah');
+      await reportRepo.create(
+        departmentId: dawah.id,
+        title: 'Outreach Program',
+        year: 2026,
+        type: ReportType.programCompletion.code,
+        formData: '{"programTitle":"Outreach Program","challenges":["rain"]}',
+      );
+      final r = (await reportRepo.watchByDepartment(dawah.id).first).single;
+      expect(r.typeEnum, ReportType.programCompletion);
+      expect(r.formData, contains('Outreach Program'));
+    });
+
+    test('activity stores the Program Proposal (P-1) form payload', () async {
+      final depts = DepartmentRepository(db);
+      await depts.addActivity(
+        departmentId: 'dawah',
+        title: 'Community Cleanup',
+        formData: '{"programTitle":"Community Cleanup","objectives":["clean"]}',
+      );
+      final acts = await depts.watchActivities('dawah').first;
+      expect(acts.single.formData, contains('Community Cleanup'));
+    });
+
+    test('executive minutes/resolution reports: create, list, delete',
+        () async {
+      final repo = MinutesReportRepository(db);
+      await repo.create(
+        title: 'Board Minutes Q1',
+        year: 2026,
+        type: 'minutes',
+        content: 'Discussion notes',
+        imagePaths: const ['/x/a.jpg', '/x/b.jpg'],
+      );
+      final list = await repo.watchAll().first;
+      expect(list, hasLength(1));
+      expect(list.single.type, 'minutes');
+      expect(MinutesReportRepository.imagesOf(list.single),
+          ['/x/a.jpg', '/x/b.jpg']);
+      await repo.delete(list.single.id);
+      expect(await repo.watchAll().first, isEmpty);
+    });
+
     test('gallery add/delete', () async {
       final repo = GalleryRepository(db);
       await repo.add(title: 'Eid Gathering', year: 2026, event: 'Community');
@@ -194,6 +371,47 @@ void main() {
       expect(photos, hasLength(1));
       await repo.delete(photos.single.id);
       expect(await repo.count(), 0);
+    });
+
+    test('department head member + staff assignment', () async {
+      final tarbiya = TarbiyaRepository(db);
+      final members = MemberRepository(db);
+      final depts = DepartmentRepository(db);
+      await tarbiya.createArea(name: 'Dept Area', nameAr: 'أ');
+      final area =
+          (await tarbiya.getAreas()).firstWhere((a) => a.name == 'Dept Area');
+      await tarbiya.createShuba(areaId: area.id, name: 'S', nameAr: 'ش');
+      final shuba = (await tarbiya.watchShubas(area.id).first).single;
+      final m1 = await members.insertMember(MembersCompanion(
+          shubaId: Value(shuba.id),
+          firstName: const Value('Omar'),
+          lastName: const Value('A')));
+      final m2 = await members.insertMember(MembersCompanion(
+          shubaId: Value(shuba.id),
+          firstName: const Value('Bilal'),
+          lastName: const Value('B')));
+
+      // Head assignment fills then vacates (dawah is a seeded department).
+      // Read back via getById (a Future) rather than a stream, so the
+      // assertion is deterministic in the full suite.
+      await depts.assignHead('dawah', m1);
+      expect((await depts.getById('dawah'))!.headMemberId, m1);
+      await depts.assignHead('dawah', null);
+      expect((await depts.getById('dawah'))!.headMemberId, isNull);
+
+      // Staff: add (dedup), then remove.
+      Future<List<String>> staffIds() async => (await db
+              .select(db.departmentStaff)
+              .get())
+          .where((s) => s.departmentId == 'dawah')
+          .map((s) => s.memberId)
+          .toList();
+      await depts.addStaff('dawah', m1);
+      await depts.addStaff('dawah', m2);
+      await depts.addStaff('dawah', m1); // duplicate is ignored
+      expect(await staffIds(), unorderedEquals([m1, m2]));
+      await depts.removeStaff('dawah', m1);
+      expect(await staffIds(), [m2]);
     });
   });
 
@@ -273,9 +491,10 @@ void main() {
       final tmp = tempImage('gal');
       addTearDown(() => tmp.existsSync() ? tmp.deleteSync() : null);
 
-      await gallery.add(title: 'Eid', year: 2026, imagePath: tmp.path);
+      await gallery.add(title: 'Eid', year: 2026, imagePaths: [tmp.path]);
       final photo = (await gallery.getAll()).single;
       expect(tmp.existsSync(), isTrue);
+      expect(GalleryRepository.imagesOf(photo), [tmp.path]);
 
       await gallery.delete(photo.id);
       expect(await gallery.count(), 0);
@@ -414,8 +633,8 @@ void main() {
       await tester.tap(find.text('Sign In'));
       await tester.pumpAndSettle();
 
-      // Home.
-      expect(find.textContaining('Welcome back'), findsOneWidget);
+      // Reached the app shell (left the login screen).
+      expect(find.text('Sign In'), findsNothing);
 
       // Language toggle → Arabic home label in the sidebar, RTL.
       await tester.tap(find.text('ع'));

@@ -2,14 +2,12 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/auth/session_controller.dart';
-import '../core/data/models.dart';
 import '../features/audit/audit_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/departments/department_detail_screen.dart';
 import '../features/departments/departments_screen.dart';
 import '../features/gallery/gallery_screen.dart';
 import '../features/history/history_screen.dart';
-import '../features/leadership/leader_form_screen.dart';
 import '../features/leadership/leader_profile_screen.dart';
 import '../features/leadership/leadership_screen.dart';
 import '../features/login/login_screen.dart';
@@ -57,10 +55,8 @@ GoRouter createRouter(SessionController session) {
       if (loc.startsWith('/members') && !(can?.manageMembers ?? false)) {
         return '/home';
       }
-      // Creating / editing a leader — executives only (viewing stays open).
-      final leaderMutation = loc.startsWith('/leadership/add') ||
-          (loc.startsWith('/leadership/profile/') && loc.endsWith('/edit'));
-      if (leaderMutation && !(can?.manageLeadership ?? false)) {
+      // Reports archive (Minutes / Resolutions) — executives only.
+      if (loc.startsWith('/reports') && !(can?.manageAllReports ?? false)) {
         return '/home';
       }
       return null;
@@ -87,39 +83,52 @@ GoRouter createRouter(SessionController session) {
           ),
           GoRoute(
             path: '/leadership/office-president',
-            builder: (context, state) => const LeadershipScreen(
-              category: LeadershipCategory.officePresident,
+            builder: (context, state) => const LeadershipPositionsScreen(
+              code: 'office_president',
+              titleEn: 'Office of the President',
+              titleAr: 'مكتب الرئيس',
             ),
           ),
           GoRoute(
             path: '/leadership/board',
-            builder: (context, state) => const LeadershipScreen(
-              category: LeadershipCategory.board,
+            builder: (context, state) => const LeadershipPositionsScreen(
+              code: 'board',
+              titleEn: 'Board of Trustees',
+              titleAr: 'مجلس الأمناء',
             ),
           ),
           GoRoute(
             path: '/leadership/assembly',
-            builder: (context, state) => const LeadershipScreen(
-              category: LeadershipCategory.assembly,
+            redirect: (_, _) => '/leadership/assembly/general',
+          ),
+          GoRoute(
+            path: '/leadership/assembly/general',
+            builder: (context, state) => const LeadershipPositionsScreen(
+              code: 'assembly_general',
+              titleEn: 'General Membership',
+              titleAr: 'العضوية العامة',
             ),
           ),
           GoRoute(
-            path: '/leadership/profile/:id',
+            path: '/leadership/assembly/committee/hayah',
+            builder: (context, state) => const LeadershipPositionsScreen(
+              code: 'committee_hayah',
+              titleEn: "Hay-ah Shar'iyyah",
+              titleAr: 'الهيئة الشرعية',
+            ),
+          ),
+          GoRoute(
+            path: '/leadership/assembly/committee/audit',
+            builder: (context, state) => const LeadershipPositionsScreen(
+              code: 'committee_audit',
+              titleEn: 'Audit',
+              titleAr: 'التدقيق',
+            ),
+          ),
+          GoRoute(
+            path: '/leadership/member/:memberId',
             builder: (context, state) => LeaderProfileScreen(
-              leaderId: state.pathParameters['id']!,
-            ),
-          ),
-          GoRoute(
-            path: '/leadership/profile/:id/edit',
-            builder: (context, state) => LeaderFormScreen(
-              leaderId: state.pathParameters['id']!,
-            ),
-          ),
-          GoRoute(
-            path: '/leadership/add/:category',
-            builder: (context, state) => LeaderFormScreen(
-              category: LeadershipCategory.fromCode(
-                  state.pathParameters['category']!),
+              memberId: state.pathParameters['memberId']!,
             ),
           ),
           GoRoute(

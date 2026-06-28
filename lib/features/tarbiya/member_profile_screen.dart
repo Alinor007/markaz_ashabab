@@ -148,7 +148,7 @@ class MemberProfileScreen extends StatelessWidget {
               route: '/tarbiya/area/${area.id}/shuba/${shuba.id}'),
         if (shuba != null)
           Crumb(
-              label: context.tr('Level ${member.level}', 'المستوى ${member.level}'),
+              label: member.levelLabel(isArabic),
               route:
                   '/tarbiya/area/${area?.id}/shuba/${shuba.id}/level/${member.level}'),
         Crumb(label: member.displayName(isArabic)),
@@ -247,7 +247,7 @@ class _Header extends StatelessWidget {
                   runSpacing: AppSpacing.sm,
                   children: [
                     _chip(context, Icons.workspace_premium_outlined,
-                        context.tr('Level ${member.level}', 'المستوى ${member.level}')),
+                        member.levelLabel(isArabic)),
                     if (area != null)
                       _chip(context, Icons.map_outlined,
                           isArabic ? area!.nameAr : area!.name),

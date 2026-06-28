@@ -37,6 +37,7 @@ class ReportRepository {
     required int year,
     required String type,
     int pages = 1,
+    String formData = '',
   }) {
     return _db.into(_db.reports).insert(ReportsCompanion.insert(
           id: _id(),
@@ -49,6 +50,7 @@ class ReportRepository {
           year: Value(year),
           type: Value(type),
           pages: Value(pages),
+          formData: Value(formData),
         ));
   }
 

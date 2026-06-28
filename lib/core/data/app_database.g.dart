@@ -3,2921 +3,6 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
-class $DepartmentsTable extends Departments
-    with TableInfo<$DepartmentsTable, Department> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $DepartmentsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
-  @override
-  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
-    'name_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _descriptionMeta = const VerificationMeta(
-    'description',
-  );
-  @override
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-    'description',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _descriptionArMeta = const VerificationMeta(
-    'descriptionAr',
-  );
-  @override
-  late final GeneratedColumn<String> descriptionAr = GeneratedColumn<String>(
-    'description_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _iconKeyMeta = const VerificationMeta(
-    'iconKey',
-  );
-  @override
-  late final GeneratedColumn<String> iconKey = GeneratedColumn<String>(
-    'icon_key',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('group'),
-  );
-  static const VerificationMeta _accentMeta = const VerificationMeta('accent');
-  @override
-  late final GeneratedColumn<int> accent = GeneratedColumn<int>(
-    'accent',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0xFF0B5D3B),
-  );
-  static const VerificationMeta _headNameMeta = const VerificationMeta(
-    'headName',
-  );
-  @override
-  late final GeneratedColumn<String> headName = GeneratedColumn<String>(
-    'head_name',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _headNameArMeta = const VerificationMeta(
-    'headNameAr',
-  );
-  @override
-  late final GeneratedColumn<String> headNameAr = GeneratedColumn<String>(
-    'head_name_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _contactEmailMeta = const VerificationMeta(
-    'contactEmail',
-  );
-  @override
-  late final GeneratedColumn<String> contactEmail = GeneratedColumn<String>(
-    'contact_email',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _contactPhoneMeta = const VerificationMeta(
-    'contactPhone',
-  );
-  @override
-  late final GeneratedColumn<String> contactPhone = GeneratedColumn<String>(
-    'contact_phone',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
-    'sortOrder',
-  );
-  @override
-  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
-    'sort_order',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0),
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    name,
-    nameAr,
-    description,
-    descriptionAr,
-    iconKey,
-    accent,
-    headName,
-    headNameAr,
-    contactEmail,
-    contactPhone,
-    sortOrder,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'departments';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<Department> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('name_ar')) {
-      context.handle(
-        _nameArMeta,
-        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
-      );
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-        _descriptionMeta,
-        description.isAcceptableOrUnknown(
-          data['description']!,
-          _descriptionMeta,
-        ),
-      );
-    }
-    if (data.containsKey('description_ar')) {
-      context.handle(
-        _descriptionArMeta,
-        descriptionAr.isAcceptableOrUnknown(
-          data['description_ar']!,
-          _descriptionArMeta,
-        ),
-      );
-    }
-    if (data.containsKey('icon_key')) {
-      context.handle(
-        _iconKeyMeta,
-        iconKey.isAcceptableOrUnknown(data['icon_key']!, _iconKeyMeta),
-      );
-    }
-    if (data.containsKey('accent')) {
-      context.handle(
-        _accentMeta,
-        accent.isAcceptableOrUnknown(data['accent']!, _accentMeta),
-      );
-    }
-    if (data.containsKey('head_name')) {
-      context.handle(
-        _headNameMeta,
-        headName.isAcceptableOrUnknown(data['head_name']!, _headNameMeta),
-      );
-    }
-    if (data.containsKey('head_name_ar')) {
-      context.handle(
-        _headNameArMeta,
-        headNameAr.isAcceptableOrUnknown(
-          data['head_name_ar']!,
-          _headNameArMeta,
-        ),
-      );
-    }
-    if (data.containsKey('contact_email')) {
-      context.handle(
-        _contactEmailMeta,
-        contactEmail.isAcceptableOrUnknown(
-          data['contact_email']!,
-          _contactEmailMeta,
-        ),
-      );
-    }
-    if (data.containsKey('contact_phone')) {
-      context.handle(
-        _contactPhoneMeta,
-        contactPhone.isAcceptableOrUnknown(
-          data['contact_phone']!,
-          _contactPhoneMeta,
-        ),
-      );
-    }
-    if (data.containsKey('sort_order')) {
-      context.handle(
-        _sortOrderMeta,
-        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Department map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Department(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-      nameAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name_ar'],
-      )!,
-      description: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}description'],
-      )!,
-      descriptionAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}description_ar'],
-      )!,
-      iconKey: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}icon_key'],
-      )!,
-      accent: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}accent'],
-      )!,
-      headName: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}head_name'],
-      )!,
-      headNameAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}head_name_ar'],
-      )!,
-      contactEmail: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}contact_email'],
-      )!,
-      contactPhone: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}contact_phone'],
-      )!,
-      sortOrder: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}sort_order'],
-      )!,
-    );
-  }
-
-  @override
-  $DepartmentsTable createAlias(String alias) {
-    return $DepartmentsTable(attachedDatabase, alias);
-  }
-}
-
-class Department extends DataClass implements Insertable<Department> {
-  final String id;
-  final String name;
-  final String nameAr;
-  final String description;
-  final String descriptionAr;
-  final String iconKey;
-  final int accent;
-  final String headName;
-  final String headNameAr;
-  final String contactEmail;
-  final String contactPhone;
-  final int sortOrder;
-  const Department({
-    required this.id,
-    required this.name,
-    required this.nameAr,
-    required this.description,
-    required this.descriptionAr,
-    required this.iconKey,
-    required this.accent,
-    required this.headName,
-    required this.headNameAr,
-    required this.contactEmail,
-    required this.contactPhone,
-    required this.sortOrder,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['name'] = Variable<String>(name);
-    map['name_ar'] = Variable<String>(nameAr);
-    map['description'] = Variable<String>(description);
-    map['description_ar'] = Variable<String>(descriptionAr);
-    map['icon_key'] = Variable<String>(iconKey);
-    map['accent'] = Variable<int>(accent);
-    map['head_name'] = Variable<String>(headName);
-    map['head_name_ar'] = Variable<String>(headNameAr);
-    map['contact_email'] = Variable<String>(contactEmail);
-    map['contact_phone'] = Variable<String>(contactPhone);
-    map['sort_order'] = Variable<int>(sortOrder);
-    return map;
-  }
-
-  DepartmentsCompanion toCompanion(bool nullToAbsent) {
-    return DepartmentsCompanion(
-      id: Value(id),
-      name: Value(name),
-      nameAr: Value(nameAr),
-      description: Value(description),
-      descriptionAr: Value(descriptionAr),
-      iconKey: Value(iconKey),
-      accent: Value(accent),
-      headName: Value(headName),
-      headNameAr: Value(headNameAr),
-      contactEmail: Value(contactEmail),
-      contactPhone: Value(contactPhone),
-      sortOrder: Value(sortOrder),
-    );
-  }
-
-  factory Department.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Department(
-      id: serializer.fromJson<String>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      nameAr: serializer.fromJson<String>(json['nameAr']),
-      description: serializer.fromJson<String>(json['description']),
-      descriptionAr: serializer.fromJson<String>(json['descriptionAr']),
-      iconKey: serializer.fromJson<String>(json['iconKey']),
-      accent: serializer.fromJson<int>(json['accent']),
-      headName: serializer.fromJson<String>(json['headName']),
-      headNameAr: serializer.fromJson<String>(json['headNameAr']),
-      contactEmail: serializer.fromJson<String>(json['contactEmail']),
-      contactPhone: serializer.fromJson<String>(json['contactPhone']),
-      sortOrder: serializer.fromJson<int>(json['sortOrder']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'name': serializer.toJson<String>(name),
-      'nameAr': serializer.toJson<String>(nameAr),
-      'description': serializer.toJson<String>(description),
-      'descriptionAr': serializer.toJson<String>(descriptionAr),
-      'iconKey': serializer.toJson<String>(iconKey),
-      'accent': serializer.toJson<int>(accent),
-      'headName': serializer.toJson<String>(headName),
-      'headNameAr': serializer.toJson<String>(headNameAr),
-      'contactEmail': serializer.toJson<String>(contactEmail),
-      'contactPhone': serializer.toJson<String>(contactPhone),
-      'sortOrder': serializer.toJson<int>(sortOrder),
-    };
-  }
-
-  Department copyWith({
-    String? id,
-    String? name,
-    String? nameAr,
-    String? description,
-    String? descriptionAr,
-    String? iconKey,
-    int? accent,
-    String? headName,
-    String? headNameAr,
-    String? contactEmail,
-    String? contactPhone,
-    int? sortOrder,
-  }) => Department(
-    id: id ?? this.id,
-    name: name ?? this.name,
-    nameAr: nameAr ?? this.nameAr,
-    description: description ?? this.description,
-    descriptionAr: descriptionAr ?? this.descriptionAr,
-    iconKey: iconKey ?? this.iconKey,
-    accent: accent ?? this.accent,
-    headName: headName ?? this.headName,
-    headNameAr: headNameAr ?? this.headNameAr,
-    contactEmail: contactEmail ?? this.contactEmail,
-    contactPhone: contactPhone ?? this.contactPhone,
-    sortOrder: sortOrder ?? this.sortOrder,
-  );
-  Department copyWithCompanion(DepartmentsCompanion data) {
-    return Department(
-      id: data.id.present ? data.id.value : this.id,
-      name: data.name.present ? data.name.value : this.name,
-      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
-      description: data.description.present
-          ? data.description.value
-          : this.description,
-      descriptionAr: data.descriptionAr.present
-          ? data.descriptionAr.value
-          : this.descriptionAr,
-      iconKey: data.iconKey.present ? data.iconKey.value : this.iconKey,
-      accent: data.accent.present ? data.accent.value : this.accent,
-      headName: data.headName.present ? data.headName.value : this.headName,
-      headNameAr: data.headNameAr.present
-          ? data.headNameAr.value
-          : this.headNameAr,
-      contactEmail: data.contactEmail.present
-          ? data.contactEmail.value
-          : this.contactEmail,
-      contactPhone: data.contactPhone.present
-          ? data.contactPhone.value
-          : this.contactPhone,
-      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('Department(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('nameAr: $nameAr, ')
-          ..write('description: $description, ')
-          ..write('descriptionAr: $descriptionAr, ')
-          ..write('iconKey: $iconKey, ')
-          ..write('accent: $accent, ')
-          ..write('headName: $headName, ')
-          ..write('headNameAr: $headNameAr, ')
-          ..write('contactEmail: $contactEmail, ')
-          ..write('contactPhone: $contactPhone, ')
-          ..write('sortOrder: $sortOrder')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    name,
-    nameAr,
-    description,
-    descriptionAr,
-    iconKey,
-    accent,
-    headName,
-    headNameAr,
-    contactEmail,
-    contactPhone,
-    sortOrder,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Department &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.nameAr == this.nameAr &&
-          other.description == this.description &&
-          other.descriptionAr == this.descriptionAr &&
-          other.iconKey == this.iconKey &&
-          other.accent == this.accent &&
-          other.headName == this.headName &&
-          other.headNameAr == this.headNameAr &&
-          other.contactEmail == this.contactEmail &&
-          other.contactPhone == this.contactPhone &&
-          other.sortOrder == this.sortOrder);
-}
-
-class DepartmentsCompanion extends UpdateCompanion<Department> {
-  final Value<String> id;
-  final Value<String> name;
-  final Value<String> nameAr;
-  final Value<String> description;
-  final Value<String> descriptionAr;
-  final Value<String> iconKey;
-  final Value<int> accent;
-  final Value<String> headName;
-  final Value<String> headNameAr;
-  final Value<String> contactEmail;
-  final Value<String> contactPhone;
-  final Value<int> sortOrder;
-  final Value<int> rowid;
-  const DepartmentsCompanion({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.nameAr = const Value.absent(),
-    this.description = const Value.absent(),
-    this.descriptionAr = const Value.absent(),
-    this.iconKey = const Value.absent(),
-    this.accent = const Value.absent(),
-    this.headName = const Value.absent(),
-    this.headNameAr = const Value.absent(),
-    this.contactEmail = const Value.absent(),
-    this.contactPhone = const Value.absent(),
-    this.sortOrder = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  DepartmentsCompanion.insert({
-    required String id,
-    required String name,
-    this.nameAr = const Value.absent(),
-    this.description = const Value.absent(),
-    this.descriptionAr = const Value.absent(),
-    this.iconKey = const Value.absent(),
-    this.accent = const Value.absent(),
-    this.headName = const Value.absent(),
-    this.headNameAr = const Value.absent(),
-    this.contactEmail = const Value.absent(),
-    this.contactPhone = const Value.absent(),
-    this.sortOrder = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       name = Value(name);
-  static Insertable<Department> custom({
-    Expression<String>? id,
-    Expression<String>? name,
-    Expression<String>? nameAr,
-    Expression<String>? description,
-    Expression<String>? descriptionAr,
-    Expression<String>? iconKey,
-    Expression<int>? accent,
-    Expression<String>? headName,
-    Expression<String>? headNameAr,
-    Expression<String>? contactEmail,
-    Expression<String>? contactPhone,
-    Expression<int>? sortOrder,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (nameAr != null) 'name_ar': nameAr,
-      if (description != null) 'description': description,
-      if (descriptionAr != null) 'description_ar': descriptionAr,
-      if (iconKey != null) 'icon_key': iconKey,
-      if (accent != null) 'accent': accent,
-      if (headName != null) 'head_name': headName,
-      if (headNameAr != null) 'head_name_ar': headNameAr,
-      if (contactEmail != null) 'contact_email': contactEmail,
-      if (contactPhone != null) 'contact_phone': contactPhone,
-      if (sortOrder != null) 'sort_order': sortOrder,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  DepartmentsCompanion copyWith({
-    Value<String>? id,
-    Value<String>? name,
-    Value<String>? nameAr,
-    Value<String>? description,
-    Value<String>? descriptionAr,
-    Value<String>? iconKey,
-    Value<int>? accent,
-    Value<String>? headName,
-    Value<String>? headNameAr,
-    Value<String>? contactEmail,
-    Value<String>? contactPhone,
-    Value<int>? sortOrder,
-    Value<int>? rowid,
-  }) {
-    return DepartmentsCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      nameAr: nameAr ?? this.nameAr,
-      description: description ?? this.description,
-      descriptionAr: descriptionAr ?? this.descriptionAr,
-      iconKey: iconKey ?? this.iconKey,
-      accent: accent ?? this.accent,
-      headName: headName ?? this.headName,
-      headNameAr: headNameAr ?? this.headNameAr,
-      contactEmail: contactEmail ?? this.contactEmail,
-      contactPhone: contactPhone ?? this.contactPhone,
-      sortOrder: sortOrder ?? this.sortOrder,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (nameAr.present) {
-      map['name_ar'] = Variable<String>(nameAr.value);
-    }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
-    }
-    if (descriptionAr.present) {
-      map['description_ar'] = Variable<String>(descriptionAr.value);
-    }
-    if (iconKey.present) {
-      map['icon_key'] = Variable<String>(iconKey.value);
-    }
-    if (accent.present) {
-      map['accent'] = Variable<int>(accent.value);
-    }
-    if (headName.present) {
-      map['head_name'] = Variable<String>(headName.value);
-    }
-    if (headNameAr.present) {
-      map['head_name_ar'] = Variable<String>(headNameAr.value);
-    }
-    if (contactEmail.present) {
-      map['contact_email'] = Variable<String>(contactEmail.value);
-    }
-    if (contactPhone.present) {
-      map['contact_phone'] = Variable<String>(contactPhone.value);
-    }
-    if (sortOrder.present) {
-      map['sort_order'] = Variable<int>(sortOrder.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('DepartmentsCompanion(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('nameAr: $nameAr, ')
-          ..write('description: $description, ')
-          ..write('descriptionAr: $descriptionAr, ')
-          ..write('iconKey: $iconKey, ')
-          ..write('accent: $accent, ')
-          ..write('headName: $headName, ')
-          ..write('headNameAr: $headNameAr, ')
-          ..write('contactEmail: $contactEmail, ')
-          ..write('contactPhone: $contactPhone, ')
-          ..write('sortOrder: $sortOrder, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $UsersTable extends Users with TableInfo<$UsersTable, User> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $UsersTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _fullNameMeta = const VerificationMeta(
-    'fullName',
-  );
-  @override
-  late final GeneratedColumn<String> fullName = GeneratedColumn<String>(
-    'full_name',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _fullNameArMeta = const VerificationMeta(
-    'fullNameAr',
-  );
-  @override
-  late final GeneratedColumn<String> fullNameAr = GeneratedColumn<String>(
-    'full_name_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _usernameMeta = const VerificationMeta(
-    'username',
-  );
-  @override
-  late final GeneratedColumn<String> username = GeneratedColumn<String>(
-    'username',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
-  );
-  static const VerificationMeta _emailMeta = const VerificationMeta('email');
-  @override
-  late final GeneratedColumn<String> email = GeneratedColumn<String>(
-    'email',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _passwordHashMeta = const VerificationMeta(
-    'passwordHash',
-  );
-  @override
-  late final GeneratedColumn<String> passwordHash = GeneratedColumn<String>(
-    'password_hash',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _roleCodeMeta = const VerificationMeta(
-    'roleCode',
-  );
-  @override
-  late final GeneratedColumn<String> roleCode = GeneratedColumn<String>(
-    'role_code',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _departmentIdMeta = const VerificationMeta(
-    'departmentId',
-  );
-  @override
-  late final GeneratedColumn<String> departmentId = GeneratedColumn<String>(
-    'department_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES departments (id) ON DELETE SET NULL',
-    ),
-  );
-  static const VerificationMeta _activeMeta = const VerificationMeta('active');
-  @override
-  late final GeneratedColumn<bool> active = GeneratedColumn<bool>(
-    'active',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("active" IN (0, 1))',
-    ),
-    defaultValue: const Constant(true),
-  );
-  static const VerificationMeta _lastActiveMeta = const VerificationMeta(
-    'lastActive',
-  );
-  @override
-  late final GeneratedColumn<DateTime> lastActive = GeneratedColumn<DateTime>(
-    'last_active',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    fullName,
-    fullNameAr,
-    username,
-    email,
-    passwordHash,
-    roleCode,
-    departmentId,
-    active,
-    lastActive,
-    createdAt,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'users';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<User> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('full_name')) {
-      context.handle(
-        _fullNameMeta,
-        fullName.isAcceptableOrUnknown(data['full_name']!, _fullNameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_fullNameMeta);
-    }
-    if (data.containsKey('full_name_ar')) {
-      context.handle(
-        _fullNameArMeta,
-        fullNameAr.isAcceptableOrUnknown(
-          data['full_name_ar']!,
-          _fullNameArMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_fullNameArMeta);
-    }
-    if (data.containsKey('username')) {
-      context.handle(
-        _usernameMeta,
-        username.isAcceptableOrUnknown(data['username']!, _usernameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_usernameMeta);
-    }
-    if (data.containsKey('email')) {
-      context.handle(
-        _emailMeta,
-        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
-      );
-    }
-    if (data.containsKey('password_hash')) {
-      context.handle(
-        _passwordHashMeta,
-        passwordHash.isAcceptableOrUnknown(
-          data['password_hash']!,
-          _passwordHashMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_passwordHashMeta);
-    }
-    if (data.containsKey('role_code')) {
-      context.handle(
-        _roleCodeMeta,
-        roleCode.isAcceptableOrUnknown(data['role_code']!, _roleCodeMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_roleCodeMeta);
-    }
-    if (data.containsKey('department_id')) {
-      context.handle(
-        _departmentIdMeta,
-        departmentId.isAcceptableOrUnknown(
-          data['department_id']!,
-          _departmentIdMeta,
-        ),
-      );
-    }
-    if (data.containsKey('active')) {
-      context.handle(
-        _activeMeta,
-        active.isAcceptableOrUnknown(data['active']!, _activeMeta),
-      );
-    }
-    if (data.containsKey('last_active')) {
-      context.handle(
-        _lastActiveMeta,
-        lastActive.isAcceptableOrUnknown(data['last_active']!, _lastActiveMeta),
-      );
-    }
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  User map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return User(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      fullName: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}full_name'],
-      )!,
-      fullNameAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}full_name_ar'],
-      )!,
-      username: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}username'],
-      )!,
-      email: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}email'],
-      )!,
-      passwordHash: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}password_hash'],
-      )!,
-      roleCode: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}role_code'],
-      )!,
-      departmentId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}department_id'],
-      ),
-      active: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}active'],
-      )!,
-      lastActive: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}last_active'],
-      ),
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-    );
-  }
-
-  @override
-  $UsersTable createAlias(String alias) {
-    return $UsersTable(attachedDatabase, alias);
-  }
-}
-
-class User extends DataClass implements Insertable<User> {
-  final String id;
-  final String fullName;
-  final String fullNameAr;
-  final String username;
-  final String email;
-  final String passwordHash;
-  final String roleCode;
-
-  /// For department-head accounts: the department they manage.
-  final String? departmentId;
-  final bool active;
-  final DateTime? lastActive;
-  final DateTime createdAt;
-  const User({
-    required this.id,
-    required this.fullName,
-    required this.fullNameAr,
-    required this.username,
-    required this.email,
-    required this.passwordHash,
-    required this.roleCode,
-    this.departmentId,
-    required this.active,
-    this.lastActive,
-    required this.createdAt,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['full_name'] = Variable<String>(fullName);
-    map['full_name_ar'] = Variable<String>(fullNameAr);
-    map['username'] = Variable<String>(username);
-    map['email'] = Variable<String>(email);
-    map['password_hash'] = Variable<String>(passwordHash);
-    map['role_code'] = Variable<String>(roleCode);
-    if (!nullToAbsent || departmentId != null) {
-      map['department_id'] = Variable<String>(departmentId);
-    }
-    map['active'] = Variable<bool>(active);
-    if (!nullToAbsent || lastActive != null) {
-      map['last_active'] = Variable<DateTime>(lastActive);
-    }
-    map['created_at'] = Variable<DateTime>(createdAt);
-    return map;
-  }
-
-  UsersCompanion toCompanion(bool nullToAbsent) {
-    return UsersCompanion(
-      id: Value(id),
-      fullName: Value(fullName),
-      fullNameAr: Value(fullNameAr),
-      username: Value(username),
-      email: Value(email),
-      passwordHash: Value(passwordHash),
-      roleCode: Value(roleCode),
-      departmentId: departmentId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(departmentId),
-      active: Value(active),
-      lastActive: lastActive == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastActive),
-      createdAt: Value(createdAt),
-    );
-  }
-
-  factory User.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return User(
-      id: serializer.fromJson<String>(json['id']),
-      fullName: serializer.fromJson<String>(json['fullName']),
-      fullNameAr: serializer.fromJson<String>(json['fullNameAr']),
-      username: serializer.fromJson<String>(json['username']),
-      email: serializer.fromJson<String>(json['email']),
-      passwordHash: serializer.fromJson<String>(json['passwordHash']),
-      roleCode: serializer.fromJson<String>(json['roleCode']),
-      departmentId: serializer.fromJson<String?>(json['departmentId']),
-      active: serializer.fromJson<bool>(json['active']),
-      lastActive: serializer.fromJson<DateTime?>(json['lastActive']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'fullName': serializer.toJson<String>(fullName),
-      'fullNameAr': serializer.toJson<String>(fullNameAr),
-      'username': serializer.toJson<String>(username),
-      'email': serializer.toJson<String>(email),
-      'passwordHash': serializer.toJson<String>(passwordHash),
-      'roleCode': serializer.toJson<String>(roleCode),
-      'departmentId': serializer.toJson<String?>(departmentId),
-      'active': serializer.toJson<bool>(active),
-      'lastActive': serializer.toJson<DateTime?>(lastActive),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-    };
-  }
-
-  User copyWith({
-    String? id,
-    String? fullName,
-    String? fullNameAr,
-    String? username,
-    String? email,
-    String? passwordHash,
-    String? roleCode,
-    Value<String?> departmentId = const Value.absent(),
-    bool? active,
-    Value<DateTime?> lastActive = const Value.absent(),
-    DateTime? createdAt,
-  }) => User(
-    id: id ?? this.id,
-    fullName: fullName ?? this.fullName,
-    fullNameAr: fullNameAr ?? this.fullNameAr,
-    username: username ?? this.username,
-    email: email ?? this.email,
-    passwordHash: passwordHash ?? this.passwordHash,
-    roleCode: roleCode ?? this.roleCode,
-    departmentId: departmentId.present ? departmentId.value : this.departmentId,
-    active: active ?? this.active,
-    lastActive: lastActive.present ? lastActive.value : this.lastActive,
-    createdAt: createdAt ?? this.createdAt,
-  );
-  User copyWithCompanion(UsersCompanion data) {
-    return User(
-      id: data.id.present ? data.id.value : this.id,
-      fullName: data.fullName.present ? data.fullName.value : this.fullName,
-      fullNameAr: data.fullNameAr.present
-          ? data.fullNameAr.value
-          : this.fullNameAr,
-      username: data.username.present ? data.username.value : this.username,
-      email: data.email.present ? data.email.value : this.email,
-      passwordHash: data.passwordHash.present
-          ? data.passwordHash.value
-          : this.passwordHash,
-      roleCode: data.roleCode.present ? data.roleCode.value : this.roleCode,
-      departmentId: data.departmentId.present
-          ? data.departmentId.value
-          : this.departmentId,
-      active: data.active.present ? data.active.value : this.active,
-      lastActive: data.lastActive.present
-          ? data.lastActive.value
-          : this.lastActive,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('User(')
-          ..write('id: $id, ')
-          ..write('fullName: $fullName, ')
-          ..write('fullNameAr: $fullNameAr, ')
-          ..write('username: $username, ')
-          ..write('email: $email, ')
-          ..write('passwordHash: $passwordHash, ')
-          ..write('roleCode: $roleCode, ')
-          ..write('departmentId: $departmentId, ')
-          ..write('active: $active, ')
-          ..write('lastActive: $lastActive, ')
-          ..write('createdAt: $createdAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    fullName,
-    fullNameAr,
-    username,
-    email,
-    passwordHash,
-    roleCode,
-    departmentId,
-    active,
-    lastActive,
-    createdAt,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is User &&
-          other.id == this.id &&
-          other.fullName == this.fullName &&
-          other.fullNameAr == this.fullNameAr &&
-          other.username == this.username &&
-          other.email == this.email &&
-          other.passwordHash == this.passwordHash &&
-          other.roleCode == this.roleCode &&
-          other.departmentId == this.departmentId &&
-          other.active == this.active &&
-          other.lastActive == this.lastActive &&
-          other.createdAt == this.createdAt);
-}
-
-class UsersCompanion extends UpdateCompanion<User> {
-  final Value<String> id;
-  final Value<String> fullName;
-  final Value<String> fullNameAr;
-  final Value<String> username;
-  final Value<String> email;
-  final Value<String> passwordHash;
-  final Value<String> roleCode;
-  final Value<String?> departmentId;
-  final Value<bool> active;
-  final Value<DateTime?> lastActive;
-  final Value<DateTime> createdAt;
-  final Value<int> rowid;
-  const UsersCompanion({
-    this.id = const Value.absent(),
-    this.fullName = const Value.absent(),
-    this.fullNameAr = const Value.absent(),
-    this.username = const Value.absent(),
-    this.email = const Value.absent(),
-    this.passwordHash = const Value.absent(),
-    this.roleCode = const Value.absent(),
-    this.departmentId = const Value.absent(),
-    this.active = const Value.absent(),
-    this.lastActive = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  UsersCompanion.insert({
-    required String id,
-    required String fullName,
-    required String fullNameAr,
-    required String username,
-    this.email = const Value.absent(),
-    required String passwordHash,
-    required String roleCode,
-    this.departmentId = const Value.absent(),
-    this.active = const Value.absent(),
-    this.lastActive = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       fullName = Value(fullName),
-       fullNameAr = Value(fullNameAr),
-       username = Value(username),
-       passwordHash = Value(passwordHash),
-       roleCode = Value(roleCode);
-  static Insertable<User> custom({
-    Expression<String>? id,
-    Expression<String>? fullName,
-    Expression<String>? fullNameAr,
-    Expression<String>? username,
-    Expression<String>? email,
-    Expression<String>? passwordHash,
-    Expression<String>? roleCode,
-    Expression<String>? departmentId,
-    Expression<bool>? active,
-    Expression<DateTime>? lastActive,
-    Expression<DateTime>? createdAt,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (fullName != null) 'full_name': fullName,
-      if (fullNameAr != null) 'full_name_ar': fullNameAr,
-      if (username != null) 'username': username,
-      if (email != null) 'email': email,
-      if (passwordHash != null) 'password_hash': passwordHash,
-      if (roleCode != null) 'role_code': roleCode,
-      if (departmentId != null) 'department_id': departmentId,
-      if (active != null) 'active': active,
-      if (lastActive != null) 'last_active': lastActive,
-      if (createdAt != null) 'created_at': createdAt,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  UsersCompanion copyWith({
-    Value<String>? id,
-    Value<String>? fullName,
-    Value<String>? fullNameAr,
-    Value<String>? username,
-    Value<String>? email,
-    Value<String>? passwordHash,
-    Value<String>? roleCode,
-    Value<String?>? departmentId,
-    Value<bool>? active,
-    Value<DateTime?>? lastActive,
-    Value<DateTime>? createdAt,
-    Value<int>? rowid,
-  }) {
-    return UsersCompanion(
-      id: id ?? this.id,
-      fullName: fullName ?? this.fullName,
-      fullNameAr: fullNameAr ?? this.fullNameAr,
-      username: username ?? this.username,
-      email: email ?? this.email,
-      passwordHash: passwordHash ?? this.passwordHash,
-      roleCode: roleCode ?? this.roleCode,
-      departmentId: departmentId ?? this.departmentId,
-      active: active ?? this.active,
-      lastActive: lastActive ?? this.lastActive,
-      createdAt: createdAt ?? this.createdAt,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (fullName.present) {
-      map['full_name'] = Variable<String>(fullName.value);
-    }
-    if (fullNameAr.present) {
-      map['full_name_ar'] = Variable<String>(fullNameAr.value);
-    }
-    if (username.present) {
-      map['username'] = Variable<String>(username.value);
-    }
-    if (email.present) {
-      map['email'] = Variable<String>(email.value);
-    }
-    if (passwordHash.present) {
-      map['password_hash'] = Variable<String>(passwordHash.value);
-    }
-    if (roleCode.present) {
-      map['role_code'] = Variable<String>(roleCode.value);
-    }
-    if (departmentId.present) {
-      map['department_id'] = Variable<String>(departmentId.value);
-    }
-    if (active.present) {
-      map['active'] = Variable<bool>(active.value);
-    }
-    if (lastActive.present) {
-      map['last_active'] = Variable<DateTime>(lastActive.value);
-    }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('UsersCompanion(')
-          ..write('id: $id, ')
-          ..write('fullName: $fullName, ')
-          ..write('fullNameAr: $fullNameAr, ')
-          ..write('username: $username, ')
-          ..write('email: $email, ')
-          ..write('passwordHash: $passwordHash, ')
-          ..write('roleCode: $roleCode, ')
-          ..write('departmentId: $departmentId, ')
-          ..write('active: $active, ')
-          ..write('lastActive: $lastActive, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $LeadersTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
-  @override
-  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
-    'name_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _positionMeta = const VerificationMeta(
-    'position',
-  );
-  @override
-  late final GeneratedColumn<String> position = GeneratedColumn<String>(
-    'position',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _positionArMeta = const VerificationMeta(
-    'positionAr',
-  );
-  @override
-  late final GeneratedColumn<String> positionAr = GeneratedColumn<String>(
-    'position_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _categoryMeta = const VerificationMeta(
-    'category',
-  );
-  @override
-  late final GeneratedColumn<String> category = GeneratedColumn<String>(
-    'category',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _serviceYearsMeta = const VerificationMeta(
-    'serviceYears',
-  );
-  @override
-  late final GeneratedColumn<String> serviceYears = GeneratedColumn<String>(
-    'service_years',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _bioMeta = const VerificationMeta('bio');
-  @override
-  late final GeneratedColumn<String> bio = GeneratedColumn<String>(
-    'bio',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _bioArMeta = const VerificationMeta('bioAr');
-  @override
-  late final GeneratedColumn<String> bioAr = GeneratedColumn<String>(
-    'bio_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _achievementsMeta = const VerificationMeta(
-    'achievements',
-  );
-  @override
-  late final GeneratedColumn<String> achievements = GeneratedColumn<String>(
-    'achievements',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _achievementsArMeta = const VerificationMeta(
-    'achievementsAr',
-  );
-  @override
-  late final GeneratedColumn<String> achievementsAr = GeneratedColumn<String>(
-    'achievements_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _responsibilitiesMeta = const VerificationMeta(
-    'responsibilities',
-  );
-  @override
-  late final GeneratedColumn<String> responsibilities = GeneratedColumn<String>(
-    'responsibilities',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _responsibilitiesArMeta =
-      const VerificationMeta('responsibilitiesAr');
-  @override
-  late final GeneratedColumn<String> responsibilitiesAr =
-      GeneratedColumn<String>(
-        'responsibilities_ar',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-        defaultValue: const Constant(''),
-      );
-  static const VerificationMeta _emailMeta = const VerificationMeta('email');
-  @override
-  late final GeneratedColumn<String> email = GeneratedColumn<String>(
-    'email',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _phoneMeta = const VerificationMeta('phone');
-  @override
-  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
-    'phone',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _photoPathMeta = const VerificationMeta(
-    'photoPath',
-  );
-  @override
-  late final GeneratedColumn<String> photoPath = GeneratedColumn<String>(
-    'photo_path',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _accentMeta = const VerificationMeta('accent');
-  @override
-  late final GeneratedColumn<int> accent = GeneratedColumn<int>(
-    'accent',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0xFF0B5D3B),
-  );
-  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
-    'sortOrder',
-  );
-  @override
-  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
-    'sort_order',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0),
-  );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    name,
-    nameAr,
-    position,
-    positionAr,
-    category,
-    serviceYears,
-    bio,
-    bioAr,
-    achievements,
-    achievementsAr,
-    responsibilities,
-    responsibilitiesAr,
-    email,
-    phone,
-    photoPath,
-    accent,
-    sortOrder,
-    createdAt,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'leaders';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<Leader> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('name_ar')) {
-      context.handle(
-        _nameArMeta,
-        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameArMeta);
-    }
-    if (data.containsKey('position')) {
-      context.handle(
-        _positionMeta,
-        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_positionMeta);
-    }
-    if (data.containsKey('position_ar')) {
-      context.handle(
-        _positionArMeta,
-        positionAr.isAcceptableOrUnknown(data['position_ar']!, _positionArMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_positionArMeta);
-    }
-    if (data.containsKey('category')) {
-      context.handle(
-        _categoryMeta,
-        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_categoryMeta);
-    }
-    if (data.containsKey('service_years')) {
-      context.handle(
-        _serviceYearsMeta,
-        serviceYears.isAcceptableOrUnknown(
-          data['service_years']!,
-          _serviceYearsMeta,
-        ),
-      );
-    }
-    if (data.containsKey('bio')) {
-      context.handle(
-        _bioMeta,
-        bio.isAcceptableOrUnknown(data['bio']!, _bioMeta),
-      );
-    }
-    if (data.containsKey('bio_ar')) {
-      context.handle(
-        _bioArMeta,
-        bioAr.isAcceptableOrUnknown(data['bio_ar']!, _bioArMeta),
-      );
-    }
-    if (data.containsKey('achievements')) {
-      context.handle(
-        _achievementsMeta,
-        achievements.isAcceptableOrUnknown(
-          data['achievements']!,
-          _achievementsMeta,
-        ),
-      );
-    }
-    if (data.containsKey('achievements_ar')) {
-      context.handle(
-        _achievementsArMeta,
-        achievementsAr.isAcceptableOrUnknown(
-          data['achievements_ar']!,
-          _achievementsArMeta,
-        ),
-      );
-    }
-    if (data.containsKey('responsibilities')) {
-      context.handle(
-        _responsibilitiesMeta,
-        responsibilities.isAcceptableOrUnknown(
-          data['responsibilities']!,
-          _responsibilitiesMeta,
-        ),
-      );
-    }
-    if (data.containsKey('responsibilities_ar')) {
-      context.handle(
-        _responsibilitiesArMeta,
-        responsibilitiesAr.isAcceptableOrUnknown(
-          data['responsibilities_ar']!,
-          _responsibilitiesArMeta,
-        ),
-      );
-    }
-    if (data.containsKey('email')) {
-      context.handle(
-        _emailMeta,
-        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
-      );
-    }
-    if (data.containsKey('phone')) {
-      context.handle(
-        _phoneMeta,
-        phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta),
-      );
-    }
-    if (data.containsKey('photo_path')) {
-      context.handle(
-        _photoPathMeta,
-        photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
-      );
-    }
-    if (data.containsKey('accent')) {
-      context.handle(
-        _accentMeta,
-        accent.isAcceptableOrUnknown(data['accent']!, _accentMeta),
-      );
-    }
-    if (data.containsKey('sort_order')) {
-      context.handle(
-        _sortOrderMeta,
-        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
-      );
-    }
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Leader map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Leader(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-      nameAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name_ar'],
-      )!,
-      position: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}position'],
-      )!,
-      positionAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}position_ar'],
-      )!,
-      category: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}category'],
-      )!,
-      serviceYears: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}service_years'],
-      )!,
-      bio: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}bio'],
-      )!,
-      bioAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}bio_ar'],
-      )!,
-      achievements: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}achievements'],
-      )!,
-      achievementsAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}achievements_ar'],
-      )!,
-      responsibilities: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}responsibilities'],
-      )!,
-      responsibilitiesAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}responsibilities_ar'],
-      )!,
-      email: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}email'],
-      )!,
-      phone: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}phone'],
-      )!,
-      photoPath: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}photo_path'],
-      )!,
-      accent: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}accent'],
-      )!,
-      sortOrder: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}sort_order'],
-      )!,
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-    );
-  }
-
-  @override
-  $LeadersTable createAlias(String alias) {
-    return $LeadersTable(attachedDatabase, alias);
-  }
-}
-
-class Leader extends DataClass implements Insertable<Leader> {
-  final String id;
-  final String name;
-  final String nameAr;
-  final String position;
-  final String positionAr;
-  final String category;
-  final String serviceYears;
-  final String bio;
-  final String bioAr;
-
-  /// Newline-separated lists.
-  final String achievements;
-  final String achievementsAr;
-  final String responsibilities;
-  final String responsibilitiesAr;
-  final String email;
-  final String phone;
-
-  /// Absolute path to the leader's stored profile photo ('' when none).
-  final String photoPath;
-  final int accent;
-  final int sortOrder;
-  final DateTime createdAt;
-  const Leader({
-    required this.id,
-    required this.name,
-    required this.nameAr,
-    required this.position,
-    required this.positionAr,
-    required this.category,
-    required this.serviceYears,
-    required this.bio,
-    required this.bioAr,
-    required this.achievements,
-    required this.achievementsAr,
-    required this.responsibilities,
-    required this.responsibilitiesAr,
-    required this.email,
-    required this.phone,
-    required this.photoPath,
-    required this.accent,
-    required this.sortOrder,
-    required this.createdAt,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['name'] = Variable<String>(name);
-    map['name_ar'] = Variable<String>(nameAr);
-    map['position'] = Variable<String>(position);
-    map['position_ar'] = Variable<String>(positionAr);
-    map['category'] = Variable<String>(category);
-    map['service_years'] = Variable<String>(serviceYears);
-    map['bio'] = Variable<String>(bio);
-    map['bio_ar'] = Variable<String>(bioAr);
-    map['achievements'] = Variable<String>(achievements);
-    map['achievements_ar'] = Variable<String>(achievementsAr);
-    map['responsibilities'] = Variable<String>(responsibilities);
-    map['responsibilities_ar'] = Variable<String>(responsibilitiesAr);
-    map['email'] = Variable<String>(email);
-    map['phone'] = Variable<String>(phone);
-    map['photo_path'] = Variable<String>(photoPath);
-    map['accent'] = Variable<int>(accent);
-    map['sort_order'] = Variable<int>(sortOrder);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    return map;
-  }
-
-  LeadersCompanion toCompanion(bool nullToAbsent) {
-    return LeadersCompanion(
-      id: Value(id),
-      name: Value(name),
-      nameAr: Value(nameAr),
-      position: Value(position),
-      positionAr: Value(positionAr),
-      category: Value(category),
-      serviceYears: Value(serviceYears),
-      bio: Value(bio),
-      bioAr: Value(bioAr),
-      achievements: Value(achievements),
-      achievementsAr: Value(achievementsAr),
-      responsibilities: Value(responsibilities),
-      responsibilitiesAr: Value(responsibilitiesAr),
-      email: Value(email),
-      phone: Value(phone),
-      photoPath: Value(photoPath),
-      accent: Value(accent),
-      sortOrder: Value(sortOrder),
-      createdAt: Value(createdAt),
-    );
-  }
-
-  factory Leader.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Leader(
-      id: serializer.fromJson<String>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      nameAr: serializer.fromJson<String>(json['nameAr']),
-      position: serializer.fromJson<String>(json['position']),
-      positionAr: serializer.fromJson<String>(json['positionAr']),
-      category: serializer.fromJson<String>(json['category']),
-      serviceYears: serializer.fromJson<String>(json['serviceYears']),
-      bio: serializer.fromJson<String>(json['bio']),
-      bioAr: serializer.fromJson<String>(json['bioAr']),
-      achievements: serializer.fromJson<String>(json['achievements']),
-      achievementsAr: serializer.fromJson<String>(json['achievementsAr']),
-      responsibilities: serializer.fromJson<String>(json['responsibilities']),
-      responsibilitiesAr: serializer.fromJson<String>(
-        json['responsibilitiesAr'],
-      ),
-      email: serializer.fromJson<String>(json['email']),
-      phone: serializer.fromJson<String>(json['phone']),
-      photoPath: serializer.fromJson<String>(json['photoPath']),
-      accent: serializer.fromJson<int>(json['accent']),
-      sortOrder: serializer.fromJson<int>(json['sortOrder']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'name': serializer.toJson<String>(name),
-      'nameAr': serializer.toJson<String>(nameAr),
-      'position': serializer.toJson<String>(position),
-      'positionAr': serializer.toJson<String>(positionAr),
-      'category': serializer.toJson<String>(category),
-      'serviceYears': serializer.toJson<String>(serviceYears),
-      'bio': serializer.toJson<String>(bio),
-      'bioAr': serializer.toJson<String>(bioAr),
-      'achievements': serializer.toJson<String>(achievements),
-      'achievementsAr': serializer.toJson<String>(achievementsAr),
-      'responsibilities': serializer.toJson<String>(responsibilities),
-      'responsibilitiesAr': serializer.toJson<String>(responsibilitiesAr),
-      'email': serializer.toJson<String>(email),
-      'phone': serializer.toJson<String>(phone),
-      'photoPath': serializer.toJson<String>(photoPath),
-      'accent': serializer.toJson<int>(accent),
-      'sortOrder': serializer.toJson<int>(sortOrder),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-    };
-  }
-
-  Leader copyWith({
-    String? id,
-    String? name,
-    String? nameAr,
-    String? position,
-    String? positionAr,
-    String? category,
-    String? serviceYears,
-    String? bio,
-    String? bioAr,
-    String? achievements,
-    String? achievementsAr,
-    String? responsibilities,
-    String? responsibilitiesAr,
-    String? email,
-    String? phone,
-    String? photoPath,
-    int? accent,
-    int? sortOrder,
-    DateTime? createdAt,
-  }) => Leader(
-    id: id ?? this.id,
-    name: name ?? this.name,
-    nameAr: nameAr ?? this.nameAr,
-    position: position ?? this.position,
-    positionAr: positionAr ?? this.positionAr,
-    category: category ?? this.category,
-    serviceYears: serviceYears ?? this.serviceYears,
-    bio: bio ?? this.bio,
-    bioAr: bioAr ?? this.bioAr,
-    achievements: achievements ?? this.achievements,
-    achievementsAr: achievementsAr ?? this.achievementsAr,
-    responsibilities: responsibilities ?? this.responsibilities,
-    responsibilitiesAr: responsibilitiesAr ?? this.responsibilitiesAr,
-    email: email ?? this.email,
-    phone: phone ?? this.phone,
-    photoPath: photoPath ?? this.photoPath,
-    accent: accent ?? this.accent,
-    sortOrder: sortOrder ?? this.sortOrder,
-    createdAt: createdAt ?? this.createdAt,
-  );
-  Leader copyWithCompanion(LeadersCompanion data) {
-    return Leader(
-      id: data.id.present ? data.id.value : this.id,
-      name: data.name.present ? data.name.value : this.name,
-      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
-      position: data.position.present ? data.position.value : this.position,
-      positionAr: data.positionAr.present
-          ? data.positionAr.value
-          : this.positionAr,
-      category: data.category.present ? data.category.value : this.category,
-      serviceYears: data.serviceYears.present
-          ? data.serviceYears.value
-          : this.serviceYears,
-      bio: data.bio.present ? data.bio.value : this.bio,
-      bioAr: data.bioAr.present ? data.bioAr.value : this.bioAr,
-      achievements: data.achievements.present
-          ? data.achievements.value
-          : this.achievements,
-      achievementsAr: data.achievementsAr.present
-          ? data.achievementsAr.value
-          : this.achievementsAr,
-      responsibilities: data.responsibilities.present
-          ? data.responsibilities.value
-          : this.responsibilities,
-      responsibilitiesAr: data.responsibilitiesAr.present
-          ? data.responsibilitiesAr.value
-          : this.responsibilitiesAr,
-      email: data.email.present ? data.email.value : this.email,
-      phone: data.phone.present ? data.phone.value : this.phone,
-      photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
-      accent: data.accent.present ? data.accent.value : this.accent,
-      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('Leader(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('nameAr: $nameAr, ')
-          ..write('position: $position, ')
-          ..write('positionAr: $positionAr, ')
-          ..write('category: $category, ')
-          ..write('serviceYears: $serviceYears, ')
-          ..write('bio: $bio, ')
-          ..write('bioAr: $bioAr, ')
-          ..write('achievements: $achievements, ')
-          ..write('achievementsAr: $achievementsAr, ')
-          ..write('responsibilities: $responsibilities, ')
-          ..write('responsibilitiesAr: $responsibilitiesAr, ')
-          ..write('email: $email, ')
-          ..write('phone: $phone, ')
-          ..write('photoPath: $photoPath, ')
-          ..write('accent: $accent, ')
-          ..write('sortOrder: $sortOrder, ')
-          ..write('createdAt: $createdAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    name,
-    nameAr,
-    position,
-    positionAr,
-    category,
-    serviceYears,
-    bio,
-    bioAr,
-    achievements,
-    achievementsAr,
-    responsibilities,
-    responsibilitiesAr,
-    email,
-    phone,
-    photoPath,
-    accent,
-    sortOrder,
-    createdAt,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Leader &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.nameAr == this.nameAr &&
-          other.position == this.position &&
-          other.positionAr == this.positionAr &&
-          other.category == this.category &&
-          other.serviceYears == this.serviceYears &&
-          other.bio == this.bio &&
-          other.bioAr == this.bioAr &&
-          other.achievements == this.achievements &&
-          other.achievementsAr == this.achievementsAr &&
-          other.responsibilities == this.responsibilities &&
-          other.responsibilitiesAr == this.responsibilitiesAr &&
-          other.email == this.email &&
-          other.phone == this.phone &&
-          other.photoPath == this.photoPath &&
-          other.accent == this.accent &&
-          other.sortOrder == this.sortOrder &&
-          other.createdAt == this.createdAt);
-}
-
-class LeadersCompanion extends UpdateCompanion<Leader> {
-  final Value<String> id;
-  final Value<String> name;
-  final Value<String> nameAr;
-  final Value<String> position;
-  final Value<String> positionAr;
-  final Value<String> category;
-  final Value<String> serviceYears;
-  final Value<String> bio;
-  final Value<String> bioAr;
-  final Value<String> achievements;
-  final Value<String> achievementsAr;
-  final Value<String> responsibilities;
-  final Value<String> responsibilitiesAr;
-  final Value<String> email;
-  final Value<String> phone;
-  final Value<String> photoPath;
-  final Value<int> accent;
-  final Value<int> sortOrder;
-  final Value<DateTime> createdAt;
-  final Value<int> rowid;
-  const LeadersCompanion({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.nameAr = const Value.absent(),
-    this.position = const Value.absent(),
-    this.positionAr = const Value.absent(),
-    this.category = const Value.absent(),
-    this.serviceYears = const Value.absent(),
-    this.bio = const Value.absent(),
-    this.bioAr = const Value.absent(),
-    this.achievements = const Value.absent(),
-    this.achievementsAr = const Value.absent(),
-    this.responsibilities = const Value.absent(),
-    this.responsibilitiesAr = const Value.absent(),
-    this.email = const Value.absent(),
-    this.phone = const Value.absent(),
-    this.photoPath = const Value.absent(),
-    this.accent = const Value.absent(),
-    this.sortOrder = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  LeadersCompanion.insert({
-    required String id,
-    required String name,
-    required String nameAr,
-    required String position,
-    required String positionAr,
-    required String category,
-    this.serviceYears = const Value.absent(),
-    this.bio = const Value.absent(),
-    this.bioAr = const Value.absent(),
-    this.achievements = const Value.absent(),
-    this.achievementsAr = const Value.absent(),
-    this.responsibilities = const Value.absent(),
-    this.responsibilitiesAr = const Value.absent(),
-    this.email = const Value.absent(),
-    this.phone = const Value.absent(),
-    this.photoPath = const Value.absent(),
-    this.accent = const Value.absent(),
-    this.sortOrder = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       name = Value(name),
-       nameAr = Value(nameAr),
-       position = Value(position),
-       positionAr = Value(positionAr),
-       category = Value(category);
-  static Insertable<Leader> custom({
-    Expression<String>? id,
-    Expression<String>? name,
-    Expression<String>? nameAr,
-    Expression<String>? position,
-    Expression<String>? positionAr,
-    Expression<String>? category,
-    Expression<String>? serviceYears,
-    Expression<String>? bio,
-    Expression<String>? bioAr,
-    Expression<String>? achievements,
-    Expression<String>? achievementsAr,
-    Expression<String>? responsibilities,
-    Expression<String>? responsibilitiesAr,
-    Expression<String>? email,
-    Expression<String>? phone,
-    Expression<String>? photoPath,
-    Expression<int>? accent,
-    Expression<int>? sortOrder,
-    Expression<DateTime>? createdAt,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (nameAr != null) 'name_ar': nameAr,
-      if (position != null) 'position': position,
-      if (positionAr != null) 'position_ar': positionAr,
-      if (category != null) 'category': category,
-      if (serviceYears != null) 'service_years': serviceYears,
-      if (bio != null) 'bio': bio,
-      if (bioAr != null) 'bio_ar': bioAr,
-      if (achievements != null) 'achievements': achievements,
-      if (achievementsAr != null) 'achievements_ar': achievementsAr,
-      if (responsibilities != null) 'responsibilities': responsibilities,
-      if (responsibilitiesAr != null) 'responsibilities_ar': responsibilitiesAr,
-      if (email != null) 'email': email,
-      if (phone != null) 'phone': phone,
-      if (photoPath != null) 'photo_path': photoPath,
-      if (accent != null) 'accent': accent,
-      if (sortOrder != null) 'sort_order': sortOrder,
-      if (createdAt != null) 'created_at': createdAt,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  LeadersCompanion copyWith({
-    Value<String>? id,
-    Value<String>? name,
-    Value<String>? nameAr,
-    Value<String>? position,
-    Value<String>? positionAr,
-    Value<String>? category,
-    Value<String>? serviceYears,
-    Value<String>? bio,
-    Value<String>? bioAr,
-    Value<String>? achievements,
-    Value<String>? achievementsAr,
-    Value<String>? responsibilities,
-    Value<String>? responsibilitiesAr,
-    Value<String>? email,
-    Value<String>? phone,
-    Value<String>? photoPath,
-    Value<int>? accent,
-    Value<int>? sortOrder,
-    Value<DateTime>? createdAt,
-    Value<int>? rowid,
-  }) {
-    return LeadersCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      nameAr: nameAr ?? this.nameAr,
-      position: position ?? this.position,
-      positionAr: positionAr ?? this.positionAr,
-      category: category ?? this.category,
-      serviceYears: serviceYears ?? this.serviceYears,
-      bio: bio ?? this.bio,
-      bioAr: bioAr ?? this.bioAr,
-      achievements: achievements ?? this.achievements,
-      achievementsAr: achievementsAr ?? this.achievementsAr,
-      responsibilities: responsibilities ?? this.responsibilities,
-      responsibilitiesAr: responsibilitiesAr ?? this.responsibilitiesAr,
-      email: email ?? this.email,
-      phone: phone ?? this.phone,
-      photoPath: photoPath ?? this.photoPath,
-      accent: accent ?? this.accent,
-      sortOrder: sortOrder ?? this.sortOrder,
-      createdAt: createdAt ?? this.createdAt,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (nameAr.present) {
-      map['name_ar'] = Variable<String>(nameAr.value);
-    }
-    if (position.present) {
-      map['position'] = Variable<String>(position.value);
-    }
-    if (positionAr.present) {
-      map['position_ar'] = Variable<String>(positionAr.value);
-    }
-    if (category.present) {
-      map['category'] = Variable<String>(category.value);
-    }
-    if (serviceYears.present) {
-      map['service_years'] = Variable<String>(serviceYears.value);
-    }
-    if (bio.present) {
-      map['bio'] = Variable<String>(bio.value);
-    }
-    if (bioAr.present) {
-      map['bio_ar'] = Variable<String>(bioAr.value);
-    }
-    if (achievements.present) {
-      map['achievements'] = Variable<String>(achievements.value);
-    }
-    if (achievementsAr.present) {
-      map['achievements_ar'] = Variable<String>(achievementsAr.value);
-    }
-    if (responsibilities.present) {
-      map['responsibilities'] = Variable<String>(responsibilities.value);
-    }
-    if (responsibilitiesAr.present) {
-      map['responsibilities_ar'] = Variable<String>(responsibilitiesAr.value);
-    }
-    if (email.present) {
-      map['email'] = Variable<String>(email.value);
-    }
-    if (phone.present) {
-      map['phone'] = Variable<String>(phone.value);
-    }
-    if (photoPath.present) {
-      map['photo_path'] = Variable<String>(photoPath.value);
-    }
-    if (accent.present) {
-      map['accent'] = Variable<int>(accent.value);
-    }
-    if (sortOrder.present) {
-      map['sort_order'] = Variable<int>(sortOrder.value);
-    }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('LeadersCompanion(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('nameAr: $nameAr, ')
-          ..write('position: $position, ')
-          ..write('positionAr: $positionAr, ')
-          ..write('category: $category, ')
-          ..write('serviceYears: $serviceYears, ')
-          ..write('bio: $bio, ')
-          ..write('bioAr: $bioAr, ')
-          ..write('achievements: $achievements, ')
-          ..write('achievementsAr: $achievementsAr, ')
-          ..write('responsibilities: $responsibilities, ')
-          ..write('responsibilitiesAr: $responsibilitiesAr, ')
-          ..write('email: $email, ')
-          ..write('phone: $phone, ')
-          ..write('photoPath: $photoPath, ')
-          ..write('accent: $accent, ')
-          ..write('sortOrder: $sortOrder, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $AuditLogsTable extends AuditLogs
-    with TableInfo<$AuditLogsTable, AuditLog> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $AuditLogsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _usernameMeta = const VerificationMeta(
-    'username',
-  );
-  @override
-  late final GeneratedColumn<String> username = GeneratedColumn<String>(
-    'username',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
-  @override
-  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
-    'user_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES users (id) ON DELETE SET NULL',
-    ),
-  );
-  static const VerificationMeta _actionMeta = const VerificationMeta('action');
-  @override
-  late final GeneratedColumn<String> action = GeneratedColumn<String>(
-    'action',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _actionArMeta = const VerificationMeta(
-    'actionAr',
-  );
-  @override
-  late final GeneratedColumn<String> actionAr = GeneratedColumn<String>(
-    'action_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _moduleMeta = const VerificationMeta('module');
-  @override
-  late final GeneratedColumn<String> module = GeneratedColumn<String>(
-    'module',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _moduleArMeta = const VerificationMeta(
-    'moduleAr',
-  );
-  @override
-  late final GeneratedColumn<String> moduleAr = GeneratedColumn<String>(
-    'module_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _timestampMeta = const VerificationMeta(
-    'timestamp',
-  );
-  @override
-  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
-    'timestamp',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    username,
-    userId,
-    action,
-    actionAr,
-    module,
-    moduleAr,
-    timestamp,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'audit_logs';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<AuditLog> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('username')) {
-      context.handle(
-        _usernameMeta,
-        username.isAcceptableOrUnknown(data['username']!, _usernameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_usernameMeta);
-    }
-    if (data.containsKey('user_id')) {
-      context.handle(
-        _userIdMeta,
-        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
-      );
-    }
-    if (data.containsKey('action')) {
-      context.handle(
-        _actionMeta,
-        action.isAcceptableOrUnknown(data['action']!, _actionMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_actionMeta);
-    }
-    if (data.containsKey('action_ar')) {
-      context.handle(
-        _actionArMeta,
-        actionAr.isAcceptableOrUnknown(data['action_ar']!, _actionArMeta),
-      );
-    }
-    if (data.containsKey('module')) {
-      context.handle(
-        _moduleMeta,
-        module.isAcceptableOrUnknown(data['module']!, _moduleMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_moduleMeta);
-    }
-    if (data.containsKey('module_ar')) {
-      context.handle(
-        _moduleArMeta,
-        moduleAr.isAcceptableOrUnknown(data['module_ar']!, _moduleArMeta),
-      );
-    }
-    if (data.containsKey('timestamp')) {
-      context.handle(
-        _timestampMeta,
-        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  AuditLog map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return AuditLog(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      username: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}username'],
-      )!,
-      userId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}user_id'],
-      ),
-      action: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}action'],
-      )!,
-      actionAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}action_ar'],
-      )!,
-      module: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}module'],
-      )!,
-      moduleAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}module_ar'],
-      )!,
-      timestamp: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}timestamp'],
-      )!,
-    );
-  }
-
-  @override
-  $AuditLogsTable createAlias(String alias) {
-    return $AuditLogsTable(attachedDatabase, alias);
-  }
-}
-
-class AuditLog extends DataClass implements Insertable<AuditLog> {
-  final String id;
-  final String username;
-
-  /// Optional link to the acting user. The [username] snapshot is always kept
-  /// so the trail survives a user being renamed or deleted (SET NULL).
-  final String? userId;
-  final String action;
-  final String actionAr;
-  final String module;
-  final String moduleAr;
-  final DateTime timestamp;
-  const AuditLog({
-    required this.id,
-    required this.username,
-    this.userId,
-    required this.action,
-    required this.actionAr,
-    required this.module,
-    required this.moduleAr,
-    required this.timestamp,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['username'] = Variable<String>(username);
-    if (!nullToAbsent || userId != null) {
-      map['user_id'] = Variable<String>(userId);
-    }
-    map['action'] = Variable<String>(action);
-    map['action_ar'] = Variable<String>(actionAr);
-    map['module'] = Variable<String>(module);
-    map['module_ar'] = Variable<String>(moduleAr);
-    map['timestamp'] = Variable<DateTime>(timestamp);
-    return map;
-  }
-
-  AuditLogsCompanion toCompanion(bool nullToAbsent) {
-    return AuditLogsCompanion(
-      id: Value(id),
-      username: Value(username),
-      userId: userId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(userId),
-      action: Value(action),
-      actionAr: Value(actionAr),
-      module: Value(module),
-      moduleAr: Value(moduleAr),
-      timestamp: Value(timestamp),
-    );
-  }
-
-  factory AuditLog.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return AuditLog(
-      id: serializer.fromJson<String>(json['id']),
-      username: serializer.fromJson<String>(json['username']),
-      userId: serializer.fromJson<String?>(json['userId']),
-      action: serializer.fromJson<String>(json['action']),
-      actionAr: serializer.fromJson<String>(json['actionAr']),
-      module: serializer.fromJson<String>(json['module']),
-      moduleAr: serializer.fromJson<String>(json['moduleAr']),
-      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'username': serializer.toJson<String>(username),
-      'userId': serializer.toJson<String?>(userId),
-      'action': serializer.toJson<String>(action),
-      'actionAr': serializer.toJson<String>(actionAr),
-      'module': serializer.toJson<String>(module),
-      'moduleAr': serializer.toJson<String>(moduleAr),
-      'timestamp': serializer.toJson<DateTime>(timestamp),
-    };
-  }
-
-  AuditLog copyWith({
-    String? id,
-    String? username,
-    Value<String?> userId = const Value.absent(),
-    String? action,
-    String? actionAr,
-    String? module,
-    String? moduleAr,
-    DateTime? timestamp,
-  }) => AuditLog(
-    id: id ?? this.id,
-    username: username ?? this.username,
-    userId: userId.present ? userId.value : this.userId,
-    action: action ?? this.action,
-    actionAr: actionAr ?? this.actionAr,
-    module: module ?? this.module,
-    moduleAr: moduleAr ?? this.moduleAr,
-    timestamp: timestamp ?? this.timestamp,
-  );
-  AuditLog copyWithCompanion(AuditLogsCompanion data) {
-    return AuditLog(
-      id: data.id.present ? data.id.value : this.id,
-      username: data.username.present ? data.username.value : this.username,
-      userId: data.userId.present ? data.userId.value : this.userId,
-      action: data.action.present ? data.action.value : this.action,
-      actionAr: data.actionAr.present ? data.actionAr.value : this.actionAr,
-      module: data.module.present ? data.module.value : this.module,
-      moduleAr: data.moduleAr.present ? data.moduleAr.value : this.moduleAr,
-      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('AuditLog(')
-          ..write('id: $id, ')
-          ..write('username: $username, ')
-          ..write('userId: $userId, ')
-          ..write('action: $action, ')
-          ..write('actionAr: $actionAr, ')
-          ..write('module: $module, ')
-          ..write('moduleAr: $moduleAr, ')
-          ..write('timestamp: $timestamp')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    username,
-    userId,
-    action,
-    actionAr,
-    module,
-    moduleAr,
-    timestamp,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is AuditLog &&
-          other.id == this.id &&
-          other.username == this.username &&
-          other.userId == this.userId &&
-          other.action == this.action &&
-          other.actionAr == this.actionAr &&
-          other.module == this.module &&
-          other.moduleAr == this.moduleAr &&
-          other.timestamp == this.timestamp);
-}
-
-class AuditLogsCompanion extends UpdateCompanion<AuditLog> {
-  final Value<String> id;
-  final Value<String> username;
-  final Value<String?> userId;
-  final Value<String> action;
-  final Value<String> actionAr;
-  final Value<String> module;
-  final Value<String> moduleAr;
-  final Value<DateTime> timestamp;
-  final Value<int> rowid;
-  const AuditLogsCompanion({
-    this.id = const Value.absent(),
-    this.username = const Value.absent(),
-    this.userId = const Value.absent(),
-    this.action = const Value.absent(),
-    this.actionAr = const Value.absent(),
-    this.module = const Value.absent(),
-    this.moduleAr = const Value.absent(),
-    this.timestamp = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  AuditLogsCompanion.insert({
-    required String id,
-    required String username,
-    this.userId = const Value.absent(),
-    required String action,
-    this.actionAr = const Value.absent(),
-    required String module,
-    this.moduleAr = const Value.absent(),
-    this.timestamp = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       username = Value(username),
-       action = Value(action),
-       module = Value(module);
-  static Insertable<AuditLog> custom({
-    Expression<String>? id,
-    Expression<String>? username,
-    Expression<String>? userId,
-    Expression<String>? action,
-    Expression<String>? actionAr,
-    Expression<String>? module,
-    Expression<String>? moduleAr,
-    Expression<DateTime>? timestamp,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (username != null) 'username': username,
-      if (userId != null) 'user_id': userId,
-      if (action != null) 'action': action,
-      if (actionAr != null) 'action_ar': actionAr,
-      if (module != null) 'module': module,
-      if (moduleAr != null) 'module_ar': moduleAr,
-      if (timestamp != null) 'timestamp': timestamp,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  AuditLogsCompanion copyWith({
-    Value<String>? id,
-    Value<String>? username,
-    Value<String?>? userId,
-    Value<String>? action,
-    Value<String>? actionAr,
-    Value<String>? module,
-    Value<String>? moduleAr,
-    Value<DateTime>? timestamp,
-    Value<int>? rowid,
-  }) {
-    return AuditLogsCompanion(
-      id: id ?? this.id,
-      username: username ?? this.username,
-      userId: userId ?? this.userId,
-      action: action ?? this.action,
-      actionAr: actionAr ?? this.actionAr,
-      module: module ?? this.module,
-      moduleAr: moduleAr ?? this.moduleAr,
-      timestamp: timestamp ?? this.timestamp,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (username.present) {
-      map['username'] = Variable<String>(username.value);
-    }
-    if (userId.present) {
-      map['user_id'] = Variable<String>(userId.value);
-    }
-    if (action.present) {
-      map['action'] = Variable<String>(action.value);
-    }
-    if (actionAr.present) {
-      map['action_ar'] = Variable<String>(actionAr.value);
-    }
-    if (module.present) {
-      map['module'] = Variable<String>(module.value);
-    }
-    if (moduleAr.present) {
-      map['module_ar'] = Variable<String>(moduleAr.value);
-    }
-    if (timestamp.present) {
-      map['timestamp'] = Variable<DateTime>(timestamp.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('AuditLogsCompanion(')
-          ..write('id: $id, ')
-          ..write('username: $username, ')
-          ..write('userId: $userId, ')
-          ..write('action: $action, ')
-          ..write('actionAr: $actionAr, ')
-          ..write('module: $module, ')
-          ..write('moduleAr: $moduleAr, ')
-          ..write('timestamp: $timestamp, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $TarbiyaAreasTable extends TarbiyaAreas
     with TableInfo<$TarbiyaAreasTable, TarbiyaArea> {
   @override
@@ -3414,8 +499,26 @@ class $ShubasTable extends Shubas with TableInfo<$ShubasTable, Shuba> {
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _masulMemberIdMeta = const VerificationMeta(
+    'masulMemberId',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, areaId, name, nameAr, sortOrder];
+  late final GeneratedColumn<String> masulMemberId = GeneratedColumn<String>(
+    'masul_member_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    areaId,
+    name,
+    nameAr,
+    sortOrder,
+    masulMemberId,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -3461,6 +564,15 @@ class $ShubasTable extends Shubas with TableInfo<$ShubasTable, Shuba> {
         sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
       );
     }
+    if (data.containsKey('masul_member_id')) {
+      context.handle(
+        _masulMemberIdMeta,
+        masulMemberId.isAcceptableOrUnknown(
+          data['masul_member_id']!,
+          _masulMemberIdMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -3490,6 +602,10 @@ class $ShubasTable extends Shubas with TableInfo<$ShubasTable, Shuba> {
         DriftSqlType.int,
         data['${effectivePrefix}sort_order'],
       )!,
+      masulMemberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}masul_member_id'],
+      ),
     );
   }
 
@@ -3505,12 +621,17 @@ class Shuba extends DataClass implements Insertable<Shuba> {
   final String name;
   final String nameAr;
   final int sortOrder;
+
+  /// The Shu'ba's Mas'ul (Person-in-Charge): an existing member, or null when
+  /// unassigned. SET NULL so deleting the member just vacates the role.
+  final String? masulMemberId;
   const Shuba({
     required this.id,
     required this.areaId,
     required this.name,
     required this.nameAr,
     required this.sortOrder,
+    this.masulMemberId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3520,6 +641,9 @@ class Shuba extends DataClass implements Insertable<Shuba> {
     map['name'] = Variable<String>(name);
     map['name_ar'] = Variable<String>(nameAr);
     map['sort_order'] = Variable<int>(sortOrder);
+    if (!nullToAbsent || masulMemberId != null) {
+      map['masul_member_id'] = Variable<String>(masulMemberId);
+    }
     return map;
   }
 
@@ -3530,6 +654,9 @@ class Shuba extends DataClass implements Insertable<Shuba> {
       name: Value(name),
       nameAr: Value(nameAr),
       sortOrder: Value(sortOrder),
+      masulMemberId: masulMemberId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(masulMemberId),
     );
   }
 
@@ -3544,6 +671,7 @@ class Shuba extends DataClass implements Insertable<Shuba> {
       name: serializer.fromJson<String>(json['name']),
       nameAr: serializer.fromJson<String>(json['nameAr']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      masulMemberId: serializer.fromJson<String?>(json['masulMemberId']),
     );
   }
   @override
@@ -3555,6 +683,7 @@ class Shuba extends DataClass implements Insertable<Shuba> {
       'name': serializer.toJson<String>(name),
       'nameAr': serializer.toJson<String>(nameAr),
       'sortOrder': serializer.toJson<int>(sortOrder),
+      'masulMemberId': serializer.toJson<String?>(masulMemberId),
     };
   }
 
@@ -3564,12 +693,16 @@ class Shuba extends DataClass implements Insertable<Shuba> {
     String? name,
     String? nameAr,
     int? sortOrder,
+    Value<String?> masulMemberId = const Value.absent(),
   }) => Shuba(
     id: id ?? this.id,
     areaId: areaId ?? this.areaId,
     name: name ?? this.name,
     nameAr: nameAr ?? this.nameAr,
     sortOrder: sortOrder ?? this.sortOrder,
+    masulMemberId: masulMemberId.present
+        ? masulMemberId.value
+        : this.masulMemberId,
   );
   Shuba copyWithCompanion(ShubasCompanion data) {
     return Shuba(
@@ -3578,6 +711,9 @@ class Shuba extends DataClass implements Insertable<Shuba> {
       name: data.name.present ? data.name.value : this.name,
       nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      masulMemberId: data.masulMemberId.present
+          ? data.masulMemberId.value
+          : this.masulMemberId,
     );
   }
 
@@ -3588,13 +724,15 @@ class Shuba extends DataClass implements Insertable<Shuba> {
           ..write('areaId: $areaId, ')
           ..write('name: $name, ')
           ..write('nameAr: $nameAr, ')
-          ..write('sortOrder: $sortOrder')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('masulMemberId: $masulMemberId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, areaId, name, nameAr, sortOrder);
+  int get hashCode =>
+      Object.hash(id, areaId, name, nameAr, sortOrder, masulMemberId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3603,7 +741,8 @@ class Shuba extends DataClass implements Insertable<Shuba> {
           other.areaId == this.areaId &&
           other.name == this.name &&
           other.nameAr == this.nameAr &&
-          other.sortOrder == this.sortOrder);
+          other.sortOrder == this.sortOrder &&
+          other.masulMemberId == this.masulMemberId);
 }
 
 class ShubasCompanion extends UpdateCompanion<Shuba> {
@@ -3612,6 +751,7 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
   final Value<String> name;
   final Value<String> nameAr;
   final Value<int> sortOrder;
+  final Value<String?> masulMemberId;
   final Value<int> rowid;
   const ShubasCompanion({
     this.id = const Value.absent(),
@@ -3619,6 +759,7 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
     this.name = const Value.absent(),
     this.nameAr = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    this.masulMemberId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ShubasCompanion.insert({
@@ -3627,6 +768,7 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
     required String name,
     this.nameAr = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    this.masulMemberId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        areaId = Value(areaId),
@@ -3637,6 +779,7 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
     Expression<String>? name,
     Expression<String>? nameAr,
     Expression<int>? sortOrder,
+    Expression<String>? masulMemberId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3645,6 +788,7 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
       if (name != null) 'name': name,
       if (nameAr != null) 'name_ar': nameAr,
       if (sortOrder != null) 'sort_order': sortOrder,
+      if (masulMemberId != null) 'masul_member_id': masulMemberId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3655,6 +799,7 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
     Value<String>? name,
     Value<String>? nameAr,
     Value<int>? sortOrder,
+    Value<String?>? masulMemberId,
     Value<int>? rowid,
   }) {
     return ShubasCompanion(
@@ -3663,6 +808,7 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
       name: name ?? this.name,
       nameAr: nameAr ?? this.nameAr,
       sortOrder: sortOrder ?? this.sortOrder,
+      masulMemberId: masulMemberId ?? this.masulMemberId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3685,6 +831,9 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
     if (sortOrder.present) {
       map['sort_order'] = Variable<int>(sortOrder.value);
     }
+    if (masulMemberId.present) {
+      map['masul_member_id'] = Variable<String>(masulMemberId.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3699,6 +848,7 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
           ..write('name: $name, ')
           ..write('nameAr: $nameAr, ')
           ..write('sortOrder: $sortOrder, ')
+          ..write('masulMemberId: $masulMemberId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -5132,6 +2282,3037 @@ class MembersCompanion extends UpdateCompanion<Member> {
   }
 }
 
+class $DepartmentsTable extends Departments
+    with TableInfo<$DepartmentsTable, Department> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DepartmentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
+  @override
+  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
+    'name_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _descriptionArMeta = const VerificationMeta(
+    'descriptionAr',
+  );
+  @override
+  late final GeneratedColumn<String> descriptionAr = GeneratedColumn<String>(
+    'description_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _iconKeyMeta = const VerificationMeta(
+    'iconKey',
+  );
+  @override
+  late final GeneratedColumn<String> iconKey = GeneratedColumn<String>(
+    'icon_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('group'),
+  );
+  static const VerificationMeta _accentMeta = const VerificationMeta('accent');
+  @override
+  late final GeneratedColumn<int> accent = GeneratedColumn<int>(
+    'accent',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0xFF0B5D3B),
+  );
+  static const VerificationMeta _headNameMeta = const VerificationMeta(
+    'headName',
+  );
+  @override
+  late final GeneratedColumn<String> headName = GeneratedColumn<String>(
+    'head_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _headNameArMeta = const VerificationMeta(
+    'headNameAr',
+  );
+  @override
+  late final GeneratedColumn<String> headNameAr = GeneratedColumn<String>(
+    'head_name_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _contactEmailMeta = const VerificationMeta(
+    'contactEmail',
+  );
+  @override
+  late final GeneratedColumn<String> contactEmail = GeneratedColumn<String>(
+    'contact_email',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _contactPhoneMeta = const VerificationMeta(
+    'contactPhone',
+  );
+  @override
+  late final GeneratedColumn<String> contactPhone = GeneratedColumn<String>(
+    'contact_phone',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _headMemberIdMeta = const VerificationMeta(
+    'headMemberId',
+  );
+  @override
+  late final GeneratedColumn<String> headMemberId = GeneratedColumn<String>(
+    'head_member_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES members (id) ON DELETE SET NULL',
+    ),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    nameAr,
+    description,
+    descriptionAr,
+    iconKey,
+    accent,
+    headName,
+    headNameAr,
+    contactEmail,
+    contactPhone,
+    headMemberId,
+    sortOrder,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'departments';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Department> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('name_ar')) {
+      context.handle(
+        _nameArMeta,
+        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
+      );
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('description_ar')) {
+      context.handle(
+        _descriptionArMeta,
+        descriptionAr.isAcceptableOrUnknown(
+          data['description_ar']!,
+          _descriptionArMeta,
+        ),
+      );
+    }
+    if (data.containsKey('icon_key')) {
+      context.handle(
+        _iconKeyMeta,
+        iconKey.isAcceptableOrUnknown(data['icon_key']!, _iconKeyMeta),
+      );
+    }
+    if (data.containsKey('accent')) {
+      context.handle(
+        _accentMeta,
+        accent.isAcceptableOrUnknown(data['accent']!, _accentMeta),
+      );
+    }
+    if (data.containsKey('head_name')) {
+      context.handle(
+        _headNameMeta,
+        headName.isAcceptableOrUnknown(data['head_name']!, _headNameMeta),
+      );
+    }
+    if (data.containsKey('head_name_ar')) {
+      context.handle(
+        _headNameArMeta,
+        headNameAr.isAcceptableOrUnknown(
+          data['head_name_ar']!,
+          _headNameArMeta,
+        ),
+      );
+    }
+    if (data.containsKey('contact_email')) {
+      context.handle(
+        _contactEmailMeta,
+        contactEmail.isAcceptableOrUnknown(
+          data['contact_email']!,
+          _contactEmailMeta,
+        ),
+      );
+    }
+    if (data.containsKey('contact_phone')) {
+      context.handle(
+        _contactPhoneMeta,
+        contactPhone.isAcceptableOrUnknown(
+          data['contact_phone']!,
+          _contactPhoneMeta,
+        ),
+      );
+    }
+    if (data.containsKey('head_member_id')) {
+      context.handle(
+        _headMemberIdMeta,
+        headMemberId.isAcceptableOrUnknown(
+          data['head_member_id']!,
+          _headMemberIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Department map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Department(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      nameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ar'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      )!,
+      descriptionAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description_ar'],
+      )!,
+      iconKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}icon_key'],
+      )!,
+      accent: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}accent'],
+      )!,
+      headName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}head_name'],
+      )!,
+      headNameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}head_name_ar'],
+      )!,
+      contactEmail: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}contact_email'],
+      )!,
+      contactPhone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}contact_phone'],
+      )!,
+      headMemberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}head_member_id'],
+      ),
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+    );
+  }
+
+  @override
+  $DepartmentsTable createAlias(String alias) {
+    return $DepartmentsTable(attachedDatabase, alias);
+  }
+}
+
+class Department extends DataClass implements Insertable<Department> {
+  final String id;
+  final String name;
+  final String nameAr;
+  final String description;
+  final String descriptionAr;
+  final String iconKey;
+  final int accent;
+  final String headName;
+  final String headNameAr;
+  final String contactEmail;
+  final String contactPhone;
+
+  /// The assigned Head of Department (an existing member), or null when none.
+  /// SET NULL so deleting the member just vacates the headship.
+  final String? headMemberId;
+  final int sortOrder;
+  const Department({
+    required this.id,
+    required this.name,
+    required this.nameAr,
+    required this.description,
+    required this.descriptionAr,
+    required this.iconKey,
+    required this.accent,
+    required this.headName,
+    required this.headNameAr,
+    required this.contactEmail,
+    required this.contactPhone,
+    this.headMemberId,
+    required this.sortOrder,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['name_ar'] = Variable<String>(nameAr);
+    map['description'] = Variable<String>(description);
+    map['description_ar'] = Variable<String>(descriptionAr);
+    map['icon_key'] = Variable<String>(iconKey);
+    map['accent'] = Variable<int>(accent);
+    map['head_name'] = Variable<String>(headName);
+    map['head_name_ar'] = Variable<String>(headNameAr);
+    map['contact_email'] = Variable<String>(contactEmail);
+    map['contact_phone'] = Variable<String>(contactPhone);
+    if (!nullToAbsent || headMemberId != null) {
+      map['head_member_id'] = Variable<String>(headMemberId);
+    }
+    map['sort_order'] = Variable<int>(sortOrder);
+    return map;
+  }
+
+  DepartmentsCompanion toCompanion(bool nullToAbsent) {
+    return DepartmentsCompanion(
+      id: Value(id),
+      name: Value(name),
+      nameAr: Value(nameAr),
+      description: Value(description),
+      descriptionAr: Value(descriptionAr),
+      iconKey: Value(iconKey),
+      accent: Value(accent),
+      headName: Value(headName),
+      headNameAr: Value(headNameAr),
+      contactEmail: Value(contactEmail),
+      contactPhone: Value(contactPhone),
+      headMemberId: headMemberId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(headMemberId),
+      sortOrder: Value(sortOrder),
+    );
+  }
+
+  factory Department.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Department(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      nameAr: serializer.fromJson<String>(json['nameAr']),
+      description: serializer.fromJson<String>(json['description']),
+      descriptionAr: serializer.fromJson<String>(json['descriptionAr']),
+      iconKey: serializer.fromJson<String>(json['iconKey']),
+      accent: serializer.fromJson<int>(json['accent']),
+      headName: serializer.fromJson<String>(json['headName']),
+      headNameAr: serializer.fromJson<String>(json['headNameAr']),
+      contactEmail: serializer.fromJson<String>(json['contactEmail']),
+      contactPhone: serializer.fromJson<String>(json['contactPhone']),
+      headMemberId: serializer.fromJson<String?>(json['headMemberId']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'nameAr': serializer.toJson<String>(nameAr),
+      'description': serializer.toJson<String>(description),
+      'descriptionAr': serializer.toJson<String>(descriptionAr),
+      'iconKey': serializer.toJson<String>(iconKey),
+      'accent': serializer.toJson<int>(accent),
+      'headName': serializer.toJson<String>(headName),
+      'headNameAr': serializer.toJson<String>(headNameAr),
+      'contactEmail': serializer.toJson<String>(contactEmail),
+      'contactPhone': serializer.toJson<String>(contactPhone),
+      'headMemberId': serializer.toJson<String?>(headMemberId),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+    };
+  }
+
+  Department copyWith({
+    String? id,
+    String? name,
+    String? nameAr,
+    String? description,
+    String? descriptionAr,
+    String? iconKey,
+    int? accent,
+    String? headName,
+    String? headNameAr,
+    String? contactEmail,
+    String? contactPhone,
+    Value<String?> headMemberId = const Value.absent(),
+    int? sortOrder,
+  }) => Department(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    nameAr: nameAr ?? this.nameAr,
+    description: description ?? this.description,
+    descriptionAr: descriptionAr ?? this.descriptionAr,
+    iconKey: iconKey ?? this.iconKey,
+    accent: accent ?? this.accent,
+    headName: headName ?? this.headName,
+    headNameAr: headNameAr ?? this.headNameAr,
+    contactEmail: contactEmail ?? this.contactEmail,
+    contactPhone: contactPhone ?? this.contactPhone,
+    headMemberId: headMemberId.present ? headMemberId.value : this.headMemberId,
+    sortOrder: sortOrder ?? this.sortOrder,
+  );
+  Department copyWithCompanion(DepartmentsCompanion data) {
+    return Department(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      descriptionAr: data.descriptionAr.present
+          ? data.descriptionAr.value
+          : this.descriptionAr,
+      iconKey: data.iconKey.present ? data.iconKey.value : this.iconKey,
+      accent: data.accent.present ? data.accent.value : this.accent,
+      headName: data.headName.present ? data.headName.value : this.headName,
+      headNameAr: data.headNameAr.present
+          ? data.headNameAr.value
+          : this.headNameAr,
+      contactEmail: data.contactEmail.present
+          ? data.contactEmail.value
+          : this.contactEmail,
+      contactPhone: data.contactPhone.present
+          ? data.contactPhone.value
+          : this.contactPhone,
+      headMemberId: data.headMemberId.present
+          ? data.headMemberId.value
+          : this.headMemberId,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Department(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('description: $description, ')
+          ..write('descriptionAr: $descriptionAr, ')
+          ..write('iconKey: $iconKey, ')
+          ..write('accent: $accent, ')
+          ..write('headName: $headName, ')
+          ..write('headNameAr: $headNameAr, ')
+          ..write('contactEmail: $contactEmail, ')
+          ..write('contactPhone: $contactPhone, ')
+          ..write('headMemberId: $headMemberId, ')
+          ..write('sortOrder: $sortOrder')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    nameAr,
+    description,
+    descriptionAr,
+    iconKey,
+    accent,
+    headName,
+    headNameAr,
+    contactEmail,
+    contactPhone,
+    headMemberId,
+    sortOrder,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Department &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.nameAr == this.nameAr &&
+          other.description == this.description &&
+          other.descriptionAr == this.descriptionAr &&
+          other.iconKey == this.iconKey &&
+          other.accent == this.accent &&
+          other.headName == this.headName &&
+          other.headNameAr == this.headNameAr &&
+          other.contactEmail == this.contactEmail &&
+          other.contactPhone == this.contactPhone &&
+          other.headMemberId == this.headMemberId &&
+          other.sortOrder == this.sortOrder);
+}
+
+class DepartmentsCompanion extends UpdateCompanion<Department> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> nameAr;
+  final Value<String> description;
+  final Value<String> descriptionAr;
+  final Value<String> iconKey;
+  final Value<int> accent;
+  final Value<String> headName;
+  final Value<String> headNameAr;
+  final Value<String> contactEmail;
+  final Value<String> contactPhone;
+  final Value<String?> headMemberId;
+  final Value<int> sortOrder;
+  final Value<int> rowid;
+  const DepartmentsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.nameAr = const Value.absent(),
+    this.description = const Value.absent(),
+    this.descriptionAr = const Value.absent(),
+    this.iconKey = const Value.absent(),
+    this.accent = const Value.absent(),
+    this.headName = const Value.absent(),
+    this.headNameAr = const Value.absent(),
+    this.contactEmail = const Value.absent(),
+    this.contactPhone = const Value.absent(),
+    this.headMemberId = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DepartmentsCompanion.insert({
+    required String id,
+    required String name,
+    this.nameAr = const Value.absent(),
+    this.description = const Value.absent(),
+    this.descriptionAr = const Value.absent(),
+    this.iconKey = const Value.absent(),
+    this.accent = const Value.absent(),
+    this.headName = const Value.absent(),
+    this.headNameAr = const Value.absent(),
+    this.contactEmail = const Value.absent(),
+    this.contactPhone = const Value.absent(),
+    this.headMemberId = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name);
+  static Insertable<Department> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? nameAr,
+    Expression<String>? description,
+    Expression<String>? descriptionAr,
+    Expression<String>? iconKey,
+    Expression<int>? accent,
+    Expression<String>? headName,
+    Expression<String>? headNameAr,
+    Expression<String>? contactEmail,
+    Expression<String>? contactPhone,
+    Expression<String>? headMemberId,
+    Expression<int>? sortOrder,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (nameAr != null) 'name_ar': nameAr,
+      if (description != null) 'description': description,
+      if (descriptionAr != null) 'description_ar': descriptionAr,
+      if (iconKey != null) 'icon_key': iconKey,
+      if (accent != null) 'accent': accent,
+      if (headName != null) 'head_name': headName,
+      if (headNameAr != null) 'head_name_ar': headNameAr,
+      if (contactEmail != null) 'contact_email': contactEmail,
+      if (contactPhone != null) 'contact_phone': contactPhone,
+      if (headMemberId != null) 'head_member_id': headMemberId,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DepartmentsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? nameAr,
+    Value<String>? description,
+    Value<String>? descriptionAr,
+    Value<String>? iconKey,
+    Value<int>? accent,
+    Value<String>? headName,
+    Value<String>? headNameAr,
+    Value<String>? contactEmail,
+    Value<String>? contactPhone,
+    Value<String?>? headMemberId,
+    Value<int>? sortOrder,
+    Value<int>? rowid,
+  }) {
+    return DepartmentsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      nameAr: nameAr ?? this.nameAr,
+      description: description ?? this.description,
+      descriptionAr: descriptionAr ?? this.descriptionAr,
+      iconKey: iconKey ?? this.iconKey,
+      accent: accent ?? this.accent,
+      headName: headName ?? this.headName,
+      headNameAr: headNameAr ?? this.headNameAr,
+      contactEmail: contactEmail ?? this.contactEmail,
+      contactPhone: contactPhone ?? this.contactPhone,
+      headMemberId: headMemberId ?? this.headMemberId,
+      sortOrder: sortOrder ?? this.sortOrder,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (nameAr.present) {
+      map['name_ar'] = Variable<String>(nameAr.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (descriptionAr.present) {
+      map['description_ar'] = Variable<String>(descriptionAr.value);
+    }
+    if (iconKey.present) {
+      map['icon_key'] = Variable<String>(iconKey.value);
+    }
+    if (accent.present) {
+      map['accent'] = Variable<int>(accent.value);
+    }
+    if (headName.present) {
+      map['head_name'] = Variable<String>(headName.value);
+    }
+    if (headNameAr.present) {
+      map['head_name_ar'] = Variable<String>(headNameAr.value);
+    }
+    if (contactEmail.present) {
+      map['contact_email'] = Variable<String>(contactEmail.value);
+    }
+    if (contactPhone.present) {
+      map['contact_phone'] = Variable<String>(contactPhone.value);
+    }
+    if (headMemberId.present) {
+      map['head_member_id'] = Variable<String>(headMemberId.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DepartmentsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('description: $description, ')
+          ..write('descriptionAr: $descriptionAr, ')
+          ..write('iconKey: $iconKey, ')
+          ..write('accent: $accent, ')
+          ..write('headName: $headName, ')
+          ..write('headNameAr: $headNameAr, ')
+          ..write('contactEmail: $contactEmail, ')
+          ..write('contactPhone: $contactPhone, ')
+          ..write('headMemberId: $headMemberId, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $UsersTable extends Users with TableInfo<$UsersTable, User> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UsersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fullNameMeta = const VerificationMeta(
+    'fullName',
+  );
+  @override
+  late final GeneratedColumn<String> fullName = GeneratedColumn<String>(
+    'full_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fullNameArMeta = const VerificationMeta(
+    'fullNameAr',
+  );
+  @override
+  late final GeneratedColumn<String> fullNameAr = GeneratedColumn<String>(
+    'full_name_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _usernameMeta = const VerificationMeta(
+    'username',
+  );
+  @override
+  late final GeneratedColumn<String> username = GeneratedColumn<String>(
+    'username',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  @override
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+    'email',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _passwordHashMeta = const VerificationMeta(
+    'passwordHash',
+  );
+  @override
+  late final GeneratedColumn<String> passwordHash = GeneratedColumn<String>(
+    'password_hash',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _roleCodeMeta = const VerificationMeta(
+    'roleCode',
+  );
+  @override
+  late final GeneratedColumn<String> roleCode = GeneratedColumn<String>(
+    'role_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _departmentIdMeta = const VerificationMeta(
+    'departmentId',
+  );
+  @override
+  late final GeneratedColumn<String> departmentId = GeneratedColumn<String>(
+    'department_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES departments (id) ON DELETE SET NULL',
+    ),
+  );
+  static const VerificationMeta _activeMeta = const VerificationMeta('active');
+  @override
+  late final GeneratedColumn<bool> active = GeneratedColumn<bool>(
+    'active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _lastActiveMeta = const VerificationMeta(
+    'lastActive',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastActive = GeneratedColumn<DateTime>(
+    'last_active',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    fullName,
+    fullNameAr,
+    username,
+    email,
+    passwordHash,
+    roleCode,
+    departmentId,
+    active,
+    lastActive,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'users';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<User> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('full_name')) {
+      context.handle(
+        _fullNameMeta,
+        fullName.isAcceptableOrUnknown(data['full_name']!, _fullNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fullNameMeta);
+    }
+    if (data.containsKey('full_name_ar')) {
+      context.handle(
+        _fullNameArMeta,
+        fullNameAr.isAcceptableOrUnknown(
+          data['full_name_ar']!,
+          _fullNameArMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_fullNameArMeta);
+    }
+    if (data.containsKey('username')) {
+      context.handle(
+        _usernameMeta,
+        username.isAcceptableOrUnknown(data['username']!, _usernameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_usernameMeta);
+    }
+    if (data.containsKey('email')) {
+      context.handle(
+        _emailMeta,
+        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
+      );
+    }
+    if (data.containsKey('password_hash')) {
+      context.handle(
+        _passwordHashMeta,
+        passwordHash.isAcceptableOrUnknown(
+          data['password_hash']!,
+          _passwordHashMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_passwordHashMeta);
+    }
+    if (data.containsKey('role_code')) {
+      context.handle(
+        _roleCodeMeta,
+        roleCode.isAcceptableOrUnknown(data['role_code']!, _roleCodeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_roleCodeMeta);
+    }
+    if (data.containsKey('department_id')) {
+      context.handle(
+        _departmentIdMeta,
+        departmentId.isAcceptableOrUnknown(
+          data['department_id']!,
+          _departmentIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('active')) {
+      context.handle(
+        _activeMeta,
+        active.isAcceptableOrUnknown(data['active']!, _activeMeta),
+      );
+    }
+    if (data.containsKey('last_active')) {
+      context.handle(
+        _lastActiveMeta,
+        lastActive.isAcceptableOrUnknown(data['last_active']!, _lastActiveMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  User map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return User(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      fullName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}full_name'],
+      )!,
+      fullNameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}full_name_ar'],
+      )!,
+      username: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}username'],
+      )!,
+      email: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}email'],
+      )!,
+      passwordHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}password_hash'],
+      )!,
+      roleCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}role_code'],
+      )!,
+      departmentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}department_id'],
+      ),
+      active: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}active'],
+      )!,
+      lastActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_active'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $UsersTable createAlias(String alias) {
+    return $UsersTable(attachedDatabase, alias);
+  }
+}
+
+class User extends DataClass implements Insertable<User> {
+  final String id;
+  final String fullName;
+  final String fullNameAr;
+  final String username;
+  final String email;
+  final String passwordHash;
+  final String roleCode;
+
+  /// For department-head accounts: the department they manage.
+  final String? departmentId;
+  final bool active;
+  final DateTime? lastActive;
+  final DateTime createdAt;
+  const User({
+    required this.id,
+    required this.fullName,
+    required this.fullNameAr,
+    required this.username,
+    required this.email,
+    required this.passwordHash,
+    required this.roleCode,
+    this.departmentId,
+    required this.active,
+    this.lastActive,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['full_name'] = Variable<String>(fullName);
+    map['full_name_ar'] = Variable<String>(fullNameAr);
+    map['username'] = Variable<String>(username);
+    map['email'] = Variable<String>(email);
+    map['password_hash'] = Variable<String>(passwordHash);
+    map['role_code'] = Variable<String>(roleCode);
+    if (!nullToAbsent || departmentId != null) {
+      map['department_id'] = Variable<String>(departmentId);
+    }
+    map['active'] = Variable<bool>(active);
+    if (!nullToAbsent || lastActive != null) {
+      map['last_active'] = Variable<DateTime>(lastActive);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  UsersCompanion toCompanion(bool nullToAbsent) {
+    return UsersCompanion(
+      id: Value(id),
+      fullName: Value(fullName),
+      fullNameAr: Value(fullNameAr),
+      username: Value(username),
+      email: Value(email),
+      passwordHash: Value(passwordHash),
+      roleCode: Value(roleCode),
+      departmentId: departmentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(departmentId),
+      active: Value(active),
+      lastActive: lastActive == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastActive),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory User.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return User(
+      id: serializer.fromJson<String>(json['id']),
+      fullName: serializer.fromJson<String>(json['fullName']),
+      fullNameAr: serializer.fromJson<String>(json['fullNameAr']),
+      username: serializer.fromJson<String>(json['username']),
+      email: serializer.fromJson<String>(json['email']),
+      passwordHash: serializer.fromJson<String>(json['passwordHash']),
+      roleCode: serializer.fromJson<String>(json['roleCode']),
+      departmentId: serializer.fromJson<String?>(json['departmentId']),
+      active: serializer.fromJson<bool>(json['active']),
+      lastActive: serializer.fromJson<DateTime?>(json['lastActive']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'fullName': serializer.toJson<String>(fullName),
+      'fullNameAr': serializer.toJson<String>(fullNameAr),
+      'username': serializer.toJson<String>(username),
+      'email': serializer.toJson<String>(email),
+      'passwordHash': serializer.toJson<String>(passwordHash),
+      'roleCode': serializer.toJson<String>(roleCode),
+      'departmentId': serializer.toJson<String?>(departmentId),
+      'active': serializer.toJson<bool>(active),
+      'lastActive': serializer.toJson<DateTime?>(lastActive),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  User copyWith({
+    String? id,
+    String? fullName,
+    String? fullNameAr,
+    String? username,
+    String? email,
+    String? passwordHash,
+    String? roleCode,
+    Value<String?> departmentId = const Value.absent(),
+    bool? active,
+    Value<DateTime?> lastActive = const Value.absent(),
+    DateTime? createdAt,
+  }) => User(
+    id: id ?? this.id,
+    fullName: fullName ?? this.fullName,
+    fullNameAr: fullNameAr ?? this.fullNameAr,
+    username: username ?? this.username,
+    email: email ?? this.email,
+    passwordHash: passwordHash ?? this.passwordHash,
+    roleCode: roleCode ?? this.roleCode,
+    departmentId: departmentId.present ? departmentId.value : this.departmentId,
+    active: active ?? this.active,
+    lastActive: lastActive.present ? lastActive.value : this.lastActive,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  User copyWithCompanion(UsersCompanion data) {
+    return User(
+      id: data.id.present ? data.id.value : this.id,
+      fullName: data.fullName.present ? data.fullName.value : this.fullName,
+      fullNameAr: data.fullNameAr.present
+          ? data.fullNameAr.value
+          : this.fullNameAr,
+      username: data.username.present ? data.username.value : this.username,
+      email: data.email.present ? data.email.value : this.email,
+      passwordHash: data.passwordHash.present
+          ? data.passwordHash.value
+          : this.passwordHash,
+      roleCode: data.roleCode.present ? data.roleCode.value : this.roleCode,
+      departmentId: data.departmentId.present
+          ? data.departmentId.value
+          : this.departmentId,
+      active: data.active.present ? data.active.value : this.active,
+      lastActive: data.lastActive.present
+          ? data.lastActive.value
+          : this.lastActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('User(')
+          ..write('id: $id, ')
+          ..write('fullName: $fullName, ')
+          ..write('fullNameAr: $fullNameAr, ')
+          ..write('username: $username, ')
+          ..write('email: $email, ')
+          ..write('passwordHash: $passwordHash, ')
+          ..write('roleCode: $roleCode, ')
+          ..write('departmentId: $departmentId, ')
+          ..write('active: $active, ')
+          ..write('lastActive: $lastActive, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    fullName,
+    fullNameAr,
+    username,
+    email,
+    passwordHash,
+    roleCode,
+    departmentId,
+    active,
+    lastActive,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is User &&
+          other.id == this.id &&
+          other.fullName == this.fullName &&
+          other.fullNameAr == this.fullNameAr &&
+          other.username == this.username &&
+          other.email == this.email &&
+          other.passwordHash == this.passwordHash &&
+          other.roleCode == this.roleCode &&
+          other.departmentId == this.departmentId &&
+          other.active == this.active &&
+          other.lastActive == this.lastActive &&
+          other.createdAt == this.createdAt);
+}
+
+class UsersCompanion extends UpdateCompanion<User> {
+  final Value<String> id;
+  final Value<String> fullName;
+  final Value<String> fullNameAr;
+  final Value<String> username;
+  final Value<String> email;
+  final Value<String> passwordHash;
+  final Value<String> roleCode;
+  final Value<String?> departmentId;
+  final Value<bool> active;
+  final Value<DateTime?> lastActive;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const UsersCompanion({
+    this.id = const Value.absent(),
+    this.fullName = const Value.absent(),
+    this.fullNameAr = const Value.absent(),
+    this.username = const Value.absent(),
+    this.email = const Value.absent(),
+    this.passwordHash = const Value.absent(),
+    this.roleCode = const Value.absent(),
+    this.departmentId = const Value.absent(),
+    this.active = const Value.absent(),
+    this.lastActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  UsersCompanion.insert({
+    required String id,
+    required String fullName,
+    required String fullNameAr,
+    required String username,
+    this.email = const Value.absent(),
+    required String passwordHash,
+    required String roleCode,
+    this.departmentId = const Value.absent(),
+    this.active = const Value.absent(),
+    this.lastActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       fullName = Value(fullName),
+       fullNameAr = Value(fullNameAr),
+       username = Value(username),
+       passwordHash = Value(passwordHash),
+       roleCode = Value(roleCode);
+  static Insertable<User> custom({
+    Expression<String>? id,
+    Expression<String>? fullName,
+    Expression<String>? fullNameAr,
+    Expression<String>? username,
+    Expression<String>? email,
+    Expression<String>? passwordHash,
+    Expression<String>? roleCode,
+    Expression<String>? departmentId,
+    Expression<bool>? active,
+    Expression<DateTime>? lastActive,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (fullName != null) 'full_name': fullName,
+      if (fullNameAr != null) 'full_name_ar': fullNameAr,
+      if (username != null) 'username': username,
+      if (email != null) 'email': email,
+      if (passwordHash != null) 'password_hash': passwordHash,
+      if (roleCode != null) 'role_code': roleCode,
+      if (departmentId != null) 'department_id': departmentId,
+      if (active != null) 'active': active,
+      if (lastActive != null) 'last_active': lastActive,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  UsersCompanion copyWith({
+    Value<String>? id,
+    Value<String>? fullName,
+    Value<String>? fullNameAr,
+    Value<String>? username,
+    Value<String>? email,
+    Value<String>? passwordHash,
+    Value<String>? roleCode,
+    Value<String?>? departmentId,
+    Value<bool>? active,
+    Value<DateTime?>? lastActive,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return UsersCompanion(
+      id: id ?? this.id,
+      fullName: fullName ?? this.fullName,
+      fullNameAr: fullNameAr ?? this.fullNameAr,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      passwordHash: passwordHash ?? this.passwordHash,
+      roleCode: roleCode ?? this.roleCode,
+      departmentId: departmentId ?? this.departmentId,
+      active: active ?? this.active,
+      lastActive: lastActive ?? this.lastActive,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (fullName.present) {
+      map['full_name'] = Variable<String>(fullName.value);
+    }
+    if (fullNameAr.present) {
+      map['full_name_ar'] = Variable<String>(fullNameAr.value);
+    }
+    if (username.present) {
+      map['username'] = Variable<String>(username.value);
+    }
+    if (email.present) {
+      map['email'] = Variable<String>(email.value);
+    }
+    if (passwordHash.present) {
+      map['password_hash'] = Variable<String>(passwordHash.value);
+    }
+    if (roleCode.present) {
+      map['role_code'] = Variable<String>(roleCode.value);
+    }
+    if (departmentId.present) {
+      map['department_id'] = Variable<String>(departmentId.value);
+    }
+    if (active.present) {
+      map['active'] = Variable<bool>(active.value);
+    }
+    if (lastActive.present) {
+      map['last_active'] = Variable<DateTime>(lastActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UsersCompanion(')
+          ..write('id: $id, ')
+          ..write('fullName: $fullName, ')
+          ..write('fullNameAr: $fullNameAr, ')
+          ..write('username: $username, ')
+          ..write('email: $email, ')
+          ..write('passwordHash: $passwordHash, ')
+          ..write('roleCode: $roleCode, ')
+          ..write('departmentId: $departmentId, ')
+          ..write('active: $active, ')
+          ..write('lastActive: $lastActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LeadersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
+  @override
+  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
+    'name_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<String> position = GeneratedColumn<String>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _positionArMeta = const VerificationMeta(
+    'positionAr',
+  );
+  @override
+  late final GeneratedColumn<String> positionAr = GeneratedColumn<String>(
+    'position_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serviceYearsMeta = const VerificationMeta(
+    'serviceYears',
+  );
+  @override
+  late final GeneratedColumn<String> serviceYears = GeneratedColumn<String>(
+    'service_years',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _bioMeta = const VerificationMeta('bio');
+  @override
+  late final GeneratedColumn<String> bio = GeneratedColumn<String>(
+    'bio',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _bioArMeta = const VerificationMeta('bioAr');
+  @override
+  late final GeneratedColumn<String> bioAr = GeneratedColumn<String>(
+    'bio_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _achievementsMeta = const VerificationMeta(
+    'achievements',
+  );
+  @override
+  late final GeneratedColumn<String> achievements = GeneratedColumn<String>(
+    'achievements',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _achievementsArMeta = const VerificationMeta(
+    'achievementsAr',
+  );
+  @override
+  late final GeneratedColumn<String> achievementsAr = GeneratedColumn<String>(
+    'achievements_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _responsibilitiesMeta = const VerificationMeta(
+    'responsibilities',
+  );
+  @override
+  late final GeneratedColumn<String> responsibilities = GeneratedColumn<String>(
+    'responsibilities',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _responsibilitiesArMeta =
+      const VerificationMeta('responsibilitiesAr');
+  @override
+  late final GeneratedColumn<String> responsibilitiesAr =
+      GeneratedColumn<String>(
+        'responsibilities_ar',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(''),
+      );
+  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  @override
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+    'email',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _phoneMeta = const VerificationMeta('phone');
+  @override
+  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
+    'phone',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _photoPathMeta = const VerificationMeta(
+    'photoPath',
+  );
+  @override
+  late final GeneratedColumn<String> photoPath = GeneratedColumn<String>(
+    'photo_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _memberIdMeta = const VerificationMeta(
+    'memberId',
+  );
+  @override
+  late final GeneratedColumn<String> memberId = GeneratedColumn<String>(
+    'member_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES members (id) ON DELETE SET NULL',
+    ),
+  );
+  static const VerificationMeta _accentMeta = const VerificationMeta('accent');
+  @override
+  late final GeneratedColumn<int> accent = GeneratedColumn<int>(
+    'accent',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0xFF0B5D3B),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    nameAr,
+    position,
+    positionAr,
+    category,
+    serviceYears,
+    bio,
+    bioAr,
+    achievements,
+    achievementsAr,
+    responsibilities,
+    responsibilitiesAr,
+    email,
+    phone,
+    photoPath,
+    memberId,
+    accent,
+    sortOrder,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'leaders';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Leader> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('name_ar')) {
+      context.handle(
+        _nameArMeta,
+        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameArMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    if (data.containsKey('position_ar')) {
+      context.handle(
+        _positionArMeta,
+        positionAr.isAcceptableOrUnknown(data['position_ar']!, _positionArMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionArMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('service_years')) {
+      context.handle(
+        _serviceYearsMeta,
+        serviceYears.isAcceptableOrUnknown(
+          data['service_years']!,
+          _serviceYearsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('bio')) {
+      context.handle(
+        _bioMeta,
+        bio.isAcceptableOrUnknown(data['bio']!, _bioMeta),
+      );
+    }
+    if (data.containsKey('bio_ar')) {
+      context.handle(
+        _bioArMeta,
+        bioAr.isAcceptableOrUnknown(data['bio_ar']!, _bioArMeta),
+      );
+    }
+    if (data.containsKey('achievements')) {
+      context.handle(
+        _achievementsMeta,
+        achievements.isAcceptableOrUnknown(
+          data['achievements']!,
+          _achievementsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('achievements_ar')) {
+      context.handle(
+        _achievementsArMeta,
+        achievementsAr.isAcceptableOrUnknown(
+          data['achievements_ar']!,
+          _achievementsArMeta,
+        ),
+      );
+    }
+    if (data.containsKey('responsibilities')) {
+      context.handle(
+        _responsibilitiesMeta,
+        responsibilities.isAcceptableOrUnknown(
+          data['responsibilities']!,
+          _responsibilitiesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('responsibilities_ar')) {
+      context.handle(
+        _responsibilitiesArMeta,
+        responsibilitiesAr.isAcceptableOrUnknown(
+          data['responsibilities_ar']!,
+          _responsibilitiesArMeta,
+        ),
+      );
+    }
+    if (data.containsKey('email')) {
+      context.handle(
+        _emailMeta,
+        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
+      );
+    }
+    if (data.containsKey('phone')) {
+      context.handle(
+        _phoneMeta,
+        phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta),
+      );
+    }
+    if (data.containsKey('photo_path')) {
+      context.handle(
+        _photoPathMeta,
+        photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
+      );
+    }
+    if (data.containsKey('member_id')) {
+      context.handle(
+        _memberIdMeta,
+        memberId.isAcceptableOrUnknown(data['member_id']!, _memberIdMeta),
+      );
+    }
+    if (data.containsKey('accent')) {
+      context.handle(
+        _accentMeta,
+        accent.isAcceptableOrUnknown(data['accent']!, _accentMeta),
+      );
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Leader map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Leader(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      nameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ar'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}position'],
+      )!,
+      positionAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}position_ar'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      serviceYears: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}service_years'],
+      )!,
+      bio: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bio'],
+      )!,
+      bioAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bio_ar'],
+      )!,
+      achievements: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}achievements'],
+      )!,
+      achievementsAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}achievements_ar'],
+      )!,
+      responsibilities: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}responsibilities'],
+      )!,
+      responsibilitiesAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}responsibilities_ar'],
+      )!,
+      email: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}email'],
+      )!,
+      phone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}phone'],
+      )!,
+      photoPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}photo_path'],
+      )!,
+      memberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}member_id'],
+      ),
+      accent: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}accent'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $LeadersTable createAlias(String alias) {
+    return $LeadersTable(attachedDatabase, alias);
+  }
+}
+
+class Leader extends DataClass implements Insertable<Leader> {
+  final String id;
+  final String name;
+  final String nameAr;
+  final String position;
+  final String positionAr;
+  final String category;
+  final String serviceYears;
+  final String bio;
+  final String bioAr;
+
+  /// Newline-separated lists.
+  final String achievements;
+  final String achievementsAr;
+  final String responsibilities;
+  final String responsibilitiesAr;
+  final String email;
+  final String phone;
+
+  /// Absolute path to the leader's stored profile photo ('' when none).
+  final String photoPath;
+
+  /// For an assignable position (Office of the President): the member who holds
+  /// it, or null when Unassigned. SET NULL so deleting the member just vacates
+  /// the position rather than removing it.
+  final String? memberId;
+  final int accent;
+  final int sortOrder;
+  final DateTime createdAt;
+  const Leader({
+    required this.id,
+    required this.name,
+    required this.nameAr,
+    required this.position,
+    required this.positionAr,
+    required this.category,
+    required this.serviceYears,
+    required this.bio,
+    required this.bioAr,
+    required this.achievements,
+    required this.achievementsAr,
+    required this.responsibilities,
+    required this.responsibilitiesAr,
+    required this.email,
+    required this.phone,
+    required this.photoPath,
+    this.memberId,
+    required this.accent,
+    required this.sortOrder,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['name_ar'] = Variable<String>(nameAr);
+    map['position'] = Variable<String>(position);
+    map['position_ar'] = Variable<String>(positionAr);
+    map['category'] = Variable<String>(category);
+    map['service_years'] = Variable<String>(serviceYears);
+    map['bio'] = Variable<String>(bio);
+    map['bio_ar'] = Variable<String>(bioAr);
+    map['achievements'] = Variable<String>(achievements);
+    map['achievements_ar'] = Variable<String>(achievementsAr);
+    map['responsibilities'] = Variable<String>(responsibilities);
+    map['responsibilities_ar'] = Variable<String>(responsibilitiesAr);
+    map['email'] = Variable<String>(email);
+    map['phone'] = Variable<String>(phone);
+    map['photo_path'] = Variable<String>(photoPath);
+    if (!nullToAbsent || memberId != null) {
+      map['member_id'] = Variable<String>(memberId);
+    }
+    map['accent'] = Variable<int>(accent);
+    map['sort_order'] = Variable<int>(sortOrder);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  LeadersCompanion toCompanion(bool nullToAbsent) {
+    return LeadersCompanion(
+      id: Value(id),
+      name: Value(name),
+      nameAr: Value(nameAr),
+      position: Value(position),
+      positionAr: Value(positionAr),
+      category: Value(category),
+      serviceYears: Value(serviceYears),
+      bio: Value(bio),
+      bioAr: Value(bioAr),
+      achievements: Value(achievements),
+      achievementsAr: Value(achievementsAr),
+      responsibilities: Value(responsibilities),
+      responsibilitiesAr: Value(responsibilitiesAr),
+      email: Value(email),
+      phone: Value(phone),
+      photoPath: Value(photoPath),
+      memberId: memberId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(memberId),
+      accent: Value(accent),
+      sortOrder: Value(sortOrder),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory Leader.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Leader(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      nameAr: serializer.fromJson<String>(json['nameAr']),
+      position: serializer.fromJson<String>(json['position']),
+      positionAr: serializer.fromJson<String>(json['positionAr']),
+      category: serializer.fromJson<String>(json['category']),
+      serviceYears: serializer.fromJson<String>(json['serviceYears']),
+      bio: serializer.fromJson<String>(json['bio']),
+      bioAr: serializer.fromJson<String>(json['bioAr']),
+      achievements: serializer.fromJson<String>(json['achievements']),
+      achievementsAr: serializer.fromJson<String>(json['achievementsAr']),
+      responsibilities: serializer.fromJson<String>(json['responsibilities']),
+      responsibilitiesAr: serializer.fromJson<String>(
+        json['responsibilitiesAr'],
+      ),
+      email: serializer.fromJson<String>(json['email']),
+      phone: serializer.fromJson<String>(json['phone']),
+      photoPath: serializer.fromJson<String>(json['photoPath']),
+      memberId: serializer.fromJson<String?>(json['memberId']),
+      accent: serializer.fromJson<int>(json['accent']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'nameAr': serializer.toJson<String>(nameAr),
+      'position': serializer.toJson<String>(position),
+      'positionAr': serializer.toJson<String>(positionAr),
+      'category': serializer.toJson<String>(category),
+      'serviceYears': serializer.toJson<String>(serviceYears),
+      'bio': serializer.toJson<String>(bio),
+      'bioAr': serializer.toJson<String>(bioAr),
+      'achievements': serializer.toJson<String>(achievements),
+      'achievementsAr': serializer.toJson<String>(achievementsAr),
+      'responsibilities': serializer.toJson<String>(responsibilities),
+      'responsibilitiesAr': serializer.toJson<String>(responsibilitiesAr),
+      'email': serializer.toJson<String>(email),
+      'phone': serializer.toJson<String>(phone),
+      'photoPath': serializer.toJson<String>(photoPath),
+      'memberId': serializer.toJson<String?>(memberId),
+      'accent': serializer.toJson<int>(accent),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  Leader copyWith({
+    String? id,
+    String? name,
+    String? nameAr,
+    String? position,
+    String? positionAr,
+    String? category,
+    String? serviceYears,
+    String? bio,
+    String? bioAr,
+    String? achievements,
+    String? achievementsAr,
+    String? responsibilities,
+    String? responsibilitiesAr,
+    String? email,
+    String? phone,
+    String? photoPath,
+    Value<String?> memberId = const Value.absent(),
+    int? accent,
+    int? sortOrder,
+    DateTime? createdAt,
+  }) => Leader(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    nameAr: nameAr ?? this.nameAr,
+    position: position ?? this.position,
+    positionAr: positionAr ?? this.positionAr,
+    category: category ?? this.category,
+    serviceYears: serviceYears ?? this.serviceYears,
+    bio: bio ?? this.bio,
+    bioAr: bioAr ?? this.bioAr,
+    achievements: achievements ?? this.achievements,
+    achievementsAr: achievementsAr ?? this.achievementsAr,
+    responsibilities: responsibilities ?? this.responsibilities,
+    responsibilitiesAr: responsibilitiesAr ?? this.responsibilitiesAr,
+    email: email ?? this.email,
+    phone: phone ?? this.phone,
+    photoPath: photoPath ?? this.photoPath,
+    memberId: memberId.present ? memberId.value : this.memberId,
+    accent: accent ?? this.accent,
+    sortOrder: sortOrder ?? this.sortOrder,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  Leader copyWithCompanion(LeadersCompanion data) {
+    return Leader(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      position: data.position.present ? data.position.value : this.position,
+      positionAr: data.positionAr.present
+          ? data.positionAr.value
+          : this.positionAr,
+      category: data.category.present ? data.category.value : this.category,
+      serviceYears: data.serviceYears.present
+          ? data.serviceYears.value
+          : this.serviceYears,
+      bio: data.bio.present ? data.bio.value : this.bio,
+      bioAr: data.bioAr.present ? data.bioAr.value : this.bioAr,
+      achievements: data.achievements.present
+          ? data.achievements.value
+          : this.achievements,
+      achievementsAr: data.achievementsAr.present
+          ? data.achievementsAr.value
+          : this.achievementsAr,
+      responsibilities: data.responsibilities.present
+          ? data.responsibilities.value
+          : this.responsibilities,
+      responsibilitiesAr: data.responsibilitiesAr.present
+          ? data.responsibilitiesAr.value
+          : this.responsibilitiesAr,
+      email: data.email.present ? data.email.value : this.email,
+      phone: data.phone.present ? data.phone.value : this.phone,
+      photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
+      memberId: data.memberId.present ? data.memberId.value : this.memberId,
+      accent: data.accent.present ? data.accent.value : this.accent,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Leader(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('position: $position, ')
+          ..write('positionAr: $positionAr, ')
+          ..write('category: $category, ')
+          ..write('serviceYears: $serviceYears, ')
+          ..write('bio: $bio, ')
+          ..write('bioAr: $bioAr, ')
+          ..write('achievements: $achievements, ')
+          ..write('achievementsAr: $achievementsAr, ')
+          ..write('responsibilities: $responsibilities, ')
+          ..write('responsibilitiesAr: $responsibilitiesAr, ')
+          ..write('email: $email, ')
+          ..write('phone: $phone, ')
+          ..write('photoPath: $photoPath, ')
+          ..write('memberId: $memberId, ')
+          ..write('accent: $accent, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    nameAr,
+    position,
+    positionAr,
+    category,
+    serviceYears,
+    bio,
+    bioAr,
+    achievements,
+    achievementsAr,
+    responsibilities,
+    responsibilitiesAr,
+    email,
+    phone,
+    photoPath,
+    memberId,
+    accent,
+    sortOrder,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Leader &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.nameAr == this.nameAr &&
+          other.position == this.position &&
+          other.positionAr == this.positionAr &&
+          other.category == this.category &&
+          other.serviceYears == this.serviceYears &&
+          other.bio == this.bio &&
+          other.bioAr == this.bioAr &&
+          other.achievements == this.achievements &&
+          other.achievementsAr == this.achievementsAr &&
+          other.responsibilities == this.responsibilities &&
+          other.responsibilitiesAr == this.responsibilitiesAr &&
+          other.email == this.email &&
+          other.phone == this.phone &&
+          other.photoPath == this.photoPath &&
+          other.memberId == this.memberId &&
+          other.accent == this.accent &&
+          other.sortOrder == this.sortOrder &&
+          other.createdAt == this.createdAt);
+}
+
+class LeadersCompanion extends UpdateCompanion<Leader> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> nameAr;
+  final Value<String> position;
+  final Value<String> positionAr;
+  final Value<String> category;
+  final Value<String> serviceYears;
+  final Value<String> bio;
+  final Value<String> bioAr;
+  final Value<String> achievements;
+  final Value<String> achievementsAr;
+  final Value<String> responsibilities;
+  final Value<String> responsibilitiesAr;
+  final Value<String> email;
+  final Value<String> phone;
+  final Value<String> photoPath;
+  final Value<String?> memberId;
+  final Value<int> accent;
+  final Value<int> sortOrder;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const LeadersCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.nameAr = const Value.absent(),
+    this.position = const Value.absent(),
+    this.positionAr = const Value.absent(),
+    this.category = const Value.absent(),
+    this.serviceYears = const Value.absent(),
+    this.bio = const Value.absent(),
+    this.bioAr = const Value.absent(),
+    this.achievements = const Value.absent(),
+    this.achievementsAr = const Value.absent(),
+    this.responsibilities = const Value.absent(),
+    this.responsibilitiesAr = const Value.absent(),
+    this.email = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.photoPath = const Value.absent(),
+    this.memberId = const Value.absent(),
+    this.accent = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LeadersCompanion.insert({
+    required String id,
+    required String name,
+    required String nameAr,
+    required String position,
+    required String positionAr,
+    required String category,
+    this.serviceYears = const Value.absent(),
+    this.bio = const Value.absent(),
+    this.bioAr = const Value.absent(),
+    this.achievements = const Value.absent(),
+    this.achievementsAr = const Value.absent(),
+    this.responsibilities = const Value.absent(),
+    this.responsibilitiesAr = const Value.absent(),
+    this.email = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.photoPath = const Value.absent(),
+    this.memberId = const Value.absent(),
+    this.accent = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       nameAr = Value(nameAr),
+       position = Value(position),
+       positionAr = Value(positionAr),
+       category = Value(category);
+  static Insertable<Leader> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? nameAr,
+    Expression<String>? position,
+    Expression<String>? positionAr,
+    Expression<String>? category,
+    Expression<String>? serviceYears,
+    Expression<String>? bio,
+    Expression<String>? bioAr,
+    Expression<String>? achievements,
+    Expression<String>? achievementsAr,
+    Expression<String>? responsibilities,
+    Expression<String>? responsibilitiesAr,
+    Expression<String>? email,
+    Expression<String>? phone,
+    Expression<String>? photoPath,
+    Expression<String>? memberId,
+    Expression<int>? accent,
+    Expression<int>? sortOrder,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (nameAr != null) 'name_ar': nameAr,
+      if (position != null) 'position': position,
+      if (positionAr != null) 'position_ar': positionAr,
+      if (category != null) 'category': category,
+      if (serviceYears != null) 'service_years': serviceYears,
+      if (bio != null) 'bio': bio,
+      if (bioAr != null) 'bio_ar': bioAr,
+      if (achievements != null) 'achievements': achievements,
+      if (achievementsAr != null) 'achievements_ar': achievementsAr,
+      if (responsibilities != null) 'responsibilities': responsibilities,
+      if (responsibilitiesAr != null) 'responsibilities_ar': responsibilitiesAr,
+      if (email != null) 'email': email,
+      if (phone != null) 'phone': phone,
+      if (photoPath != null) 'photo_path': photoPath,
+      if (memberId != null) 'member_id': memberId,
+      if (accent != null) 'accent': accent,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LeadersCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? nameAr,
+    Value<String>? position,
+    Value<String>? positionAr,
+    Value<String>? category,
+    Value<String>? serviceYears,
+    Value<String>? bio,
+    Value<String>? bioAr,
+    Value<String>? achievements,
+    Value<String>? achievementsAr,
+    Value<String>? responsibilities,
+    Value<String>? responsibilitiesAr,
+    Value<String>? email,
+    Value<String>? phone,
+    Value<String>? photoPath,
+    Value<String?>? memberId,
+    Value<int>? accent,
+    Value<int>? sortOrder,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return LeadersCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      nameAr: nameAr ?? this.nameAr,
+      position: position ?? this.position,
+      positionAr: positionAr ?? this.positionAr,
+      category: category ?? this.category,
+      serviceYears: serviceYears ?? this.serviceYears,
+      bio: bio ?? this.bio,
+      bioAr: bioAr ?? this.bioAr,
+      achievements: achievements ?? this.achievements,
+      achievementsAr: achievementsAr ?? this.achievementsAr,
+      responsibilities: responsibilities ?? this.responsibilities,
+      responsibilitiesAr: responsibilitiesAr ?? this.responsibilitiesAr,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      photoPath: photoPath ?? this.photoPath,
+      memberId: memberId ?? this.memberId,
+      accent: accent ?? this.accent,
+      sortOrder: sortOrder ?? this.sortOrder,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (nameAr.present) {
+      map['name_ar'] = Variable<String>(nameAr.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<String>(position.value);
+    }
+    if (positionAr.present) {
+      map['position_ar'] = Variable<String>(positionAr.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (serviceYears.present) {
+      map['service_years'] = Variable<String>(serviceYears.value);
+    }
+    if (bio.present) {
+      map['bio'] = Variable<String>(bio.value);
+    }
+    if (bioAr.present) {
+      map['bio_ar'] = Variable<String>(bioAr.value);
+    }
+    if (achievements.present) {
+      map['achievements'] = Variable<String>(achievements.value);
+    }
+    if (achievementsAr.present) {
+      map['achievements_ar'] = Variable<String>(achievementsAr.value);
+    }
+    if (responsibilities.present) {
+      map['responsibilities'] = Variable<String>(responsibilities.value);
+    }
+    if (responsibilitiesAr.present) {
+      map['responsibilities_ar'] = Variable<String>(responsibilitiesAr.value);
+    }
+    if (email.present) {
+      map['email'] = Variable<String>(email.value);
+    }
+    if (phone.present) {
+      map['phone'] = Variable<String>(phone.value);
+    }
+    if (photoPath.present) {
+      map['photo_path'] = Variable<String>(photoPath.value);
+    }
+    if (memberId.present) {
+      map['member_id'] = Variable<String>(memberId.value);
+    }
+    if (accent.present) {
+      map['accent'] = Variable<int>(accent.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LeadersCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('position: $position, ')
+          ..write('positionAr: $positionAr, ')
+          ..write('category: $category, ')
+          ..write('serviceYears: $serviceYears, ')
+          ..write('bio: $bio, ')
+          ..write('bioAr: $bioAr, ')
+          ..write('achievements: $achievements, ')
+          ..write('achievementsAr: $achievementsAr, ')
+          ..write('responsibilities: $responsibilities, ')
+          ..write('responsibilitiesAr: $responsibilitiesAr, ')
+          ..write('email: $email, ')
+          ..write('phone: $phone, ')
+          ..write('photoPath: $photoPath, ')
+          ..write('memberId: $memberId, ')
+          ..write('accent: $accent, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AuditLogsTable extends AuditLogs
+    with TableInfo<$AuditLogsTable, AuditLog> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AuditLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _usernameMeta = const VerificationMeta(
+    'username',
+  );
+  @override
+  late final GeneratedColumn<String> username = GeneratedColumn<String>(
+    'username',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES users (id) ON DELETE SET NULL',
+    ),
+  );
+  static const VerificationMeta _actionMeta = const VerificationMeta('action');
+  @override
+  late final GeneratedColumn<String> action = GeneratedColumn<String>(
+    'action',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _actionArMeta = const VerificationMeta(
+    'actionAr',
+  );
+  @override
+  late final GeneratedColumn<String> actionAr = GeneratedColumn<String>(
+    'action_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _moduleMeta = const VerificationMeta('module');
+  @override
+  late final GeneratedColumn<String> module = GeneratedColumn<String>(
+    'module',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _moduleArMeta = const VerificationMeta(
+    'moduleAr',
+  );
+  @override
+  late final GeneratedColumn<String> moduleAr = GeneratedColumn<String>(
+    'module_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+    'timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    username,
+    userId,
+    action,
+    actionAr,
+    module,
+    moduleAr,
+    timestamp,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'audit_logs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AuditLog> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('username')) {
+      context.handle(
+        _usernameMeta,
+        username.isAcceptableOrUnknown(data['username']!, _usernameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_usernameMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    }
+    if (data.containsKey('action')) {
+      context.handle(
+        _actionMeta,
+        action.isAcceptableOrUnknown(data['action']!, _actionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_actionMeta);
+    }
+    if (data.containsKey('action_ar')) {
+      context.handle(
+        _actionArMeta,
+        actionAr.isAcceptableOrUnknown(data['action_ar']!, _actionArMeta),
+      );
+    }
+    if (data.containsKey('module')) {
+      context.handle(
+        _moduleMeta,
+        module.isAcceptableOrUnknown(data['module']!, _moduleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_moduleMeta);
+    }
+    if (data.containsKey('module_ar')) {
+      context.handle(
+        _moduleArMeta,
+        moduleAr.isAcceptableOrUnknown(data['module_ar']!, _moduleArMeta),
+      );
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AuditLog map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AuditLog(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      username: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}username'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      ),
+      action: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}action'],
+      )!,
+      actionAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}action_ar'],
+      )!,
+      module: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}module'],
+      )!,
+      moduleAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}module_ar'],
+      )!,
+      timestamp: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}timestamp'],
+      )!,
+    );
+  }
+
+  @override
+  $AuditLogsTable createAlias(String alias) {
+    return $AuditLogsTable(attachedDatabase, alias);
+  }
+}
+
+class AuditLog extends DataClass implements Insertable<AuditLog> {
+  final String id;
+  final String username;
+
+  /// Optional link to the acting user. The [username] snapshot is always kept
+  /// so the trail survives a user being renamed or deleted (SET NULL).
+  final String? userId;
+  final String action;
+  final String actionAr;
+  final String module;
+  final String moduleAr;
+  final DateTime timestamp;
+  const AuditLog({
+    required this.id,
+    required this.username,
+    this.userId,
+    required this.action,
+    required this.actionAr,
+    required this.module,
+    required this.moduleAr,
+    required this.timestamp,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['username'] = Variable<String>(username);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['action'] = Variable<String>(action);
+    map['action_ar'] = Variable<String>(actionAr);
+    map['module'] = Variable<String>(module);
+    map['module_ar'] = Variable<String>(moduleAr);
+    map['timestamp'] = Variable<DateTime>(timestamp);
+    return map;
+  }
+
+  AuditLogsCompanion toCompanion(bool nullToAbsent) {
+    return AuditLogsCompanion(
+      id: Value(id),
+      username: Value(username),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
+      action: Value(action),
+      actionAr: Value(actionAr),
+      module: Value(module),
+      moduleAr: Value(moduleAr),
+      timestamp: Value(timestamp),
+    );
+  }
+
+  factory AuditLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AuditLog(
+      id: serializer.fromJson<String>(json['id']),
+      username: serializer.fromJson<String>(json['username']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      action: serializer.fromJson<String>(json['action']),
+      actionAr: serializer.fromJson<String>(json['actionAr']),
+      module: serializer.fromJson<String>(json['module']),
+      moduleAr: serializer.fromJson<String>(json['moduleAr']),
+      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'username': serializer.toJson<String>(username),
+      'userId': serializer.toJson<String?>(userId),
+      'action': serializer.toJson<String>(action),
+      'actionAr': serializer.toJson<String>(actionAr),
+      'module': serializer.toJson<String>(module),
+      'moduleAr': serializer.toJson<String>(moduleAr),
+      'timestamp': serializer.toJson<DateTime>(timestamp),
+    };
+  }
+
+  AuditLog copyWith({
+    String? id,
+    String? username,
+    Value<String?> userId = const Value.absent(),
+    String? action,
+    String? actionAr,
+    String? module,
+    String? moduleAr,
+    DateTime? timestamp,
+  }) => AuditLog(
+    id: id ?? this.id,
+    username: username ?? this.username,
+    userId: userId.present ? userId.value : this.userId,
+    action: action ?? this.action,
+    actionAr: actionAr ?? this.actionAr,
+    module: module ?? this.module,
+    moduleAr: moduleAr ?? this.moduleAr,
+    timestamp: timestamp ?? this.timestamp,
+  );
+  AuditLog copyWithCompanion(AuditLogsCompanion data) {
+    return AuditLog(
+      id: data.id.present ? data.id.value : this.id,
+      username: data.username.present ? data.username.value : this.username,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      action: data.action.present ? data.action.value : this.action,
+      actionAr: data.actionAr.present ? data.actionAr.value : this.actionAr,
+      module: data.module.present ? data.module.value : this.module,
+      moduleAr: data.moduleAr.present ? data.moduleAr.value : this.moduleAr,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AuditLog(')
+          ..write('id: $id, ')
+          ..write('username: $username, ')
+          ..write('userId: $userId, ')
+          ..write('action: $action, ')
+          ..write('actionAr: $actionAr, ')
+          ..write('module: $module, ')
+          ..write('moduleAr: $moduleAr, ')
+          ..write('timestamp: $timestamp')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    username,
+    userId,
+    action,
+    actionAr,
+    module,
+    moduleAr,
+    timestamp,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AuditLog &&
+          other.id == this.id &&
+          other.username == this.username &&
+          other.userId == this.userId &&
+          other.action == this.action &&
+          other.actionAr == this.actionAr &&
+          other.module == this.module &&
+          other.moduleAr == this.moduleAr &&
+          other.timestamp == this.timestamp);
+}
+
+class AuditLogsCompanion extends UpdateCompanion<AuditLog> {
+  final Value<String> id;
+  final Value<String> username;
+  final Value<String?> userId;
+  final Value<String> action;
+  final Value<String> actionAr;
+  final Value<String> module;
+  final Value<String> moduleAr;
+  final Value<DateTime> timestamp;
+  final Value<int> rowid;
+  const AuditLogsCompanion({
+    this.id = const Value.absent(),
+    this.username = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.action = const Value.absent(),
+    this.actionAr = const Value.absent(),
+    this.module = const Value.absent(),
+    this.moduleAr = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AuditLogsCompanion.insert({
+    required String id,
+    required String username,
+    this.userId = const Value.absent(),
+    required String action,
+    this.actionAr = const Value.absent(),
+    required String module,
+    this.moduleAr = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       username = Value(username),
+       action = Value(action),
+       module = Value(module);
+  static Insertable<AuditLog> custom({
+    Expression<String>? id,
+    Expression<String>? username,
+    Expression<String>? userId,
+    Expression<String>? action,
+    Expression<String>? actionAr,
+    Expression<String>? module,
+    Expression<String>? moduleAr,
+    Expression<DateTime>? timestamp,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (username != null) 'username': username,
+      if (userId != null) 'user_id': userId,
+      if (action != null) 'action': action,
+      if (actionAr != null) 'action_ar': actionAr,
+      if (module != null) 'module': module,
+      if (moduleAr != null) 'module_ar': moduleAr,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AuditLogsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? username,
+    Value<String?>? userId,
+    Value<String>? action,
+    Value<String>? actionAr,
+    Value<String>? module,
+    Value<String>? moduleAr,
+    Value<DateTime>? timestamp,
+    Value<int>? rowid,
+  }) {
+    return AuditLogsCompanion(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      userId: userId ?? this.userId,
+      action: action ?? this.action,
+      actionAr: actionAr ?? this.actionAr,
+      module: module ?? this.module,
+      moduleAr: moduleAr ?? this.moduleAr,
+      timestamp: timestamp ?? this.timestamp,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (username.present) {
+      map['username'] = Variable<String>(username.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (action.present) {
+      map['action'] = Variable<String>(action.value);
+    }
+    if (actionAr.present) {
+      map['action_ar'] = Variable<String>(actionAr.value);
+    }
+    if (module.present) {
+      map['module'] = Variable<String>(module.value);
+    }
+    if (moduleAr.present) {
+      map['module_ar'] = Variable<String>(moduleAr.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AuditLogsCompanion(')
+          ..write('id: $id, ')
+          ..write('username: $username, ')
+          ..write('userId: $userId, ')
+          ..write('action: $action, ')
+          ..write('actionAr: $actionAr, ')
+          ..write('module: $module, ')
+          ..write('moduleAr: $moduleAr, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $MemberChildrenTable extends MemberChildren
     with TableInfo<$MemberChildrenTable, MemberChildrenData> {
   @override
@@ -5434,6 +5615,595 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
           ..write('memberId: $memberId, ')
           ..write('name: $name, ')
           ..write('dob: $dob, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MemberWivesTable extends MemberWives
+    with TableInfo<$MemberWivesTable, MemberWife> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MemberWivesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _memberIdMeta = const VerificationMeta(
+    'memberId',
+  );
+  @override
+  late final GeneratedColumn<String> memberId = GeneratedColumn<String>(
+    'member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES members (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _marriageDateMeta = const VerificationMeta(
+    'marriageDate',
+  );
+  @override
+  late final GeneratedColumn<String> marriageDate = GeneratedColumn<String>(
+    'marriage_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, memberId, name, marriageDate];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'member_wives';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MemberWife> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('member_id')) {
+      context.handle(
+        _memberIdMeta,
+        memberId.isAcceptableOrUnknown(data['member_id']!, _memberIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_memberIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('marriage_date')) {
+      context.handle(
+        _marriageDateMeta,
+        marriageDate.isAcceptableOrUnknown(
+          data['marriage_date']!,
+          _marriageDateMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MemberWife map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MemberWife(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      memberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}member_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      marriageDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}marriage_date'],
+      )!,
+    );
+  }
+
+  @override
+  $MemberWivesTable createAlias(String alias) {
+    return $MemberWivesTable(attachedDatabase, alias);
+  }
+}
+
+class MemberWife extends DataClass implements Insertable<MemberWife> {
+  final String id;
+  final String memberId;
+  final String name;
+  final String marriageDate;
+  const MemberWife({
+    required this.id,
+    required this.memberId,
+    required this.name,
+    required this.marriageDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['member_id'] = Variable<String>(memberId);
+    map['name'] = Variable<String>(name);
+    map['marriage_date'] = Variable<String>(marriageDate);
+    return map;
+  }
+
+  MemberWivesCompanion toCompanion(bool nullToAbsent) {
+    return MemberWivesCompanion(
+      id: Value(id),
+      memberId: Value(memberId),
+      name: Value(name),
+      marriageDate: Value(marriageDate),
+    );
+  }
+
+  factory MemberWife.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MemberWife(
+      id: serializer.fromJson<String>(json['id']),
+      memberId: serializer.fromJson<String>(json['memberId']),
+      name: serializer.fromJson<String>(json['name']),
+      marriageDate: serializer.fromJson<String>(json['marriageDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'memberId': serializer.toJson<String>(memberId),
+      'name': serializer.toJson<String>(name),
+      'marriageDate': serializer.toJson<String>(marriageDate),
+    };
+  }
+
+  MemberWife copyWith({
+    String? id,
+    String? memberId,
+    String? name,
+    String? marriageDate,
+  }) => MemberWife(
+    id: id ?? this.id,
+    memberId: memberId ?? this.memberId,
+    name: name ?? this.name,
+    marriageDate: marriageDate ?? this.marriageDate,
+  );
+  MemberWife copyWithCompanion(MemberWivesCompanion data) {
+    return MemberWife(
+      id: data.id.present ? data.id.value : this.id,
+      memberId: data.memberId.present ? data.memberId.value : this.memberId,
+      name: data.name.present ? data.name.value : this.name,
+      marriageDate: data.marriageDate.present
+          ? data.marriageDate.value
+          : this.marriageDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemberWife(')
+          ..write('id: $id, ')
+          ..write('memberId: $memberId, ')
+          ..write('name: $name, ')
+          ..write('marriageDate: $marriageDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, memberId, name, marriageDate);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MemberWife &&
+          other.id == this.id &&
+          other.memberId == this.memberId &&
+          other.name == this.name &&
+          other.marriageDate == this.marriageDate);
+}
+
+class MemberWivesCompanion extends UpdateCompanion<MemberWife> {
+  final Value<String> id;
+  final Value<String> memberId;
+  final Value<String> name;
+  final Value<String> marriageDate;
+  final Value<int> rowid;
+  const MemberWivesCompanion({
+    this.id = const Value.absent(),
+    this.memberId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.marriageDate = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MemberWivesCompanion.insert({
+    required String id,
+    required String memberId,
+    required String name,
+    this.marriageDate = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       memberId = Value(memberId),
+       name = Value(name);
+  static Insertable<MemberWife> custom({
+    Expression<String>? id,
+    Expression<String>? memberId,
+    Expression<String>? name,
+    Expression<String>? marriageDate,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (memberId != null) 'member_id': memberId,
+      if (name != null) 'name': name,
+      if (marriageDate != null) 'marriage_date': marriageDate,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MemberWivesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? memberId,
+    Value<String>? name,
+    Value<String>? marriageDate,
+    Value<int>? rowid,
+  }) {
+    return MemberWivesCompanion(
+      id: id ?? this.id,
+      memberId: memberId ?? this.memberId,
+      name: name ?? this.name,
+      marriageDate: marriageDate ?? this.marriageDate,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (memberId.present) {
+      map['member_id'] = Variable<String>(memberId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (marriageDate.present) {
+      map['marriage_date'] = Variable<String>(marriageDate.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemberWivesCompanion(')
+          ..write('id: $id, ')
+          ..write('memberId: $memberId, ')
+          ..write('name: $name, ')
+          ..write('marriageDate: $marriageDate, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MemberUsraLinksTable extends MemberUsraLinks
+    with TableInfo<$MemberUsraLinksTable, MemberUsraLink> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MemberUsraLinksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _memberIdMeta = const VerificationMeta(
+    'memberId',
+  );
+  @override
+  late final GeneratedColumn<String> memberId = GeneratedColumn<String>(
+    'member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES members (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _usraMemberIdMeta = const VerificationMeta(
+    'usraMemberId',
+  );
+  @override
+  late final GeneratedColumn<String> usraMemberId = GeneratedColumn<String>(
+    'usra_member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES members (id) ON DELETE CASCADE',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, memberId, usraMemberId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'member_usra_links';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MemberUsraLink> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('member_id')) {
+      context.handle(
+        _memberIdMeta,
+        memberId.isAcceptableOrUnknown(data['member_id']!, _memberIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_memberIdMeta);
+    }
+    if (data.containsKey('usra_member_id')) {
+      context.handle(
+        _usraMemberIdMeta,
+        usraMemberId.isAcceptableOrUnknown(
+          data['usra_member_id']!,
+          _usraMemberIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_usraMemberIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MemberUsraLink map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MemberUsraLink(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      memberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}member_id'],
+      )!,
+      usraMemberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}usra_member_id'],
+      )!,
+    );
+  }
+
+  @override
+  $MemberUsraLinksTable createAlias(String alias) {
+    return $MemberUsraLinksTable(attachedDatabase, alias);
+  }
+}
+
+class MemberUsraLink extends DataClass implements Insertable<MemberUsraLink> {
+  final String id;
+  final String memberId;
+  final String usraMemberId;
+  const MemberUsraLink({
+    required this.id,
+    required this.memberId,
+    required this.usraMemberId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['member_id'] = Variable<String>(memberId);
+    map['usra_member_id'] = Variable<String>(usraMemberId);
+    return map;
+  }
+
+  MemberUsraLinksCompanion toCompanion(bool nullToAbsent) {
+    return MemberUsraLinksCompanion(
+      id: Value(id),
+      memberId: Value(memberId),
+      usraMemberId: Value(usraMemberId),
+    );
+  }
+
+  factory MemberUsraLink.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MemberUsraLink(
+      id: serializer.fromJson<String>(json['id']),
+      memberId: serializer.fromJson<String>(json['memberId']),
+      usraMemberId: serializer.fromJson<String>(json['usraMemberId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'memberId': serializer.toJson<String>(memberId),
+      'usraMemberId': serializer.toJson<String>(usraMemberId),
+    };
+  }
+
+  MemberUsraLink copyWith({
+    String? id,
+    String? memberId,
+    String? usraMemberId,
+  }) => MemberUsraLink(
+    id: id ?? this.id,
+    memberId: memberId ?? this.memberId,
+    usraMemberId: usraMemberId ?? this.usraMemberId,
+  );
+  MemberUsraLink copyWithCompanion(MemberUsraLinksCompanion data) {
+    return MemberUsraLink(
+      id: data.id.present ? data.id.value : this.id,
+      memberId: data.memberId.present ? data.memberId.value : this.memberId,
+      usraMemberId: data.usraMemberId.present
+          ? data.usraMemberId.value
+          : this.usraMemberId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemberUsraLink(')
+          ..write('id: $id, ')
+          ..write('memberId: $memberId, ')
+          ..write('usraMemberId: $usraMemberId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, memberId, usraMemberId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MemberUsraLink &&
+          other.id == this.id &&
+          other.memberId == this.memberId &&
+          other.usraMemberId == this.usraMemberId);
+}
+
+class MemberUsraLinksCompanion extends UpdateCompanion<MemberUsraLink> {
+  final Value<String> id;
+  final Value<String> memberId;
+  final Value<String> usraMemberId;
+  final Value<int> rowid;
+  const MemberUsraLinksCompanion({
+    this.id = const Value.absent(),
+    this.memberId = const Value.absent(),
+    this.usraMemberId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MemberUsraLinksCompanion.insert({
+    required String id,
+    required String memberId,
+    required String usraMemberId,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       memberId = Value(memberId),
+       usraMemberId = Value(usraMemberId);
+  static Insertable<MemberUsraLink> custom({
+    Expression<String>? id,
+    Expression<String>? memberId,
+    Expression<String>? usraMemberId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (memberId != null) 'member_id': memberId,
+      if (usraMemberId != null) 'usra_member_id': usraMemberId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MemberUsraLinksCompanion copyWith({
+    Value<String>? id,
+    Value<String>? memberId,
+    Value<String>? usraMemberId,
+    Value<int>? rowid,
+  }) {
+    return MemberUsraLinksCompanion(
+      id: id ?? this.id,
+      memberId: memberId ?? this.memberId,
+      usraMemberId: usraMemberId ?? this.usraMemberId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (memberId.present) {
+      map['member_id'] = Variable<String>(memberId.value);
+    }
+    if (usraMemberId.present) {
+      map['usra_member_id'] = Variable<String>(usraMemberId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemberUsraLinksCompanion(')
+          ..write('id: $id, ')
+          ..write('memberId: $memberId, ')
+          ..write('usraMemberId: $usraMemberId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -8133,6 +8903,286 @@ class MemberRolesCompanion extends UpdateCompanion<MemberRole> {
   }
 }
 
+class $DepartmentStaffTable extends DepartmentStaff
+    with TableInfo<$DepartmentStaffTable, DepartmentStaffData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DepartmentStaffTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _departmentIdMeta = const VerificationMeta(
+    'departmentId',
+  );
+  @override
+  late final GeneratedColumn<String> departmentId = GeneratedColumn<String>(
+    'department_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES departments (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _memberIdMeta = const VerificationMeta(
+    'memberId',
+  );
+  @override
+  late final GeneratedColumn<String> memberId = GeneratedColumn<String>(
+    'member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES members (id) ON DELETE CASCADE',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, departmentId, memberId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'department_staff';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DepartmentStaffData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('department_id')) {
+      context.handle(
+        _departmentIdMeta,
+        departmentId.isAcceptableOrUnknown(
+          data['department_id']!,
+          _departmentIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_departmentIdMeta);
+    }
+    if (data.containsKey('member_id')) {
+      context.handle(
+        _memberIdMeta,
+        memberId.isAcceptableOrUnknown(data['member_id']!, _memberIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_memberIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {departmentId, memberId},
+  ];
+  @override
+  DepartmentStaffData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DepartmentStaffData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      departmentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}department_id'],
+      )!,
+      memberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}member_id'],
+      )!,
+    );
+  }
+
+  @override
+  $DepartmentStaffTable createAlias(String alias) {
+    return $DepartmentStaffTable(attachedDatabase, alias);
+  }
+}
+
+class DepartmentStaffData extends DataClass
+    implements Insertable<DepartmentStaffData> {
+  final String id;
+  final String departmentId;
+  final String memberId;
+  const DepartmentStaffData({
+    required this.id,
+    required this.departmentId,
+    required this.memberId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['department_id'] = Variable<String>(departmentId);
+    map['member_id'] = Variable<String>(memberId);
+    return map;
+  }
+
+  DepartmentStaffCompanion toCompanion(bool nullToAbsent) {
+    return DepartmentStaffCompanion(
+      id: Value(id),
+      departmentId: Value(departmentId),
+      memberId: Value(memberId),
+    );
+  }
+
+  factory DepartmentStaffData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DepartmentStaffData(
+      id: serializer.fromJson<String>(json['id']),
+      departmentId: serializer.fromJson<String>(json['departmentId']),
+      memberId: serializer.fromJson<String>(json['memberId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'departmentId': serializer.toJson<String>(departmentId),
+      'memberId': serializer.toJson<String>(memberId),
+    };
+  }
+
+  DepartmentStaffData copyWith({
+    String? id,
+    String? departmentId,
+    String? memberId,
+  }) => DepartmentStaffData(
+    id: id ?? this.id,
+    departmentId: departmentId ?? this.departmentId,
+    memberId: memberId ?? this.memberId,
+  );
+  DepartmentStaffData copyWithCompanion(DepartmentStaffCompanion data) {
+    return DepartmentStaffData(
+      id: data.id.present ? data.id.value : this.id,
+      departmentId: data.departmentId.present
+          ? data.departmentId.value
+          : this.departmentId,
+      memberId: data.memberId.present ? data.memberId.value : this.memberId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DepartmentStaffData(')
+          ..write('id: $id, ')
+          ..write('departmentId: $departmentId, ')
+          ..write('memberId: $memberId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, departmentId, memberId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DepartmentStaffData &&
+          other.id == this.id &&
+          other.departmentId == this.departmentId &&
+          other.memberId == this.memberId);
+}
+
+class DepartmentStaffCompanion extends UpdateCompanion<DepartmentStaffData> {
+  final Value<String> id;
+  final Value<String> departmentId;
+  final Value<String> memberId;
+  final Value<int> rowid;
+  const DepartmentStaffCompanion({
+    this.id = const Value.absent(),
+    this.departmentId = const Value.absent(),
+    this.memberId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DepartmentStaffCompanion.insert({
+    required String id,
+    required String departmentId,
+    required String memberId,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       departmentId = Value(departmentId),
+       memberId = Value(memberId);
+  static Insertable<DepartmentStaffData> custom({
+    Expression<String>? id,
+    Expression<String>? departmentId,
+    Expression<String>? memberId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (departmentId != null) 'department_id': departmentId,
+      if (memberId != null) 'member_id': memberId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DepartmentStaffCompanion copyWith({
+    Value<String>? id,
+    Value<String>? departmentId,
+    Value<String>? memberId,
+    Value<int>? rowid,
+  }) {
+    return DepartmentStaffCompanion(
+      id: id ?? this.id,
+      departmentId: departmentId ?? this.departmentId,
+      memberId: memberId ?? this.memberId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (departmentId.present) {
+      map['department_id'] = Variable<String>(departmentId.value);
+    }
+    if (memberId.present) {
+      map['member_id'] = Variable<String>(memberId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DepartmentStaffCompanion(')
+          ..write('id: $id, ')
+          ..write('departmentId: $departmentId, ')
+          ..write('memberId: $memberId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $DeptActivitiesTable extends DeptActivities
     with TableInfo<$DeptActivitiesTable, DeptActivity> {
   @override
@@ -8227,6 +9277,18 @@ class $DeptActivitiesTable extends DeptActivities
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _formDataMeta = const VerificationMeta(
+    'formData',
+  );
+  @override
+  late final GeneratedColumn<String> formData = GeneratedColumn<String>(
+    'form_data',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -8249,6 +9311,7 @@ class $DeptActivitiesTable extends DeptActivities
     date,
     status,
     attendance,
+    formData,
     createdAt,
   ];
   @override
@@ -8320,6 +9383,12 @@ class $DeptActivitiesTable extends DeptActivities
         attendance.isAcceptableOrUnknown(data['attendance']!, _attendanceMeta),
       );
     }
+    if (data.containsKey('form_data')) {
+      context.handle(
+        _formDataMeta,
+        formData.isAcceptableOrUnknown(data['form_data']!, _formDataMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -8367,6 +9436,10 @@ class $DeptActivitiesTable extends DeptActivities
         DriftSqlType.int,
         data['${effectivePrefix}attendance'],
       )!,
+      formData: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}form_data'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -8389,6 +9462,10 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
   final String date;
   final String status;
   final int attendance;
+
+  /// Structured form payload (JSON) for the Program Proposal (Form P-1). Empty
+  /// for legacy free-form activities.
+  final String formData;
   final DateTime createdAt;
   const DeptActivity({
     required this.id,
@@ -8399,6 +9476,7 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
     required this.date,
     required this.status,
     required this.attendance,
+    required this.formData,
     required this.createdAt,
   });
   @override
@@ -8412,6 +9490,7 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
     map['date'] = Variable<String>(date);
     map['status'] = Variable<String>(status);
     map['attendance'] = Variable<int>(attendance);
+    map['form_data'] = Variable<String>(formData);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -8426,6 +9505,7 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
       date: Value(date),
       status: Value(status),
       attendance: Value(attendance),
+      formData: Value(formData),
       createdAt: Value(createdAt),
     );
   }
@@ -8444,6 +9524,7 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
       date: serializer.fromJson<String>(json['date']),
       status: serializer.fromJson<String>(json['status']),
       attendance: serializer.fromJson<int>(json['attendance']),
+      formData: serializer.fromJson<String>(json['formData']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -8459,6 +9540,7 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
       'date': serializer.toJson<String>(date),
       'status': serializer.toJson<String>(status),
       'attendance': serializer.toJson<int>(attendance),
+      'formData': serializer.toJson<String>(formData),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -8472,6 +9554,7 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
     String? date,
     String? status,
     int? attendance,
+    String? formData,
     DateTime? createdAt,
   }) => DeptActivity(
     id: id ?? this.id,
@@ -8482,6 +9565,7 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
     date: date ?? this.date,
     status: status ?? this.status,
     attendance: attendance ?? this.attendance,
+    formData: formData ?? this.formData,
     createdAt: createdAt ?? this.createdAt,
   );
   DeptActivity copyWithCompanion(DeptActivitiesCompanion data) {
@@ -8500,6 +9584,7 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
       attendance: data.attendance.present
           ? data.attendance.value
           : this.attendance,
+      formData: data.formData.present ? data.formData.value : this.formData,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -8515,6 +9600,7 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
           ..write('date: $date, ')
           ..write('status: $status, ')
           ..write('attendance: $attendance, ')
+          ..write('formData: $formData, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -8530,6 +9616,7 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
     date,
     status,
     attendance,
+    formData,
     createdAt,
   );
   @override
@@ -8544,6 +9631,7 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
           other.date == this.date &&
           other.status == this.status &&
           other.attendance == this.attendance &&
+          other.formData == this.formData &&
           other.createdAt == this.createdAt);
 }
 
@@ -8556,6 +9644,7 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
   final Value<String> date;
   final Value<String> status;
   final Value<int> attendance;
+  final Value<String> formData;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const DeptActivitiesCompanion({
@@ -8567,6 +9656,7 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
     this.date = const Value.absent(),
     this.status = const Value.absent(),
     this.attendance = const Value.absent(),
+    this.formData = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -8579,6 +9669,7 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
     this.date = const Value.absent(),
     this.status = const Value.absent(),
     this.attendance = const Value.absent(),
+    this.formData = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -8593,6 +9684,7 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
     Expression<String>? date,
     Expression<String>? status,
     Expression<int>? attendance,
+    Expression<String>? formData,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
@@ -8605,6 +9697,7 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
       if (date != null) 'date': date,
       if (status != null) 'status': status,
       if (attendance != null) 'attendance': attendance,
+      if (formData != null) 'form_data': formData,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -8619,6 +9712,7 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
     Value<String>? date,
     Value<String>? status,
     Value<int>? attendance,
+    Value<String>? formData,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
@@ -8631,6 +9725,7 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
       date: date ?? this.date,
       status: status ?? this.status,
       attendance: attendance ?? this.attendance,
+      formData: formData ?? this.formData,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -8663,6 +9758,9 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
     if (attendance.present) {
       map['attendance'] = Variable<int>(attendance.value);
     }
+    if (formData.present) {
+      map['form_data'] = Variable<String>(formData.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -8683,6 +9781,7 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
           ..write('date: $date, ')
           ..write('status: $status, ')
           ..write('attendance: $attendance, ')
+          ..write('formData: $formData, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -8803,6 +9902,18 @@ class $ReportsTable extends Reports with TableInfo<$ReportsTable, Report> {
     requiredDuringInsert: false,
     defaultValue: const Constant(1),
   );
+  static const VerificationMeta _formDataMeta = const VerificationMeta(
+    'formData',
+  );
+  @override
+  late final GeneratedColumn<String> formData = GeneratedColumn<String>(
+    'form_data',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -8827,6 +9938,7 @@ class $ReportsTable extends Reports with TableInfo<$ReportsTable, Report> {
     year,
     type,
     pages,
+    formData,
     createdAt,
   ];
   @override
@@ -8907,6 +10019,12 @@ class $ReportsTable extends Reports with TableInfo<$ReportsTable, Report> {
         pages.isAcceptableOrUnknown(data['pages']!, _pagesMeta),
       );
     }
+    if (data.containsKey('form_data')) {
+      context.handle(
+        _formDataMeta,
+        formData.isAcceptableOrUnknown(data['form_data']!, _formDataMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -8962,6 +10080,10 @@ class $ReportsTable extends Reports with TableInfo<$ReportsTable, Report> {
         DriftSqlType.int,
         data['${effectivePrefix}pages'],
       )!,
+      formData: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}form_data'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -8986,6 +10108,10 @@ class Report extends DataClass implements Insertable<Report> {
   final int year;
   final String type;
   final int pages;
+
+  /// Structured form payload (JSON) for the Program Completion Report (Form
+  /// P-2). Empty for legacy minutes/resolution reports.
+  final String formData;
   final DateTime createdAt;
   const Report({
     required this.id,
@@ -8998,6 +10124,7 @@ class Report extends DataClass implements Insertable<Report> {
     required this.year,
     required this.type,
     required this.pages,
+    required this.formData,
     required this.createdAt,
   });
   @override
@@ -9013,6 +10140,7 @@ class Report extends DataClass implements Insertable<Report> {
     map['year'] = Variable<int>(year);
     map['type'] = Variable<String>(type);
     map['pages'] = Variable<int>(pages);
+    map['form_data'] = Variable<String>(formData);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -9029,6 +10157,7 @@ class Report extends DataClass implements Insertable<Report> {
       year: Value(year),
       type: Value(type),
       pages: Value(pages),
+      formData: Value(formData),
       createdAt: Value(createdAt),
     );
   }
@@ -9049,6 +10178,7 @@ class Report extends DataClass implements Insertable<Report> {
       year: serializer.fromJson<int>(json['year']),
       type: serializer.fromJson<String>(json['type']),
       pages: serializer.fromJson<int>(json['pages']),
+      formData: serializer.fromJson<String>(json['formData']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -9066,6 +10196,7 @@ class Report extends DataClass implements Insertable<Report> {
       'year': serializer.toJson<int>(year),
       'type': serializer.toJson<String>(type),
       'pages': serializer.toJson<int>(pages),
+      'formData': serializer.toJson<String>(formData),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -9081,6 +10212,7 @@ class Report extends DataClass implements Insertable<Report> {
     int? year,
     String? type,
     int? pages,
+    String? formData,
     DateTime? createdAt,
   }) => Report(
     id: id ?? this.id,
@@ -9093,6 +10225,7 @@ class Report extends DataClass implements Insertable<Report> {
     year: year ?? this.year,
     type: type ?? this.type,
     pages: pages ?? this.pages,
+    formData: formData ?? this.formData,
     createdAt: createdAt ?? this.createdAt,
   );
   Report copyWithCompanion(ReportsCompanion data) {
@@ -9109,6 +10242,7 @@ class Report extends DataClass implements Insertable<Report> {
       year: data.year.present ? data.year.value : this.year,
       type: data.type.present ? data.type.value : this.type,
       pages: data.pages.present ? data.pages.value : this.pages,
+      formData: data.formData.present ? data.formData.value : this.formData,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -9126,6 +10260,7 @@ class Report extends DataClass implements Insertable<Report> {
           ..write('year: $year, ')
           ..write('type: $type, ')
           ..write('pages: $pages, ')
+          ..write('formData: $formData, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -9143,6 +10278,7 @@ class Report extends DataClass implements Insertable<Report> {
     year,
     type,
     pages,
+    formData,
     createdAt,
   );
   @override
@@ -9159,6 +10295,7 @@ class Report extends DataClass implements Insertable<Report> {
           other.year == this.year &&
           other.type == this.type &&
           other.pages == this.pages &&
+          other.formData == this.formData &&
           other.createdAt == this.createdAt);
 }
 
@@ -9173,6 +10310,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
   final Value<int> year;
   final Value<String> type;
   final Value<int> pages;
+  final Value<String> formData;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const ReportsCompanion({
@@ -9186,6 +10324,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
     this.year = const Value.absent(),
     this.type = const Value.absent(),
     this.pages = const Value.absent(),
+    this.formData = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -9200,6 +10339,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
     this.year = const Value.absent(),
     this.type = const Value.absent(),
     this.pages = const Value.absent(),
+    this.formData = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -9216,6 +10356,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
     Expression<int>? year,
     Expression<String>? type,
     Expression<int>? pages,
+    Expression<String>? formData,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
@@ -9230,6 +10371,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
       if (year != null) 'year': year,
       if (type != null) 'type': type,
       if (pages != null) 'pages': pages,
+      if (formData != null) 'form_data': formData,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -9246,6 +10388,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
     Value<int>? year,
     Value<String>? type,
     Value<int>? pages,
+    Value<String>? formData,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
@@ -9260,6 +10403,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
       year: year ?? this.year,
       type: type ?? this.type,
       pages: pages ?? this.pages,
+      formData: formData ?? this.formData,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -9298,6 +10442,9 @@ class ReportsCompanion extends UpdateCompanion<Report> {
     if (pages.present) {
       map['pages'] = Variable<int>(pages.value);
     }
+    if (formData.present) {
+      map['form_data'] = Variable<String>(formData.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -9320,6 +10467,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
           ..write('year: $year, ')
           ..write('type: $type, ')
           ..write('pages: $pages, ')
+          ..write('formData: $formData, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -9429,6 +10577,18 @@ class $GalleryPhotosTable extends GalleryPhotos
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
+  static const VerificationMeta _imagePathsMeta = const VerificationMeta(
+    'imagePaths',
+  );
+  @override
+  late final GeneratedColumn<String> imagePaths = GeneratedColumn<String>(
+    'image_paths',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _heightHintMeta = const VerificationMeta(
     'heightHint',
   );
@@ -9464,6 +10624,7 @@ class $GalleryPhotosTable extends GalleryPhotos
     iconKey,
     accent,
     imagePath,
+    imagePaths,
     heightHint,
     createdAt,
   ];
@@ -9534,6 +10695,12 @@ class $GalleryPhotosTable extends GalleryPhotos
         imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
       );
     }
+    if (data.containsKey('image_paths')) {
+      context.handle(
+        _imagePathsMeta,
+        imagePaths.isAcceptableOrUnknown(data['image_paths']!, _imagePathsMeta),
+      );
+    }
     if (data.containsKey('height_hint')) {
       context.handle(
         _heightHintMeta,
@@ -9591,6 +10758,10 @@ class $GalleryPhotosTable extends GalleryPhotos
         DriftSqlType.string,
         data['${effectivePrefix}image_path'],
       )!,
+      imagePaths: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_paths'],
+      )!,
       heightHint: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}height_hint'],
@@ -9617,7 +10788,12 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
   final String eventAr;
   final String iconKey;
   final int accent;
+
+  /// Cover image (first of the album), kept for the masonry thumbnail.
   final String imagePath;
+
+  /// JSON array of all stored image paths in this entry's album.
+  final String imagePaths;
   final int heightHint;
   final DateTime createdAt;
   const GalleryPhoto({
@@ -9630,6 +10806,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     required this.iconKey,
     required this.accent,
     required this.imagePath,
+    required this.imagePaths,
     required this.heightHint,
     required this.createdAt,
   });
@@ -9645,6 +10822,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     map['icon_key'] = Variable<String>(iconKey);
     map['accent'] = Variable<int>(accent);
     map['image_path'] = Variable<String>(imagePath);
+    map['image_paths'] = Variable<String>(imagePaths);
     map['height_hint'] = Variable<int>(heightHint);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -9661,6 +10839,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
       iconKey: Value(iconKey),
       accent: Value(accent),
       imagePath: Value(imagePath),
+      imagePaths: Value(imagePaths),
       heightHint: Value(heightHint),
       createdAt: Value(createdAt),
     );
@@ -9681,6 +10860,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
       iconKey: serializer.fromJson<String>(json['iconKey']),
       accent: serializer.fromJson<int>(json['accent']),
       imagePath: serializer.fromJson<String>(json['imagePath']),
+      imagePaths: serializer.fromJson<String>(json['imagePaths']),
       heightHint: serializer.fromJson<int>(json['heightHint']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
@@ -9698,6 +10878,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
       'iconKey': serializer.toJson<String>(iconKey),
       'accent': serializer.toJson<int>(accent),
       'imagePath': serializer.toJson<String>(imagePath),
+      'imagePaths': serializer.toJson<String>(imagePaths),
       'heightHint': serializer.toJson<int>(heightHint),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
@@ -9713,6 +10894,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     String? iconKey,
     int? accent,
     String? imagePath,
+    String? imagePaths,
     int? heightHint,
     DateTime? createdAt,
   }) => GalleryPhoto(
@@ -9725,6 +10907,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     iconKey: iconKey ?? this.iconKey,
     accent: accent ?? this.accent,
     imagePath: imagePath ?? this.imagePath,
+    imagePaths: imagePaths ?? this.imagePaths,
     heightHint: heightHint ?? this.heightHint,
     createdAt: createdAt ?? this.createdAt,
   );
@@ -9739,6 +10922,9 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
       iconKey: data.iconKey.present ? data.iconKey.value : this.iconKey,
       accent: data.accent.present ? data.accent.value : this.accent,
       imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+      imagePaths: data.imagePaths.present
+          ? data.imagePaths.value
+          : this.imagePaths,
       heightHint: data.heightHint.present
           ? data.heightHint.value
           : this.heightHint,
@@ -9758,6 +10944,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
           ..write('iconKey: $iconKey, ')
           ..write('accent: $accent, ')
           ..write('imagePath: $imagePath, ')
+          ..write('imagePaths: $imagePaths, ')
           ..write('heightHint: $heightHint, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -9775,6 +10962,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     iconKey,
     accent,
     imagePath,
+    imagePaths,
     heightHint,
     createdAt,
   );
@@ -9791,6 +10979,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
           other.iconKey == this.iconKey &&
           other.accent == this.accent &&
           other.imagePath == this.imagePath &&
+          other.imagePaths == this.imagePaths &&
           other.heightHint == this.heightHint &&
           other.createdAt == this.createdAt);
 }
@@ -9805,6 +10994,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
   final Value<String> iconKey;
   final Value<int> accent;
   final Value<String> imagePath;
+  final Value<String> imagePaths;
   final Value<int> heightHint;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
@@ -9818,6 +11008,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
     this.iconKey = const Value.absent(),
     this.accent = const Value.absent(),
     this.imagePath = const Value.absent(),
+    this.imagePaths = const Value.absent(),
     this.heightHint = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -9832,6 +11023,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
     this.iconKey = const Value.absent(),
     this.accent = const Value.absent(),
     this.imagePath = const Value.absent(),
+    this.imagePaths = const Value.absent(),
     this.heightHint = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -9847,6 +11039,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
     Expression<String>? iconKey,
     Expression<int>? accent,
     Expression<String>? imagePath,
+    Expression<String>? imagePaths,
     Expression<int>? heightHint,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
@@ -9861,6 +11054,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
       if (iconKey != null) 'icon_key': iconKey,
       if (accent != null) 'accent': accent,
       if (imagePath != null) 'image_path': imagePath,
+      if (imagePaths != null) 'image_paths': imagePaths,
       if (heightHint != null) 'height_hint': heightHint,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
@@ -9877,6 +11071,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
     Value<String>? iconKey,
     Value<int>? accent,
     Value<String>? imagePath,
+    Value<String>? imagePaths,
     Value<int>? heightHint,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
@@ -9891,6 +11086,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
       iconKey: iconKey ?? this.iconKey,
       accent: accent ?? this.accent,
       imagePath: imagePath ?? this.imagePath,
+      imagePaths: imagePaths ?? this.imagePaths,
       heightHint: heightHint ?? this.heightHint,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
@@ -9927,6 +11123,9 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
     if (imagePath.present) {
       map['image_path'] = Variable<String>(imagePath.value);
     }
+    if (imagePaths.present) {
+      map['image_paths'] = Variable<String>(imagePaths.value);
+    }
     if (heightHint.present) {
       map['height_hint'] = Variable<int>(heightHint.value);
     }
@@ -9951,8 +11150,734 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
           ..write('iconKey: $iconKey, ')
           ..write('accent: $accent, ')
           ..write('imagePath: $imagePath, ')
+          ..write('imagePaths: $imagePaths, ')
           ..write('heightHint: $heightHint, ')
           ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MinutesReportsTable extends MinutesReports
+    with TableInfo<$MinutesReportsTable, MinutesReport> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MinutesReportsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _yearMeta = const VerificationMeta('year');
+  @override
+  late final GeneratedColumn<int> year = GeneratedColumn<int>(
+    'year',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('minutes'),
+  );
+  static const VerificationMeta _contentMeta = const VerificationMeta(
+    'content',
+  );
+  @override
+  late final GeneratedColumn<String> content = GeneratedColumn<String>(
+    'content',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _imagePathsMeta = const VerificationMeta(
+    'imagePaths',
+  );
+  @override
+  late final GeneratedColumn<String> imagePaths = GeneratedColumn<String>(
+    'image_paths',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    title,
+    year,
+    type,
+    content,
+    imagePaths,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'minutes_reports';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MinutesReport> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('year')) {
+      context.handle(
+        _yearMeta,
+        year.isAcceptableOrUnknown(data['year']!, _yearMeta),
+      );
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    }
+    if (data.containsKey('content')) {
+      context.handle(
+        _contentMeta,
+        content.isAcceptableOrUnknown(data['content']!, _contentMeta),
+      );
+    }
+    if (data.containsKey('image_paths')) {
+      context.handle(
+        _imagePathsMeta,
+        imagePaths.isAcceptableOrUnknown(data['image_paths']!, _imagePathsMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MinutesReport map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MinutesReport(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      year: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}year'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      content: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}content'],
+      )!,
+      imagePaths: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_paths'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $MinutesReportsTable createAlias(String alias) {
+    return $MinutesReportsTable(attachedDatabase, alias);
+  }
+}
+
+class MinutesReport extends DataClass implements Insertable<MinutesReport> {
+  final String id;
+  final String title;
+  final int year;
+
+  /// `minutes` | `resolution`.
+  final String type;
+  final String content;
+
+  /// JSON array of stored image file paths (the album).
+  final String imagePaths;
+  final DateTime createdAt;
+  const MinutesReport({
+    required this.id,
+    required this.title,
+    required this.year,
+    required this.type,
+    required this.content,
+    required this.imagePaths,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['title'] = Variable<String>(title);
+    map['year'] = Variable<int>(year);
+    map['type'] = Variable<String>(type);
+    map['content'] = Variable<String>(content);
+    map['image_paths'] = Variable<String>(imagePaths);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  MinutesReportsCompanion toCompanion(bool nullToAbsent) {
+    return MinutesReportsCompanion(
+      id: Value(id),
+      title: Value(title),
+      year: Value(year),
+      type: Value(type),
+      content: Value(content),
+      imagePaths: Value(imagePaths),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory MinutesReport.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MinutesReport(
+      id: serializer.fromJson<String>(json['id']),
+      title: serializer.fromJson<String>(json['title']),
+      year: serializer.fromJson<int>(json['year']),
+      type: serializer.fromJson<String>(json['type']),
+      content: serializer.fromJson<String>(json['content']),
+      imagePaths: serializer.fromJson<String>(json['imagePaths']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'title': serializer.toJson<String>(title),
+      'year': serializer.toJson<int>(year),
+      'type': serializer.toJson<String>(type),
+      'content': serializer.toJson<String>(content),
+      'imagePaths': serializer.toJson<String>(imagePaths),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  MinutesReport copyWith({
+    String? id,
+    String? title,
+    int? year,
+    String? type,
+    String? content,
+    String? imagePaths,
+    DateTime? createdAt,
+  }) => MinutesReport(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    year: year ?? this.year,
+    type: type ?? this.type,
+    content: content ?? this.content,
+    imagePaths: imagePaths ?? this.imagePaths,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  MinutesReport copyWithCompanion(MinutesReportsCompanion data) {
+    return MinutesReport(
+      id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      year: data.year.present ? data.year.value : this.year,
+      type: data.type.present ? data.type.value : this.type,
+      content: data.content.present ? data.content.value : this.content,
+      imagePaths: data.imagePaths.present
+          ? data.imagePaths.value
+          : this.imagePaths,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MinutesReport(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('year: $year, ')
+          ..write('type: $type, ')
+          ..write('content: $content, ')
+          ..write('imagePaths: $imagePaths, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, title, year, type, content, imagePaths, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MinutesReport &&
+          other.id == this.id &&
+          other.title == this.title &&
+          other.year == this.year &&
+          other.type == this.type &&
+          other.content == this.content &&
+          other.imagePaths == this.imagePaths &&
+          other.createdAt == this.createdAt);
+}
+
+class MinutesReportsCompanion extends UpdateCompanion<MinutesReport> {
+  final Value<String> id;
+  final Value<String> title;
+  final Value<int> year;
+  final Value<String> type;
+  final Value<String> content;
+  final Value<String> imagePaths;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const MinutesReportsCompanion({
+    this.id = const Value.absent(),
+    this.title = const Value.absent(),
+    this.year = const Value.absent(),
+    this.type = const Value.absent(),
+    this.content = const Value.absent(),
+    this.imagePaths = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MinutesReportsCompanion.insert({
+    required String id,
+    required String title,
+    this.year = const Value.absent(),
+    this.type = const Value.absent(),
+    this.content = const Value.absent(),
+    this.imagePaths = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       title = Value(title);
+  static Insertable<MinutesReport> custom({
+    Expression<String>? id,
+    Expression<String>? title,
+    Expression<int>? year,
+    Expression<String>? type,
+    Expression<String>? content,
+    Expression<String>? imagePaths,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (title != null) 'title': title,
+      if (year != null) 'year': year,
+      if (type != null) 'type': type,
+      if (content != null) 'content': content,
+      if (imagePaths != null) 'image_paths': imagePaths,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MinutesReportsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? title,
+    Value<int>? year,
+    Value<String>? type,
+    Value<String>? content,
+    Value<String>? imagePaths,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return MinutesReportsCompanion(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      year: year ?? this.year,
+      type: type ?? this.type,
+      content: content ?? this.content,
+      imagePaths: imagePaths ?? this.imagePaths,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (year.present) {
+      map['year'] = Variable<int>(year.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<String>(content.value);
+    }
+    if (imagePaths.present) {
+      map['image_paths'] = Variable<String>(imagePaths.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MinutesReportsCompanion(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('year: $year, ')
+          ..write('type: $type, ')
+          ..write('content: $content, ')
+          ..write('imagePaths: $imagePaths, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LeadershipGroupInfoTable extends LeadershipGroupInfo
+    with TableInfo<$LeadershipGroupInfoTable, LeadershipGroupInfoData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LeadershipGroupInfoTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _descriptionArMeta = const VerificationMeta(
+    'descriptionAr',
+  );
+  @override
+  late final GeneratedColumn<String> descriptionAr = GeneratedColumn<String>(
+    'description_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [code, description, descriptionAr];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'leadership_group_info';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LeadershipGroupInfoData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('description_ar')) {
+      context.handle(
+        _descriptionArMeta,
+        descriptionAr.isAcceptableOrUnknown(
+          data['description_ar']!,
+          _descriptionArMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {code};
+  @override
+  LeadershipGroupInfoData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LeadershipGroupInfoData(
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      )!,
+      descriptionAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description_ar'],
+      )!,
+    );
+  }
+
+  @override
+  $LeadershipGroupInfoTable createAlias(String alias) {
+    return $LeadershipGroupInfoTable(attachedDatabase, alias);
+  }
+}
+
+class LeadershipGroupInfoData extends DataClass
+    implements Insertable<LeadershipGroupInfoData> {
+  final String code;
+  final String description;
+  final String descriptionAr;
+  const LeadershipGroupInfoData({
+    required this.code,
+    required this.description,
+    required this.descriptionAr,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['code'] = Variable<String>(code);
+    map['description'] = Variable<String>(description);
+    map['description_ar'] = Variable<String>(descriptionAr);
+    return map;
+  }
+
+  LeadershipGroupInfoCompanion toCompanion(bool nullToAbsent) {
+    return LeadershipGroupInfoCompanion(
+      code: Value(code),
+      description: Value(description),
+      descriptionAr: Value(descriptionAr),
+    );
+  }
+
+  factory LeadershipGroupInfoData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LeadershipGroupInfoData(
+      code: serializer.fromJson<String>(json['code']),
+      description: serializer.fromJson<String>(json['description']),
+      descriptionAr: serializer.fromJson<String>(json['descriptionAr']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'code': serializer.toJson<String>(code),
+      'description': serializer.toJson<String>(description),
+      'descriptionAr': serializer.toJson<String>(descriptionAr),
+    };
+  }
+
+  LeadershipGroupInfoData copyWith({
+    String? code,
+    String? description,
+    String? descriptionAr,
+  }) => LeadershipGroupInfoData(
+    code: code ?? this.code,
+    description: description ?? this.description,
+    descriptionAr: descriptionAr ?? this.descriptionAr,
+  );
+  LeadershipGroupInfoData copyWithCompanion(LeadershipGroupInfoCompanion data) {
+    return LeadershipGroupInfoData(
+      code: data.code.present ? data.code.value : this.code,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      descriptionAr: data.descriptionAr.present
+          ? data.descriptionAr.value
+          : this.descriptionAr,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LeadershipGroupInfoData(')
+          ..write('code: $code, ')
+          ..write('description: $description, ')
+          ..write('descriptionAr: $descriptionAr')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(code, description, descriptionAr);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LeadershipGroupInfoData &&
+          other.code == this.code &&
+          other.description == this.description &&
+          other.descriptionAr == this.descriptionAr);
+}
+
+class LeadershipGroupInfoCompanion
+    extends UpdateCompanion<LeadershipGroupInfoData> {
+  final Value<String> code;
+  final Value<String> description;
+  final Value<String> descriptionAr;
+  final Value<int> rowid;
+  const LeadershipGroupInfoCompanion({
+    this.code = const Value.absent(),
+    this.description = const Value.absent(),
+    this.descriptionAr = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LeadershipGroupInfoCompanion.insert({
+    required String code,
+    this.description = const Value.absent(),
+    this.descriptionAr = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : code = Value(code);
+  static Insertable<LeadershipGroupInfoData> custom({
+    Expression<String>? code,
+    Expression<String>? description,
+    Expression<String>? descriptionAr,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (description != null) 'description': description,
+      if (descriptionAr != null) 'description_ar': descriptionAr,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LeadershipGroupInfoCompanion copyWith({
+    Value<String>? code,
+    Value<String>? description,
+    Value<String>? descriptionAr,
+    Value<int>? rowid,
+  }) {
+    return LeadershipGroupInfoCompanion(
+      code: code ?? this.code,
+      description: description ?? this.description,
+      descriptionAr: descriptionAr ?? this.descriptionAr,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (descriptionAr.present) {
+      map['description_ar'] = Variable<String>(descriptionAr.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LeadershipGroupInfoCompanion(')
+          ..write('code: $code, ')
+          ..write('description: $description, ')
+          ..write('descriptionAr: $descriptionAr, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -9962,14 +11887,18 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final $TarbiyaAreasTable tarbiyaAreas = $TarbiyaAreasTable(this);
+  late final $ShubasTable shubas = $ShubasTable(this);
+  late final $MembersTable members = $MembersTable(this);
   late final $DepartmentsTable departments = $DepartmentsTable(this);
   late final $UsersTable users = $UsersTable(this);
   late final $LeadersTable leaders = $LeadersTable(this);
   late final $AuditLogsTable auditLogs = $AuditLogsTable(this);
-  late final $TarbiyaAreasTable tarbiyaAreas = $TarbiyaAreasTable(this);
-  late final $ShubasTable shubas = $ShubasTable(this);
-  late final $MembersTable members = $MembersTable(this);
   late final $MemberChildrenTable memberChildren = $MemberChildrenTable(this);
+  late final $MemberWivesTable memberWives = $MemberWivesTable(this);
+  late final $MemberUsraLinksTable memberUsraLinks = $MemberUsraLinksTable(
+    this,
+  );
   late final $MemberEducationTable memberEducation = $MemberEducationTable(
     this,
   );
@@ -9983,9 +11912,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $MemberRolesTable memberRoles = $MemberRolesTable(this);
+  late final $DepartmentStaffTable departmentStaff = $DepartmentStaffTable(
+    this,
+  );
   late final $DeptActivitiesTable deptActivities = $DeptActivitiesTable(this);
   late final $ReportsTable reports = $ReportsTable(this);
   late final $GalleryPhotosTable galleryPhotos = $GalleryPhotosTable(this);
+  late final $MinutesReportsTable minutesReports = $MinutesReportsTable(this);
+  late final $LeadershipGroupInfoTable leadershipGroupInfo =
+      $LeadershipGroupInfoTable(this);
   late final Index idxUsersDepartment = Index(
     'idx_users_department',
     'CREATE INDEX idx_users_department ON users (department_id)',
@@ -10014,6 +11949,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_member_children_member',
     'CREATE INDEX idx_member_children_member ON member_children (member_id)',
   );
+  late final Index idxMemberWivesMember = Index(
+    'idx_member_wives_member',
+    'CREATE INDEX idx_member_wives_member ON member_wives (member_id)',
+  );
+  late final Index idxMemberUsraLinksMember = Index(
+    'idx_member_usra_links_member',
+    'CREATE INDEX idx_member_usra_links_member ON member_usra_links (member_id)',
+  );
   late final Index idxMemberEducationMember = Index(
     'idx_member_education_member',
     'CREATE INDEX idx_member_education_member ON member_education (member_id)',
@@ -10038,6 +11981,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_member_roles_member',
     'CREATE INDEX idx_member_roles_member ON member_roles (member_id)',
   );
+  late final Index idxDeptStaffDept = Index(
+    'idx_dept_staff_dept',
+    'CREATE INDEX idx_dept_staff_dept ON department_staff (department_id)',
+  );
   late final Index idxDeptActivitiesDept = Index(
     'idx_dept_activities_dept',
     'CREATE INDEX idx_dept_activities_dept ON dept_activities (department_id)',
@@ -10051,23 +11998,28 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
+    tarbiyaAreas,
+    shubas,
+    members,
     departments,
     users,
     leaders,
     auditLogs,
-    tarbiyaAreas,
-    shubas,
-    members,
     memberChildren,
+    memberWives,
+    memberUsraLinks,
     memberEducation,
     memberActivities,
     memberContributions,
     memberTased,
     memberDonations,
     memberRoles,
+    departmentStaff,
     deptActivities,
     reports,
     galleryPhotos,
+    minutesReports,
+    leadershipGroupInfo,
     idxUsersDepartment,
     idxLeadersCategory,
     idxAuditTimestamp,
@@ -10075,12 +12027,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     idxMembersShubaLevel,
     idxMembersNaqib,
     idxMemberChildrenMember,
+    idxMemberWivesMember,
+    idxMemberUsraLinksMember,
     idxMemberEducationMember,
     idxMemberActivitiesMember,
     idxMemberContributionsMember,
     idxMemberTasedMember,
     idxMemberDonationsMemberYear,
     idxMemberRolesMember,
+    idxDeptStaffDept,
     idxDeptActivitiesDept,
     idxReportsDeptYear,
   ];
@@ -10088,10 +12043,31 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
     WritePropagation(
       on: TableUpdateQuery.onTableName(
+        'members',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('members', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'members',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('departments', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
         'departments',
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('users', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'members',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('leaders', kind: UpdateKind.update)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -10105,14 +12081,28 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         'members',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('members', kind: UpdateKind.update)],
+      result: [TableUpdate('member_children', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'members',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('member_children', kind: UpdateKind.delete)],
+      result: [TableUpdate('member_wives', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'members',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('member_usra_links', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'members',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('member_usra_links', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -10168,11 +12158,2674 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         'departments',
         limitUpdateKind: UpdateKind.delete,
       ),
+      result: [TableUpdate('department_staff', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'members',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('department_staff', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'departments',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('dept_activities', kind: UpdateKind.delete)],
     ),
   ]);
 }
 
+typedef $$TarbiyaAreasTableCreateCompanionBuilder =
+    TarbiyaAreasCompanion Function({
+      required String id,
+      required String name,
+      Value<String> nameAr,
+      Value<String> region,
+      Value<String> regionAr,
+      Value<int> accent,
+      Value<int> sortOrder,
+      Value<int> rowid,
+    });
+typedef $$TarbiyaAreasTableUpdateCompanionBuilder =
+    TarbiyaAreasCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> nameAr,
+      Value<String> region,
+      Value<String> regionAr,
+      Value<int> accent,
+      Value<int> sortOrder,
+      Value<int> rowid,
+    });
+
+final class $$TarbiyaAreasTableReferences
+    extends BaseReferences<_$AppDatabase, $TarbiyaAreasTable, TarbiyaArea> {
+  $$TarbiyaAreasTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$ShubasTable, List<Shuba>> _shubasRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.shubas,
+    aliasName: 'tarbiya_areas__id__shubas__area_id',
+  );
+
+  $$ShubasTableProcessedTableManager get shubasRefs {
+    final manager = $$ShubasTableTableManager(
+      $_db,
+      $_db.shubas,
+    ).filter((f) => f.areaId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_shubasRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$TarbiyaAreasTableFilterComposer
+    extends Composer<_$AppDatabase, $TarbiyaAreasTable> {
+  $$TarbiyaAreasTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get region => $composableBuilder(
+    column: $table.region,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get regionAr => $composableBuilder(
+    column: $table.regionAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get accent => $composableBuilder(
+    column: $table.accent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> shubasRefs(
+    Expression<bool> Function($$ShubasTableFilterComposer f) f,
+  ) {
+    final $$ShubasTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.shubas,
+      getReferencedColumn: (t) => t.areaId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ShubasTableFilterComposer(
+            $db: $db,
+            $table: $db.shubas,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TarbiyaAreasTableOrderingComposer
+    extends Composer<_$AppDatabase, $TarbiyaAreasTable> {
+  $$TarbiyaAreasTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get region => $composableBuilder(
+    column: $table.region,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get regionAr => $composableBuilder(
+    column: $table.regionAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get accent => $composableBuilder(
+    column: $table.accent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TarbiyaAreasTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TarbiyaAreasTable> {
+  $$TarbiyaAreasTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<String> get region =>
+      $composableBuilder(column: $table.region, builder: (column) => column);
+
+  GeneratedColumn<String> get regionAr =>
+      $composableBuilder(column: $table.regionAr, builder: (column) => column);
+
+  GeneratedColumn<int> get accent =>
+      $composableBuilder(column: $table.accent, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  Expression<T> shubasRefs<T extends Object>(
+    Expression<T> Function($$ShubasTableAnnotationComposer a) f,
+  ) {
+    final $$ShubasTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.shubas,
+      getReferencedColumn: (t) => t.areaId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ShubasTableAnnotationComposer(
+            $db: $db,
+            $table: $db.shubas,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TarbiyaAreasTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TarbiyaAreasTable,
+          TarbiyaArea,
+          $$TarbiyaAreasTableFilterComposer,
+          $$TarbiyaAreasTableOrderingComposer,
+          $$TarbiyaAreasTableAnnotationComposer,
+          $$TarbiyaAreasTableCreateCompanionBuilder,
+          $$TarbiyaAreasTableUpdateCompanionBuilder,
+          (TarbiyaArea, $$TarbiyaAreasTableReferences),
+          TarbiyaArea,
+          PrefetchHooks Function({bool shubasRefs})
+        > {
+  $$TarbiyaAreasTableTableManager(_$AppDatabase db, $TarbiyaAreasTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TarbiyaAreasTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TarbiyaAreasTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TarbiyaAreasTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<String> region = const Value.absent(),
+                Value<String> regionAr = const Value.absent(),
+                Value<int> accent = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TarbiyaAreasCompanion(
+                id: id,
+                name: name,
+                nameAr: nameAr,
+                region: region,
+                regionAr: regionAr,
+                accent: accent,
+                sortOrder: sortOrder,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                Value<String> nameAr = const Value.absent(),
+                Value<String> region = const Value.absent(),
+                Value<String> regionAr = const Value.absent(),
+                Value<int> accent = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TarbiyaAreasCompanion.insert(
+                id: id,
+                name: name,
+                nameAr: nameAr,
+                region: region,
+                regionAr: regionAr,
+                accent: accent,
+                sortOrder: sortOrder,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TarbiyaAreasTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({shubasRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (shubasRefs) db.shubas],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (shubasRefs)
+                    await $_getPrefetchedData<
+                      TarbiyaArea,
+                      $TarbiyaAreasTable,
+                      Shuba
+                    >(
+                      currentTable: table,
+                      referencedTable: $$TarbiyaAreasTableReferences
+                          ._shubasRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$TarbiyaAreasTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).shubasRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.areaId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TarbiyaAreasTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TarbiyaAreasTable,
+      TarbiyaArea,
+      $$TarbiyaAreasTableFilterComposer,
+      $$TarbiyaAreasTableOrderingComposer,
+      $$TarbiyaAreasTableAnnotationComposer,
+      $$TarbiyaAreasTableCreateCompanionBuilder,
+      $$TarbiyaAreasTableUpdateCompanionBuilder,
+      (TarbiyaArea, $$TarbiyaAreasTableReferences),
+      TarbiyaArea,
+      PrefetchHooks Function({bool shubasRefs})
+    >;
+typedef $$ShubasTableCreateCompanionBuilder =
+    ShubasCompanion Function({
+      required String id,
+      required String areaId,
+      required String name,
+      Value<String> nameAr,
+      Value<int> sortOrder,
+      Value<String?> masulMemberId,
+      Value<int> rowid,
+    });
+typedef $$ShubasTableUpdateCompanionBuilder =
+    ShubasCompanion Function({
+      Value<String> id,
+      Value<String> areaId,
+      Value<String> name,
+      Value<String> nameAr,
+      Value<int> sortOrder,
+      Value<String?> masulMemberId,
+      Value<int> rowid,
+    });
+
+final class $$ShubasTableReferences
+    extends BaseReferences<_$AppDatabase, $ShubasTable, Shuba> {
+  $$ShubasTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $TarbiyaAreasTable _areaIdTable(_$AppDatabase db) =>
+      db.tarbiyaAreas.createAlias('shubas__area_id__tarbiya_areas__id');
+
+  $$TarbiyaAreasTableProcessedTableManager get areaId {
+    final $_column = $_itemColumn<String>('area_id')!;
+
+    final manager = $$TarbiyaAreasTableTableManager(
+      $_db,
+      $_db.tarbiyaAreas,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_areaIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$MembersTable, List<Member>> _membersRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.members,
+    aliasName: 'shubas__id__members__shuba_id',
+  );
+
+  $$MembersTableProcessedTableManager get membersRefs {
+    final manager = $$MembersTableTableManager(
+      $_db,
+      $_db.members,
+    ).filter((f) => f.shubaId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_membersRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$ShubasTableFilterComposer
+    extends Composer<_$AppDatabase, $ShubasTable> {
+  $$ShubasTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get masulMemberId => $composableBuilder(
+    column: $table.masulMemberId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TarbiyaAreasTableFilterComposer get areaId {
+    final $$TarbiyaAreasTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.areaId,
+      referencedTable: $db.tarbiyaAreas,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TarbiyaAreasTableFilterComposer(
+            $db: $db,
+            $table: $db.tarbiyaAreas,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> membersRefs(
+    Expression<bool> Function($$MembersTableFilterComposer f) f,
+  ) {
+    final $$MembersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.shubaId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableFilterComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ShubasTableOrderingComposer
+    extends Composer<_$AppDatabase, $ShubasTable> {
+  $$ShubasTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get masulMemberId => $composableBuilder(
+    column: $table.masulMemberId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TarbiyaAreasTableOrderingComposer get areaId {
+    final $$TarbiyaAreasTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.areaId,
+      referencedTable: $db.tarbiyaAreas,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TarbiyaAreasTableOrderingComposer(
+            $db: $db,
+            $table: $db.tarbiyaAreas,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ShubasTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ShubasTable> {
+  $$ShubasTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<String> get masulMemberId => $composableBuilder(
+    column: $table.masulMemberId,
+    builder: (column) => column,
+  );
+
+  $$TarbiyaAreasTableAnnotationComposer get areaId {
+    final $$TarbiyaAreasTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.areaId,
+      referencedTable: $db.tarbiyaAreas,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TarbiyaAreasTableAnnotationComposer(
+            $db: $db,
+            $table: $db.tarbiyaAreas,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> membersRefs<T extends Object>(
+    Expression<T> Function($$MembersTableAnnotationComposer a) f,
+  ) {
+    final $$MembersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.shubaId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ShubasTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ShubasTable,
+          Shuba,
+          $$ShubasTableFilterComposer,
+          $$ShubasTableOrderingComposer,
+          $$ShubasTableAnnotationComposer,
+          $$ShubasTableCreateCompanionBuilder,
+          $$ShubasTableUpdateCompanionBuilder,
+          (Shuba, $$ShubasTableReferences),
+          Shuba,
+          PrefetchHooks Function({bool areaId, bool membersRefs})
+        > {
+  $$ShubasTableTableManager(_$AppDatabase db, $ShubasTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ShubasTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ShubasTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ShubasTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> areaId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<String?> masulMemberId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ShubasCompanion(
+                id: id,
+                areaId: areaId,
+                name: name,
+                nameAr: nameAr,
+                sortOrder: sortOrder,
+                masulMemberId: masulMemberId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String areaId,
+                required String name,
+                Value<String> nameAr = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<String?> masulMemberId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ShubasCompanion.insert(
+                id: id,
+                areaId: areaId,
+                name: name,
+                nameAr: nameAr,
+                sortOrder: sortOrder,
+                masulMemberId: masulMemberId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) =>
+                    (e.readTable(table), $$ShubasTableReferences(db, table, e)),
+              )
+              .toList(),
+          prefetchHooksCallback: ({areaId = false, membersRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (membersRefs) db.members],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (areaId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.areaId,
+                                referencedTable: $$ShubasTableReferences
+                                    ._areaIdTable(db),
+                                referencedColumn: $$ShubasTableReferences
+                                    ._areaIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (membersRefs)
+                    await $_getPrefetchedData<Shuba, $ShubasTable, Member>(
+                      currentTable: table,
+                      referencedTable: $$ShubasTableReferences
+                          ._membersRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$ShubasTableReferences(db, table, p0).membersRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.shubaId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ShubasTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ShubasTable,
+      Shuba,
+      $$ShubasTableFilterComposer,
+      $$ShubasTableOrderingComposer,
+      $$ShubasTableAnnotationComposer,
+      $$ShubasTableCreateCompanionBuilder,
+      $$ShubasTableUpdateCompanionBuilder,
+      (Shuba, $$ShubasTableReferences),
+      Shuba,
+      PrefetchHooks Function({bool areaId, bool membersRefs})
+    >;
+typedef $$MembersTableCreateCompanionBuilder =
+    MembersCompanion Function({
+      required String id,
+      required String shubaId,
+      Value<int> level,
+      required String firstName,
+      Value<String> middleName,
+      required String lastName,
+      Value<String> suffix,
+      Value<String> nameAr,
+      Value<String> gender,
+      Value<String> dob,
+      Value<String> placeOfBirth,
+      Value<String> contactNumber,
+      Value<String> email,
+      Value<String> address,
+      Value<String> ethnicity,
+      Value<String> occupation,
+      Value<String> photoPath,
+      Value<String> civilStatus,
+      Value<String> spouseName,
+      Value<String> spouseDate,
+      Value<String> status,
+      Value<String> dateJoined,
+      Value<String> usraName,
+      Value<String> usraEstablishedYear,
+      Value<String> usraMeetingSchedule,
+      Value<String?> naqibMemberId,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$MembersTableUpdateCompanionBuilder =
+    MembersCompanion Function({
+      Value<String> id,
+      Value<String> shubaId,
+      Value<int> level,
+      Value<String> firstName,
+      Value<String> middleName,
+      Value<String> lastName,
+      Value<String> suffix,
+      Value<String> nameAr,
+      Value<String> gender,
+      Value<String> dob,
+      Value<String> placeOfBirth,
+      Value<String> contactNumber,
+      Value<String> email,
+      Value<String> address,
+      Value<String> ethnicity,
+      Value<String> occupation,
+      Value<String> photoPath,
+      Value<String> civilStatus,
+      Value<String> spouseName,
+      Value<String> spouseDate,
+      Value<String> status,
+      Value<String> dateJoined,
+      Value<String> usraName,
+      Value<String> usraEstablishedYear,
+      Value<String> usraMeetingSchedule,
+      Value<String?> naqibMemberId,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$MembersTableReferences
+    extends BaseReferences<_$AppDatabase, $MembersTable, Member> {
+  $$MembersTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ShubasTable _shubaIdTable(_$AppDatabase db) =>
+      db.shubas.createAlias('members__shuba_id__shubas__id');
+
+  $$ShubasTableProcessedTableManager get shubaId {
+    final $_column = $_itemColumn<String>('shuba_id')!;
+
+    final manager = $$ShubasTableTableManager(
+      $_db,
+      $_db.shubas,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_shubaIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $MembersTable _naqibMemberIdTable(_$AppDatabase db) =>
+      db.members.createAlias('members__naqib_member_id__members__id');
+
+  $$MembersTableProcessedTableManager? get naqibMemberId {
+    final $_column = $_itemColumn<String>('naqib_member_id');
+    if ($_column == null) return null;
+    final manager = $$MembersTableTableManager(
+      $_db,
+      $_db.members,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_naqibMemberIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$DepartmentsTable, List<Department>>
+  _departmentsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.departments,
+    aliasName: 'members__id__departments__head_member_id',
+  );
+
+  $$DepartmentsTableProcessedTableManager get departmentsRefs {
+    final manager = $$DepartmentsTableTableManager(
+      $_db,
+      $_db.departments,
+    ).filter((f) => f.headMemberId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_departmentsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$LeadersTable, List<Leader>> _leadersRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.leaders,
+    aliasName: 'members__id__leaders__member_id',
+  );
+
+  $$LeadersTableProcessedTableManager get leadersRefs {
+    final manager = $$LeadersTableTableManager(
+      $_db,
+      $_db.leaders,
+    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_leadersRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$MemberChildrenTable, List<MemberChildrenData>>
+  _memberChildrenRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.memberChildren,
+    aliasName: 'members__id__member_children__member_id',
+  );
+
+  $$MemberChildrenTableProcessedTableManager get memberChildrenRefs {
+    final manager = $$MemberChildrenTableTableManager(
+      $_db,
+      $_db.memberChildren,
+    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_memberChildrenRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$MemberWivesTable, List<MemberWife>>
+  _memberWivesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.memberWives,
+    aliasName: 'members__id__member_wives__member_id',
+  );
+
+  $$MemberWivesTableProcessedTableManager get memberWivesRefs {
+    final manager = $$MemberWivesTableTableManager(
+      $_db,
+      $_db.memberWives,
+    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_memberWivesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$MemberEducationTable, List<MemberEducationData>>
+  _memberEducationRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.memberEducation,
+    aliasName: 'members__id__member_education__member_id',
+  );
+
+  $$MemberEducationTableProcessedTableManager get memberEducationRefs {
+    final manager = $$MemberEducationTableTableManager(
+      $_db,
+      $_db.memberEducation,
+    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _memberEducationRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$MemberActivitiesTable, List<MemberActivity>>
+  _memberActivitiesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.memberActivities,
+    aliasName: 'members__id__member_activities__member_id',
+  );
+
+  $$MemberActivitiesTableProcessedTableManager get memberActivitiesRefs {
+    final manager = $$MemberActivitiesTableTableManager(
+      $_db,
+      $_db.memberActivities,
+    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _memberActivitiesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $MemberContributionsTable,
+    List<MemberContribution>
+  >
+  _memberContributionsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.memberContributions,
+        aliasName: 'members__id__member_contributions__member_id',
+      );
+
+  $$MemberContributionsTableProcessedTableManager get memberContributionsRefs {
+    final manager = $$MemberContributionsTableTableManager(
+      $_db,
+      $_db.memberContributions,
+    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _memberContributionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$MemberTasedTable, List<MemberTasedData>>
+  _memberTasedRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.memberTased,
+    aliasName: 'members__id__member_tased__member_id',
+  );
+
+  $$MemberTasedTableProcessedTableManager get memberTasedRefs {
+    final manager = $$MemberTasedTableTableManager(
+      $_db,
+      $_db.memberTased,
+    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_memberTasedRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$MemberDonationsTable, List<MemberDonation>>
+  _memberDonationsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.memberDonations,
+    aliasName: 'members__id__member_donations__member_id',
+  );
+
+  $$MemberDonationsTableProcessedTableManager get memberDonationsRefs {
+    final manager = $$MemberDonationsTableTableManager(
+      $_db,
+      $_db.memberDonations,
+    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _memberDonationsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$MemberRolesTable, List<MemberRole>>
+  _memberRolesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.memberRoles,
+    aliasName: 'members__id__member_roles__member_id',
+  );
+
+  $$MemberRolesTableProcessedTableManager get memberRolesRefs {
+    final manager = $$MemberRolesTableTableManager(
+      $_db,
+      $_db.memberRoles,
+    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_memberRolesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$DepartmentStaffTable, List<DepartmentStaffData>>
+  _departmentStaffRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.departmentStaff,
+    aliasName: 'members__id__department_staff__member_id',
+  );
+
+  $$DepartmentStaffTableProcessedTableManager get departmentStaffRefs {
+    final manager = $$DepartmentStaffTableTableManager(
+      $_db,
+      $_db.departmentStaff,
+    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _departmentStaffRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$MembersTableFilterComposer
+    extends Composer<_$AppDatabase, $MembersTable> {
+  $$MembersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get level => $composableBuilder(
+    column: $table.level,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get firstName => $composableBuilder(
+    column: $table.firstName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get middleName => $composableBuilder(
+    column: $table.middleName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastName => $composableBuilder(
+    column: $table.lastName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get suffix => $composableBuilder(
+    column: $table.suffix,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gender => $composableBuilder(
+    column: $table.gender,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dob => $composableBuilder(
+    column: $table.dob,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get placeOfBirth => $composableBuilder(
+    column: $table.placeOfBirth,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get contactNumber => $composableBuilder(
+    column: $table.contactNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ethnicity => $composableBuilder(
+    column: $table.ethnicity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get civilStatus => $composableBuilder(
+    column: $table.civilStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get spouseName => $composableBuilder(
+    column: $table.spouseName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get spouseDate => $composableBuilder(
+    column: $table.spouseDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dateJoined => $composableBuilder(
+    column: $table.dateJoined,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get usraName => $composableBuilder(
+    column: $table.usraName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get usraEstablishedYear => $composableBuilder(
+    column: $table.usraEstablishedYear,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get usraMeetingSchedule => $composableBuilder(
+    column: $table.usraMeetingSchedule,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ShubasTableFilterComposer get shubaId {
+    final $$ShubasTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.shubaId,
+      referencedTable: $db.shubas,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ShubasTableFilterComposer(
+            $db: $db,
+            $table: $db.shubas,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableFilterComposer get naqibMemberId {
+    final $$MembersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.naqibMemberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableFilterComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> departmentsRefs(
+    Expression<bool> Function($$DepartmentsTableFilterComposer f) f,
+  ) {
+    final $$DepartmentsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.departments,
+      getReferencedColumn: (t) => t.headMemberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DepartmentsTableFilterComposer(
+            $db: $db,
+            $table: $db.departments,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> leadersRefs(
+    Expression<bool> Function($$LeadersTableFilterComposer f) f,
+  ) {
+    final $$LeadersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.leaders,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LeadersTableFilterComposer(
+            $db: $db,
+            $table: $db.leaders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> memberChildrenRefs(
+    Expression<bool> Function($$MemberChildrenTableFilterComposer f) f,
+  ) {
+    final $$MemberChildrenTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberChildren,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberChildrenTableFilterComposer(
+            $db: $db,
+            $table: $db.memberChildren,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> memberWivesRefs(
+    Expression<bool> Function($$MemberWivesTableFilterComposer f) f,
+  ) {
+    final $$MemberWivesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberWives,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberWivesTableFilterComposer(
+            $db: $db,
+            $table: $db.memberWives,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> memberEducationRefs(
+    Expression<bool> Function($$MemberEducationTableFilterComposer f) f,
+  ) {
+    final $$MemberEducationTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberEducation,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberEducationTableFilterComposer(
+            $db: $db,
+            $table: $db.memberEducation,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> memberActivitiesRefs(
+    Expression<bool> Function($$MemberActivitiesTableFilterComposer f) f,
+  ) {
+    final $$MemberActivitiesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberActivities,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberActivitiesTableFilterComposer(
+            $db: $db,
+            $table: $db.memberActivities,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> memberContributionsRefs(
+    Expression<bool> Function($$MemberContributionsTableFilterComposer f) f,
+  ) {
+    final $$MemberContributionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberContributions,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberContributionsTableFilterComposer(
+            $db: $db,
+            $table: $db.memberContributions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> memberTasedRefs(
+    Expression<bool> Function($$MemberTasedTableFilterComposer f) f,
+  ) {
+    final $$MemberTasedTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberTased,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberTasedTableFilterComposer(
+            $db: $db,
+            $table: $db.memberTased,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> memberDonationsRefs(
+    Expression<bool> Function($$MemberDonationsTableFilterComposer f) f,
+  ) {
+    final $$MemberDonationsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberDonations,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberDonationsTableFilterComposer(
+            $db: $db,
+            $table: $db.memberDonations,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> memberRolesRefs(
+    Expression<bool> Function($$MemberRolesTableFilterComposer f) f,
+  ) {
+    final $$MemberRolesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberRoles,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberRolesTableFilterComposer(
+            $db: $db,
+            $table: $db.memberRoles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> departmentStaffRefs(
+    Expression<bool> Function($$DepartmentStaffTableFilterComposer f) f,
+  ) {
+    final $$DepartmentStaffTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.departmentStaff,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DepartmentStaffTableFilterComposer(
+            $db: $db,
+            $table: $db.departmentStaff,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$MembersTableOrderingComposer
+    extends Composer<_$AppDatabase, $MembersTable> {
+  $$MembersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get level => $composableBuilder(
+    column: $table.level,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get firstName => $composableBuilder(
+    column: $table.firstName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get middleName => $composableBuilder(
+    column: $table.middleName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastName => $composableBuilder(
+    column: $table.lastName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get suffix => $composableBuilder(
+    column: $table.suffix,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gender => $composableBuilder(
+    column: $table.gender,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dob => $composableBuilder(
+    column: $table.dob,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get placeOfBirth => $composableBuilder(
+    column: $table.placeOfBirth,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get contactNumber => $composableBuilder(
+    column: $table.contactNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ethnicity => $composableBuilder(
+    column: $table.ethnicity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get civilStatus => $composableBuilder(
+    column: $table.civilStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get spouseName => $composableBuilder(
+    column: $table.spouseName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get spouseDate => $composableBuilder(
+    column: $table.spouseDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dateJoined => $composableBuilder(
+    column: $table.dateJoined,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get usraName => $composableBuilder(
+    column: $table.usraName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get usraEstablishedYear => $composableBuilder(
+    column: $table.usraEstablishedYear,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get usraMeetingSchedule => $composableBuilder(
+    column: $table.usraMeetingSchedule,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ShubasTableOrderingComposer get shubaId {
+    final $$ShubasTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.shubaId,
+      referencedTable: $db.shubas,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ShubasTableOrderingComposer(
+            $db: $db,
+            $table: $db.shubas,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableOrderingComposer get naqibMemberId {
+    final $$MembersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.naqibMemberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableOrderingComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MembersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MembersTable> {
+  $$MembersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get level =>
+      $composableBuilder(column: $table.level, builder: (column) => column);
+
+  GeneratedColumn<String> get firstName =>
+      $composableBuilder(column: $table.firstName, builder: (column) => column);
+
+  GeneratedColumn<String> get middleName => $composableBuilder(
+    column: $table.middleName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastName =>
+      $composableBuilder(column: $table.lastName, builder: (column) => column);
+
+  GeneratedColumn<String> get suffix =>
+      $composableBuilder(column: $table.suffix, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<String> get gender =>
+      $composableBuilder(column: $table.gender, builder: (column) => column);
+
+  GeneratedColumn<String> get dob =>
+      $composableBuilder(column: $table.dob, builder: (column) => column);
+
+  GeneratedColumn<String> get placeOfBirth => $composableBuilder(
+    column: $table.placeOfBirth,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get contactNumber => $composableBuilder(
+    column: $table.contactNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<String> get address =>
+      $composableBuilder(column: $table.address, builder: (column) => column);
+
+  GeneratedColumn<String> get ethnicity =>
+      $composableBuilder(column: $table.ethnicity, builder: (column) => column);
+
+  GeneratedColumn<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get photoPath =>
+      $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
+  GeneratedColumn<String> get civilStatus => $composableBuilder(
+    column: $table.civilStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get spouseName => $composableBuilder(
+    column: $table.spouseName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get spouseDate => $composableBuilder(
+    column: $table.spouseDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get dateJoined => $composableBuilder(
+    column: $table.dateJoined,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get usraName =>
+      $composableBuilder(column: $table.usraName, builder: (column) => column);
+
+  GeneratedColumn<String> get usraEstablishedYear => $composableBuilder(
+    column: $table.usraEstablishedYear,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get usraMeetingSchedule => $composableBuilder(
+    column: $table.usraMeetingSchedule,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$ShubasTableAnnotationComposer get shubaId {
+    final $$ShubasTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.shubaId,
+      referencedTable: $db.shubas,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ShubasTableAnnotationComposer(
+            $db: $db,
+            $table: $db.shubas,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableAnnotationComposer get naqibMemberId {
+    final $$MembersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.naqibMemberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> departmentsRefs<T extends Object>(
+    Expression<T> Function($$DepartmentsTableAnnotationComposer a) f,
+  ) {
+    final $$DepartmentsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.departments,
+      getReferencedColumn: (t) => t.headMemberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DepartmentsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.departments,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> leadersRefs<T extends Object>(
+    Expression<T> Function($$LeadersTableAnnotationComposer a) f,
+  ) {
+    final $$LeadersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.leaders,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LeadersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.leaders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> memberChildrenRefs<T extends Object>(
+    Expression<T> Function($$MemberChildrenTableAnnotationComposer a) f,
+  ) {
+    final $$MemberChildrenTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberChildren,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberChildrenTableAnnotationComposer(
+            $db: $db,
+            $table: $db.memberChildren,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> memberWivesRefs<T extends Object>(
+    Expression<T> Function($$MemberWivesTableAnnotationComposer a) f,
+  ) {
+    final $$MemberWivesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberWives,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberWivesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.memberWives,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> memberEducationRefs<T extends Object>(
+    Expression<T> Function($$MemberEducationTableAnnotationComposer a) f,
+  ) {
+    final $$MemberEducationTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberEducation,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberEducationTableAnnotationComposer(
+            $db: $db,
+            $table: $db.memberEducation,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> memberActivitiesRefs<T extends Object>(
+    Expression<T> Function($$MemberActivitiesTableAnnotationComposer a) f,
+  ) {
+    final $$MemberActivitiesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberActivities,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberActivitiesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.memberActivities,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> memberContributionsRefs<T extends Object>(
+    Expression<T> Function($$MemberContributionsTableAnnotationComposer a) f,
+  ) {
+    final $$MemberContributionsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.memberContributions,
+          getReferencedColumn: (t) => t.memberId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$MemberContributionsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.memberContributions,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> memberTasedRefs<T extends Object>(
+    Expression<T> Function($$MemberTasedTableAnnotationComposer a) f,
+  ) {
+    final $$MemberTasedTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberTased,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberTasedTableAnnotationComposer(
+            $db: $db,
+            $table: $db.memberTased,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> memberDonationsRefs<T extends Object>(
+    Expression<T> Function($$MemberDonationsTableAnnotationComposer a) f,
+  ) {
+    final $$MemberDonationsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberDonations,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberDonationsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.memberDonations,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> memberRolesRefs<T extends Object>(
+    Expression<T> Function($$MemberRolesTableAnnotationComposer a) f,
+  ) {
+    final $$MemberRolesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memberRoles,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemberRolesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.memberRoles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> departmentStaffRefs<T extends Object>(
+    Expression<T> Function($$DepartmentStaffTableAnnotationComposer a) f,
+  ) {
+    final $$DepartmentStaffTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.departmentStaff,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DepartmentStaffTableAnnotationComposer(
+            $db: $db,
+            $table: $db.departmentStaff,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$MembersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MembersTable,
+          Member,
+          $$MembersTableFilterComposer,
+          $$MembersTableOrderingComposer,
+          $$MembersTableAnnotationComposer,
+          $$MembersTableCreateCompanionBuilder,
+          $$MembersTableUpdateCompanionBuilder,
+          (Member, $$MembersTableReferences),
+          Member,
+          PrefetchHooks Function({
+            bool shubaId,
+            bool naqibMemberId,
+            bool departmentsRefs,
+            bool leadersRefs,
+            bool memberChildrenRefs,
+            bool memberWivesRefs,
+            bool memberEducationRefs,
+            bool memberActivitiesRefs,
+            bool memberContributionsRefs,
+            bool memberTasedRefs,
+            bool memberDonationsRefs,
+            bool memberRolesRefs,
+            bool departmentStaffRefs,
+          })
+        > {
+  $$MembersTableTableManager(_$AppDatabase db, $MembersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MembersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MembersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MembersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> shubaId = const Value.absent(),
+                Value<int> level = const Value.absent(),
+                Value<String> firstName = const Value.absent(),
+                Value<String> middleName = const Value.absent(),
+                Value<String> lastName = const Value.absent(),
+                Value<String> suffix = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<String> gender = const Value.absent(),
+                Value<String> dob = const Value.absent(),
+                Value<String> placeOfBirth = const Value.absent(),
+                Value<String> contactNumber = const Value.absent(),
+                Value<String> email = const Value.absent(),
+                Value<String> address = const Value.absent(),
+                Value<String> ethnicity = const Value.absent(),
+                Value<String> occupation = const Value.absent(),
+                Value<String> photoPath = const Value.absent(),
+                Value<String> civilStatus = const Value.absent(),
+                Value<String> spouseName = const Value.absent(),
+                Value<String> spouseDate = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> dateJoined = const Value.absent(),
+                Value<String> usraName = const Value.absent(),
+                Value<String> usraEstablishedYear = const Value.absent(),
+                Value<String> usraMeetingSchedule = const Value.absent(),
+                Value<String?> naqibMemberId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MembersCompanion(
+                id: id,
+                shubaId: shubaId,
+                level: level,
+                firstName: firstName,
+                middleName: middleName,
+                lastName: lastName,
+                suffix: suffix,
+                nameAr: nameAr,
+                gender: gender,
+                dob: dob,
+                placeOfBirth: placeOfBirth,
+                contactNumber: contactNumber,
+                email: email,
+                address: address,
+                ethnicity: ethnicity,
+                occupation: occupation,
+                photoPath: photoPath,
+                civilStatus: civilStatus,
+                spouseName: spouseName,
+                spouseDate: spouseDate,
+                status: status,
+                dateJoined: dateJoined,
+                usraName: usraName,
+                usraEstablishedYear: usraEstablishedYear,
+                usraMeetingSchedule: usraMeetingSchedule,
+                naqibMemberId: naqibMemberId,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String shubaId,
+                Value<int> level = const Value.absent(),
+                required String firstName,
+                Value<String> middleName = const Value.absent(),
+                required String lastName,
+                Value<String> suffix = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<String> gender = const Value.absent(),
+                Value<String> dob = const Value.absent(),
+                Value<String> placeOfBirth = const Value.absent(),
+                Value<String> contactNumber = const Value.absent(),
+                Value<String> email = const Value.absent(),
+                Value<String> address = const Value.absent(),
+                Value<String> ethnicity = const Value.absent(),
+                Value<String> occupation = const Value.absent(),
+                Value<String> photoPath = const Value.absent(),
+                Value<String> civilStatus = const Value.absent(),
+                Value<String> spouseName = const Value.absent(),
+                Value<String> spouseDate = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> dateJoined = const Value.absent(),
+                Value<String> usraName = const Value.absent(),
+                Value<String> usraEstablishedYear = const Value.absent(),
+                Value<String> usraMeetingSchedule = const Value.absent(),
+                Value<String?> naqibMemberId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MembersCompanion.insert(
+                id: id,
+                shubaId: shubaId,
+                level: level,
+                firstName: firstName,
+                middleName: middleName,
+                lastName: lastName,
+                suffix: suffix,
+                nameAr: nameAr,
+                gender: gender,
+                dob: dob,
+                placeOfBirth: placeOfBirth,
+                contactNumber: contactNumber,
+                email: email,
+                address: address,
+                ethnicity: ethnicity,
+                occupation: occupation,
+                photoPath: photoPath,
+                civilStatus: civilStatus,
+                spouseName: spouseName,
+                spouseDate: spouseDate,
+                status: status,
+                dateJoined: dateJoined,
+                usraName: usraName,
+                usraEstablishedYear: usraEstablishedYear,
+                usraMeetingSchedule: usraMeetingSchedule,
+                naqibMemberId: naqibMemberId,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$MembersTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                shubaId = false,
+                naqibMemberId = false,
+                departmentsRefs = false,
+                leadersRefs = false,
+                memberChildrenRefs = false,
+                memberWivesRefs = false,
+                memberEducationRefs = false,
+                memberActivitiesRefs = false,
+                memberContributionsRefs = false,
+                memberTasedRefs = false,
+                memberDonationsRefs = false,
+                memberRolesRefs = false,
+                departmentStaffRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (departmentsRefs) db.departments,
+                    if (leadersRefs) db.leaders,
+                    if (memberChildrenRefs) db.memberChildren,
+                    if (memberWivesRefs) db.memberWives,
+                    if (memberEducationRefs) db.memberEducation,
+                    if (memberActivitiesRefs) db.memberActivities,
+                    if (memberContributionsRefs) db.memberContributions,
+                    if (memberTasedRefs) db.memberTased,
+                    if (memberDonationsRefs) db.memberDonations,
+                    if (memberRolesRefs) db.memberRoles,
+                    if (departmentStaffRefs) db.departmentStaff,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (shubaId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.shubaId,
+                                    referencedTable: $$MembersTableReferences
+                                        ._shubaIdTable(db),
+                                    referencedColumn: $$MembersTableReferences
+                                        ._shubaIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (naqibMemberId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.naqibMemberId,
+                                    referencedTable: $$MembersTableReferences
+                                        ._naqibMemberIdTable(db),
+                                    referencedColumn: $$MembersTableReferences
+                                        ._naqibMemberIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (departmentsRefs)
+                        await $_getPrefetchedData<
+                          Member,
+                          $MembersTable,
+                          Department
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._departmentsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).departmentsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.headMemberId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (leadersRefs)
+                        await $_getPrefetchedData<
+                          Member,
+                          $MembersTable,
+                          Leader
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._leadersRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).leadersRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.memberId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (memberChildrenRefs)
+                        await $_getPrefetchedData<
+                          Member,
+                          $MembersTable,
+                          MemberChildrenData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._memberChildrenRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).memberChildrenRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.memberId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (memberWivesRefs)
+                        await $_getPrefetchedData<
+                          Member,
+                          $MembersTable,
+                          MemberWife
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._memberWivesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).memberWivesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.memberId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (memberEducationRefs)
+                        await $_getPrefetchedData<
+                          Member,
+                          $MembersTable,
+                          MemberEducationData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._memberEducationRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).memberEducationRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.memberId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (memberActivitiesRefs)
+                        await $_getPrefetchedData<
+                          Member,
+                          $MembersTable,
+                          MemberActivity
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._memberActivitiesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).memberActivitiesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.memberId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (memberContributionsRefs)
+                        await $_getPrefetchedData<
+                          Member,
+                          $MembersTable,
+                          MemberContribution
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._memberContributionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).memberContributionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.memberId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (memberTasedRefs)
+                        await $_getPrefetchedData<
+                          Member,
+                          $MembersTable,
+                          MemberTasedData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._memberTasedRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).memberTasedRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.memberId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (memberDonationsRefs)
+                        await $_getPrefetchedData<
+                          Member,
+                          $MembersTable,
+                          MemberDonation
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._memberDonationsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).memberDonationsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.memberId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (memberRolesRefs)
+                        await $_getPrefetchedData<
+                          Member,
+                          $MembersTable,
+                          MemberRole
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._memberRolesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).memberRolesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.memberId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (departmentStaffRefs)
+                        await $_getPrefetchedData<
+                          Member,
+                          $MembersTable,
+                          DepartmentStaffData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._departmentStaffRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).departmentStaffRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.memberId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$MembersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MembersTable,
+      Member,
+      $$MembersTableFilterComposer,
+      $$MembersTableOrderingComposer,
+      $$MembersTableAnnotationComposer,
+      $$MembersTableCreateCompanionBuilder,
+      $$MembersTableUpdateCompanionBuilder,
+      (Member, $$MembersTableReferences),
+      Member,
+      PrefetchHooks Function({
+        bool shubaId,
+        bool naqibMemberId,
+        bool departmentsRefs,
+        bool leadersRefs,
+        bool memberChildrenRefs,
+        bool memberWivesRefs,
+        bool memberEducationRefs,
+        bool memberActivitiesRefs,
+        bool memberContributionsRefs,
+        bool memberTasedRefs,
+        bool memberDonationsRefs,
+        bool memberRolesRefs,
+        bool departmentStaffRefs,
+      })
+    >;
 typedef $$DepartmentsTableCreateCompanionBuilder =
     DepartmentsCompanion Function({
       required String id,
@@ -10186,6 +14839,7 @@ typedef $$DepartmentsTableCreateCompanionBuilder =
       Value<String> headNameAr,
       Value<String> contactEmail,
       Value<String> contactPhone,
+      Value<String?> headMemberId,
       Value<int> sortOrder,
       Value<int> rowid,
     });
@@ -10202,6 +14856,7 @@ typedef $$DepartmentsTableUpdateCompanionBuilder =
       Value<String> headNameAr,
       Value<String> contactEmail,
       Value<String> contactPhone,
+      Value<String?> headMemberId,
       Value<int> sortOrder,
       Value<int> rowid,
     });
@@ -10209,6 +14864,23 @@ typedef $$DepartmentsTableUpdateCompanionBuilder =
 final class $$DepartmentsTableReferences
     extends BaseReferences<_$AppDatabase, $DepartmentsTable, Department> {
   $$DepartmentsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $MembersTable _headMemberIdTable(_$AppDatabase db) =>
+      db.members.createAlias('departments__head_member_id__members__id');
+
+  $$MembersTableProcessedTableManager? get headMemberId {
+    final $_column = $_itemColumn<String>('head_member_id');
+    if ($_column == null) return null;
+    final manager = $$MembersTableTableManager(
+      $_db,
+      $_db.members,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_headMemberIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
 
   static MultiTypedResultKey<$UsersTable, List<User>> _usersRefsTable(
     _$AppDatabase db,
@@ -10242,6 +14914,26 @@ final class $$DepartmentsTableReferences
     ).filter((f) => f.departmentId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_memberRolesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$DepartmentStaffTable, List<DepartmentStaffData>>
+  _departmentStaffRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.departmentStaff,
+    aliasName: 'departments__id__department_staff__department_id',
+  );
+
+  $$DepartmentStaffTableProcessedTableManager get departmentStaffRefs {
+    final manager = $$DepartmentStaffTableTableManager(
+      $_db,
+      $_db.departmentStaff,
+    ).filter((f) => f.departmentId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _departmentStaffRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -10354,6 +15046,29 @@ class $$DepartmentsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  $$MembersTableFilterComposer get headMemberId {
+    final $$MembersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.headMemberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableFilterComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   Expression<bool> usersRefs(
     Expression<bool> Function($$UsersTableFilterComposer f) f,
   ) {
@@ -10395,6 +15110,31 @@ class $$DepartmentsTableFilterComposer
           }) => $$MemberRolesTableFilterComposer(
             $db: $db,
             $table: $db.memberRoles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> departmentStaffRefs(
+    Expression<bool> Function($$DepartmentStaffTableFilterComposer f) f,
+  ) {
+    final $$DepartmentStaffTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.departmentStaff,
+      getReferencedColumn: (t) => t.departmentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DepartmentStaffTableFilterComposer(
+            $db: $db,
+            $table: $db.departmentStaff,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -10523,6 +15263,29 @@ class $$DepartmentsTableOrderingComposer
     column: $table.sortOrder,
     builder: (column) => ColumnOrderings(column),
   );
+
+  $$MembersTableOrderingComposer get headMemberId {
+    final $$MembersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.headMemberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableOrderingComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$DepartmentsTableAnnotationComposer
@@ -10580,6 +15343,29 @@ class $$DepartmentsTableAnnotationComposer
   GeneratedColumn<int> get sortOrder =>
       $composableBuilder(column: $table.sortOrder, builder: (column) => column);
 
+  $$MembersTableAnnotationComposer get headMemberId {
+    final $$MembersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.headMemberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   Expression<T> usersRefs<T extends Object>(
     Expression<T> Function($$UsersTableAnnotationComposer a) f,
   ) {
@@ -10621,6 +15407,31 @@ class $$DepartmentsTableAnnotationComposer
           }) => $$MemberRolesTableAnnotationComposer(
             $db: $db,
             $table: $db.memberRoles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> departmentStaffRefs<T extends Object>(
+    Expression<T> Function($$DepartmentStaffTableAnnotationComposer a) f,
+  ) {
+    final $$DepartmentStaffTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.departmentStaff,
+      getReferencedColumn: (t) => t.departmentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DepartmentStaffTableAnnotationComposer(
+            $db: $db,
+            $table: $db.departmentStaff,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -10695,8 +15506,10 @@ class $$DepartmentsTableTableManager
           (Department, $$DepartmentsTableReferences),
           Department,
           PrefetchHooks Function({
+            bool headMemberId,
             bool usersRefs,
             bool memberRolesRefs,
+            bool departmentStaffRefs,
             bool deptActivitiesRefs,
             bool reportsRefs,
           })
@@ -10725,6 +15538,7 @@ class $$DepartmentsTableTableManager
                 Value<String> headNameAr = const Value.absent(),
                 Value<String> contactEmail = const Value.absent(),
                 Value<String> contactPhone = const Value.absent(),
+                Value<String?> headMemberId = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DepartmentsCompanion(
@@ -10739,6 +15553,7 @@ class $$DepartmentsTableTableManager
                 headNameAr: headNameAr,
                 contactEmail: contactEmail,
                 contactPhone: contactPhone,
+                headMemberId: headMemberId,
                 sortOrder: sortOrder,
                 rowid: rowid,
               ),
@@ -10755,6 +15570,7 @@ class $$DepartmentsTableTableManager
                 Value<String> headNameAr = const Value.absent(),
                 Value<String> contactEmail = const Value.absent(),
                 Value<String> contactPhone = const Value.absent(),
+                Value<String?> headMemberId = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DepartmentsCompanion.insert(
@@ -10769,6 +15585,7 @@ class $$DepartmentsTableTableManager
                 headNameAr: headNameAr,
                 contactEmail: contactEmail,
                 contactPhone: contactPhone,
+                headMemberId: headMemberId,
                 sortOrder: sortOrder,
                 rowid: rowid,
               ),
@@ -10782,8 +15599,10 @@ class $$DepartmentsTableTableManager
               .toList(),
           prefetchHooksCallback:
               ({
+                headMemberId = false,
                 usersRefs = false,
                 memberRolesRefs = false,
+                departmentStaffRefs = false,
                 deptActivitiesRefs = false,
                 reportsRefs = false,
               }) {
@@ -10792,10 +15611,44 @@ class $$DepartmentsTableTableManager
                   explicitlyWatchedTables: [
                     if (usersRefs) db.users,
                     if (memberRolesRefs) db.memberRoles,
+                    if (departmentStaffRefs) db.departmentStaff,
                     if (deptActivitiesRefs) db.deptActivities,
                     if (reportsRefs) db.reports,
                   ],
-                  addJoins: null,
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (headMemberId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.headMemberId,
+                                    referencedTable:
+                                        $$DepartmentsTableReferences
+                                            ._headMemberIdTable(db),
+                                    referencedColumn:
+                                        $$DepartmentsTableReferences
+                                            ._headMemberIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (usersRefs)
@@ -10834,6 +15687,27 @@ class $$DepartmentsTableTableManager
                                 table,
                                 p0,
                               ).memberRolesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.departmentId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (departmentStaffRefs)
+                        await $_getPrefetchedData<
+                          Department,
+                          $DepartmentsTable,
+                          DepartmentStaffData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$DepartmentsTableReferences
+                              ._departmentStaffRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$DepartmentsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).departmentStaffRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.departmentId == item.id,
@@ -10903,8 +15777,10 @@ typedef $$DepartmentsTableProcessedTableManager =
       (Department, $$DepartmentsTableReferences),
       Department,
       PrefetchHooks Function({
+        bool headMemberId,
         bool usersRefs,
         bool memberRolesRefs,
+        bool departmentStaffRefs,
         bool deptActivitiesRefs,
         bool reportsRefs,
       })
@@ -11448,6 +16324,7 @@ typedef $$LeadersTableCreateCompanionBuilder =
       Value<String> email,
       Value<String> phone,
       Value<String> photoPath,
+      Value<String?> memberId,
       Value<int> accent,
       Value<int> sortOrder,
       Value<DateTime> createdAt,
@@ -11471,11 +16348,34 @@ typedef $$LeadersTableUpdateCompanionBuilder =
       Value<String> email,
       Value<String> phone,
       Value<String> photoPath,
+      Value<String?> memberId,
       Value<int> accent,
       Value<int> sortOrder,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
+
+final class $$LeadersTableReferences
+    extends BaseReferences<_$AppDatabase, $LeadersTable, Leader> {
+  $$LeadersTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $MembersTable _memberIdTable(_$AppDatabase db) =>
+      db.members.createAlias('leaders__member_id__members__id');
+
+  $$MembersTableProcessedTableManager? get memberId {
+    final $_column = $_itemColumn<String>('member_id');
+    if ($_column == null) return null;
+    final manager = $$MembersTableTableManager(
+      $_db,
+      $_db.members,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_memberIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
 
 class $$LeadersTableFilterComposer
     extends Composer<_$AppDatabase, $LeadersTable> {
@@ -11580,6 +16480,29 @@ class $$LeadersTableFilterComposer
     column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  $$MembersTableFilterComposer get memberId {
+    final $$MembersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableFilterComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$LeadersTableOrderingComposer
@@ -11685,6 +16608,29 @@ class $$LeadersTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  $$MembersTableOrderingComposer get memberId {
+    final $$MembersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableOrderingComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$LeadersTableAnnotationComposer
@@ -11764,6 +16710,29 @@ class $$LeadersTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$MembersTableAnnotationComposer get memberId {
+    final $$MembersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$LeadersTableTableManager
@@ -11777,9 +16746,9 @@ class $$LeadersTableTableManager
           $$LeadersTableAnnotationComposer,
           $$LeadersTableCreateCompanionBuilder,
           $$LeadersTableUpdateCompanionBuilder,
-          (Leader, BaseReferences<_$AppDatabase, $LeadersTable, Leader>),
+          (Leader, $$LeadersTableReferences),
           Leader,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool memberId})
         > {
   $$LeadersTableTableManager(_$AppDatabase db, $LeadersTable table)
     : super(
@@ -11810,6 +16779,7 @@ class $$LeadersTableTableManager
                 Value<String> email = const Value.absent(),
                 Value<String> phone = const Value.absent(),
                 Value<String> photoPath = const Value.absent(),
+                Value<String?> memberId = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -11831,6 +16801,7 @@ class $$LeadersTableTableManager
                 email: email,
                 phone: phone,
                 photoPath: photoPath,
+                memberId: memberId,
                 accent: accent,
                 sortOrder: sortOrder,
                 createdAt: createdAt,
@@ -11854,6 +16825,7 @@ class $$LeadersTableTableManager
                 Value<String> email = const Value.absent(),
                 Value<String> phone = const Value.absent(),
                 Value<String> photoPath = const Value.absent(),
+                Value<String?> memberId = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -11875,15 +16847,61 @@ class $$LeadersTableTableManager
                 email: email,
                 phone: phone,
                 photoPath: photoPath,
+                memberId: memberId,
                 accent: accent,
                 sortOrder: sortOrder,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$LeadersTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({memberId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (memberId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.memberId,
+                                referencedTable: $$LeadersTableReferences
+                                    ._memberIdTable(db),
+                                referencedColumn: $$LeadersTableReferences
+                                    ._memberIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ),
       );
 }
@@ -11898,9 +16916,9 @@ typedef $$LeadersTableProcessedTableManager =
       $$LeadersTableAnnotationComposer,
       $$LeadersTableCreateCompanionBuilder,
       $$LeadersTableUpdateCompanionBuilder,
-      (Leader, BaseReferences<_$AppDatabase, $LeadersTable, Leader>),
+      (Leader, $$LeadersTableReferences),
       Leader,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool memberId})
     >;
 typedef $$AuditLogsTableCreateCompanionBuilder =
     AuditLogsCompanion Function({
@@ -12276,2259 +17294,6 @@ typedef $$AuditLogsTableProcessedTableManager =
       AuditLog,
       PrefetchHooks Function({bool userId})
     >;
-typedef $$TarbiyaAreasTableCreateCompanionBuilder =
-    TarbiyaAreasCompanion Function({
-      required String id,
-      required String name,
-      Value<String> nameAr,
-      Value<String> region,
-      Value<String> regionAr,
-      Value<int> accent,
-      Value<int> sortOrder,
-      Value<int> rowid,
-    });
-typedef $$TarbiyaAreasTableUpdateCompanionBuilder =
-    TarbiyaAreasCompanion Function({
-      Value<String> id,
-      Value<String> name,
-      Value<String> nameAr,
-      Value<String> region,
-      Value<String> regionAr,
-      Value<int> accent,
-      Value<int> sortOrder,
-      Value<int> rowid,
-    });
-
-final class $$TarbiyaAreasTableReferences
-    extends BaseReferences<_$AppDatabase, $TarbiyaAreasTable, TarbiyaArea> {
-  $$TarbiyaAreasTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static MultiTypedResultKey<$ShubasTable, List<Shuba>> _shubasRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
-    db.shubas,
-    aliasName: 'tarbiya_areas__id__shubas__area_id',
-  );
-
-  $$ShubasTableProcessedTableManager get shubasRefs {
-    final manager = $$ShubasTableTableManager(
-      $_db,
-      $_db.shubas,
-    ).filter((f) => f.areaId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_shubasRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$TarbiyaAreasTableFilterComposer
-    extends Composer<_$AppDatabase, $TarbiyaAreasTable> {
-  $$TarbiyaAreasTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get region => $composableBuilder(
-    column: $table.region,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get regionAr => $composableBuilder(
-    column: $table.regionAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get accent => $composableBuilder(
-    column: $table.accent,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get sortOrder => $composableBuilder(
-    column: $table.sortOrder,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  Expression<bool> shubasRefs(
-    Expression<bool> Function($$ShubasTableFilterComposer f) f,
-  ) {
-    final $$ShubasTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.shubas,
-      getReferencedColumn: (t) => t.areaId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ShubasTableFilterComposer(
-            $db: $db,
-            $table: $db.shubas,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$TarbiyaAreasTableOrderingComposer
-    extends Composer<_$AppDatabase, $TarbiyaAreasTable> {
-  $$TarbiyaAreasTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get region => $composableBuilder(
-    column: $table.region,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get regionAr => $composableBuilder(
-    column: $table.regionAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get accent => $composableBuilder(
-    column: $table.accent,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get sortOrder => $composableBuilder(
-    column: $table.sortOrder,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$TarbiyaAreasTableAnnotationComposer
-    extends Composer<_$AppDatabase, $TarbiyaAreasTable> {
-  $$TarbiyaAreasTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get nameAr =>
-      $composableBuilder(column: $table.nameAr, builder: (column) => column);
-
-  GeneratedColumn<String> get region =>
-      $composableBuilder(column: $table.region, builder: (column) => column);
-
-  GeneratedColumn<String> get regionAr =>
-      $composableBuilder(column: $table.regionAr, builder: (column) => column);
-
-  GeneratedColumn<int> get accent =>
-      $composableBuilder(column: $table.accent, builder: (column) => column);
-
-  GeneratedColumn<int> get sortOrder =>
-      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
-
-  Expression<T> shubasRefs<T extends Object>(
-    Expression<T> Function($$ShubasTableAnnotationComposer a) f,
-  ) {
-    final $$ShubasTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.shubas,
-      getReferencedColumn: (t) => t.areaId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ShubasTableAnnotationComposer(
-            $db: $db,
-            $table: $db.shubas,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$TarbiyaAreasTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $TarbiyaAreasTable,
-          TarbiyaArea,
-          $$TarbiyaAreasTableFilterComposer,
-          $$TarbiyaAreasTableOrderingComposer,
-          $$TarbiyaAreasTableAnnotationComposer,
-          $$TarbiyaAreasTableCreateCompanionBuilder,
-          $$TarbiyaAreasTableUpdateCompanionBuilder,
-          (TarbiyaArea, $$TarbiyaAreasTableReferences),
-          TarbiyaArea,
-          PrefetchHooks Function({bool shubasRefs})
-        > {
-  $$TarbiyaAreasTableTableManager(_$AppDatabase db, $TarbiyaAreasTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$TarbiyaAreasTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$TarbiyaAreasTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$TarbiyaAreasTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<String> nameAr = const Value.absent(),
-                Value<String> region = const Value.absent(),
-                Value<String> regionAr = const Value.absent(),
-                Value<int> accent = const Value.absent(),
-                Value<int> sortOrder = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => TarbiyaAreasCompanion(
-                id: id,
-                name: name,
-                nameAr: nameAr,
-                region: region,
-                regionAr: regionAr,
-                accent: accent,
-                sortOrder: sortOrder,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String id,
-                required String name,
-                Value<String> nameAr = const Value.absent(),
-                Value<String> region = const Value.absent(),
-                Value<String> regionAr = const Value.absent(),
-                Value<int> accent = const Value.absent(),
-                Value<int> sortOrder = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => TarbiyaAreasCompanion.insert(
-                id: id,
-                name: name,
-                nameAr: nameAr,
-                region: region,
-                regionAr: regionAr,
-                accent: accent,
-                sortOrder: sortOrder,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$TarbiyaAreasTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({shubasRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (shubasRefs) db.shubas],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (shubasRefs)
-                    await $_getPrefetchedData<
-                      TarbiyaArea,
-                      $TarbiyaAreasTable,
-                      Shuba
-                    >(
-                      currentTable: table,
-                      referencedTable: $$TarbiyaAreasTableReferences
-                          ._shubasRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$TarbiyaAreasTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).shubasRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.areaId == item.id),
-                      typedResults: items,
-                    ),
-                ];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$TarbiyaAreasTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $TarbiyaAreasTable,
-      TarbiyaArea,
-      $$TarbiyaAreasTableFilterComposer,
-      $$TarbiyaAreasTableOrderingComposer,
-      $$TarbiyaAreasTableAnnotationComposer,
-      $$TarbiyaAreasTableCreateCompanionBuilder,
-      $$TarbiyaAreasTableUpdateCompanionBuilder,
-      (TarbiyaArea, $$TarbiyaAreasTableReferences),
-      TarbiyaArea,
-      PrefetchHooks Function({bool shubasRefs})
-    >;
-typedef $$ShubasTableCreateCompanionBuilder =
-    ShubasCompanion Function({
-      required String id,
-      required String areaId,
-      required String name,
-      Value<String> nameAr,
-      Value<int> sortOrder,
-      Value<int> rowid,
-    });
-typedef $$ShubasTableUpdateCompanionBuilder =
-    ShubasCompanion Function({
-      Value<String> id,
-      Value<String> areaId,
-      Value<String> name,
-      Value<String> nameAr,
-      Value<int> sortOrder,
-      Value<int> rowid,
-    });
-
-final class $$ShubasTableReferences
-    extends BaseReferences<_$AppDatabase, $ShubasTable, Shuba> {
-  $$ShubasTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $TarbiyaAreasTable _areaIdTable(_$AppDatabase db) =>
-      db.tarbiyaAreas.createAlias('shubas__area_id__tarbiya_areas__id');
-
-  $$TarbiyaAreasTableProcessedTableManager get areaId {
-    final $_column = $_itemColumn<String>('area_id')!;
-
-    final manager = $$TarbiyaAreasTableTableManager(
-      $_db,
-      $_db.tarbiyaAreas,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_areaIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static MultiTypedResultKey<$MembersTable, List<Member>> _membersRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
-    db.members,
-    aliasName: 'shubas__id__members__shuba_id',
-  );
-
-  $$MembersTableProcessedTableManager get membersRefs {
-    final manager = $$MembersTableTableManager(
-      $_db,
-      $_db.members,
-    ).filter((f) => f.shubaId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_membersRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$ShubasTableFilterComposer
-    extends Composer<_$AppDatabase, $ShubasTable> {
-  $$ShubasTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get sortOrder => $composableBuilder(
-    column: $table.sortOrder,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$TarbiyaAreasTableFilterComposer get areaId {
-    final $$TarbiyaAreasTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.areaId,
-      referencedTable: $db.tarbiyaAreas,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$TarbiyaAreasTableFilterComposer(
-            $db: $db,
-            $table: $db.tarbiyaAreas,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<bool> membersRefs(
-    Expression<bool> Function($$MembersTableFilterComposer f) f,
-  ) {
-    final $$MembersTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.members,
-      getReferencedColumn: (t) => t.shubaId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MembersTableFilterComposer(
-            $db: $db,
-            $table: $db.members,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$ShubasTableOrderingComposer
-    extends Composer<_$AppDatabase, $ShubasTable> {
-  $$ShubasTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get sortOrder => $composableBuilder(
-    column: $table.sortOrder,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$TarbiyaAreasTableOrderingComposer get areaId {
-    final $$TarbiyaAreasTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.areaId,
-      referencedTable: $db.tarbiyaAreas,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$TarbiyaAreasTableOrderingComposer(
-            $db: $db,
-            $table: $db.tarbiyaAreas,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$ShubasTableAnnotationComposer
-    extends Composer<_$AppDatabase, $ShubasTable> {
-  $$ShubasTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get nameAr =>
-      $composableBuilder(column: $table.nameAr, builder: (column) => column);
-
-  GeneratedColumn<int> get sortOrder =>
-      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
-
-  $$TarbiyaAreasTableAnnotationComposer get areaId {
-    final $$TarbiyaAreasTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.areaId,
-      referencedTable: $db.tarbiyaAreas,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$TarbiyaAreasTableAnnotationComposer(
-            $db: $db,
-            $table: $db.tarbiyaAreas,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<T> membersRefs<T extends Object>(
-    Expression<T> Function($$MembersTableAnnotationComposer a) f,
-  ) {
-    final $$MembersTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.members,
-      getReferencedColumn: (t) => t.shubaId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MembersTableAnnotationComposer(
-            $db: $db,
-            $table: $db.members,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$ShubasTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $ShubasTable,
-          Shuba,
-          $$ShubasTableFilterComposer,
-          $$ShubasTableOrderingComposer,
-          $$ShubasTableAnnotationComposer,
-          $$ShubasTableCreateCompanionBuilder,
-          $$ShubasTableUpdateCompanionBuilder,
-          (Shuba, $$ShubasTableReferences),
-          Shuba,
-          PrefetchHooks Function({bool areaId, bool membersRefs})
-        > {
-  $$ShubasTableTableManager(_$AppDatabase db, $ShubasTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$ShubasTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$ShubasTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$ShubasTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> areaId = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<String> nameAr = const Value.absent(),
-                Value<int> sortOrder = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => ShubasCompanion(
-                id: id,
-                areaId: areaId,
-                name: name,
-                nameAr: nameAr,
-                sortOrder: sortOrder,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String id,
-                required String areaId,
-                required String name,
-                Value<String> nameAr = const Value.absent(),
-                Value<int> sortOrder = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => ShubasCompanion.insert(
-                id: id,
-                areaId: areaId,
-                name: name,
-                nameAr: nameAr,
-                sortOrder: sortOrder,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) =>
-                    (e.readTable(table), $$ShubasTableReferences(db, table, e)),
-              )
-              .toList(),
-          prefetchHooksCallback: ({areaId = false, membersRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (membersRefs) db.members],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (areaId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.areaId,
-                                referencedTable: $$ShubasTableReferences
-                                    ._areaIdTable(db),
-                                referencedColumn: $$ShubasTableReferences
-                                    ._areaIdTable(db)
-                                    .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (membersRefs)
-                    await $_getPrefetchedData<Shuba, $ShubasTable, Member>(
-                      currentTable: table,
-                      referencedTable: $$ShubasTableReferences
-                          ._membersRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$ShubasTableReferences(db, table, p0).membersRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.shubaId == item.id),
-                      typedResults: items,
-                    ),
-                ];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$ShubasTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $ShubasTable,
-      Shuba,
-      $$ShubasTableFilterComposer,
-      $$ShubasTableOrderingComposer,
-      $$ShubasTableAnnotationComposer,
-      $$ShubasTableCreateCompanionBuilder,
-      $$ShubasTableUpdateCompanionBuilder,
-      (Shuba, $$ShubasTableReferences),
-      Shuba,
-      PrefetchHooks Function({bool areaId, bool membersRefs})
-    >;
-typedef $$MembersTableCreateCompanionBuilder =
-    MembersCompanion Function({
-      required String id,
-      required String shubaId,
-      Value<int> level,
-      required String firstName,
-      Value<String> middleName,
-      required String lastName,
-      Value<String> suffix,
-      Value<String> nameAr,
-      Value<String> gender,
-      Value<String> dob,
-      Value<String> placeOfBirth,
-      Value<String> contactNumber,
-      Value<String> email,
-      Value<String> address,
-      Value<String> ethnicity,
-      Value<String> occupation,
-      Value<String> photoPath,
-      Value<String> civilStatus,
-      Value<String> spouseName,
-      Value<String> spouseDate,
-      Value<String> status,
-      Value<String> dateJoined,
-      Value<String> usraName,
-      Value<String> usraEstablishedYear,
-      Value<String> usraMeetingSchedule,
-      Value<String?> naqibMemberId,
-      Value<DateTime> createdAt,
-      Value<int> rowid,
-    });
-typedef $$MembersTableUpdateCompanionBuilder =
-    MembersCompanion Function({
-      Value<String> id,
-      Value<String> shubaId,
-      Value<int> level,
-      Value<String> firstName,
-      Value<String> middleName,
-      Value<String> lastName,
-      Value<String> suffix,
-      Value<String> nameAr,
-      Value<String> gender,
-      Value<String> dob,
-      Value<String> placeOfBirth,
-      Value<String> contactNumber,
-      Value<String> email,
-      Value<String> address,
-      Value<String> ethnicity,
-      Value<String> occupation,
-      Value<String> photoPath,
-      Value<String> civilStatus,
-      Value<String> spouseName,
-      Value<String> spouseDate,
-      Value<String> status,
-      Value<String> dateJoined,
-      Value<String> usraName,
-      Value<String> usraEstablishedYear,
-      Value<String> usraMeetingSchedule,
-      Value<String?> naqibMemberId,
-      Value<DateTime> createdAt,
-      Value<int> rowid,
-    });
-
-final class $$MembersTableReferences
-    extends BaseReferences<_$AppDatabase, $MembersTable, Member> {
-  $$MembersTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $ShubasTable _shubaIdTable(_$AppDatabase db) =>
-      db.shubas.createAlias('members__shuba_id__shubas__id');
-
-  $$ShubasTableProcessedTableManager get shubaId {
-    final $_column = $_itemColumn<String>('shuba_id')!;
-
-    final manager = $$ShubasTableTableManager(
-      $_db,
-      $_db.shubas,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_shubaIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static $MembersTable _naqibMemberIdTable(_$AppDatabase db) =>
-      db.members.createAlias('members__naqib_member_id__members__id');
-
-  $$MembersTableProcessedTableManager? get naqibMemberId {
-    final $_column = $_itemColumn<String>('naqib_member_id');
-    if ($_column == null) return null;
-    final manager = $$MembersTableTableManager(
-      $_db,
-      $_db.members,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_naqibMemberIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static MultiTypedResultKey<$MemberChildrenTable, List<MemberChildrenData>>
-  _memberChildrenRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.memberChildren,
-    aliasName: 'members__id__member_children__member_id',
-  );
-
-  $$MemberChildrenTableProcessedTableManager get memberChildrenRefs {
-    final manager = $$MemberChildrenTableTableManager(
-      $_db,
-      $_db.memberChildren,
-    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_memberChildrenRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$MemberEducationTable, List<MemberEducationData>>
-  _memberEducationRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.memberEducation,
-    aliasName: 'members__id__member_education__member_id',
-  );
-
-  $$MemberEducationTableProcessedTableManager get memberEducationRefs {
-    final manager = $$MemberEducationTableTableManager(
-      $_db,
-      $_db.memberEducation,
-    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _memberEducationRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$MemberActivitiesTable, List<MemberActivity>>
-  _memberActivitiesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.memberActivities,
-    aliasName: 'members__id__member_activities__member_id',
-  );
-
-  $$MemberActivitiesTableProcessedTableManager get memberActivitiesRefs {
-    final manager = $$MemberActivitiesTableTableManager(
-      $_db,
-      $_db.memberActivities,
-    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _memberActivitiesRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<
-    $MemberContributionsTable,
-    List<MemberContribution>
-  >
-  _memberContributionsRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.memberContributions,
-        aliasName: 'members__id__member_contributions__member_id',
-      );
-
-  $$MemberContributionsTableProcessedTableManager get memberContributionsRefs {
-    final manager = $$MemberContributionsTableTableManager(
-      $_db,
-      $_db.memberContributions,
-    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _memberContributionsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$MemberTasedTable, List<MemberTasedData>>
-  _memberTasedRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.memberTased,
-    aliasName: 'members__id__member_tased__member_id',
-  );
-
-  $$MemberTasedTableProcessedTableManager get memberTasedRefs {
-    final manager = $$MemberTasedTableTableManager(
-      $_db,
-      $_db.memberTased,
-    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_memberTasedRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$MemberDonationsTable, List<MemberDonation>>
-  _memberDonationsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.memberDonations,
-    aliasName: 'members__id__member_donations__member_id',
-  );
-
-  $$MemberDonationsTableProcessedTableManager get memberDonationsRefs {
-    final manager = $$MemberDonationsTableTableManager(
-      $_db,
-      $_db.memberDonations,
-    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _memberDonationsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$MemberRolesTable, List<MemberRole>>
-  _memberRolesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.memberRoles,
-    aliasName: 'members__id__member_roles__member_id',
-  );
-
-  $$MemberRolesTableProcessedTableManager get memberRolesRefs {
-    final manager = $$MemberRolesTableTableManager(
-      $_db,
-      $_db.memberRoles,
-    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_memberRolesRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$MembersTableFilterComposer
-    extends Composer<_$AppDatabase, $MembersTable> {
-  $$MembersTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get level => $composableBuilder(
-    column: $table.level,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get firstName => $composableBuilder(
-    column: $table.firstName,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get middleName => $composableBuilder(
-    column: $table.middleName,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get lastName => $composableBuilder(
-    column: $table.lastName,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get suffix => $composableBuilder(
-    column: $table.suffix,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get gender => $composableBuilder(
-    column: $table.gender,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get dob => $composableBuilder(
-    column: $table.dob,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get placeOfBirth => $composableBuilder(
-    column: $table.placeOfBirth,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get contactNumber => $composableBuilder(
-    column: $table.contactNumber,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get email => $composableBuilder(
-    column: $table.email,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get address => $composableBuilder(
-    column: $table.address,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get ethnicity => $composableBuilder(
-    column: $table.ethnicity,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get occupation => $composableBuilder(
-    column: $table.occupation,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get photoPath => $composableBuilder(
-    column: $table.photoPath,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get civilStatus => $composableBuilder(
-    column: $table.civilStatus,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get spouseName => $composableBuilder(
-    column: $table.spouseName,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get spouseDate => $composableBuilder(
-    column: $table.spouseDate,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get status => $composableBuilder(
-    column: $table.status,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get dateJoined => $composableBuilder(
-    column: $table.dateJoined,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get usraName => $composableBuilder(
-    column: $table.usraName,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get usraEstablishedYear => $composableBuilder(
-    column: $table.usraEstablishedYear,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get usraMeetingSchedule => $composableBuilder(
-    column: $table.usraMeetingSchedule,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$ShubasTableFilterComposer get shubaId {
-    final $$ShubasTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.shubaId,
-      referencedTable: $db.shubas,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ShubasTableFilterComposer(
-            $db: $db,
-            $table: $db.shubas,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$MembersTableFilterComposer get naqibMemberId {
-    final $$MembersTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.naqibMemberId,
-      referencedTable: $db.members,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MembersTableFilterComposer(
-            $db: $db,
-            $table: $db.members,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<bool> memberChildrenRefs(
-    Expression<bool> Function($$MemberChildrenTableFilterComposer f) f,
-  ) {
-    final $$MemberChildrenTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.memberChildren,
-      getReferencedColumn: (t) => t.memberId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MemberChildrenTableFilterComposer(
-            $db: $db,
-            $table: $db.memberChildren,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> memberEducationRefs(
-    Expression<bool> Function($$MemberEducationTableFilterComposer f) f,
-  ) {
-    final $$MemberEducationTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.memberEducation,
-      getReferencedColumn: (t) => t.memberId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MemberEducationTableFilterComposer(
-            $db: $db,
-            $table: $db.memberEducation,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> memberActivitiesRefs(
-    Expression<bool> Function($$MemberActivitiesTableFilterComposer f) f,
-  ) {
-    final $$MemberActivitiesTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.memberActivities,
-      getReferencedColumn: (t) => t.memberId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MemberActivitiesTableFilterComposer(
-            $db: $db,
-            $table: $db.memberActivities,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> memberContributionsRefs(
-    Expression<bool> Function($$MemberContributionsTableFilterComposer f) f,
-  ) {
-    final $$MemberContributionsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.memberContributions,
-      getReferencedColumn: (t) => t.memberId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MemberContributionsTableFilterComposer(
-            $db: $db,
-            $table: $db.memberContributions,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> memberTasedRefs(
-    Expression<bool> Function($$MemberTasedTableFilterComposer f) f,
-  ) {
-    final $$MemberTasedTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.memberTased,
-      getReferencedColumn: (t) => t.memberId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MemberTasedTableFilterComposer(
-            $db: $db,
-            $table: $db.memberTased,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> memberDonationsRefs(
-    Expression<bool> Function($$MemberDonationsTableFilterComposer f) f,
-  ) {
-    final $$MemberDonationsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.memberDonations,
-      getReferencedColumn: (t) => t.memberId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MemberDonationsTableFilterComposer(
-            $db: $db,
-            $table: $db.memberDonations,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> memberRolesRefs(
-    Expression<bool> Function($$MemberRolesTableFilterComposer f) f,
-  ) {
-    final $$MemberRolesTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.memberRoles,
-      getReferencedColumn: (t) => t.memberId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MemberRolesTableFilterComposer(
-            $db: $db,
-            $table: $db.memberRoles,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$MembersTableOrderingComposer
-    extends Composer<_$AppDatabase, $MembersTable> {
-  $$MembersTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get level => $composableBuilder(
-    column: $table.level,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get firstName => $composableBuilder(
-    column: $table.firstName,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get middleName => $composableBuilder(
-    column: $table.middleName,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get lastName => $composableBuilder(
-    column: $table.lastName,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get suffix => $composableBuilder(
-    column: $table.suffix,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get gender => $composableBuilder(
-    column: $table.gender,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get dob => $composableBuilder(
-    column: $table.dob,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get placeOfBirth => $composableBuilder(
-    column: $table.placeOfBirth,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get contactNumber => $composableBuilder(
-    column: $table.contactNumber,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get email => $composableBuilder(
-    column: $table.email,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get address => $composableBuilder(
-    column: $table.address,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get ethnicity => $composableBuilder(
-    column: $table.ethnicity,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get occupation => $composableBuilder(
-    column: $table.occupation,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get photoPath => $composableBuilder(
-    column: $table.photoPath,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get civilStatus => $composableBuilder(
-    column: $table.civilStatus,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get spouseName => $composableBuilder(
-    column: $table.spouseName,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get spouseDate => $composableBuilder(
-    column: $table.spouseDate,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get status => $composableBuilder(
-    column: $table.status,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get dateJoined => $composableBuilder(
-    column: $table.dateJoined,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get usraName => $composableBuilder(
-    column: $table.usraName,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get usraEstablishedYear => $composableBuilder(
-    column: $table.usraEstablishedYear,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get usraMeetingSchedule => $composableBuilder(
-    column: $table.usraMeetingSchedule,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$ShubasTableOrderingComposer get shubaId {
-    final $$ShubasTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.shubaId,
-      referencedTable: $db.shubas,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ShubasTableOrderingComposer(
-            $db: $db,
-            $table: $db.shubas,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$MembersTableOrderingComposer get naqibMemberId {
-    final $$MembersTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.naqibMemberId,
-      referencedTable: $db.members,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MembersTableOrderingComposer(
-            $db: $db,
-            $table: $db.members,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$MembersTableAnnotationComposer
-    extends Composer<_$AppDatabase, $MembersTable> {
-  $$MembersTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<int> get level =>
-      $composableBuilder(column: $table.level, builder: (column) => column);
-
-  GeneratedColumn<String> get firstName =>
-      $composableBuilder(column: $table.firstName, builder: (column) => column);
-
-  GeneratedColumn<String> get middleName => $composableBuilder(
-    column: $table.middleName,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get lastName =>
-      $composableBuilder(column: $table.lastName, builder: (column) => column);
-
-  GeneratedColumn<String> get suffix =>
-      $composableBuilder(column: $table.suffix, builder: (column) => column);
-
-  GeneratedColumn<String> get nameAr =>
-      $composableBuilder(column: $table.nameAr, builder: (column) => column);
-
-  GeneratedColumn<String> get gender =>
-      $composableBuilder(column: $table.gender, builder: (column) => column);
-
-  GeneratedColumn<String> get dob =>
-      $composableBuilder(column: $table.dob, builder: (column) => column);
-
-  GeneratedColumn<String> get placeOfBirth => $composableBuilder(
-    column: $table.placeOfBirth,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get contactNumber => $composableBuilder(
-    column: $table.contactNumber,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get email =>
-      $composableBuilder(column: $table.email, builder: (column) => column);
-
-  GeneratedColumn<String> get address =>
-      $composableBuilder(column: $table.address, builder: (column) => column);
-
-  GeneratedColumn<String> get ethnicity =>
-      $composableBuilder(column: $table.ethnicity, builder: (column) => column);
-
-  GeneratedColumn<String> get occupation => $composableBuilder(
-    column: $table.occupation,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get photoPath =>
-      $composableBuilder(column: $table.photoPath, builder: (column) => column);
-
-  GeneratedColumn<String> get civilStatus => $composableBuilder(
-    column: $table.civilStatus,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get spouseName => $composableBuilder(
-    column: $table.spouseName,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get spouseDate => $composableBuilder(
-    column: $table.spouseDate,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get status =>
-      $composableBuilder(column: $table.status, builder: (column) => column);
-
-  GeneratedColumn<String> get dateJoined => $composableBuilder(
-    column: $table.dateJoined,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get usraName =>
-      $composableBuilder(column: $table.usraName, builder: (column) => column);
-
-  GeneratedColumn<String> get usraEstablishedYear => $composableBuilder(
-    column: $table.usraEstablishedYear,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get usraMeetingSchedule => $composableBuilder(
-    column: $table.usraMeetingSchedule,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  $$ShubasTableAnnotationComposer get shubaId {
-    final $$ShubasTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.shubaId,
-      referencedTable: $db.shubas,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ShubasTableAnnotationComposer(
-            $db: $db,
-            $table: $db.shubas,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$MembersTableAnnotationComposer get naqibMemberId {
-    final $$MembersTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.naqibMemberId,
-      referencedTable: $db.members,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MembersTableAnnotationComposer(
-            $db: $db,
-            $table: $db.members,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<T> memberChildrenRefs<T extends Object>(
-    Expression<T> Function($$MemberChildrenTableAnnotationComposer a) f,
-  ) {
-    final $$MemberChildrenTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.memberChildren,
-      getReferencedColumn: (t) => t.memberId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MemberChildrenTableAnnotationComposer(
-            $db: $db,
-            $table: $db.memberChildren,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> memberEducationRefs<T extends Object>(
-    Expression<T> Function($$MemberEducationTableAnnotationComposer a) f,
-  ) {
-    final $$MemberEducationTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.memberEducation,
-      getReferencedColumn: (t) => t.memberId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MemberEducationTableAnnotationComposer(
-            $db: $db,
-            $table: $db.memberEducation,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> memberActivitiesRefs<T extends Object>(
-    Expression<T> Function($$MemberActivitiesTableAnnotationComposer a) f,
-  ) {
-    final $$MemberActivitiesTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.memberActivities,
-      getReferencedColumn: (t) => t.memberId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MemberActivitiesTableAnnotationComposer(
-            $db: $db,
-            $table: $db.memberActivities,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> memberContributionsRefs<T extends Object>(
-    Expression<T> Function($$MemberContributionsTableAnnotationComposer a) f,
-  ) {
-    final $$MemberContributionsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.memberContributions,
-          getReferencedColumn: (t) => t.memberId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$MemberContributionsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.memberContributions,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<T> memberTasedRefs<T extends Object>(
-    Expression<T> Function($$MemberTasedTableAnnotationComposer a) f,
-  ) {
-    final $$MemberTasedTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.memberTased,
-      getReferencedColumn: (t) => t.memberId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MemberTasedTableAnnotationComposer(
-            $db: $db,
-            $table: $db.memberTased,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> memberDonationsRefs<T extends Object>(
-    Expression<T> Function($$MemberDonationsTableAnnotationComposer a) f,
-  ) {
-    final $$MemberDonationsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.memberDonations,
-      getReferencedColumn: (t) => t.memberId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MemberDonationsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.memberDonations,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> memberRolesRefs<T extends Object>(
-    Expression<T> Function($$MemberRolesTableAnnotationComposer a) f,
-  ) {
-    final $$MemberRolesTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.memberRoles,
-      getReferencedColumn: (t) => t.memberId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MemberRolesTableAnnotationComposer(
-            $db: $db,
-            $table: $db.memberRoles,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$MembersTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $MembersTable,
-          Member,
-          $$MembersTableFilterComposer,
-          $$MembersTableOrderingComposer,
-          $$MembersTableAnnotationComposer,
-          $$MembersTableCreateCompanionBuilder,
-          $$MembersTableUpdateCompanionBuilder,
-          (Member, $$MembersTableReferences),
-          Member,
-          PrefetchHooks Function({
-            bool shubaId,
-            bool naqibMemberId,
-            bool memberChildrenRefs,
-            bool memberEducationRefs,
-            bool memberActivitiesRefs,
-            bool memberContributionsRefs,
-            bool memberTasedRefs,
-            bool memberDonationsRefs,
-            bool memberRolesRefs,
-          })
-        > {
-  $$MembersTableTableManager(_$AppDatabase db, $MembersTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$MembersTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$MembersTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$MembersTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> shubaId = const Value.absent(),
-                Value<int> level = const Value.absent(),
-                Value<String> firstName = const Value.absent(),
-                Value<String> middleName = const Value.absent(),
-                Value<String> lastName = const Value.absent(),
-                Value<String> suffix = const Value.absent(),
-                Value<String> nameAr = const Value.absent(),
-                Value<String> gender = const Value.absent(),
-                Value<String> dob = const Value.absent(),
-                Value<String> placeOfBirth = const Value.absent(),
-                Value<String> contactNumber = const Value.absent(),
-                Value<String> email = const Value.absent(),
-                Value<String> address = const Value.absent(),
-                Value<String> ethnicity = const Value.absent(),
-                Value<String> occupation = const Value.absent(),
-                Value<String> photoPath = const Value.absent(),
-                Value<String> civilStatus = const Value.absent(),
-                Value<String> spouseName = const Value.absent(),
-                Value<String> spouseDate = const Value.absent(),
-                Value<String> status = const Value.absent(),
-                Value<String> dateJoined = const Value.absent(),
-                Value<String> usraName = const Value.absent(),
-                Value<String> usraEstablishedYear = const Value.absent(),
-                Value<String> usraMeetingSchedule = const Value.absent(),
-                Value<String?> naqibMemberId = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => MembersCompanion(
-                id: id,
-                shubaId: shubaId,
-                level: level,
-                firstName: firstName,
-                middleName: middleName,
-                lastName: lastName,
-                suffix: suffix,
-                nameAr: nameAr,
-                gender: gender,
-                dob: dob,
-                placeOfBirth: placeOfBirth,
-                contactNumber: contactNumber,
-                email: email,
-                address: address,
-                ethnicity: ethnicity,
-                occupation: occupation,
-                photoPath: photoPath,
-                civilStatus: civilStatus,
-                spouseName: spouseName,
-                spouseDate: spouseDate,
-                status: status,
-                dateJoined: dateJoined,
-                usraName: usraName,
-                usraEstablishedYear: usraEstablishedYear,
-                usraMeetingSchedule: usraMeetingSchedule,
-                naqibMemberId: naqibMemberId,
-                createdAt: createdAt,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String id,
-                required String shubaId,
-                Value<int> level = const Value.absent(),
-                required String firstName,
-                Value<String> middleName = const Value.absent(),
-                required String lastName,
-                Value<String> suffix = const Value.absent(),
-                Value<String> nameAr = const Value.absent(),
-                Value<String> gender = const Value.absent(),
-                Value<String> dob = const Value.absent(),
-                Value<String> placeOfBirth = const Value.absent(),
-                Value<String> contactNumber = const Value.absent(),
-                Value<String> email = const Value.absent(),
-                Value<String> address = const Value.absent(),
-                Value<String> ethnicity = const Value.absent(),
-                Value<String> occupation = const Value.absent(),
-                Value<String> photoPath = const Value.absent(),
-                Value<String> civilStatus = const Value.absent(),
-                Value<String> spouseName = const Value.absent(),
-                Value<String> spouseDate = const Value.absent(),
-                Value<String> status = const Value.absent(),
-                Value<String> dateJoined = const Value.absent(),
-                Value<String> usraName = const Value.absent(),
-                Value<String> usraEstablishedYear = const Value.absent(),
-                Value<String> usraMeetingSchedule = const Value.absent(),
-                Value<String?> naqibMemberId = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => MembersCompanion.insert(
-                id: id,
-                shubaId: shubaId,
-                level: level,
-                firstName: firstName,
-                middleName: middleName,
-                lastName: lastName,
-                suffix: suffix,
-                nameAr: nameAr,
-                gender: gender,
-                dob: dob,
-                placeOfBirth: placeOfBirth,
-                contactNumber: contactNumber,
-                email: email,
-                address: address,
-                ethnicity: ethnicity,
-                occupation: occupation,
-                photoPath: photoPath,
-                civilStatus: civilStatus,
-                spouseName: spouseName,
-                spouseDate: spouseDate,
-                status: status,
-                dateJoined: dateJoined,
-                usraName: usraName,
-                usraEstablishedYear: usraEstablishedYear,
-                usraMeetingSchedule: usraMeetingSchedule,
-                naqibMemberId: naqibMemberId,
-                createdAt: createdAt,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$MembersTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback:
-              ({
-                shubaId = false,
-                naqibMemberId = false,
-                memberChildrenRefs = false,
-                memberEducationRefs = false,
-                memberActivitiesRefs = false,
-                memberContributionsRefs = false,
-                memberTasedRefs = false,
-                memberDonationsRefs = false,
-                memberRolesRefs = false,
-              }) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (memberChildrenRefs) db.memberChildren,
-                    if (memberEducationRefs) db.memberEducation,
-                    if (memberActivitiesRefs) db.memberActivities,
-                    if (memberContributionsRefs) db.memberContributions,
-                    if (memberTasedRefs) db.memberTased,
-                    if (memberDonationsRefs) db.memberDonations,
-                    if (memberRolesRefs) db.memberRoles,
-                  ],
-                  addJoins:
-                      <
-                        T extends TableManagerState<
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic
-                        >
-                      >(state) {
-                        if (shubaId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.shubaId,
-                                    referencedTable: $$MembersTableReferences
-                                        ._shubaIdTable(db),
-                                    referencedColumn: $$MembersTableReferences
-                                        ._shubaIdTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
-                        if (naqibMemberId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.naqibMemberId,
-                                    referencedTable: $$MembersTableReferences
-                                        ._naqibMemberIdTable(db),
-                                    referencedColumn: $$MembersTableReferences
-                                        ._naqibMemberIdTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
-
-                        return state;
-                      },
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (memberChildrenRefs)
-                        await $_getPrefetchedData<
-                          Member,
-                          $MembersTable,
-                          MemberChildrenData
-                        >(
-                          currentTable: table,
-                          referencedTable: $$MembersTableReferences
-                              ._memberChildrenRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$MembersTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).memberChildrenRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.memberId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (memberEducationRefs)
-                        await $_getPrefetchedData<
-                          Member,
-                          $MembersTable,
-                          MemberEducationData
-                        >(
-                          currentTable: table,
-                          referencedTable: $$MembersTableReferences
-                              ._memberEducationRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$MembersTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).memberEducationRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.memberId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (memberActivitiesRefs)
-                        await $_getPrefetchedData<
-                          Member,
-                          $MembersTable,
-                          MemberActivity
-                        >(
-                          currentTable: table,
-                          referencedTable: $$MembersTableReferences
-                              ._memberActivitiesRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$MembersTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).memberActivitiesRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.memberId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (memberContributionsRefs)
-                        await $_getPrefetchedData<
-                          Member,
-                          $MembersTable,
-                          MemberContribution
-                        >(
-                          currentTable: table,
-                          referencedTable: $$MembersTableReferences
-                              ._memberContributionsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$MembersTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).memberContributionsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.memberId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (memberTasedRefs)
-                        await $_getPrefetchedData<
-                          Member,
-                          $MembersTable,
-                          MemberTasedData
-                        >(
-                          currentTable: table,
-                          referencedTable: $$MembersTableReferences
-                              ._memberTasedRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$MembersTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).memberTasedRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.memberId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (memberDonationsRefs)
-                        await $_getPrefetchedData<
-                          Member,
-                          $MembersTable,
-                          MemberDonation
-                        >(
-                          currentTable: table,
-                          referencedTable: $$MembersTableReferences
-                              ._memberDonationsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$MembersTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).memberDonationsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.memberId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (memberRolesRefs)
-                        await $_getPrefetchedData<
-                          Member,
-                          $MembersTable,
-                          MemberRole
-                        >(
-                          currentTable: table,
-                          referencedTable: $$MembersTableReferences
-                              ._memberRolesRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$MembersTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).memberRolesRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.memberId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
-              },
-        ),
-      );
-}
-
-typedef $$MembersTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $MembersTable,
-      Member,
-      $$MembersTableFilterComposer,
-      $$MembersTableOrderingComposer,
-      $$MembersTableAnnotationComposer,
-      $$MembersTableCreateCompanionBuilder,
-      $$MembersTableUpdateCompanionBuilder,
-      (Member, $$MembersTableReferences),
-      Member,
-      PrefetchHooks Function({
-        bool shubaId,
-        bool naqibMemberId,
-        bool memberChildrenRefs,
-        bool memberEducationRefs,
-        bool memberActivitiesRefs,
-        bool memberContributionsRefs,
-        bool memberTasedRefs,
-        bool memberDonationsRefs,
-        bool memberRolesRefs,
-      })
-    >;
 typedef $$MemberChildrenTableCreateCompanionBuilder =
     MemberChildrenCompanion Function({
       required String id,
@@ -14838,6 +17603,682 @@ typedef $$MemberChildrenTableProcessedTableManager =
       (MemberChildrenData, $$MemberChildrenTableReferences),
       MemberChildrenData,
       PrefetchHooks Function({bool memberId})
+    >;
+typedef $$MemberWivesTableCreateCompanionBuilder =
+    MemberWivesCompanion Function({
+      required String id,
+      required String memberId,
+      required String name,
+      Value<String> marriageDate,
+      Value<int> rowid,
+    });
+typedef $$MemberWivesTableUpdateCompanionBuilder =
+    MemberWivesCompanion Function({
+      Value<String> id,
+      Value<String> memberId,
+      Value<String> name,
+      Value<String> marriageDate,
+      Value<int> rowid,
+    });
+
+final class $$MemberWivesTableReferences
+    extends BaseReferences<_$AppDatabase, $MemberWivesTable, MemberWife> {
+  $$MemberWivesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $MembersTable _memberIdTable(_$AppDatabase db) =>
+      db.members.createAlias('member_wives__member_id__members__id');
+
+  $$MembersTableProcessedTableManager get memberId {
+    final $_column = $_itemColumn<String>('member_id')!;
+
+    final manager = $$MembersTableTableManager(
+      $_db,
+      $_db.members,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_memberIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$MemberWivesTableFilterComposer
+    extends Composer<_$AppDatabase, $MemberWivesTable> {
+  $$MemberWivesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get marriageDate => $composableBuilder(
+    column: $table.marriageDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$MembersTableFilterComposer get memberId {
+    final $$MembersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableFilterComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MemberWivesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MemberWivesTable> {
+  $$MemberWivesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get marriageDate => $composableBuilder(
+    column: $table.marriageDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$MembersTableOrderingComposer get memberId {
+    final $$MembersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableOrderingComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MemberWivesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MemberWivesTable> {
+  $$MemberWivesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get marriageDate => $composableBuilder(
+    column: $table.marriageDate,
+    builder: (column) => column,
+  );
+
+  $$MembersTableAnnotationComposer get memberId {
+    final $$MembersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MemberWivesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MemberWivesTable,
+          MemberWife,
+          $$MemberWivesTableFilterComposer,
+          $$MemberWivesTableOrderingComposer,
+          $$MemberWivesTableAnnotationComposer,
+          $$MemberWivesTableCreateCompanionBuilder,
+          $$MemberWivesTableUpdateCompanionBuilder,
+          (MemberWife, $$MemberWivesTableReferences),
+          MemberWife,
+          PrefetchHooks Function({bool memberId})
+        > {
+  $$MemberWivesTableTableManager(_$AppDatabase db, $MemberWivesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MemberWivesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MemberWivesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MemberWivesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> memberId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> marriageDate = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MemberWivesCompanion(
+                id: id,
+                memberId: memberId,
+                name: name,
+                marriageDate: marriageDate,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String memberId,
+                required String name,
+                Value<String> marriageDate = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MemberWivesCompanion.insert(
+                id: id,
+                memberId: memberId,
+                name: name,
+                marriageDate: marriageDate,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$MemberWivesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({memberId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (memberId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.memberId,
+                                referencedTable: $$MemberWivesTableReferences
+                                    ._memberIdTable(db),
+                                referencedColumn: $$MemberWivesTableReferences
+                                    ._memberIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$MemberWivesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MemberWivesTable,
+      MemberWife,
+      $$MemberWivesTableFilterComposer,
+      $$MemberWivesTableOrderingComposer,
+      $$MemberWivesTableAnnotationComposer,
+      $$MemberWivesTableCreateCompanionBuilder,
+      $$MemberWivesTableUpdateCompanionBuilder,
+      (MemberWife, $$MemberWivesTableReferences),
+      MemberWife,
+      PrefetchHooks Function({bool memberId})
+    >;
+typedef $$MemberUsraLinksTableCreateCompanionBuilder =
+    MemberUsraLinksCompanion Function({
+      required String id,
+      required String memberId,
+      required String usraMemberId,
+      Value<int> rowid,
+    });
+typedef $$MemberUsraLinksTableUpdateCompanionBuilder =
+    MemberUsraLinksCompanion Function({
+      Value<String> id,
+      Value<String> memberId,
+      Value<String> usraMemberId,
+      Value<int> rowid,
+    });
+
+final class $$MemberUsraLinksTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $MemberUsraLinksTable, MemberUsraLink> {
+  $$MemberUsraLinksTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $MembersTable _memberIdTable(_$AppDatabase db) =>
+      db.members.createAlias('member_usra_links__member_id__members__id');
+
+  $$MembersTableProcessedTableManager get memberId {
+    final $_column = $_itemColumn<String>('member_id')!;
+
+    final manager = $$MembersTableTableManager(
+      $_db,
+      $_db.members,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_memberIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $MembersTable _usraMemberIdTable(_$AppDatabase db) =>
+      db.members.createAlias('member_usra_links__usra_member_id__members__id');
+
+  $$MembersTableProcessedTableManager get usraMemberId {
+    final $_column = $_itemColumn<String>('usra_member_id')!;
+
+    final manager = $$MembersTableTableManager(
+      $_db,
+      $_db.members,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_usraMemberIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$MemberUsraLinksTableFilterComposer
+    extends Composer<_$AppDatabase, $MemberUsraLinksTable> {
+  $$MemberUsraLinksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$MembersTableFilterComposer get memberId {
+    final $$MembersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableFilterComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableFilterComposer get usraMemberId {
+    final $$MembersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.usraMemberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableFilterComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MemberUsraLinksTableOrderingComposer
+    extends Composer<_$AppDatabase, $MemberUsraLinksTable> {
+  $$MemberUsraLinksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$MembersTableOrderingComposer get memberId {
+    final $$MembersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableOrderingComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableOrderingComposer get usraMemberId {
+    final $$MembersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.usraMemberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableOrderingComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MemberUsraLinksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MemberUsraLinksTable> {
+  $$MemberUsraLinksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  $$MembersTableAnnotationComposer get memberId {
+    final $$MembersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableAnnotationComposer get usraMemberId {
+    final $$MembersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.usraMemberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MemberUsraLinksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MemberUsraLinksTable,
+          MemberUsraLink,
+          $$MemberUsraLinksTableFilterComposer,
+          $$MemberUsraLinksTableOrderingComposer,
+          $$MemberUsraLinksTableAnnotationComposer,
+          $$MemberUsraLinksTableCreateCompanionBuilder,
+          $$MemberUsraLinksTableUpdateCompanionBuilder,
+          (MemberUsraLink, $$MemberUsraLinksTableReferences),
+          MemberUsraLink,
+          PrefetchHooks Function({bool memberId, bool usraMemberId})
+        > {
+  $$MemberUsraLinksTableTableManager(
+    _$AppDatabase db,
+    $MemberUsraLinksTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MemberUsraLinksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MemberUsraLinksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MemberUsraLinksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> memberId = const Value.absent(),
+                Value<String> usraMemberId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MemberUsraLinksCompanion(
+                id: id,
+                memberId: memberId,
+                usraMemberId: usraMemberId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String memberId,
+                required String usraMemberId,
+                Value<int> rowid = const Value.absent(),
+              }) => MemberUsraLinksCompanion.insert(
+                id: id,
+                memberId: memberId,
+                usraMemberId: usraMemberId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$MemberUsraLinksTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({memberId = false, usraMemberId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (memberId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.memberId,
+                                referencedTable:
+                                    $$MemberUsraLinksTableReferences
+                                        ._memberIdTable(db),
+                                referencedColumn:
+                                    $$MemberUsraLinksTableReferences
+                                        ._memberIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (usraMemberId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.usraMemberId,
+                                referencedTable:
+                                    $$MemberUsraLinksTableReferences
+                                        ._usraMemberIdTable(db),
+                                referencedColumn:
+                                    $$MemberUsraLinksTableReferences
+                                        ._usraMemberIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$MemberUsraLinksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MemberUsraLinksTable,
+      MemberUsraLink,
+      $$MemberUsraLinksTableFilterComposer,
+      $$MemberUsraLinksTableOrderingComposer,
+      $$MemberUsraLinksTableAnnotationComposer,
+      $$MemberUsraLinksTableCreateCompanionBuilder,
+      $$MemberUsraLinksTableUpdateCompanionBuilder,
+      (MemberUsraLink, $$MemberUsraLinksTableReferences),
+      MemberUsraLink,
+      PrefetchHooks Function({bool memberId, bool usraMemberId})
     >;
 typedef $$MemberEducationTableCreateCompanionBuilder =
     MemberEducationCompanion Function({
@@ -17099,6 +20540,387 @@ typedef $$MemberRolesTableProcessedTableManager =
       MemberRole,
       PrefetchHooks Function({bool memberId, bool departmentId})
     >;
+typedef $$DepartmentStaffTableCreateCompanionBuilder =
+    DepartmentStaffCompanion Function({
+      required String id,
+      required String departmentId,
+      required String memberId,
+      Value<int> rowid,
+    });
+typedef $$DepartmentStaffTableUpdateCompanionBuilder =
+    DepartmentStaffCompanion Function({
+      Value<String> id,
+      Value<String> departmentId,
+      Value<String> memberId,
+      Value<int> rowid,
+    });
+
+final class $$DepartmentStaffTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $DepartmentStaffTable,
+          DepartmentStaffData
+        > {
+  $$DepartmentStaffTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $DepartmentsTable _departmentIdTable(_$AppDatabase db) => db
+      .departments
+      .createAlias('department_staff__department_id__departments__id');
+
+  $$DepartmentsTableProcessedTableManager get departmentId {
+    final $_column = $_itemColumn<String>('department_id')!;
+
+    final manager = $$DepartmentsTableTableManager(
+      $_db,
+      $_db.departments,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_departmentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $MembersTable _memberIdTable(_$AppDatabase db) =>
+      db.members.createAlias('department_staff__member_id__members__id');
+
+  $$MembersTableProcessedTableManager get memberId {
+    final $_column = $_itemColumn<String>('member_id')!;
+
+    final manager = $$MembersTableTableManager(
+      $_db,
+      $_db.members,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_memberIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$DepartmentStaffTableFilterComposer
+    extends Composer<_$AppDatabase, $DepartmentStaffTable> {
+  $$DepartmentStaffTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$DepartmentsTableFilterComposer get departmentId {
+    final $$DepartmentsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.departmentId,
+      referencedTable: $db.departments,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DepartmentsTableFilterComposer(
+            $db: $db,
+            $table: $db.departments,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableFilterComposer get memberId {
+    final $$MembersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableFilterComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DepartmentStaffTableOrderingComposer
+    extends Composer<_$AppDatabase, $DepartmentStaffTable> {
+  $$DepartmentStaffTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$DepartmentsTableOrderingComposer get departmentId {
+    final $$DepartmentsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.departmentId,
+      referencedTable: $db.departments,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DepartmentsTableOrderingComposer(
+            $db: $db,
+            $table: $db.departments,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableOrderingComposer get memberId {
+    final $$MembersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableOrderingComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DepartmentStaffTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DepartmentStaffTable> {
+  $$DepartmentStaffTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  $$DepartmentsTableAnnotationComposer get departmentId {
+    final $$DepartmentsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.departmentId,
+      referencedTable: $db.departments,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DepartmentsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.departments,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableAnnotationComposer get memberId {
+    final $$MembersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DepartmentStaffTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DepartmentStaffTable,
+          DepartmentStaffData,
+          $$DepartmentStaffTableFilterComposer,
+          $$DepartmentStaffTableOrderingComposer,
+          $$DepartmentStaffTableAnnotationComposer,
+          $$DepartmentStaffTableCreateCompanionBuilder,
+          $$DepartmentStaffTableUpdateCompanionBuilder,
+          (DepartmentStaffData, $$DepartmentStaffTableReferences),
+          DepartmentStaffData,
+          PrefetchHooks Function({bool departmentId, bool memberId})
+        > {
+  $$DepartmentStaffTableTableManager(
+    _$AppDatabase db,
+    $DepartmentStaffTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DepartmentStaffTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DepartmentStaffTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DepartmentStaffTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> departmentId = const Value.absent(),
+                Value<String> memberId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DepartmentStaffCompanion(
+                id: id,
+                departmentId: departmentId,
+                memberId: memberId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String departmentId,
+                required String memberId,
+                Value<int> rowid = const Value.absent(),
+              }) => DepartmentStaffCompanion.insert(
+                id: id,
+                departmentId: departmentId,
+                memberId: memberId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$DepartmentStaffTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({departmentId = false, memberId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (departmentId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.departmentId,
+                                referencedTable:
+                                    $$DepartmentStaffTableReferences
+                                        ._departmentIdTable(db),
+                                referencedColumn:
+                                    $$DepartmentStaffTableReferences
+                                        ._departmentIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (memberId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.memberId,
+                                referencedTable:
+                                    $$DepartmentStaffTableReferences
+                                        ._memberIdTable(db),
+                                referencedColumn:
+                                    $$DepartmentStaffTableReferences
+                                        ._memberIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$DepartmentStaffTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DepartmentStaffTable,
+      DepartmentStaffData,
+      $$DepartmentStaffTableFilterComposer,
+      $$DepartmentStaffTableOrderingComposer,
+      $$DepartmentStaffTableAnnotationComposer,
+      $$DepartmentStaffTableCreateCompanionBuilder,
+      $$DepartmentStaffTableUpdateCompanionBuilder,
+      (DepartmentStaffData, $$DepartmentStaffTableReferences),
+      DepartmentStaffData,
+      PrefetchHooks Function({bool departmentId, bool memberId})
+    >;
 typedef $$DeptActivitiesTableCreateCompanionBuilder =
     DeptActivitiesCompanion Function({
       required String id,
@@ -17109,6 +20931,7 @@ typedef $$DeptActivitiesTableCreateCompanionBuilder =
       Value<String> date,
       Value<String> status,
       Value<int> attendance,
+      Value<String> formData,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
@@ -17122,6 +20945,7 @@ typedef $$DeptActivitiesTableUpdateCompanionBuilder =
       Value<String> date,
       Value<String> status,
       Value<int> attendance,
+      Value<String> formData,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
@@ -17194,6 +21018,11 @@ class $$DeptActivitiesTableFilterComposer
 
   ColumnFilters<int> get attendance => $composableBuilder(
     column: $table.attendance,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get formData => $composableBuilder(
+    column: $table.formData,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -17270,6 +21099,11 @@ class $$DeptActivitiesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get formData => $composableBuilder(
+    column: $table.formData,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -17332,6 +21166,9 @@ class $$DeptActivitiesTableAnnotationComposer
     column: $table.attendance,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get formData =>
+      $composableBuilder(column: $table.formData, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -17398,6 +21235,7 @@ class $$DeptActivitiesTableTableManager
                 Value<String> date = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<int> attendance = const Value.absent(),
+                Value<String> formData = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DeptActivitiesCompanion(
@@ -17409,6 +21247,7 @@ class $$DeptActivitiesTableTableManager
                 date: date,
                 status: status,
                 attendance: attendance,
+                formData: formData,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -17422,6 +21261,7 @@ class $$DeptActivitiesTableTableManager
                 Value<String> date = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<int> attendance = const Value.absent(),
+                Value<String> formData = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DeptActivitiesCompanion.insert(
@@ -17433,6 +21273,7 @@ class $$DeptActivitiesTableTableManager
                 date: date,
                 status: status,
                 attendance: attendance,
+                formData: formData,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -17516,6 +21357,7 @@ typedef $$ReportsTableCreateCompanionBuilder =
       Value<int> year,
       Value<String> type,
       Value<int> pages,
+      Value<String> formData,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
@@ -17531,6 +21373,7 @@ typedef $$ReportsTableUpdateCompanionBuilder =
       Value<int> year,
       Value<String> type,
       Value<int> pages,
+      Value<String> formData,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
@@ -17608,6 +21451,11 @@ class $$ReportsTableFilterComposer
 
   ColumnFilters<int> get pages => $composableBuilder(
     column: $table.pages,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get formData => $composableBuilder(
+    column: $table.formData,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -17694,6 +21542,11 @@ class $$ReportsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get formData => $composableBuilder(
+    column: $table.formData,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -17758,6 +21611,9 @@ class $$ReportsTableAnnotationComposer
 
   GeneratedColumn<int> get pages =>
       $composableBuilder(column: $table.pages, builder: (column) => column);
+
+  GeneratedColumn<String> get formData =>
+      $composableBuilder(column: $table.formData, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -17824,6 +21680,7 @@ class $$ReportsTableTableManager
                 Value<int> year = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<int> pages = const Value.absent(),
+                Value<String> formData = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ReportsCompanion(
@@ -17837,6 +21694,7 @@ class $$ReportsTableTableManager
                 year: year,
                 type: type,
                 pages: pages,
+                formData: formData,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -17852,6 +21710,7 @@ class $$ReportsTableTableManager
                 Value<int> year = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<int> pages = const Value.absent(),
+                Value<String> formData = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ReportsCompanion.insert(
@@ -17865,6 +21724,7 @@ class $$ReportsTableTableManager
                 year: year,
                 type: type,
                 pages: pages,
+                formData: formData,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -17946,6 +21806,7 @@ typedef $$GalleryPhotosTableCreateCompanionBuilder =
       Value<String> iconKey,
       Value<int> accent,
       Value<String> imagePath,
+      Value<String> imagePaths,
       Value<int> heightHint,
       Value<DateTime> createdAt,
       Value<int> rowid,
@@ -17961,6 +21822,7 @@ typedef $$GalleryPhotosTableUpdateCompanionBuilder =
       Value<String> iconKey,
       Value<int> accent,
       Value<String> imagePath,
+      Value<String> imagePaths,
       Value<int> heightHint,
       Value<DateTime> createdAt,
       Value<int> rowid,
@@ -18017,6 +21879,11 @@ class $$GalleryPhotosTableFilterComposer
 
   ColumnFilters<String> get imagePath => $composableBuilder(
     column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePaths => $composableBuilder(
+    column: $table.imagePaths,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -18085,6 +21952,11 @@ class $$GalleryPhotosTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get imagePaths => $composableBuilder(
+    column: $table.imagePaths,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get heightHint => $composableBuilder(
     column: $table.heightHint,
     builder: (column) => ColumnOrderings(column),
@@ -18131,6 +22003,11 @@ class $$GalleryPhotosTableAnnotationComposer
 
   GeneratedColumn<String> get imagePath =>
       $composableBuilder(column: $table.imagePath, builder: (column) => column);
+
+  GeneratedColumn<String> get imagePaths => $composableBuilder(
+    column: $table.imagePaths,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get heightHint => $composableBuilder(
     column: $table.heightHint,
@@ -18181,6 +22058,7 @@ class $$GalleryPhotosTableTableManager
                 Value<String> iconKey = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<String> imagePath = const Value.absent(),
+                Value<String> imagePaths = const Value.absent(),
                 Value<int> heightHint = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -18194,6 +22072,7 @@ class $$GalleryPhotosTableTableManager
                 iconKey: iconKey,
                 accent: accent,
                 imagePath: imagePath,
+                imagePaths: imagePaths,
                 heightHint: heightHint,
                 createdAt: createdAt,
                 rowid: rowid,
@@ -18209,6 +22088,7 @@ class $$GalleryPhotosTableTableManager
                 Value<String> iconKey = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<String> imagePath = const Value.absent(),
+                Value<String> imagePaths = const Value.absent(),
                 Value<int> heightHint = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -18222,6 +22102,7 @@ class $$GalleryPhotosTableTableManager
                 iconKey: iconKey,
                 accent: accent,
                 imagePath: imagePath,
+                imagePaths: imagePaths,
                 heightHint: heightHint,
                 createdAt: createdAt,
                 rowid: rowid,
@@ -18251,10 +22132,440 @@ typedef $$GalleryPhotosTableProcessedTableManager =
       GalleryPhoto,
       PrefetchHooks Function()
     >;
+typedef $$MinutesReportsTableCreateCompanionBuilder =
+    MinutesReportsCompanion Function({
+      required String id,
+      required String title,
+      Value<int> year,
+      Value<String> type,
+      Value<String> content,
+      Value<String> imagePaths,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$MinutesReportsTableUpdateCompanionBuilder =
+    MinutesReportsCompanion Function({
+      Value<String> id,
+      Value<String> title,
+      Value<int> year,
+      Value<String> type,
+      Value<String> content,
+      Value<String> imagePaths,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$MinutesReportsTableFilterComposer
+    extends Composer<_$AppDatabase, $MinutesReportsTable> {
+  $$MinutesReportsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get content => $composableBuilder(
+    column: $table.content,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePaths => $composableBuilder(
+    column: $table.imagePaths,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MinutesReportsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MinutesReportsTable> {
+  $$MinutesReportsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get content => $composableBuilder(
+    column: $table.content,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePaths => $composableBuilder(
+    column: $table.imagePaths,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MinutesReportsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MinutesReportsTable> {
+  $$MinutesReportsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<int> get year =>
+      $composableBuilder(column: $table.year, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<String> get imagePaths => $composableBuilder(
+    column: $table.imagePaths,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$MinutesReportsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MinutesReportsTable,
+          MinutesReport,
+          $$MinutesReportsTableFilterComposer,
+          $$MinutesReportsTableOrderingComposer,
+          $$MinutesReportsTableAnnotationComposer,
+          $$MinutesReportsTableCreateCompanionBuilder,
+          $$MinutesReportsTableUpdateCompanionBuilder,
+          (
+            MinutesReport,
+            BaseReferences<_$AppDatabase, $MinutesReportsTable, MinutesReport>,
+          ),
+          MinutesReport,
+          PrefetchHooks Function()
+        > {
+  $$MinutesReportsTableTableManager(
+    _$AppDatabase db,
+    $MinutesReportsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MinutesReportsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MinutesReportsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MinutesReportsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<int> year = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String> content = const Value.absent(),
+                Value<String> imagePaths = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MinutesReportsCompanion(
+                id: id,
+                title: title,
+                year: year,
+                type: type,
+                content: content,
+                imagePaths: imagePaths,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String title,
+                Value<int> year = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String> content = const Value.absent(),
+                Value<String> imagePaths = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MinutesReportsCompanion.insert(
+                id: id,
+                title: title,
+                year: year,
+                type: type,
+                content: content,
+                imagePaths: imagePaths,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MinutesReportsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MinutesReportsTable,
+      MinutesReport,
+      $$MinutesReportsTableFilterComposer,
+      $$MinutesReportsTableOrderingComposer,
+      $$MinutesReportsTableAnnotationComposer,
+      $$MinutesReportsTableCreateCompanionBuilder,
+      $$MinutesReportsTableUpdateCompanionBuilder,
+      (
+        MinutesReport,
+        BaseReferences<_$AppDatabase, $MinutesReportsTable, MinutesReport>,
+      ),
+      MinutesReport,
+      PrefetchHooks Function()
+    >;
+typedef $$LeadershipGroupInfoTableCreateCompanionBuilder =
+    LeadershipGroupInfoCompanion Function({
+      required String code,
+      Value<String> description,
+      Value<String> descriptionAr,
+      Value<int> rowid,
+    });
+typedef $$LeadershipGroupInfoTableUpdateCompanionBuilder =
+    LeadershipGroupInfoCompanion Function({
+      Value<String> code,
+      Value<String> description,
+      Value<String> descriptionAr,
+      Value<int> rowid,
+    });
+
+class $$LeadershipGroupInfoTableFilterComposer
+    extends Composer<_$AppDatabase, $LeadershipGroupInfoTable> {
+  $$LeadershipGroupInfoTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get descriptionAr => $composableBuilder(
+    column: $table.descriptionAr,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LeadershipGroupInfoTableOrderingComposer
+    extends Composer<_$AppDatabase, $LeadershipGroupInfoTable> {
+  $$LeadershipGroupInfoTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get descriptionAr => $composableBuilder(
+    column: $table.descriptionAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LeadershipGroupInfoTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LeadershipGroupInfoTable> {
+  $$LeadershipGroupInfoTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get descriptionAr => $composableBuilder(
+    column: $table.descriptionAr,
+    builder: (column) => column,
+  );
+}
+
+class $$LeadershipGroupInfoTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LeadershipGroupInfoTable,
+          LeadershipGroupInfoData,
+          $$LeadershipGroupInfoTableFilterComposer,
+          $$LeadershipGroupInfoTableOrderingComposer,
+          $$LeadershipGroupInfoTableAnnotationComposer,
+          $$LeadershipGroupInfoTableCreateCompanionBuilder,
+          $$LeadershipGroupInfoTableUpdateCompanionBuilder,
+          (
+            LeadershipGroupInfoData,
+            BaseReferences<
+              _$AppDatabase,
+              $LeadershipGroupInfoTable,
+              LeadershipGroupInfoData
+            >,
+          ),
+          LeadershipGroupInfoData,
+          PrefetchHooks Function()
+        > {
+  $$LeadershipGroupInfoTableTableManager(
+    _$AppDatabase db,
+    $LeadershipGroupInfoTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LeadershipGroupInfoTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LeadershipGroupInfoTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$LeadershipGroupInfoTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> code = const Value.absent(),
+                Value<String> description = const Value.absent(),
+                Value<String> descriptionAr = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LeadershipGroupInfoCompanion(
+                code: code,
+                description: description,
+                descriptionAr: descriptionAr,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String code,
+                Value<String> description = const Value.absent(),
+                Value<String> descriptionAr = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LeadershipGroupInfoCompanion.insert(
+                code: code,
+                description: description,
+                descriptionAr: descriptionAr,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LeadershipGroupInfoTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LeadershipGroupInfoTable,
+      LeadershipGroupInfoData,
+      $$LeadershipGroupInfoTableFilterComposer,
+      $$LeadershipGroupInfoTableOrderingComposer,
+      $$LeadershipGroupInfoTableAnnotationComposer,
+      $$LeadershipGroupInfoTableCreateCompanionBuilder,
+      $$LeadershipGroupInfoTableUpdateCompanionBuilder,
+      (
+        LeadershipGroupInfoData,
+        BaseReferences<
+          _$AppDatabase,
+          $LeadershipGroupInfoTable,
+          LeadershipGroupInfoData
+        >,
+      ),
+      LeadershipGroupInfoData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
+  $$TarbiyaAreasTableTableManager get tarbiyaAreas =>
+      $$TarbiyaAreasTableTableManager(_db, _db.tarbiyaAreas);
+  $$ShubasTableTableManager get shubas =>
+      $$ShubasTableTableManager(_db, _db.shubas);
+  $$MembersTableTableManager get members =>
+      $$MembersTableTableManager(_db, _db.members);
   $$DepartmentsTableTableManager get departments =>
       $$DepartmentsTableTableManager(_db, _db.departments);
   $$UsersTableTableManager get users =>
@@ -18263,14 +22574,12 @@ class $AppDatabaseManager {
       $$LeadersTableTableManager(_db, _db.leaders);
   $$AuditLogsTableTableManager get auditLogs =>
       $$AuditLogsTableTableManager(_db, _db.auditLogs);
-  $$TarbiyaAreasTableTableManager get tarbiyaAreas =>
-      $$TarbiyaAreasTableTableManager(_db, _db.tarbiyaAreas);
-  $$ShubasTableTableManager get shubas =>
-      $$ShubasTableTableManager(_db, _db.shubas);
-  $$MembersTableTableManager get members =>
-      $$MembersTableTableManager(_db, _db.members);
   $$MemberChildrenTableTableManager get memberChildren =>
       $$MemberChildrenTableTableManager(_db, _db.memberChildren);
+  $$MemberWivesTableTableManager get memberWives =>
+      $$MemberWivesTableTableManager(_db, _db.memberWives);
+  $$MemberUsraLinksTableTableManager get memberUsraLinks =>
+      $$MemberUsraLinksTableTableManager(_db, _db.memberUsraLinks);
   $$MemberEducationTableTableManager get memberEducation =>
       $$MemberEducationTableTableManager(_db, _db.memberEducation);
   $$MemberActivitiesTableTableManager get memberActivities =>
@@ -18283,10 +22592,16 @@ class $AppDatabaseManager {
       $$MemberDonationsTableTableManager(_db, _db.memberDonations);
   $$MemberRolesTableTableManager get memberRoles =>
       $$MemberRolesTableTableManager(_db, _db.memberRoles);
+  $$DepartmentStaffTableTableManager get departmentStaff =>
+      $$DepartmentStaffTableTableManager(_db, _db.departmentStaff);
   $$DeptActivitiesTableTableManager get deptActivities =>
       $$DeptActivitiesTableTableManager(_db, _db.deptActivities);
   $$ReportsTableTableManager get reports =>
       $$ReportsTableTableManager(_db, _db.reports);
   $$GalleryPhotosTableTableManager get galleryPhotos =>
       $$GalleryPhotosTableTableManager(_db, _db.galleryPhotos);
+  $$MinutesReportsTableTableManager get minutesReports =>
+      $$MinutesReportsTableTableManager(_db, _db.minutesReports);
+  $$LeadershipGroupInfoTableTableManager get leadershipGroupInfo =>
+      $$LeadershipGroupInfoTableTableManager(_db, _db.leadershipGroupInfo);
 }

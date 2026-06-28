@@ -1,15 +1,27 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 
 import '../data/app_database.dart';
 import '../util/photo_service.dart';
 
-/// Gallery archive photos.
+/// Gallery archive photos. Each entry is an album of one or more images stored
+/// as files (only the paths are kept in the database — never image BLOBs).
 class GalleryRepository {
   GalleryRepository(this._db, [this._photos = const PhotoService()]);
   final AppDatabase _db;
   final PhotoService _photos;
 
   String _id() => 'photo_${DateTime.now().microsecondsSinceEpoch}';
+
+  /// All image paths in an entry's album (falls back to the single cover path
+  /// for legacy entries).
+  static List<String> imagesOf(GalleryPhoto p) {
+    if (p.imagePaths.trim().isNotEmpty) {
+      return (jsonDecode(p.imagePaths) as List).map((e) => '$e').toList();
+    }
+    return p.imagePath.isEmpty ? const [] : [p.imagePath];
+  }
 
   Stream<List<GalleryPhoto>> watchAll() => (_db.select(_db.galleryPhotos)
         ..orderBy([(p) => OrderingTerm.desc(p.year)]))
@@ -27,7 +39,7 @@ class GalleryRepository {
     String eventAr = '',
     String iconKey = 'photo',
     int accent = 0xFF0B5D3B,
-    String imagePath = '',
+    List<String> imagePaths = const [],
     int heightHint = 220,
   }) {
     return _db.into(_db.galleryPhotos).insert(GalleryPhotosCompanion.insert(
@@ -39,7 +51,9 @@ class GalleryRepository {
           eventAr: Value(eventAr),
           iconKey: Value(iconKey),
           accent: Value(accent),
-          imagePath: Value(imagePath),
+          // Cover = first image (kept for the masonry thumbnail).
+          imagePath: Value(imagePaths.isNotEmpty ? imagePaths.first : ''),
+          imagePaths: Value(jsonEncode(imagePaths)),
           heightHint: Value(heightHint),
         ));
   }
@@ -49,6 +63,10 @@ class GalleryRepository {
           ..where((p) => p.id.equals(id)))
         .getSingleOrNull();
     await (_db.delete(_db.galleryPhotos)..where((p) => p.id.equals(id))).go();
-    await _photos.deleteStored(photo?.imagePath);
+    if (photo != null) {
+      for (final path in imagesOf(photo)) {
+        await _photos.deleteStored(path);
+      }
+    }
   }
 }

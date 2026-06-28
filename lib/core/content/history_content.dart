@@ -60,7 +60,7 @@ const List<Bilingual> kHistoryNarrative = [
         'الحق لا بدّ أن ينبع من داخل الناس قبل أن يُصلح المجتمع بأسره.',
   ),
   (
-    en: 'Led by the late Muhammad Qasim (Qassem) Tarusan, these young idealists '
+    en: 'Led by the late Muhammad Qasim Tarusan, these young idealists '
         'organized a group guided by Islamic creed and ideology, first known '
         'as “Shababul Muslim.” Their clear mission and tireless devotion to '
         'spreading the Islamic message attracted people from all walks of '
@@ -115,7 +115,7 @@ const List<Milestone> kMilestones = [
     title: 'Founding Abroad',
     titleAr: 'النشأة في المهجر',
     description:
-        'Young Filipino Muslim students in Kuwait, led by the late Muhammad '
+        'Young Filipino Muslim students in Kuwait, led by the late shiekh Muhammad '
         'Qasim Tarusan, form a group known as “Shababul Muslim.”',
     descriptionAr:
         'طلابٌ مسلمون فلبينيون في الكويت، بقيادة المرحوم محمد قاسم تاروسان، '

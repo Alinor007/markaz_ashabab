@@ -122,9 +122,8 @@ class _SearchScreenState extends State<SearchScreen> {
       if (_match(q, [m.fullName, m.nameAr, m.occupation])) {
         add('members', _Hit(
           title: m.displayName(context.isArabic),
-          subtitle: m.occupation.isEmpty
-              ? context.tr('Level ${m.level}', 'المستوى ${m.level}')
-              : m.occupation,
+          subtitle:
+              m.occupation.isEmpty ? m.levelLabel(context.isArabic) : m.occupation,
           icon: Icons.person_outline,
           categoryEn: 'Members', categoryAr: 'الأعضاء',
           color: AppColors.emerald,

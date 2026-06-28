@@ -127,7 +127,7 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
 
-# App launcher icon (Markaz As-Shabab seal). Run after changes:
+# App launcher icon (Markazosshabab seal). Run after changes:
 #   dart run flutter_launcher_icons
 flutter_launcher_icons:
   android: true

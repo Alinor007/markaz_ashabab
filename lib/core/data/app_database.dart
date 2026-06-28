@@ -59,6 +59,12 @@ class Leaders extends Table {
 
   /// Absolute path to the leader's stored profile photo ('' when none).
   TextColumn get photoPath => text().withDefault(const Constant(''))();
+
+  /// For an assignable position (Office of the President): the member who holds
+  /// it, or null when Unassigned. SET NULL so deleting the member just vacates
+  /// the position rather than removing it.
+  TextColumn get memberId =>
+      text().nullable().references(Members, #id, onDelete: KeyAction.setNull)();
   IntColumn get accent => integer().withDefault(const Constant(0xFF0B5D3B))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
   DateTimeColumn get createdAt =>
@@ -114,6 +120,11 @@ class Shubas extends Table {
   TextColumn get name => text()();
   TextColumn get nameAr => text().withDefault(const Constant(''))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+
+  /// The Shu'ba's Mas'ul (Person-in-Charge): an existing member, or null when
+  /// unassigned. SET NULL so deleting the member just vacates the role.
+  TextColumn get masulMemberId =>
+      text().nullable().references(Members, #id, onDelete: KeyAction.setNull)();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -179,6 +190,36 @@ class MemberChildren extends Table {
       text().references(Members, #id, onDelete: KeyAction.cascade)();
   TextColumn get name => text()();
   TextColumn get dob => text().withDefault(const Constant(''))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// A member's wives (up to four, enforced in the form). Free-text name plus an
+/// optional marriage date — wives are not necessarily members themselves.
+@DataClassName('MemberWife')
+@TableIndex(name: 'idx_member_wives_member', columns: {#memberId})
+class MemberWives extends Table {
+  TextColumn get id => text()();
+  TextColumn get memberId =>
+      text().references(Members, #id, onDelete: KeyAction.cascade)();
+  TextColumn get name => text()();
+  TextColumn get marriageDate => text().withDefault(const Constant(''))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Explicit Usra membership: links a member to another member in their Usra.
+/// Both sides cascade-delete so removing either member drops the link.
+@DataClassName('MemberUsraLink')
+@TableIndex(name: 'idx_member_usra_links_member', columns: {#memberId})
+class MemberUsraLinks extends Table {
+  TextColumn get id => text()();
+  TextColumn get memberId =>
+      text().references(Members, #id, onDelete: KeyAction.cascade)();
+  TextColumn get usraMemberId =>
+      text().references(Members, #id, onDelete: KeyAction.cascade)();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -304,10 +345,35 @@ class Departments extends Table {
   TextColumn get headNameAr => text().withDefault(const Constant(''))();
   TextColumn get contactEmail => text().withDefault(const Constant(''))();
   TextColumn get contactPhone => text().withDefault(const Constant(''))();
+
+  /// The assigned Head of Department (an existing member), or null when none.
+  /// SET NULL so deleting the member just vacates the headship.
+  TextColumn get headMemberId =>
+      text().nullable().references(Members, #id, onDelete: KeyAction.setNull)();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {id};
+}
+
+/// Members assigned as staff of a department (many-to-many). Rows are removed
+/// when either the department or the member is deleted.
+@TableIndex(name: 'idx_dept_staff_dept', columns: {#departmentId})
+class DepartmentStaff extends Table {
+  TextColumn get id => text()();
+  TextColumn get departmentId =>
+      text().references(Departments, #id, onDelete: KeyAction.cascade)();
+  TextColumn get memberId =>
+      text().references(Members, #id, onDelete: KeyAction.cascade)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+
+  /// A member appears at most once per department.
+  @override
+  List<Set<Column>> get uniqueKeys => [
+        {departmentId, memberId},
+      ];
 }
 
 /// Activities belonging to a department.
@@ -322,6 +388,10 @@ class DeptActivities extends Table {
   TextColumn get date => text().withDefault(const Constant(''))();
   TextColumn get status => text().withDefault(const Constant('planned'))();
   IntColumn get attendance => integer().withDefault(const Constant(0))();
+
+  /// Structured form payload (JSON) for the Program Proposal (Form P-1). Empty
+  /// for legacy free-form activities.
+  TextColumn get formData => text().withDefault(const Constant(''))();
   DateTimeColumn get createdAt =>
       dateTime().withDefault(currentDateAndTime)();
 
@@ -343,6 +413,10 @@ class Reports extends Table {
   IntColumn get year => integer().withDefault(const Constant(0))();
   TextColumn get type => text().withDefault(const Constant('minutes'))();
   IntColumn get pages => integer().withDefault(const Constant(1))();
+
+  /// Structured form payload (JSON) for the Program Completion Report (Form
+  /// P-2). Empty for legacy minutes/resolution reports.
+  TextColumn get formData => text().withDefault(const Constant(''))();
   DateTimeColumn get createdAt =>
       dateTime().withDefault(currentDateAndTime)();
 
@@ -360,8 +434,45 @@ class GalleryPhotos extends Table {
   TextColumn get eventAr => text().withDefault(const Constant(''))();
   TextColumn get iconKey => text().withDefault(const Constant('photo'))();
   IntColumn get accent => integer().withDefault(const Constant(0xFF0B5D3B))();
+  /// Cover image (first of the album), kept for the masonry thumbnail.
   TextColumn get imagePath => text().withDefault(const Constant(''))();
+
+  /// JSON array of all stored image paths in this entry's album.
+  TextColumn get imagePaths => text().withDefault(const Constant(''))();
   IntColumn get heightHint => integer().withDefault(const Constant(220))();
+  DateTimeColumn get createdAt =>
+      dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Editable description of a leadership group's functions (Office of the
+/// President, Board of Trustees, and the Consultative Assembly sub-sections),
+/// keyed by the group's category code.
+class LeadershipGroupInfo extends Table {
+  TextColumn get code => text()();
+  TextColumn get description => text().withDefault(const Constant(''))();
+  TextColumn get descriptionAr => text().withDefault(const Constant(''))();
+
+  @override
+  Set<Column> get primaryKey => {code};
+}
+
+/// Executive Minutes-of-Meeting / Resolution reports (the sidebar Reports
+/// archive). Each groups multiple attached images into an album; not
+/// department-scoped, and visible only to executives.
+class MinutesReports extends Table {
+  TextColumn get id => text()();
+  TextColumn get title => text()();
+  IntColumn get year => integer().withDefault(const Constant(0))();
+
+  /// `minutes` | `resolution`.
+  TextColumn get type => text().withDefault(const Constant('minutes'))();
+  TextColumn get content => text().withDefault(const Constant(''))();
+
+  /// JSON array of stored image file paths (the album).
+  TextColumn get imagePaths => text().withDefault(const Constant(''))();
   DateTimeColumn get createdAt =>
       dateTime().withDefault(currentDateAndTime)();
 
@@ -377,6 +488,8 @@ class GalleryPhotos extends Table {
   Shubas,
   Members,
   MemberChildren,
+  MemberWives,
+  MemberUsraLinks,
   MemberEducation,
   MemberActivities,
   MemberContributions,
@@ -384,9 +497,12 @@ class GalleryPhotos extends Table {
   MemberDonations,
   MemberRoles,
   Departments,
+  DepartmentStaff,
   DeptActivities,
   Reports,
   GalleryPhotos,
+  MinutesReports,
+  LeadershipGroupInfo,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openOnDevice());
@@ -395,7 +511,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.memory() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 18;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -405,6 +521,8 @@ class AppDatabase extends _$AppDatabase {
           await _seedDepartments();
           await _seedTarbiyaAreas();
           await _seedDefaultAccounts();
+          await _seedLeadershipPositions();
+          await _seedLeadershipGroupInfo();
         },
         beforeOpen: (details) async {
           // Foreign keys are off by default in SQLite and must be enabled per
@@ -461,6 +579,57 @@ class AppDatabase extends _$AppDatabase {
           if (from < 9) {
             // Leader profile photos added in schema v9.
             await m.addColumn(leaders, leaders.photoPath);
+          }
+          if (from < 10) {
+            // Member wives + explicit Usra-member links added in schema v10.
+            await m.createTable(memberWives);
+            await m.createTable(memberUsraLinks);
+          }
+          if (from < 11) {
+            // Leadership becomes assignable positions in schema v11: leaders
+            // gain an optional assigned member, and the standing positions are
+            // seeded.
+            await m.addColumn(leaders, leaders.memberId);
+            await _seedLeadershipPositions();
+          }
+          if (from < 12) {
+            // Consultative Assembly → General Membership gains a seeded
+            // Chairman position in schema v12.
+            await _seedLeadershipPositions();
+          }
+          if (from < 13) {
+            // Departments gain an assigned Head member and a staff link table
+            // in schema v13.
+            await m.addColumn(departments, departments.headMemberId);
+            await m.createTable(departmentStaff);
+          }
+          if (from < 14) {
+            // Reports gain a structured Program Completion (P-2) payload.
+            await m.addColumn(reports, reports.formData);
+          }
+          if (from < 15) {
+            // Activities gain a structured Program Proposal (P-1) payload.
+            await m.addColumn(deptActivities, deptActivities.formData);
+          }
+          if (from < 16) {
+            // Shu'bas gain an assignable Mas'ul (Person-in-Charge).
+            await m.addColumn(shubas, shubas.masulMemberId);
+          }
+          if (from < 17) {
+            // Executive Minutes/Resolution reports added in schema v17.
+            await m.createTable(minutesReports);
+          }
+          if (from < 18) {
+            // Gallery albums (multiple images per entry) and editable
+            // leadership group descriptions added in schema v18; Office of the
+            // President now seeds only the President.
+            await m.addColumn(galleryPhotos, galleryPhotos.imagePaths);
+            await m.createTable(leadershipGroupInfo);
+            await _seedLeadershipGroupInfo();
+            await customStatement(
+                "DELETE FROM leaders WHERE id IN "
+                "('pos_vice_president','pos_secretary_general','pos_treasurer') "
+                "AND member_id IS NULL");
           }
         },
       );
@@ -647,6 +816,95 @@ class AppDatabase extends _$AppDatabase {
           passwordHash: tempHash,
           roleCode: UserRole.departmentHead.code,
           departmentId: Value(deptId),
+        ),
+        mode: InsertMode.insertOrIgnore,
+      );
+    }
+  }
+
+  /// Seeds the standing leadership positions. Each is an assignable position
+  /// (filled later by assigning an existing member), so the title fields hold
+  /// the position label and the assigned member starts null. Sort order 0 shows
+  /// first/prominently. Board of Trustees and the committees are not seeded —
+  /// the admin defines their positions.
+  ///
+  /// Category codes: `office_president`, `assembly_general` (Consultative
+  /// Assembly → General Membership). Board uses `board`; the committees use
+  /// `committee_hayah` and `committee_audit`.
+  Future<void> _seedLeadershipPositions() async {
+    // Only the President (Office) and Chairman (Assembly General Membership)
+    // are pre-seeded; admins add any other positions via "Add Position".
+    const seed = [
+      // (id, title, titleAr, categoryCode, sortOrder)
+      ('pos_president', 'President', 'الرئيس', 'office_president', 0),
+      ('pos_chairman', 'Chairman', 'رئيس المجلس', 'assembly_general', 0),
+    ];
+    for (final (id, title, titleAr, category, order) in seed) {
+      await into(leaders).insert(
+        LeadersCompanion.insert(
+          id: id,
+          name: title,
+          nameAr: titleAr,
+          position: title,
+          positionAr: titleAr,
+          category: category,
+          sortOrder: Value(order),
+        ),
+        mode: InsertMode.insertOrIgnore,
+      );
+    }
+  }
+
+  /// Seeds the default, editable descriptions of each leadership group's
+  /// functions. Executives can edit these later from each group's screen.
+  Future<void> _seedLeadershipGroupInfo() async {
+    const seed = [
+      (
+        'office_president',
+        'The executive leadership of Markaz As-Shabab. It sets the '
+            'organization’s direction, oversees all departments and '
+            'committees, represents the organization externally, and ensures '
+            'its programs serve the mission.',
+        'القيادة التنفيذية لمركز الشباب: تحدّد توجّه المنظمة، وتشرف على جميع '
+            'الأقسام واللجان، وتمثّل المنظمة، وتضمن خدمة برامجها للرسالة.'
+      ),
+      (
+        'board',
+        'Provides governance and strategic oversight — safeguarding the '
+            'organization’s mission, assets, and long-term direction, and '
+            'holding the leadership accountable.',
+        'يوفّر الحوكمة والإشراف الاستراتيجي، ويصون رسالة المنظمة وأصولها '
+            'وتوجّهها بعيد المدى، ويُسائل القيادة.'
+      ),
+      (
+        'assembly_general',
+        'The consultative body of the Assembly. It deliberates on policies, '
+            'advises the leadership, and represents the general membership.',
+        'الهيئة الاستشارية للمجلس: تتداول في السياسات، وتنصح القيادة، وتمثّل '
+            'العضوية العامة.'
+      ),
+      (
+        'committee_hayah',
+        'The Shari’ah committee. It ensures the organization’s '
+            'activities conform to Islamic principles and provides religious '
+            'guidance.',
+        'اللجنة الشرعية: تضمن توافق أنشطة المنظمة مع المبادئ الإسلامية وتقدّم '
+            'التوجيه الشرعي.'
+      ),
+      (
+        'committee_audit',
+        'The audit committee. It reviews finances and operations to ensure '
+            'accountability, transparency, and the proper use of resources.',
+        'لجنة التدقيق: تراجع المالية والعمليات لضمان المساءلة والشفافية وحسن '
+            'استخدام الموارد.'
+      ),
+    ];
+    for (final (code, description, descriptionAr) in seed) {
+      await into(leadershipGroupInfo).insert(
+        LeadershipGroupInfoCompanion.insert(
+          code: code,
+          description: Value(description),
+          descriptionAr: Value(descriptionAr),
         ),
         mode: InsertMode.insertOrIgnore,
       );

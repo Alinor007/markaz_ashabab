@@ -8,6 +8,7 @@ import '../../core/i18n/localized.dart';
 import '../../core/repositories/member_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../core/util/validators.dart';
 import '../../widgets/common/info_panel.dart';
 import '../../widgets/common/portrait_avatar.dart';
 import '../../widgets/common/search_field.dart';
@@ -88,6 +89,28 @@ Future<String?> _pickDate(BuildContext context, String current) async {
   return picked?.toIso8601String().split('T').first;
 }
 
+/// Date picker constrained to a single [year]/[month] — used for a monthly
+/// donation so its date can only fall within the month it belongs to. The
+/// month and year are effectively locked because the first and last selectable
+/// dates are both inside that month.
+Future<String?> _pickMonthDate(
+    BuildContext context, int year, int month, String current) async {
+  final first = DateTime(year, month, 1);
+  final last = DateTime(year, month + 1, 0); // day 0 of next month = last day
+  final parsed = DateTime.tryParse(current);
+  final initial =
+      (parsed != null && !parsed.isBefore(first) && !parsed.isAfter(last))
+          ? parsed
+          : first;
+  final picked = await showDatePicker(
+    context: context,
+    initialDate: initial,
+    firstDate: first,
+    lastDate: last,
+  );
+  return picked?.toIso8601String().split('T').first;
+}
+
 // ════════════════════════════ Personal ════════════════════════════
 
 class PersonalInfoCard extends StatelessWidget {
@@ -143,6 +166,35 @@ class FamilyChildrenCard extends StatelessWidget {
           if (single)
             Text(context.tr('Single', 'أعزب'),
                 style: Theme.of(context).textTheme.bodyMedium),
+          // Wives (up to 4) — only shown when any are recorded.
+          StreamBuilder<List<MemberWife>>(
+            stream: repo.watchWives(member.id),
+            builder: (context, snap) {
+              final wives = snap.data ?? const [];
+              if (wives.isEmpty) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(context.tr('Wives', 'الزوجات'),
+                        style: Theme.of(context).textTheme.titleSmall),
+                    const SizedBox(height: AppSpacing.sm),
+                    for (final w in wives)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                        child: Text(
+                          w.marriageDate.isEmpty
+                              ? w.name
+                              : '${w.name} — ${w.marriageDate}',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
           const SizedBox(height: AppSpacing.md),
           Text(context.tr('Children', 'الأبناء'),
               style: Theme.of(context).textTheme.titleSmall),
@@ -270,11 +322,29 @@ class NaqibUsraCard extends StatelessWidget {
                 member.usraMeetingSchedule),
           ]),
           const SizedBox(height: AppSpacing.md),
+          Text(context.tr('Naqib', 'النقيب'),
+              style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: AppSpacing.sm),
+          FutureBuilder<Member?>(
+            future: member.naqibMemberId == null
+                ? Future.value(null)
+                : repo.getMember(member.naqibMemberId!),
+            builder: (context, snap) {
+              final naqib = snap.data;
+              return Text(
+                naqib == null
+                    ? context.tr('Not assigned', 'غير معيّن')
+                    : naqib.displayName(context.isArabic),
+                style: Theme.of(context).textTheme.bodyMedium,
+              );
+            },
+          ),
+          const SizedBox(height: AppSpacing.md),
           Text(context.tr('Usra Members', 'أعضاء الأسرة'),
               style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: AppSpacing.sm),
           StreamBuilder<List<Member>>(
-            stream: repo.watchUsraMembers(member.id, member.usraName),
+            stream: repo.watchUsraMembers(member.id),
             builder: (context, snap) {
               final members = snap.data ?? const [];
               if (members.isEmpty) {
@@ -460,6 +530,7 @@ Future<void> _showTasedDialog(BuildContext context, MemberRepository repo,
   int level = existing?.level ?? 1;
   final yearCtrl = TextEditingController(text: existing?.year ?? '');
   String status = existing?.status ?? 'inactive';
+  final formKey = GlobalKey<FormState>();
   final result = await showDialog<bool>(
     context: context,
     builder: (context) => StatefulBuilder(
@@ -470,43 +541,59 @@ Future<void> _showTasedDialog(BuildContext context, MemberRepository repo,
             : context.tr('Edit Tas\'ed Record', 'تعديل سجل التصعيد')),
         content: SizedBox(
           width: 360,
-          child: SingleChildScrollView(child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DropdownButtonFormField<int>(
-                initialValue: level,
-                decoration: InputDecoration(labelText: context.tr('Level', 'المستوى')),
-                items: [
-                  for (final l in kTarbiyaLevels)
-                    DropdownMenuItem(value: l, child: Text('Level $l')),
+          child: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<int>(
+                    initialValue: level,
+                    decoration: InputDecoration(
+                        labelText: context.tr('Level', 'المستوى')),
+                    items: [
+                      for (final l in kTarbiyaLevels)
+                        DropdownMenuItem(value: l, child: Text('Level $l')),
+                    ],
+                    onChanged: (v) => level = v ?? level,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  TextFormField(
+                    controller: yearCtrl,
+                    keyboardType: TextInputType.number,
+                    validator: (v) => Validators.optionalYear(context, v),
+                    decoration:
+                        InputDecoration(labelText: context.tr('Year', 'السنة')),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  DropdownButtonFormField<String>(
+                    initialValue: status,
+                    decoration: InputDecoration(
+                        labelText: context.tr('Status', 'الحالة')),
+                    items: [
+                      DropdownMenuItem(
+                          value: 'active',
+                          child: Text(context.tr('Active', 'نشط'))),
+                      DropdownMenuItem(
+                          value: 'inactive',
+                          child: Text(context.tr('Inactive', 'غير نشط'))),
+                    ],
+                    onChanged: (v) => status = v ?? status,
+                  ),
                 ],
-                onChanged: (v) => level = v ?? level,
               ),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
-                controller: yearCtrl,
-                decoration: InputDecoration(labelText: context.tr('Year', 'السنة')),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              DropdownButtonFormField<String>(
-                initialValue: status,
-                decoration: InputDecoration(labelText: context.tr('Status', 'الحالة')),
-                items: [
-                  DropdownMenuItem(value: 'active', child: Text(context.tr('Active', 'نشط'))),
-                  DropdownMenuItem(
-                      value: 'inactive', child: Text(context.tr('Inactive', 'غير نشط'))),
-                ],
-                onChanged: (v) => status = v ?? status,
-              ),
-            ],
-          )),
+            ),
+          ),
         ),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
               child: Text(context.tr('Cancel', 'إلغاء'))),
           FilledButton(
-              onPressed: () => Navigator.pop(context, true),
+              onPressed: () {
+                if (!formKey.currentState!.validate()) return;
+                Navigator.pop(context, true);
+              },
               child: Text(context.tr('Save', 'حفظ'))),
         ],
       ),
@@ -641,12 +728,13 @@ class _DonationCardState extends State<DonationCard> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setLocal) => AlertDialog(
+          scrollable: true,
           backgroundColor: AppColors.surface,
           title: Text(
               '${(context.isArabic ? _monthsAr : _months)[month - 1]} $_year'),
           content: SizedBox(
             width: 360,
-            child: SingleChildScrollView(child: Column(
+            child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 SwitchListTile(
@@ -665,7 +753,8 @@ class _DonationCardState extends State<DonationCard> {
                 const SizedBox(height: AppSpacing.md),
                 InkWell(
                   onTap: () async {
-                    final picked = await _pickDate(context, date);
+                    final picked =
+                        await _pickMonthDate(context, _year, month, date);
                     if (picked != null) setLocal(() => date = picked);
                   },
                   child: InputDecorator(
@@ -683,7 +772,7 @@ class _DonationCardState extends State<DonationCard> {
                       InputDecoration(labelText: context.tr('Notes', 'ملاحظات')),
                 ),
               ],
-            )),
+            ),
           ),
           actions: [
             TextButton(
@@ -942,11 +1031,12 @@ Future<void> _showActivityDialog(
     context: context,
     builder: (context) => StatefulBuilder(
       builder: (context, setLocal) => AlertDialog(
+        scrollable: true,
         backgroundColor: AppColors.surface,
         title: Text(context.tr('Add Activity', 'إضافة نشاط')),
         content: SizedBox(
           width: 380,
-          child: SingleChildScrollView(child: Column(
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
@@ -984,7 +1074,7 @@ Future<void> _showActivityDialog(
                   DropdownMenuItem(
                       value: 'absent', child: Text(context.tr('Absent', 'غائب'))),
                 ],
-                onChanged: (v) => attendance = v ?? attendance,
+                onChanged: (v) => setLocal(() => attendance = v ?? attendance),
               ),
               const SizedBox(height: AppSpacing.md),
               TextField(
@@ -992,7 +1082,7 @@ Future<void> _showActivityDialog(
                   decoration: InputDecoration(
                       labelText: context.tr('Remarks', 'ملاحظات'))),
             ],
-          )),
+          ),
         ),
         actions: [
           TextButton(

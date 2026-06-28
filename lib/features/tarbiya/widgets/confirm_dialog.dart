@@ -11,19 +11,22 @@ Future<bool> confirmDialog(
 }) async {
   final result = await showDialog<bool>(
     context: context,
-    builder: (_) => AlertDialog(
+    // Pop with the dialog's own context (not the outer one): the dialog is on
+    // the root navigator, while the caller may be inside a nested shell
+    // navigator — popping the outer context would miss the dialog entirely.
+    builder: (dialogContext) => AlertDialog(
       backgroundColor: AppColors.surface,
       title: Text(title),
       content: Text(message),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: Text(context.tr('Cancel', 'إلغاء')),
+          onPressed: () => Navigator.pop(dialogContext, false),
+          child: Text(dialogContext.tr('Cancel', 'إلغاء')),
         ),
         FilledButton(
           style: FilledButton.styleFrom(backgroundColor: AppColors.error),
-          onPressed: () => Navigator.pop(context, true),
-          child: Text(context.tr('Delete', 'حذف')),
+          onPressed: () => Navigator.pop(dialogContext, true),
+          child: Text(dialogContext.tr('Delete', 'حذف')),
         ),
       ],
     ),

@@ -9,6 +9,7 @@ import '../core/repositories/department_repository.dart';
 import '../core/repositories/gallery_repository.dart';
 import '../core/repositories/leader_repository.dart';
 import '../core/repositories/member_repository.dart';
+import '../core/repositories/minutes_report_repository.dart';
 import '../core/repositories/report_repository.dart';
 import '../core/repositories/tarbiya_repository.dart';
 import '../core/repositories/user_repository.dart';
@@ -48,6 +49,8 @@ class _MarkazAppState extends State<MarkazApp> {
   late final MemberRepository _members = MemberRepository(_db);
   late final DepartmentRepository _departments = DepartmentRepository(_db);
   late final ReportRepository _reports = ReportRepository(_db);
+  late final MinutesReportRepository _minutesReports =
+      MinutesReportRepository(_db);
   late final GalleryRepository _gallery = GalleryRepository(_db);
   late final AuditRepository _audit = AuditRepository(_db);
   late final SessionController _session = SessionController(_users, _audit);
@@ -79,6 +82,7 @@ class _MarkazAppState extends State<MarkazApp> {
         Provider<MemberRepository>.value(value: _members),
         Provider<DepartmentRepository>.value(value: _departments),
         Provider<ReportRepository>.value(value: _reports),
+        Provider<MinutesReportRepository>.value(value: _minutesReports),
         Provider<GalleryRepository>.value(value: _gallery),
         Provider<AuditRepository>.value(value: _audit),
         ChangeNotifierProvider.value(value: _session),

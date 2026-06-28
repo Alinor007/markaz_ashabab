@@ -293,27 +293,137 @@ class _LeadershipNavGroupState extends State<_LeadershipNavGroup> {
             ),
           ),
         ),
-        if (_expanded)
-          for (final category in LeadershipCategory.values)
-            _LeadershipSubTile(
-              label: isArabic ? category.ar : category.en,
-              route: '/leadership/${_routeSuffix(category)}',
-              selected: widget.currentRoute ==
-                  '/leadership/${_routeSuffix(category)}',
-            ),
+        if (_expanded) ...[
+          _LeadershipSubTile(
+            label: isArabic
+                ? LeadershipCategory.officePresident.ar
+                : LeadershipCategory.officePresident.en,
+            route: '/leadership/office-president',
+            selected: widget.currentRoute == '/leadership/office-president',
+          ),
+          _LeadershipSubTile(
+            label: isArabic
+                ? LeadershipCategory.board.ar
+                : LeadershipCategory.board.en,
+            route: '/leadership/board',
+            selected: widget.currentRoute == '/leadership/board',
+          ),
+          // Consultative Assembly → nested General Membership + Committees.
+          _ExpandableSubGroup(
+            label: isArabic
+                ? LeadershipCategory.assembly.ar
+                : LeadershipCategory.assembly.en,
+            indent: 1,
+            autoExpand: widget.currentRoute.startsWith('/leadership/assembly'),
+            children: [
+              _LeadershipSubTile(
+                label: isArabic ? 'العضوية العامة' : 'General Membership',
+                route: '/leadership/assembly/general',
+                selected:
+                    widget.currentRoute == '/leadership/assembly/general',
+                indent: 2,
+              ),
+              _ExpandableSubGroup(
+                label: isArabic ? 'اللجان' : 'Committees',
+                indent: 2,
+                autoExpand: widget.currentRoute
+                    .startsWith('/leadership/assembly/committee'),
+                children: [
+                  _LeadershipSubTile(
+                    label: isArabic ? 'الهيئة الشرعية' : "Hay-ah Shar'iyyah",
+                    route: '/leadership/assembly/committee/hayah',
+                    selected: widget.currentRoute ==
+                        '/leadership/assembly/committee/hayah',
+                    indent: 3,
+                  ),
+                  _LeadershipSubTile(
+                    label: isArabic ? 'التدقيق' : 'Audit',
+                    route: '/leadership/assembly/committee/audit',
+                    selected: widget.currentRoute ==
+                        '/leadership/assembly/committee/audit',
+                    indent: 3,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }
+}
 
-  String _routeSuffix(LeadershipCategory category) {
-    switch (category) {
-      case LeadershipCategory.officePresident:
-        return 'office-president';
-      case LeadershipCategory.board:
-        return 'board';
-      case LeadershipCategory.assembly:
-        return 'assembly';
-    }
+/// A nested, collapsible sub-group inside the Leadership tree (e.g. Consultative
+/// Assembly, or Committees within it). Auto-expands when the active route falls
+/// within it.
+class _ExpandableSubGroup extends StatefulWidget {
+  const _ExpandableSubGroup({
+    required this.label,
+    required this.indent,
+    required this.autoExpand,
+    required this.children,
+  });
+
+  final String label;
+  final int indent;
+  final bool autoExpand;
+  final List<Widget> children;
+
+  @override
+  State<_ExpandableSubGroup> createState() => _ExpandableSubGroupState();
+}
+
+class _ExpandableSubGroupState extends State<_ExpandableSubGroup> {
+  bool? _override;
+  bool get _expanded => _override ?? widget.autoExpand;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(
+              bottom: AppSpacing.xs, left: AppSpacing.lg * widget.indent),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(AppRadius.sm),
+              onTap: () => setState(() => _override = !_expanded),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                          color: Colors.white38, shape: BoxShape.circle),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Text(
+                        widget.label,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                              color: Colors.white60,
+                              fontWeight: FontWeight.w500,
+                            ),
+                      ),
+                    ),
+                    Icon(_expanded ? Icons.expand_less : Icons.expand_more,
+                        size: 18, color: Colors.white54),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (_expanded) ...widget.children,
+      ],
+    );
   }
 }
 
@@ -322,15 +432,20 @@ class _LeadershipSubTile extends StatelessWidget {
     required this.label,
     required this.route,
     required this.selected,
+    this.indent = 1,
   });
   final String label;
   final String route;
   final bool selected;
 
+  /// Nesting depth (1 = direct child of Leadership). Drives left padding.
+  final int indent;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.xs, left: AppSpacing.lg),
+      padding: EdgeInsets.only(
+          bottom: AppSpacing.xs, left: AppSpacing.lg * indent),
       child: Material(
         color: selected ? AppColors.emerald : Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadius.sm),

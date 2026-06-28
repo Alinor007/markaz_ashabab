@@ -8,12 +8,15 @@ import '../../core/data/app_database.dart';
 import '../../core/data/models.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/repositories/department_repository.dart';
+import '../../core/repositories/member_repository.dart';
 import '../../core/repositories/report_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_typography.dart';
 import '../../widgets/cards/report_card.dart';
 import '../../widgets/common/info_panel.dart';
+import '../../widgets/common/member_picker.dart';
+import '../../widgets/common/portrait_avatar.dart';
 import '../../widgets/common/profile_header.dart';
 import '../../widgets/common/stat_card.dart';
 import '../../widgets/feedback/empty_state.dart';
@@ -60,7 +63,7 @@ class _DetailBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final isArabic = context.isArabic;
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xxl),
         child: Column(
@@ -116,6 +119,7 @@ class _DetailBody extends StatelessWidget {
                 labelStyle: AppTypography.textTheme.labelLarge,
                 tabs: [
                   Tab(text: context.tr('Overview', 'نظرة عامة')),
+                  Tab(text: context.tr('Staffs', 'الطاقم')),
                   Tab(text: context.tr('Activities', 'الأنشطة')),
                   Tab(text: context.tr('Reports', 'التقارير')),
                 ],
@@ -126,6 +130,7 @@ class _DetailBody extends StatelessWidget {
               child: TabBarView(
                 children: [
                   _OverviewTab(department: department),
+                  _StaffsTab(department: department),
                   _ActivitiesTab(department: department),
                   _ReportsTab(department: department),
                 ],
@@ -159,61 +164,21 @@ class _OverviewTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: InfoPanel(
-                    icon: Icons.info_outline,
-                    title: context.tr('About', 'نبذة'),
-                    action: editAction,
-                    child: Text(
-                      (isArabic ? department.descriptionAr : department.description)
-                              .isEmpty
-                          ? context.tr('No description provided.', 'لا يوجد وصف.')
-                          : (isArabic
-                              ? department.descriptionAr
-                              : department.description),
-                      textDirection:
-                          isArabic ? TextDirection.rtl : TextDirection.ltr,
-                      style: isArabic
-                          ? AppTypography.arabic(fontSize: 16, height: 1.9)
-                          : Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.lg),
-                Expanded(
-                  flex: 2,
-                  child: InfoPanel(
-                    icon: Icons.contact_mail_outlined,
-                    title: context.tr('Department Head & Contact',
-                        'رئيس القسم والتواصل'),
-                    action: editAction,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _kv(context, Icons.person_outline,
-                            department.headName.isEmpty
-                                ? context.tr('Not assigned', 'غير معيّن')
-                                : department.headName),
-                        const SizedBox(height: AppSpacing.sm),
-                        _kv(context, Icons.email_outlined,
-                            department.contactEmail.isEmpty
-                                ? '—'
-                                : department.contactEmail),
-                        const SizedBox(height: AppSpacing.sm),
-                        _kv(context, Icons.phone_outlined,
-                            department.contactPhone.isEmpty
-                                ? '—'
-                                : department.contactPhone),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+          InfoPanel(
+            icon: Icons.info_outline,
+            title: context.tr('About', 'نبذة'),
+            action: editAction,
+            child: Text(
+              (isArabic ? department.descriptionAr : department.description)
+                      .isEmpty
+                  ? context.tr('No description provided.', 'لا يوجد وصف.')
+                  : (isArabic
+                      ? department.descriptionAr
+                      : department.description),
+              textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+              style: isArabic
+                  ? AppTypography.arabic(fontSize: 16, height: 1.9)
+                  : Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -251,13 +216,231 @@ class _OverviewTab extends StatelessWidget {
     );
   }
 
-  Widget _kv(BuildContext context, IconData icon, String value) {
+}
+
+// ════════════════════════════ Staffs ════════════════════════════
+
+/// Head of Department + Department Staffs — both filled by assigning existing
+/// members (no separate creation). Admins/executives manage; others read-only.
+class _StaffsTab extends StatelessWidget {
+  const _StaffsTab({required this.department});
+  final Department department;
+
+  Future<void> _assignHead(BuildContext context) async {
+    final deptRepo = context.read<DepartmentRepository>();
+    final memberRepo = context.read<MemberRepository>();
+    final picked = await pickMember(context, memberRepo,
+        title: context.trRead('Assign Head', 'تعيين رئيس القسم'));
+    if (picked == null || !context.mounted) return;
+    await deptRepo.assignHead(department.id, picked.id);
+  }
+
+  Future<void> _clearHead(BuildContext context) =>
+      context.read<DepartmentRepository>().assignHead(department.id, null);
+
+  Future<void> _addStaff(BuildContext context) async {
+    final deptRepo = context.read<DepartmentRepository>();
+    final memberRepo = context.read<MemberRepository>();
+    // Exclude the current head and anyone already on staff.
+    final staff = await deptRepo.watchStaff(department.id).first;
+    final head = await deptRepo.watchHead(department.id).first;
+    if (!context.mounted) return;
+    final exclude = {
+      for (final m in staff) m.id,
+      if (head != null) head.id,
+    };
+    final picked = await pickMember(context, memberRepo,
+        title: context.trRead('Add Staff', 'إضافة عضو'), excludeIds: exclude);
+    if (picked == null || !context.mounted) return;
+    await deptRepo.addStaff(department.id, picked.id);
+  }
+
+  Future<void> _removeStaff(BuildContext context, Member m) =>
+      context.read<DepartmentRepository>().removeStaff(department.id, m.id);
+
+  @override
+  Widget build(BuildContext context) {
+    final repo = context.read<DepartmentRepository>();
+    final canManage =
+        context.watch<SessionController>().can?.manageContent ?? false;
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          InfoPanel(
+            icon: Icons.workspace_premium_outlined,
+            title: context.tr('Head of Department', 'رئيس القسم'),
+            action: canManage
+                ? _StaffActionButton(
+                    icon: Icons.person_search_outlined,
+                    label: context.tr('Assign', 'تعيين'),
+                    onPressed: () => _assignHead(context),
+                  )
+                : null,
+            child: StreamBuilder<Member?>(
+              stream: repo.watchHead(department.id),
+              builder: (context, snap) {
+                final head = snap.data;
+                if (head == null) {
+                  return _UnassignedRow(
+                      label: context.tr('Unassigned', 'غير معيّن'));
+                }
+                return _MemberRow(
+                  member: head,
+                  trailing: canManage
+                      ? IconButton(
+                          tooltip: context.tr('Clear', 'مسح'),
+                          icon: const Icon(Icons.person_remove_outlined,
+                              size: 18),
+                          onPressed: () => _clearHead(context),
+                        )
+                      : null,
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          InfoPanel(
+            icon: Icons.groups_outlined,
+            title: context.tr('Department Staffs', 'طاقم القسم'),
+            action: canManage
+                ? _StaffActionButton(
+                    icon: Icons.person_add_alt_1_outlined,
+                    label: context.tr('Add', 'إضافة'),
+                    onPressed: () => _addStaff(context),
+                  )
+                : null,
+            child: StreamBuilder<List<Member>>(
+              stream: repo.watchStaff(department.id),
+              builder: (context, snap) {
+                final staff = snap.data ?? const <Member>[];
+                if (staff.isEmpty) {
+                  return Text(
+                    context.tr('No staff added yet', 'لم تتم إضافة طاقم بعد'),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: AppColors.textMuted),
+                  );
+                }
+                return Column(
+                  children: [
+                    for (var i = 0; i < staff.length; i++) ...[
+                      if (i > 0) const Divider(height: AppSpacing.lg),
+                      _MemberRow(
+                        member: staff[i],
+                        trailing: canManage
+                            ? IconButton(
+                                tooltip: context.tr('Remove', 'إزالة'),
+                                icon: const Icon(Icons.delete_outline,
+                                    size: 18, color: AppColors.error),
+                                onPressed: () =>
+                                    _removeStaff(context, staff[i]),
+                              )
+                            : null,
+                      ),
+                    ],
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A compact action button used in the Staffs panel headers.
+class _StaffActionButton extends StatelessWidget {
+  const _StaffActionButton(
+      {required this.icon, required this.label, required this.onPressed});
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18),
+      label: Text(label),
+    );
+  }
+}
+
+/// A member row (avatar + name + level) used in the Staffs tab; tapping opens
+/// the member's profile.
+class _MemberRow extends StatelessWidget {
+  const _MemberRow({required this.member, this.trailing});
+  final Member member;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final isArabic = context.isArabic;
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppRadius.sm),
+      onTap: () => context.go('/tarbiya/member/${member.id}'),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+        child: Row(
+          children: [
+            PortraitAvatar(
+                initials: member.initials,
+                imagePath: member.photoPath,
+                size: 44,
+                ring: false),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(member.displayName(isArabic),
+                      style: Theme.of(context).textTheme.titleSmall),
+                  Text(member.levelLabel(isArabic),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.textMuted)),
+                ],
+              ),
+            ),
+            ?trailing,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Placeholder shown when no Head of Department is assigned.
+class _UnassignedRow extends StatelessWidget {
+  const _UnassignedRow({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: AppColors.emerald),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-            child: Text(value, style: Theme.of(context).textTheme.bodyMedium)),
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppColors.surfaceAlt,
+            border: Border.all(color: AppColors.border),
+          ),
+          child: const Icon(Icons.person_outline,
+              size: 20, color: AppColors.textFaint),
+        ),
+        const SizedBox(width: AppSpacing.md),
+        Text(label,
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textMuted)),
       ],
     );
   }
@@ -361,7 +544,7 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
   }
 
   Future<void> _add(BuildContext context, DepartmentRepository repo) async {
-    final r = await showActivityForm(context);
+    final r = await showActivityForm(context, department: widget.department);
     if (r == null) return;
     await repo.addActivity(
       departmentId: widget.department.id,
@@ -370,19 +553,22 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
       date: r.date,
       status: r.status,
       attendance: r.attendance,
+      formData: r.formData,
     );
   }
 
   Future<void> _edit(
       BuildContext context, DepartmentRepository repo, DeptActivity a) async {
-    final r = await showActivityForm(context, existing: a);
+    final r = await showActivityForm(context,
+        department: widget.department, existing: a);
     if (r == null) return;
     await repo.updateActivity(a.id,
         title: r.title,
         description: r.description,
         date: r.date,
         status: r.status,
-        attendance: r.attendance);
+        attendance: r.attendance,
+        formData: r.formData);
   }
 
   Future<void> _delete(
@@ -656,13 +842,11 @@ class _ReportsTab extends StatelessWidget {
     await repo.create(
       departmentId: department.id,
       title: r.title,
-      titleAr: r.titleAr,
       summary: r.summary,
-      summaryAr: r.summaryAr,
       date: r.date,
       year: r.year,
       type: r.type,
-      pages: r.pages,
+      formData: r.formData,
     );
   }
 
@@ -677,13 +861,11 @@ class _ReportsTab extends StatelessWidget {
       report.id,
       ReportsCompanion(
         title: Value(r.title),
-        titleAr: Value(r.titleAr),
         summary: Value(r.summary),
-        summaryAr: Value(r.summaryAr),
         date: Value(r.date),
         year: Value(r.year),
         type: Value(r.type),
-        pages: Value(r.pages),
+        formData: Value(r.formData),
       ),
     );
   }

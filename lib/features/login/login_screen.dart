@@ -244,7 +244,7 @@ class _BrandPanel extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const BrandEmblem(size: 96, onLight: false),
+                  const BrandEmblem(size: 160, onLight: false),
                   const SizedBox(height: AppSpacing.xxxl),
                   Text(
                     s.orgNameArabic,
@@ -276,21 +276,6 @@ class _BrandPanel extends StatelessWidget {
                             height: 1.7,
                           ),
                     ),
-                  ),
-                  const SizedBox(height: AppSpacing.xxxl),
-                  Row(
-                    children: [
-                      Icon(Icons.verified_user_outlined,
-                          size: 18, color: Colors.white.withValues(alpha: 0.7)),
-                      const SizedBox(width: AppSpacing.sm),
-                      Text(
-                        '',
-                        style:
-                            Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.7),
-                                ),
-                      ),
-                    ],
                   ),
                 ],
               ),

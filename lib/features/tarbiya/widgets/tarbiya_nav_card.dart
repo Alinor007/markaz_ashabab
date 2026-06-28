@@ -19,6 +19,7 @@ class TarbiyaNavCard extends StatelessWidget {
     this.stats = const [],
     this.onEdit,
     this.onDelete,
+    this.footer,
   });
 
   final IconData icon;
@@ -30,6 +31,9 @@ class TarbiyaNavCard extends StatelessWidget {
   final List<({IconData icon, String value, String label})> stats;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+
+  /// Optional footer below the stats (e.g. a Shu'ba's Mas'ul row).
+  final Widget? footer;
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +121,12 @@ class TarbiyaNavCard extends StatelessWidget {
                     ],
                   ],
                 ),
+              ],
+              if (footer != null) ...[
+                const SizedBox(height: AppSpacing.md),
+                const Divider(height: 1),
+                const SizedBox(height: AppSpacing.sm),
+                footer!,
               ],
             ],
           ),

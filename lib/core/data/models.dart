@@ -86,7 +86,9 @@ const List<int> kTarbiyaLevels = [1, 2, 3, 4, 5];
 /// Report document types.
 enum ReportType {
   minutes('minutes', 'Minutes of Meeting', 'محضر اجتماع'),
-  resolution('resolution', 'Resolution', 'قرار');
+  resolution('resolution', 'Resolution', 'قرار'),
+  programCompletion(
+      'program_completion', 'Program Completion (P-2)', 'تقرير إنجاز برنامج');
 
   const ReportType(this.code, this.en, this.ar);
   final String code;
@@ -151,6 +153,11 @@ extension MemberX on Member {
       isArabic && nameAr.trim().isNotEmpty ? nameAr : fullName;
 
   bool get isActive => status == 'active';
+
+  /// The member's tarbiya level for display; "—" when 0 (no Tas'ed record).
+  /// Level is driven by the member's Tas'ed records, not set manually.
+  String levelLabel(bool isArabic) =>
+      level <= 0 ? '—' : (isArabic ? 'المستوى $level' : 'Level $level');
 
   CivilStatus get civilStatusEnum => CivilStatus.fromCode(civilStatus);
 
