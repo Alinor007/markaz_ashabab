@@ -14,7 +14,10 @@
       "Read(//c/Users/User\\(Ooz\\)/.claude/skills/frontend-design/**)",
       "Read(//c/Users/User\\(Ooz\\)/.claude/plugins/**)",
       "Bash(xargs grep -l \"P-1\\\\|P-2\\\\|Program Proposal\\\\|Program Completion\")",
-      "Bash(xargs grep -l \"Program Proposal\\\\|Form P-1\\\\|formData\")"
+      "Bash(xargs grep -l \"Program Proposal\\\\|Form P-1\\\\|formData\")",
+      "Bash(cp \"C:/Users/User\\(Ooz\\)/Downloads/files \\(2\\)/Logo/logo.jpg\" \"C:/Users/User\\(Ooz\\)/Desktop/Project Folder/Mobile/Markaz As-shabab/markaz_ashabab/assets/images/logo.png\")",
+      "PowerShell(flutter analyze 2>&1)",
+      "PowerShell(flutter test 2>&1)"
     ]
   }
 }

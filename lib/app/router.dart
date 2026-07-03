@@ -45,8 +45,10 @@ GoRouter createRouter(SessionController session) {
       final loc = state.matchedLocation;
       final can = session.can;
 
-      // Account management & audit logs — Administrator only.
-      if ((loc.startsWith('/users') || loc.startsWith('/audit')) &&
+      // Account management, audit logs & settings — Administrator only.
+      if ((loc.startsWith('/users') ||
+              loc.startsWith('/audit') ||
+              loc.startsWith('/settings')) &&
           !session.isAdmin) {
         return '/home';
       }

@@ -24,8 +24,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _username = TextEditingController(text: 'admin');
-  final _password = TextEditingController(text: 'admin123');
+  final _username = TextEditingController();
+  final _password = TextEditingController();
   bool _busy = false;
   String? _errorKey;
 

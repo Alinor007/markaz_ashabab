@@ -609,10 +609,11 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
       TextEditingController(text: widget.existing?.entry.positionAr ?? '');
   late final _term =
       TextEditingController(text: widget.existing?.entry.termYears ?? '');
-  late final _earlyLife =
+  // Note / Note (Arabic) are no longer edited here (the "Early Life" field was
+  // removed — the Biography Sections cover it), but their existing values are
+  // preserved unedited through save so nothing is lost.
+  late final _note =
       TextEditingController(text: widget.existing?.entry.note ?? '');
-  // Hidden from the UI (Note (Arabic) was removed), but preserved unedited
-  // through save so any existing value isn't lost.
   late final _noteAr =
       TextEditingController(text: widget.existing?.entry.noteAr ?? '');
   late int _accent = widget.existing?.entry.accent ?? kHistoryAccents[1];
@@ -643,7 +644,7 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
 
   @override
   void dispose() {
-    for (final c in [_position, _positionAr, _term, _earlyLife, _noteAr]) {
+    for (final c in [_position, _positionAr, _term, _note, _noteAr]) {
       c.dispose();
     }
     for (final s in _sections) {
@@ -740,15 +741,6 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
                 decoration: InputDecoration(
                     labelText: context.tr(
                         'Term / Years (e.g. 1983–1990)', 'المدة / السنوات')),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
-                controller: _earlyLife,
-                minLines: 2,
-                maxLines: 4,
-                decoration: InputDecoration(
-                    labelText: context.tr('Early Life', 'النشأة المبكرة'),
-                    alignLabelWithHint: true),
               ),
               const SizedBox(height: AppSpacing.lg),
               Align(
@@ -876,7 +868,7 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
                     position: _position.text.trim(),
                     positionAr: _positionAr.text.trim(),
                     termYears: _term.text.trim(),
-                    note: _earlyLife.text.trim(),
+                    note: _note.text.trim(),
                     noteAr: _noteAr.text.trim(),
                     accent: _accent,
                     sections: [

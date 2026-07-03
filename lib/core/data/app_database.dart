@@ -227,7 +227,7 @@ class MemberUsraLinks extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-/// stage: elementary | highschool | college | postgraduate
+/// stage: elementary | junior_high | senior_high | vocational | college
 @TableIndex(name: 'idx_member_education_member', columns: {#memberId})
 class MemberEducation extends Table {
   TextColumn get id => text()();
@@ -603,7 +603,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.memory() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 21;
+  int get schemaVersion => 22;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -745,6 +745,12 @@ class AppDatabase extends _$AppDatabase {
             // to Previous Leadership entries in schema v21.
             await m.createTable(previousLeaderSections);
           }
+          if (from < 22) {
+            // A Vice President executive account is added to the default
+            // seed in schema v22 (insertOrIgnore, so existing accounts are
+            // untouched).
+            await _seedDefaultAccounts();
+          }
         },
       );
 
@@ -813,7 +819,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Creates the default Administrator account on first launch so the system
   /// can be accessed before any data exists. Username `admin`, password
-  /// `admin123` (change immediately in production).
+  /// `Admin@markazosshabab` (change immediately in production).
   Future<void> _seedAdministrator() async {
     await into(users).insert(
       UsersCompanion.insert(
@@ -822,7 +828,7 @@ class AppDatabase extends _$AppDatabase {
         fullNameAr: 'مدير النظام',
         username: 'admin',
         email: const Value('admin@markaz.org'),
-        passwordHash: PasswordHasher.hash('admin123'),
+        passwordHash: PasswordHasher.hash('Admin@markazosshabab'),
         roleCode: UserRole.administrator.code,
       ),
     );
@@ -881,6 +887,8 @@ class AppDatabase extends _$AppDatabase {
     // Executive accounts (no department link).
     const executives = [
       ('president', 'president', 'President', 'الرئيس', 'president'),
+      ('vice_president', 'vicepresident', 'Vice President', 'نائب الرئيس',
+          'vice_president'),
       ('secretary_general', 'secretary', 'Secretary General', 'الأمين العام',
           'secretary_general'),
       ('treasurer', 'treasurer', 'Treasurer', 'أمين الصندوق', 'treasurer'),

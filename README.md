@@ -43,8 +43,8 @@ all major modules wired with mock data.
   reset-password.
 - **Audit Logs** (admin) — chronological action timeline.
 - **History** — founding hero, key facts, and a milestones timeline.
-- **Settings** — account summary, language (EN/AR) switch, notification
-  toggles, and application/about info.
+- **Settings** — account summary, language (EN/AR) switch, and
+  application/about info.
 
 Every sidebar destination is now a fully built screen.
 

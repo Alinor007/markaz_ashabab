@@ -616,7 +616,13 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                         for (final s in EducationStage.values)
                           s: s.label(context.isArabic)
                       },
-                      onChanged: (v) => setState(() => _education[i].stage = v),
+                      onChanged: (v) => setState(() {
+                        _education[i].stage = v;
+                        // Drop values the new stage doesn't collect, so a
+                        // hidden field's stale text isn't silently saved.
+                        if (!v.hasDegree) _education[i].degree.clear();
+                        if (!v.hasProgram) _education[i].program.clear();
+                      }),
                     ),
                     _field(_education[i].school,
                         context.tr('School Name', 'اسم المدرسة')),
@@ -627,10 +633,12 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                     ),
                   ]),
                   _row([
-                    _field(_education[i].degree,
-                        context.tr('Degree', 'الدرجة العلمية')),
-                    _field(_education[i].program,
-                        context.tr('Program', 'البرنامج')),
+                    if (_education[i].stage.hasDegree)
+                      _field(_education[i].degree,
+                          context.tr('Degree', 'الدرجة العلمية')),
+                    if (_education[i].stage.hasProgram)
+                      _field(_education[i].program,
+                          _education[i].stage.programLabel(context.isArabic)),
                     _field(_education[i].year,
                         context.tr('Year Graduated', 'سنة التخرج')),
                   ]),

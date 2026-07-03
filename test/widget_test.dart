@@ -28,18 +28,22 @@ void main() {
 
     test('seeds an administrator account on first launch', () async {
       final users = await UserRepository(db).watchAll().first;
-      // 1 admin + 3 executives + 10 department heads seeded by default.
-      expect(users, hasLength(14));
+      // 1 admin + 4 executives (incl. Vice President) + 10 department heads
+      // seeded by default.
+      expect(users, hasLength(15));
       final admin = users.firstWhere((u) => u.username == 'admin');
       expect(admin.role, UserRole.administrator);
+      final vp = users.firstWhere((u) => u.username == 'vicepresident');
+      expect(vp.role, UserRole.vicePresident);
     });
 
     test('authenticates the seeded admin and rejects bad credentials',
         () async {
       final repo = UserRepository(db);
-      expect(await repo.authenticate('admin', 'admin123'), isNotNull);
+      expect(await repo.authenticate('admin', 'Admin@markazosshabab'),
+          isNotNull);
       expect(await repo.authenticate('admin', 'wrong'), isNull);
-      expect(await repo.authenticate('ghost', 'admin123'), isNull);
+      expect(await repo.authenticate('ghost', 'Admin@markazosshabab'), isNull);
     });
 
     test('creates users and enforces unique usernames', () async {
@@ -55,7 +59,7 @@ void main() {
       expect(await repo.usernameExists('a.lomondot'), isTrue);
       expect(await repo.usernameExists('unique.name'), isFalse);
       final users = await repo.watchAll().first;
-      expect(users, hasLength(15)); // 14 seeded + 1 created
+      expect(users, hasLength(16)); // 15 seeded + 1 created
     });
 
     test('leadership CRUD by category', () async {
@@ -620,6 +624,17 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
     }
 
+    // The login fields are no longer pre-filled, so every test that needs to
+    // get past the login screen must type the seeded admin credentials in
+    // before tapping Sign In.
+    Future<void> signIn(WidgetTester tester) async {
+      final fields = find.byType(TextField);
+      await tester.enterText(fields.at(0), 'admin');
+      await tester.enterText(fields.at(1), 'Admin@markazosshabab');
+      await tester.tap(find.text('Sign In'));
+      await tester.pumpAndSettle();
+    }
+
     testWidgets('boots to login, signs in, reaches home, toggles AR',
         (tester) async {
       useTabletSurface(tester);
@@ -629,10 +644,9 @@ void main() {
       await tester.pumpWidget(MarkazApp(database: db));
       await tester.pumpAndSettle();
 
-      // Login screen (credentials are pre-filled with the seeded admin).
+      // Login screen — enter the seeded admin credentials and sign in.
       expect(find.text('Sign In'), findsOneWidget);
-      await tester.tap(find.text('Sign In'));
-      await tester.pumpAndSettle();
+      await signIn(tester);
 
       // Reached the app shell (left the login screen).
       expect(find.text('Sign In'), findsNothing);
@@ -651,8 +665,7 @@ void main() {
 
       await tester.pumpWidget(MarkazApp(database: db));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Sign In'));
-      await tester.pumpAndSettle();
+      await signIn(tester);
 
       // Expand the Leadership group in the sidebar; it reveals three pages.
       // The Home page also surfaces a "Leadership" quick-access tile, so target
@@ -673,8 +686,7 @@ void main() {
 
       await tester.pumpWidget(MarkazApp(database: db));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Sign In'));
-      await tester.pumpAndSettle();
+      await signIn(tester);
 
       // Tarbiya has no sidebar entry — reach it via the Departments section.
       await tester.tap(find.text('Departments'));
@@ -726,8 +738,7 @@ void main() {
 
       await tester.pumpWidget(MarkazApp(database: db));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Sign In'));
-      await tester.pumpAndSettle();
+      await signIn(tester);
 
       await tester.tap(find.text('User Management'));
       await tester.pumpAndSettle();
@@ -772,8 +783,7 @@ void main() {
       final db = AppDatabase.memory();
       await tester.pumpWidget(MarkazApp(database: db));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Sign In'));
-      await tester.pumpAndSettle();
+      await signIn(tester);
 
       // Open User Management (empty → shows the EmptyState that overflowed).
       await tester.tap(find.text('User Management'));

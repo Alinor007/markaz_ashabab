@@ -54,7 +54,6 @@ class AppStrings {
 
   // Top bar
   String get globalSearchHint => _s.globalSearchHint;
-  String get notifications => _s.notifications;
   String get logout => _s.logout;
   String get languageName => _s.languageName;
 
@@ -107,7 +106,6 @@ class _Strings {
     required this.auditLogs,
     required this.administration,
     required this.globalSearchHint,
-    required this.notifications,
     required this.logout,
     required this.languageName,
     required this.welcome,
@@ -151,7 +149,6 @@ class _Strings {
   final String auditLogs;
   final String administration;
   final String globalSearchHint;
-  final String notifications;
   final String logout;
   final String languageName;
   final String welcome;
@@ -198,7 +195,6 @@ const _Strings _englishStrings = _Strings(
   auditLogs: 'Audit Logs',
   administration: 'Administration',
   globalSearchHint: 'Search members, leaders, reports…',
-  notifications: 'Notifications',
   logout: 'Logout',
   languageName: 'EN',
   welcome: 'Welcome back',
@@ -247,7 +243,6 @@ const _Strings _arabicStrings = _Strings(
   auditLogs: 'سجلات التدقيق',
   administration: 'الإدارة',
   globalSearchHint: 'ابحث عن الأعضاء والقادة والتقارير…',
-  notifications: 'الإشعارات',
   logout: 'تسجيل الخروج',
   languageName: 'ع',
   welcome: 'مرحبًا بعودتك',

@@ -11,8 +11,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_typography.dart';
 
-/// The top navigation bar: breadcrumbs, a global search field, language toggle,
-/// notifications, and the user avatar.
+/// The top navigation bar: breadcrumbs, a global search field, language
+/// toggle, and the user avatar.
 class AppTopBar extends StatelessWidget {
   const AppTopBar({super.key});
 
@@ -100,10 +100,6 @@ class AppTopBar extends StatelessWidget {
 
           // Language toggle
           _LanguageToggle(locale: locale),
-          const SizedBox(width: AppSpacing.md),
-
-          // Notifications
-          _NotificationsButton(tooltip: s.notifications, isArabic: isArabic),
           const SizedBox(width: AppSpacing.lg),
 
           // Avatar
@@ -170,61 +166,3 @@ class _LanguageToggle extends StatelessWidget {
   }
 }
 
-/// The notifications bell. There is no notifications backend yet, so rather
-/// than show a fake unread badge it opens an honest empty-state popover. A
-/// badge is shown only when [count] is greater than zero.
-class _NotificationsButton extends StatelessWidget {
-  const _NotificationsButton({
-    required this.tooltip,
-    required this.isArabic,
-  });
-
-  final String tooltip;
-  final bool isArabic;
-
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton<void>(
-      tooltip: tooltip,
-      position: PopupMenuPosition.under,
-      offset: const Offset(0, 8),
-      shape: const RoundedRectangleBorder(borderRadius: AppRadius.panel),
-      itemBuilder: (context) => [
-        PopupMenuItem<void>(
-          enabled: false,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minWidth: 220),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  tooltip,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                Row(
-                  children: [
-                    const Icon(Icons.notifications_off_outlined,
-                        size: 18, color: AppColors.textFaint),
-                    const SizedBox(width: AppSpacing.sm),
-                    Text(
-                      isArabic
-                          ? 'لا توجد إشعارات جديدة'
-                          : 'No new notifications',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-      child: const Padding(
-        padding: EdgeInsets.all(AppSpacing.sm),
-        child: Icon(Icons.notifications_outlined,
-            size: 24, color: AppColors.charcoal),
-      ),
-    );
-  }
-}
