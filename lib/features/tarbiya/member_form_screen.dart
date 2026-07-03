@@ -20,15 +20,17 @@ import '../../widgets/layout/module_page.dart';
 
 /// Mutable child row in the form.
 class _ChildRow {
-  _ChildRow({String name = '', this.dob = ''})
-      : name = TextEditingController(text: name);
+  _ChildRow({String name = '', String age = ''})
+      : name = TextEditingController(text: name),
+        age = TextEditingController(text: age);
   final TextEditingController name;
-  String dob;
+  final TextEditingController age;
 }
 
-/// Mutable wife row in the form (max 4 enforced in the UI).
-class _WifeRow {
-  _WifeRow({String name = '', this.marriageDate = ''})
+/// Mutable spouse row in the form. A non-single female keeps 1; a non-single
+/// male keeps up to 4 (the cap is enforced in the UI).
+class _SpouseRow {
+  _SpouseRow({String name = '', this.marriageDate = ''})
       : name = TextEditingController(text: name);
   final TextEditingController name;
   String marriageDate;
@@ -85,14 +87,12 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   final _address = TextEditingController();
   final _ethnicity = TextEditingController();
   final _occupation = TextEditingController();
-  final _spouseName = TextEditingController();
   final _usraName = TextEditingController();
   final _usraYear = TextEditingController();
   final _usraSchedule = TextEditingController();
 
   String _gender = 'M';
   String _dob = '';
-  String _spouseDate = '';
   String _dateJoined = '';
   CivilStatus _civil = CivilStatus.single;
   String _status = 'active';
@@ -102,7 +102,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
 
   final List<_ChildRow> _children = [];
   final List<_EduRow> _education = [];
-  final List<_WifeRow> _wives = [];
+  final List<_SpouseRow> _spouses = [];
 
   /// This member's Naqib (an existing member) and explicit Usra members.
   Member? _naqib;
@@ -110,21 +110,20 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
 
   bool get _notSingle => _civil != CivilStatus.single;
 
-  /// A non-single female records a husband/spouse (Family Information card).
-  bool get _showFamilySection => _gender == 'F' && _notSingle;
+  /// Spouses are recorded in the Family Information card for any non-single
+  /// member (hidden entirely when Single).
+  bool get _showSpouseSection => _notSingle;
 
-  /// A non-single male records up to four wives (Wives card).
-  bool get _showWivesSection => _gender == 'M' && _notSingle;
+  /// A female records 1 spouse; a male up to 4.
+  int get _maxSpouses => _gender == 'F' ? 1 : 4;
 
-  /// Clears any entered family data so a hidden section never carries stale
+  /// Clears any entered spouse data so a hidden section never carries stale
   /// values into a save (e.g. after switching to Single or changing gender).
   void _clearFamilyData() {
-    _spouseName.clear();
-    _spouseDate = '';
-    for (final w in _wives) {
-      w.name.dispose();
+    for (final s in _spouses) {
+      s.name.dispose();
     }
-    _wives.clear();
+    _spouses.clear();
   }
 
   @override
@@ -163,13 +162,11 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     _address.text = m.address;
     _ethnicity.text = m.ethnicity;
     _occupation.text = m.occupation;
-    _spouseName.text = m.spouseName;
     _usraName.text = m.usraName;
     _usraYear.text = m.usraEstablishedYear;
     _usraSchedule.text = m.usraMeetingSchedule;
     _gender = m.gender;
     _dob = m.dob;
-    _spouseDate = m.spouseDate;
     _dateJoined = m.dateJoined;
     _civil = m.civilStatusEnum;
     _status = m.status;
@@ -178,7 +175,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     _photoPath = m.photoPath;
     _children
       ..clear()
-      ..addAll(children.map((c) => _ChildRow(name: c.name, dob: c.dob)));
+      ..addAll(children.map((c) => _ChildRow(name: c.name, age: c.dob)));
     _education
       ..clear()
       ..addAll(education.map((e) => _EduRow(
@@ -188,10 +185,15 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
             program: e.program,
             year: e.yearGraduated,
           )));
-    _wives
+    _spouses
       ..clear()
       ..addAll(wives
-          .map((w) => _WifeRow(name: w.name, marriageDate: w.marriageDate)));
+          .map((w) => _SpouseRow(name: w.name, marriageDate: w.marriageDate)));
+    // Back-compat: surface a legacy denormalized spouse (older female records)
+    // when no normalized spouse rows exist yet.
+    if (_spouses.isEmpty && m.spouseName.trim().isNotEmpty) {
+      _spouses.add(_SpouseRow(name: m.spouseName, marriageDate: m.spouseDate));
+    }
     _naqib = naqib;
     _usraMembers
       ..clear()
@@ -203,15 +205,16 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   void dispose() {
     for (final c in [
       _first, _middle, _last, _suffix, _nameAr, _placeOfBirth, _contact,
-      _email, _address, _ethnicity, _occupation, _spouseName, _usraName,
+      _email, _address, _ethnicity, _occupation, _usraName,
       _usraYear, _usraSchedule,
     ]) {
       c.dispose();
     }
     for (final r in _children) {
       r.name.dispose();
+      r.age.dispose();
     }
-    for (final r in _wives) {
+    for (final r in _spouses) {
       r.name.dispose();
     }
     for (final r in _education) {
@@ -269,10 +272,10 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
       occupation: Value(_occupation.text.trim()),
       photoPath: Value(_photoPath),
       civilStatus: Value(_civil.code),
-      // Persist the spouse only when the Family section applies (non-single
-      // female); otherwise it's cleared so hidden data can't linger.
-      spouseName: Value(_showFamilySection ? _spouseName.text.trim() : ''),
-      spouseDate: Value(_showFamilySection ? _spouseDate : ''),
+      // Spouses are now stored in the MemberWives table for all genders; the
+      // denormalized columns are deprecated and always cleared.
+      spouseName: const Value(''),
+      spouseDate: const Value(''),
       status: Value(_status),
       dateJoined: Value(_dateJoined),
       usraName: Value(_usraName.text.trim()),
@@ -303,7 +306,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     }
     for (final c in _children) {
       if (c.name.text.trim().isEmpty) continue;
-      await repo.addChild(memberId, c.name.text.trim(), c.dob);
+      await repo.addChild(memberId, c.name.text.trim(), c.age.text.trim());
     }
     for (final e in _education) {
       if (e.school.text.trim().isEmpty) continue;
@@ -316,12 +319,12 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
         yearGraduated: e.year.text.trim(),
       );
     }
-    // Only a non-single male keeps wives; otherwise none are re-added (the edit
-    // branch above already removed any existing rows).
-    if (_showWivesSection) {
-      for (final w in _wives) {
-        if (w.name.text.trim().isEmpty) continue;
-        await repo.addWife(memberId, w.name.text.trim(), w.marriageDate);
+    // Spouses are kept for any non-single member (the edit branch above already
+    // removed existing rows); none are re-added when Single.
+    if (_showSpouseSection) {
+      for (final s in _spouses) {
+        if (s.name.text.trim().isEmpty) continue;
+        await repo.addWife(memberId, s.name.text.trim(), s.marriageDate);
       }
     }
     for (final m in _usraMembers) {
@@ -393,14 +396,10 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
           children: [
             _personalSection(),
             const SizedBox(height: AppSpacing.lg),
-            // Family section shows only for a non-single female (husband/spouse);
-            // the Wives section only for a non-single male (up to 4 wives).
-            if (_showFamilySection) ...[
+            // Spouses are recorded in Family Information for any non-single
+            // member (1 for a female, up to 4 for a male).
+            if (_showSpouseSection) ...[
               _familySection(),
-              const SizedBox(height: AppSpacing.lg),
-            ],
-            if (_showWivesSection) ...[
-              _wivesSection(),
               const SizedBox(height: AppSpacing.lg),
             ],
             _childrenSection(),
@@ -513,77 +512,55 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     );
   }
 
+  /// The name label for a spouse row, based on gender and civil status.
+  String _spouseNameLabel() => _gender == 'F'
+      ? switch (_civil) {
+          CivilStatus.married => context.tr('Husband Name', 'اسم الزوج '),
+          CivilStatus.widowed => context.tr('Spouse Name', 'اسم الزوج/ة'),
+          CivilStatus.divorced =>
+            context.tr('Former Spouse Name', 'اسم الزوج/ة السابق'),
+          CivilStatus.single => '',
+        }
+      : context.tr('Wife Name', 'اسم الزوجة');
+
   Widget _familySection() {
-    if (_civil == CivilStatus.single) {
-      return const SizedBox.shrink();
-    }
-    final (label, dateLabel) = switch (_civil) {
-      CivilStatus.married => (
-          context.tr('Husband Name', 'اسم الزوج '),
-          context.tr('Date of Marriage', 'تاريخ الزواج')
-        ),
-      CivilStatus.widowed => (
-          context.tr('Spouse Name', 'اسم الزوج/ة'),
-          context.tr('Date Widowed', 'تاريخ الترمل')
-        ),
-      CivilStatus.divorced => (
-          context.tr('Former Spouse Name', 'اسم الزوج/ة السابق'),
-          context.tr('Date of Divorce', 'تاريخ الطلاق')
-        ),
-      CivilStatus.single => ('', ''),
-    };
+    final nameLabel = _spouseNameLabel();
     return InfoPanel(
       icon: Icons.family_restroom_outlined,
       title: context.tr('Family Information', 'معلومات الأسرة'),
-      child: _row([
-        _field(_spouseName, label),
-        _dateField(dateLabel, _spouseDate, (v) => setState(() => _spouseDate = v)),
-      ]),
-    );
-  }
-
-  Widget _wivesSection() {
-    return InfoPanel(
-      icon: Icons.favorite_outline,
-      title: context.tr('Wives (max 4)', 'الزوجات (4 كحد أقصى)'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (var i = 0; i < _wives.length; i++)
+          for (var i = 0; i < _spouses.length; i++)
             Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
               child: _row([
-                _field(_wives[i].name, context.tr('Wife Name', 'اسم الزوجة')),
-                _dateField(context.tr('Marriage Date', 'تاريخ الزواج'),
-                    _wives[i].marriageDate,
-                    (v) => setState(() => _wives[i].marriageDate = v)),
+                _field(_spouses[i].name, nameLabel),
                 IconButton(
                   icon: const Icon(Icons.remove_circle_outline,
                       color: AppColors.error),
-                  onPressed: () => setState(() => _wives.removeAt(i)),
+                  onPressed: () => setState(() {
+                    _spouses[i].name.dispose();
+                    _spouses.removeAt(i);
+                  }),
                 ),
               ]),
             ),
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: TextButton.icon(
-              onPressed: _addWife,
-              icon: const Icon(Icons.add, size: 18),
-              label: Text(context.tr('Add Wife', 'إضافة زوجة')),
+          // The Add button disappears once the gender-based cap is reached.
+          if (_spouses.length < _maxSpouses)
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                onPressed: () => setState(() => _spouses.add(_SpouseRow())),
+                icon: const Icon(Icons.add, size: 18),
+                label: Text(_gender == 'F'
+                    ? context.tr('Add Spouse', 'إضافة زوج/ة')
+                    : context.tr('Add Wife', 'إضافة زوجة')),
+              ),
             ),
-          ),
         ],
       ),
     );
-  }
-
-  void _addWife() {
-    if (_wives.length >= 4) {
-      _toast(context.trRead(
-          'A member can have at most 4 wives.', 'لا يمكن إضافة أكثر من 4 زوجات.'));
-      return;
-    }
-    setState(() => _wives.add(_WifeRow()));
   }
 
   Widget _childrenSection() {
@@ -598,8 +575,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
               child: _row([
                 _field(_children[i].name, context.tr('Child Name', 'اسم الابن')),
-                _dateField(context.tr('Date of Birth', 'تاريخ الميلاد'),
-                    _children[i].dob, (v) => setState(() => _children[i].dob = v)),
+                _field(_children[i].age, context.tr('Age', 'العمر')),
                 IconButton(
                   icon: const Icon(Icons.remove_circle_outline,
                       color: AppColors.error),

@@ -66,33 +66,36 @@ class AppTopBar extends StatelessWidget {
           Text(pageLabel, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(width: AppSpacing.xl),
 
-          // Global search
-          Expanded(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 460),
-              child: SizedBox(
-                height: 42,
-                child: TextField(
-                  textDirection:
-                      isArabic ? TextDirection.rtl : TextDirection.ltr,
-                  textInputAction: TextInputAction.search,
-                  onSubmitted: (value) {
-                    final q = value.trim();
-                    if (q.isEmpty) return;
-                    context.go('/search?q=${Uri.encodeQueryComponent(q)}');
-                  },
-                  decoration: InputDecoration(
-                    hintText: s.globalSearchHint,
-                    prefixIcon: const Icon(Icons.search, size: 20),
-                    isDense: true,
-                    fillColor: AppColors.ivory,
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+          // Global search — hidden from department heads.
+          if (session.can?.globalSearch ?? false)
+            Expanded(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 460),
+                child: SizedBox(
+                  height: 42,
+                  child: TextField(
+                    textDirection:
+                        isArabic ? TextDirection.rtl : TextDirection.ltr,
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (value) {
+                      final q = value.trim();
+                      if (q.isEmpty) return;
+                      context.go('/search?q=${Uri.encodeQueryComponent(q)}');
+                    },
+                    decoration: InputDecoration(
+                      hintText: s.globalSearchHint,
+                      prefixIcon: const Icon(Icons.search, size: 20),
+                      isDense: true,
+                      fillColor: AppColors.ivory,
+                      contentPadding:
+                          const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
+            )
+          else
+            const Spacer(),
           const SizedBox(width: AppSpacing.lg),
 
           // Language toggle

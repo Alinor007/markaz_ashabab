@@ -7,6 +7,7 @@ import '../core/i18n/locale_controller.dart';
 import '../core/repositories/audit_repository.dart';
 import '../core/repositories/department_repository.dart';
 import '../core/repositories/gallery_repository.dart';
+import '../core/repositories/history_repository.dart';
 import '../core/repositories/leader_repository.dart';
 import '../core/repositories/member_repository.dart';
 import '../core/repositories/minutes_report_repository.dart';
@@ -52,6 +53,7 @@ class _MarkazAppState extends State<MarkazApp> {
   late final MinutesReportRepository _minutesReports =
       MinutesReportRepository(_db);
   late final GalleryRepository _gallery = GalleryRepository(_db);
+  late final HistoryRepository _history = HistoryRepository(_db);
   late final AuditRepository _audit = AuditRepository(_db);
   late final SessionController _session = SessionController(_users, _audit);
   late final LocaleController _locale = LocaleController(
@@ -84,6 +86,7 @@ class _MarkazAppState extends State<MarkazApp> {
         Provider<ReportRepository>.value(value: _reports),
         Provider<MinutesReportRepository>.value(value: _minutesReports),
         Provider<GalleryRepository>.value(value: _gallery),
+        Provider<HistoryRepository>.value(value: _history),
         Provider<AuditRepository>.value(value: _audit),
         ChangeNotifierProvider.value(value: _session),
         ChangeNotifierProvider.value(value: _locale),

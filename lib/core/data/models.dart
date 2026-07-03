@@ -87,6 +87,7 @@ const List<int> kTarbiyaLevels = [1, 2, 3, 4, 5];
 enum ReportType {
   minutes('minutes', 'Minutes of Meeting', 'محضر اجتماع'),
   resolution('resolution', 'Resolution', 'قرار'),
+  other('other', 'Other Report', 'تقرير آخر'),
   programCompletion(
       'program_completion', 'Program Completion (P-2)', 'تقرير إنجاز برنامج');
 

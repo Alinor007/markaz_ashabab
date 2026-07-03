@@ -41,6 +41,7 @@ class GalleryRepository {
     int accent = 0xFF0B5D3B,
     List<String> imagePaths = const [],
     int heightHint = 220,
+    String? reportId,
   }) {
     return _db.into(_db.galleryPhotos).insert(GalleryPhotosCompanion.insert(
           id: _id(),
@@ -55,7 +56,63 @@ class GalleryRepository {
           imagePath: Value(imagePaths.isNotEmpty ? imagePaths.first : ''),
           imagePaths: Value(jsonEncode(imagePaths)),
           heightHint: Value(heightHint),
+          reportId: Value(reportId),
         ));
+  }
+
+  /// The album linked to a Program Completion Report (Form P-2), or null.
+  Future<GalleryPhoto?> getForReport(String reportId) =>
+      (_db.select(_db.galleryPhotos)..where((p) => p.reportId.equals(reportId)))
+          .getSingleOrNull();
+
+  /// Watches the album linked to [reportId] (for the report view screen).
+  Stream<GalleryPhoto?> watchForReport(String reportId) =>
+      (_db.select(_db.galleryPhotos)..where((p) => p.reportId.equals(reportId)))
+          .watchSingleOrNull();
+
+  /// Creates or updates the single Gallery album that holds a report's uploaded
+  /// photos. Files dropped from [imagePaths] are removed from disk. When the
+  /// report has no photos, any existing linked album is deleted.
+  Future<void> setAlbumForReport({
+    required String reportId,
+    required String title,
+    required int year,
+    required List<String> imagePaths,
+    String iconKey = 'photo',
+    int accent = 0xFF0B5D3B,
+  }) async {
+    final existing = await getForReport(reportId);
+    final previous = existing == null ? const <String>[] : imagesOf(existing);
+
+    if (imagePaths.isEmpty) {
+      if (existing != null) await delete(existing.id);
+      return;
+    }
+
+    if (existing == null) {
+      await add(
+        title: title,
+        year: year,
+        iconKey: iconKey,
+        accent: accent,
+        imagePaths: imagePaths,
+        reportId: reportId,
+      );
+    } else {
+      await (_db.update(_db.galleryPhotos)
+            ..where((p) => p.id.equals(existing.id)))
+          .write(GalleryPhotosCompanion(
+        title: Value(title),
+        year: Value(year),
+        imagePath: Value(imagePaths.first),
+        imagePaths: Value(jsonEncode(imagePaths)),
+      ));
+    }
+
+    // Clean up files no longer referenced.
+    for (final path in previous) {
+      if (!imagePaths.contains(path)) await _photos.deleteStored(path);
+    }
   }
 
   Future<void> delete(String id) async {

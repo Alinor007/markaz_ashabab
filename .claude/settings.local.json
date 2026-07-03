@@ -10,7 +10,11 @@
       "Bash(grep -vE \"^00:|^\\\\s*$\")",
       "Bash(cd \"C:\\\\Users\\\\User\\(Ooz\\)\\\\Desktop\\\\Project Folder\\\\Mobile\\\\Markaz As-shabab\\\\markaz_ashabab\" && flutter test --plain-name \"department head member + staff assignment\" > /tmp/staff_test.log 2>&1; grep -nE \"Expected|Actual|Exception|Error|SqliteException|constraint|line [0-9]+\" /tmp/staff_test.log | head -25)",
       "Bash(git rm *)",
-      "Bash(flutter analyze *)"
+      "Bash(flutter analyze *)",
+      "Read(//c/Users/User\\(Ooz\\)/.claude/skills/frontend-design/**)",
+      "Read(//c/Users/User\\(Ooz\\)/.claude/plugins/**)",
+      "Bash(xargs grep -l \"P-1\\\\|P-2\\\\|Program Proposal\\\\|Program Completion\")",
+      "Bash(xargs grep -l \"Program Proposal\\\\|Form P-1\\\\|formData\")"
     ]
   }
 }

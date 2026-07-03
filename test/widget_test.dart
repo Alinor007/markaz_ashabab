@@ -28,8 +28,8 @@ void main() {
 
     test('seeds an administrator account on first launch', () async {
       final users = await UserRepository(db).watchAll().first;
-      // 1 admin + 3 executives + 9 department heads seeded by default.
-      expect(users, hasLength(13));
+      // 1 admin + 3 executives + 10 department heads seeded by default.
+      expect(users, hasLength(14));
       final admin = users.firstWhere((u) => u.username == 'admin');
       expect(admin.role, UserRole.administrator);
     });
@@ -55,7 +55,7 @@ void main() {
       expect(await repo.usernameExists('a.lomondot'), isTrue);
       expect(await repo.usernameExists('unique.name'), isFalse);
       final users = await repo.watchAll().first;
-      expect(users, hasLength(14)); // 13 seeded + 1 created
+      expect(users, hasLength(15)); // 14 seeded + 1 created
     });
 
     test('leadership CRUD by category', () async {
@@ -283,10 +283,11 @@ void main() {
     setUp(() => db = AppDatabase.memory());
     tearDown(() => db.close());
 
-    test('seeds the nine standing departments with overviews', () async {
+    test('seeds the ten standing departments with overviews', () async {
       final depts = await DepartmentRepository(db).getAll();
-      expect(depts, hasLength(9));
+      expect(depts, hasLength(10));
       expect(depts.map((d) => d.name), contains('Tarbiyah'));
+      expect(depts.map((d) => d.name), contains('Human Capital (Tarbiya)'));
       expect(depts.map((d) => d.name), contains('Economy and Investments'));
       // Youth & Students was added in schema v7.
       final youth = depts.firstWhere((d) => d.id == 'youth');

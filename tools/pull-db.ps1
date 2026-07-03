@@ -6,7 +6,7 @@
 
 .DESCRIPTION
     The app stores its database (drift, WAL mode) in the app-private folder:
-        /data/data/com.example.markazosshabab/app_flutter/markaz_archive.sqlite
+        /data/data/com.markazosshabab.markazosshababApp/app_flutter/markaz_archive.sqlite
     plus the WAL sidecars (-wal / -shm) which hold the most recent writes.
 
     This script copies all three out. It first tries `adb root` (works on
@@ -30,7 +30,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$package   = 'com.example.markazosshabab'
+$package   = 'com.markazosshabab.markazosshababApp'
 $remoteDir = "/data/data/$package/app_flutter"
 $dbFile    = 'markaz_archive.sqlite'
 $files     = @($dbFile, "$dbFile-wal", "$dbFile-shm")

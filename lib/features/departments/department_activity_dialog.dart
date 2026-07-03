@@ -154,7 +154,11 @@ class ActivityFormResult {
   final ProgramProposal data;
 
   String get title => data.programTitle;
-  String get description => data.programDescription;
+  // Form P-1 no longer captures a Program Description; show the short-term
+  // Output (or the first objective) as the activity's list subtitle.
+  String get description => data.output.isNotEmpty
+      ? data.output
+      : (data.objectives.isNotEmpty ? data.objectives.first : '');
   String get date => data.proposedDate;
   String get status => 'planned';
   int get attendance => 0;
@@ -185,24 +189,18 @@ class _ActivityFormDialog extends StatefulWidget {
 
 class _ActivityFormDialogState extends State<_ActivityFormDialog> {
   final _formKey = GlobalKey<FormState>();
+  final _scroll = ScrollController();
+  final _titleFocus = FocusNode();
+  String? _formError;
 
   late final _programTitle = _c();
   late final _venue = _c();
   late final _target = _c();
   late final _expected = _c();
-  late final _problem = _c();
-  late final _relevance = _c();
-  late final _description = _c();
-  late final _selfReliance = _c();
-  late final _adminAssistance = _c();
   late final _output = _c();
   late final _outcome = _c();
 
   final _objectives = <TextEditingController>[];
-  final _keyActivities = <TextEditingController>[];
-  final _equipment = <TextEditingController>[];
-  final _timeline = <_TimelineRow>[];
-  final _coordination = <String>{};
 
   String _proposedDate = '';
 
@@ -216,57 +214,32 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
         ? ProgramProposal.fromJson(jsonDecode(raw) as Map<String, dynamic>)
         : ProgramProposal(
             programTitle: widget.existing?.title ?? '',
-            programDescription: widget.existing?.description ?? '',
             proposedDate: widget.existing?.date ?? '',
-            // Pre-seed equipment only for a brand-new proposal.
-            equipment: widget.existing == null
-                ? List.of(ProgramProposal.defaultEquipment)
-                : [],
           );
     _programTitle.text = p.programTitle;
     _venue.text = p.venue;
     _target.text = p.targetParticipants;
     _expected.text = p.expectedParticipants;
-    _problem.text = p.problem;
-    _relevance.text = p.relevance;
-    _description.text = p.programDescription;
-    _selfReliance.text = p.selfReliance;
-    _adminAssistance.text = p.adminAssistance;
     _output.text = p.output;
     _outcome.text = p.outcome;
     _proposedDate = p.proposedDate;
-    _coordination.addAll(p.coordination);
     for (final v in p.objectives) {
       _objectives.add(_c(v));
-    }
-    for (final v in p.keyActivities) {
-      _keyActivities.add(_c(v));
-    }
-    for (final v in p.equipment) {
-      _equipment.add(_c(v));
-    }
-    for (final t in p.timeline) {
-      _timeline.add(_TimelineRow(
-          name: t.name, date: t.date, responsible: t.responsible));
     }
   }
 
   @override
   void dispose() {
     for (final c in [
-      _programTitle, _venue, _target, _expected, _problem, _relevance,
-      _description, _selfReliance, _adminAssistance, _output, _outcome,
+      _programTitle, _venue, _target, _expected, _output, _outcome,
     ]) {
       c.dispose();
     }
-    for (final list in [_objectives, _keyActivities, _equipment]) {
-      for (final c in list) {
-        c.dispose();
-      }
+    for (final c in _objectives) {
+      c.dispose();
     }
-    for (final t in _timeline) {
-      t.dispose();
-    }
+    _scroll.dispose();
+    _titleFocus.dispose();
     super.dispose();
   }
 
@@ -285,7 +258,22 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
       list.map((c) => c.text.trim()).where((s) => s.isNotEmpty).toList();
 
   void _save() {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      // Show a visible in-dialog error (a SnackBar would render behind the
+      // modal) and scroll the required Program Title (Section A) into view.
+      setState(() => _formError = context.trRead(
+          'Please enter the Program Title to save.',
+          'يرجى إدخال عنوان البرنامج للحفظ.'));
+      if (_scroll.hasClients) {
+        _scroll.animateTo(0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut);
+      }
+      // Take the user straight to the empty required field.
+      _titleFocus.requestFocus();
+      return;
+    }
+    _formError = null;
     final data = ProgramProposal(
       programTitle: _programTitle.text.trim(),
       proposedDate: _proposedDate,
@@ -293,24 +281,6 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
       targetParticipants: _target.text.trim(),
       expectedParticipants: _expected.text.trim(),
       objectives: _values(_objectives),
-      problem: _problem.text.trim(),
-      relevance: _relevance.text.trim(),
-      programDescription: _description.text.trim(),
-      keyActivities: _values(_keyActivities),
-      coordination: _coordination,
-      selfReliance: _selfReliance.text.trim(),
-      adminAssistance: _adminAssistance.text.trim(),
-      equipment: _values(_equipment),
-      timeline: [
-        for (final t in _timeline)
-          if (t.name.text.trim().isNotEmpty ||
-              t.date.isNotEmpty ||
-              t.responsible.text.trim().isNotEmpty)
-            TimelineItem(
-                name: t.name.text.trim(),
-                date: t.date,
-                responsible: t.responsible.text.trim()),
-      ],
       output: _output.text.trim(),
       outcome: _outcome.text.trim(),
     );
@@ -351,7 +321,9 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
             Expanded(
               child: Form(
                 key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: SingleChildScrollView(
+                  controller: _scroll,
                   padding: EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.lg,
                       AppSpacing.xl, AppSpacing.lg + media.viewInsets.bottom),
                   child: Column(
@@ -362,6 +334,7 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
               ),
             ),
             const Divider(height: 1),
+            if (_formError != null) _FormErrorBanner(message: _formError!),
             Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
               child: Row(
@@ -395,8 +368,8 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
       ),
 
       _section('A', context.tr('Basic Information', 'المعلومات الأساسية')),
-      _field(_programTitle, context.tr('Program Title', 'عنوان البرنامج'),
-          required: true),
+      _field(_programTitle, '${context.tr('Program Title', 'عنوان البرنامج')} *',
+          required: true, focusNode: _titleFocus),
       _row2(
         _dateField(context),
         _field(_venue, context.tr('Venue / Location', 'المكان / الموقع')),
@@ -413,60 +386,6 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
       _list(context,
           context.tr('What do you want to achieve?', 'ما الذي تريد تحقيقه؟'),
           _objectives),
-
-      _section('C', context.tr('Justification', 'المبررات')),
-      _field(_problem,
-          context.tr('Problem Being Addressed', 'المشكلة المراد معالجتها'),
-          lines: 2),
-      _field(
-          _relevance,
-          context.tr('Relevance to Markazosshabab Mission',
-              'الصلة برسالة مركز الشباب'),
-          lines: 2),
-
-      _section('D', context.tr('Program Details', 'تفاصيل البرنامج')),
-      _field(_description,
-          context.tr('Program Description', 'وصف البرنامج'), lines: 3),
-      _list(context, context.tr('Key Activities', 'الأنشطة الرئيسية'),
-          _keyActivities),
-
-      _section('E',
-          context.tr('Coordination Requirement', 'متطلبات التنسيق')),
-      Wrap(
-        spacing: AppSpacing.sm,
-        runSpacing: AppSpacing.xs,
-        children: [
-          for (final (key, en, ar) in ProgramProposal.coordinationOptions)
-            FilterChip(
-              label: Text(context.tr(en, ar)),
-              selected: _coordination.contains(key),
-              onSelected: (sel) => setState(() =>
-                  sel ? _coordination.add(key) : _coordination.remove(key)),
-            ),
-        ],
-      ),
-      const SizedBox(height: AppSpacing.md),
-
-      _section('F', context.tr('Resources', 'الموارد')),
-      Text(context.tr('Budget Needed', 'الميزانية المطلوبة'),
-          style: Theme.of(context).textTheme.labelMedium),
-      const SizedBox(height: AppSpacing.sm),
-      _row2(
-        _field(_selfReliance,
-            context.tr('Self-Reliance — Amount', 'الاعتماد الذاتي — المبلغ'),
-            keyboard: TextInputType.number),
-        _field(
-            _adminAssistance,
-            context.tr('Assistance from Admin — Amount',
-                'مساعدة من الإدارة — المبلغ'),
-            keyboard: TextInputType.number),
-      ),
-      _list(context,
-          context.tr('Equipment / Materials Needed', 'المعدات / المواد المطلوبة'),
-          _equipment),
-
-      _section('G', context.tr('Timeline', 'الجدول الزمني')),
-      _timelineSection(context),
 
       _section('H', context.tr('Expected', 'المتوقع')),
       _field(_output,
@@ -516,11 +435,13 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
     bool required = false,
     int lines = 1,
     TextInputType? keyboard,
+    FocusNode? focusNode,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
       child: TextFormField(
         controller: controller,
+        focusNode: focusNode,
         minLines: lines,
         maxLines: lines == 1 ? 1 : lines + 2,
         keyboardType: keyboard ?? (lines > 1 ? TextInputType.multiline : null),
@@ -543,8 +464,10 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
           if (picked != null) setState(() => _proposedDate = picked);
         },
         child: InputDecorator(
-          decoration: _dec(context.tr('Proposed Date', 'التاريخ المقترح')).copyWith(
-              suffixIcon: const Icon(Icons.calendar_today_outlined, size: 18)),
+          decoration: _dec(context.tr('Proposed Date', 'التاريخ المقترح'))
+              .copyWith(
+                  suffixIcon:
+                      const Icon(Icons.calendar_today_outlined, size: 18)),
           child: Text(_proposedDate.isEmpty ? '—' : _proposedDate),
         ),
       ),
@@ -604,91 +527,36 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
       ),
     );
   }
-
-  Widget _timelineSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (var i = 0; i < _timeline.length; i++)
-          Container(
-            margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-            padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(
-              borderRadius: AppRadius.card,
-              border: Border.all(color: AppColors.border),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _timeline[i].name,
-                        decoration:
-                            _dec(context.tr('Activity Name', 'اسم النشاط')),
-                      ),
-                    ),
-                    IconButton(
-                      tooltip: context.tr('Remove', 'إزالة'),
-                      icon: const Icon(Icons.remove_circle_outline,
-                          size: 20, color: AppColors.error),
-                      onPressed: () => setState(() {
-                        _timeline[i].dispose();
-                        _timeline.removeAt(i);
-                      }),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                _row2(
-                  InkWell(
-                    onTap: () async {
-                      final picked = await _pickDate(_timeline[i].date);
-                      if (picked != null) {
-                        setState(() => _timeline[i].date = picked);
-                      }
-                    },
-                    child: InputDecorator(
-                      decoration: _dec(context.tr('Date', 'التاريخ')).copyWith(
-                          suffixIcon: const Icon(Icons.calendar_today_outlined,
-                              size: 18)),
-                      child: Text(
-                          _timeline[i].date.isEmpty ? '—' : _timeline[i].date),
-                    ),
-                  ),
-                  TextField(
-                    controller: _timeline[i].responsible,
-                    decoration: _dec(
-                        context.tr('Responsible Person', 'الشخص المسؤول')),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        Align(
-          alignment: AlignmentDirectional.centerStart,
-          child: TextButton.icon(
-            onPressed: () => setState(() => _timeline.add(_TimelineRow())),
-            icon: const Icon(Icons.add, size: 18),
-            label: Text(context.tr('Add Timeline Entry', 'إضافة بند زمني')),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
-/// Mutable timeline row holding controllers + a picked date.
-class _TimelineRow {
-  _TimelineRow({String name = '', this.date = '', String responsible = ''})
-      : name = TextEditingController(text: name),
-        responsible = TextEditingController(text: responsible);
-  final TextEditingController name;
-  String date;
-  final TextEditingController responsible;
+/// An inline, in-dialog validation error shown above the action buttons. Used
+/// because a SnackBar would render behind the modal dialog.
+class _FormErrorBanner extends StatelessWidget {
+  const _FormErrorBanner({required this.message});
+  final String message;
 
-  void dispose() {
-    name.dispose();
-    responsible.dispose();
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      color: AppColors.error.withValues(alpha: 0.08),
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline, size: 18, color: AppColors.error),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              message,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: AppColors.error),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

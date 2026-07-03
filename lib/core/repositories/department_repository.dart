@@ -119,6 +119,11 @@ class DepartmentRepository {
             ..orderBy([(a) => OrderingTerm.desc(a.date)]))
           .watch();
 
+  /// Watches a single activity so the read-only view screen reflects edits live.
+  Stream<DeptActivity?> watchActivity(String id) =>
+      (_db.select(_db.deptActivities)..where((a) => a.id.equals(id)))
+          .watchSingleOrNull();
+
   Future<int> activityCount(String departmentId) async =>
       (await (_db.select(_db.deptActivities)
                 ..where((a) => a.departmentId.equals(departmentId)))

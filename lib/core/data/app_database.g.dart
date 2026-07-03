@@ -10601,6 +10601,20 @@ class $GalleryPhotosTable extends GalleryPhotos
     requiredDuringInsert: false,
     defaultValue: const Constant(220),
   );
+  static const VerificationMeta _reportIdMeta = const VerificationMeta(
+    'reportId',
+  );
+  @override
+  late final GeneratedColumn<String> reportId = GeneratedColumn<String>(
+    'report_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES reports (id) ON DELETE CASCADE',
+    ),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -10626,6 +10640,7 @@ class $GalleryPhotosTable extends GalleryPhotos
     imagePath,
     imagePaths,
     heightHint,
+    reportId,
     createdAt,
   ];
   @override
@@ -10707,6 +10722,12 @@ class $GalleryPhotosTable extends GalleryPhotos
         heightHint.isAcceptableOrUnknown(data['height_hint']!, _heightHintMeta),
       );
     }
+    if (data.containsKey('report_id')) {
+      context.handle(
+        _reportIdMeta,
+        reportId.isAcceptableOrUnknown(data['report_id']!, _reportIdMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -10766,6 +10787,10 @@ class $GalleryPhotosTable extends GalleryPhotos
         DriftSqlType.int,
         data['${effectivePrefix}height_hint'],
       )!,
+      reportId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}report_id'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -10795,6 +10820,10 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
   /// JSON array of all stored image paths in this entry's album.
   final String imagePaths;
   final int heightHint;
+
+  /// Optional owning Program Completion Report (Form P-2). When set, this album
+  /// holds the report's uploaded photos and is removed with the report.
+  final String? reportId;
   final DateTime createdAt;
   const GalleryPhoto({
     required this.id,
@@ -10808,6 +10837,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     required this.imagePath,
     required this.imagePaths,
     required this.heightHint,
+    this.reportId,
     required this.createdAt,
   });
   @override
@@ -10824,6 +10854,9 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     map['image_path'] = Variable<String>(imagePath);
     map['image_paths'] = Variable<String>(imagePaths);
     map['height_hint'] = Variable<int>(heightHint);
+    if (!nullToAbsent || reportId != null) {
+      map['report_id'] = Variable<String>(reportId);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -10841,6 +10874,9 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
       imagePath: Value(imagePath),
       imagePaths: Value(imagePaths),
       heightHint: Value(heightHint),
+      reportId: reportId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reportId),
       createdAt: Value(createdAt),
     );
   }
@@ -10862,6 +10898,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
       imagePath: serializer.fromJson<String>(json['imagePath']),
       imagePaths: serializer.fromJson<String>(json['imagePaths']),
       heightHint: serializer.fromJson<int>(json['heightHint']),
+      reportId: serializer.fromJson<String?>(json['reportId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -10880,6 +10917,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
       'imagePath': serializer.toJson<String>(imagePath),
       'imagePaths': serializer.toJson<String>(imagePaths),
       'heightHint': serializer.toJson<int>(heightHint),
+      'reportId': serializer.toJson<String?>(reportId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -10896,6 +10934,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     String? imagePath,
     String? imagePaths,
     int? heightHint,
+    Value<String?> reportId = const Value.absent(),
     DateTime? createdAt,
   }) => GalleryPhoto(
     id: id ?? this.id,
@@ -10909,6 +10948,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     imagePath: imagePath ?? this.imagePath,
     imagePaths: imagePaths ?? this.imagePaths,
     heightHint: heightHint ?? this.heightHint,
+    reportId: reportId.present ? reportId.value : this.reportId,
     createdAt: createdAt ?? this.createdAt,
   );
   GalleryPhoto copyWithCompanion(GalleryPhotosCompanion data) {
@@ -10928,6 +10968,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
       heightHint: data.heightHint.present
           ? data.heightHint.value
           : this.heightHint,
+      reportId: data.reportId.present ? data.reportId.value : this.reportId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -10946,6 +10987,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
           ..write('imagePath: $imagePath, ')
           ..write('imagePaths: $imagePaths, ')
           ..write('heightHint: $heightHint, ')
+          ..write('reportId: $reportId, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -10964,6 +11006,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     imagePath,
     imagePaths,
     heightHint,
+    reportId,
     createdAt,
   );
   @override
@@ -10981,6 +11024,7 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
           other.imagePath == this.imagePath &&
           other.imagePaths == this.imagePaths &&
           other.heightHint == this.heightHint &&
+          other.reportId == this.reportId &&
           other.createdAt == this.createdAt);
 }
 
@@ -10996,6 +11040,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
   final Value<String> imagePath;
   final Value<String> imagePaths;
   final Value<int> heightHint;
+  final Value<String?> reportId;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const GalleryPhotosCompanion({
@@ -11010,6 +11055,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
     this.imagePath = const Value.absent(),
     this.imagePaths = const Value.absent(),
     this.heightHint = const Value.absent(),
+    this.reportId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -11025,6 +11071,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
     this.imagePath = const Value.absent(),
     this.imagePaths = const Value.absent(),
     this.heightHint = const Value.absent(),
+    this.reportId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -11041,6 +11088,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
     Expression<String>? imagePath,
     Expression<String>? imagePaths,
     Expression<int>? heightHint,
+    Expression<String>? reportId,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
@@ -11056,6 +11104,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
       if (imagePath != null) 'image_path': imagePath,
       if (imagePaths != null) 'image_paths': imagePaths,
       if (heightHint != null) 'height_hint': heightHint,
+      if (reportId != null) 'report_id': reportId,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -11073,6 +11122,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
     Value<String>? imagePath,
     Value<String>? imagePaths,
     Value<int>? heightHint,
+    Value<String?>? reportId,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
@@ -11088,6 +11138,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
       imagePath: imagePath ?? this.imagePath,
       imagePaths: imagePaths ?? this.imagePaths,
       heightHint: heightHint ?? this.heightHint,
+      reportId: reportId ?? this.reportId,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -11129,6 +11180,9 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
     if (heightHint.present) {
       map['height_hint'] = Variable<int>(heightHint.value);
     }
+    if (reportId.present) {
+      map['report_id'] = Variable<String>(reportId.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -11152,6 +11206,7 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
           ..write('imagePath: $imagePath, ')
           ..write('imagePaths: $imagePaths, ')
           ..write('heightHint: $heightHint, ')
+          ..write('reportId: $reportId, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -11884,6 +11939,2201 @@ class LeadershipGroupInfoCompanion
   }
 }
 
+class $HistoryContentsTable extends HistoryContents
+    with TableInfo<$HistoryContentsTable, HistoryContent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HistoryContentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('history'),
+  );
+  static const VerificationMeta _foundingEnMeta = const VerificationMeta(
+    'foundingEn',
+  );
+  @override
+  late final GeneratedColumn<String> foundingEn = GeneratedColumn<String>(
+    'founding_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _foundingArMeta = const VerificationMeta(
+    'foundingAr',
+  );
+  @override
+  late final GeneratedColumn<String> foundingAr = GeneratedColumn<String>(
+    'founding_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _missionEnMeta = const VerificationMeta(
+    'missionEn',
+  );
+  @override
+  late final GeneratedColumn<String> missionEn = GeneratedColumn<String>(
+    'mission_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _missionArMeta = const VerificationMeta(
+    'missionAr',
+  );
+  @override
+  late final GeneratedColumn<String> missionAr = GeneratedColumn<String>(
+    'mission_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _visionEnMeta = const VerificationMeta(
+    'visionEn',
+  );
+  @override
+  late final GeneratedColumn<String> visionEn = GeneratedColumn<String>(
+    'vision_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _visionArMeta = const VerificationMeta(
+    'visionAr',
+  );
+  @override
+  late final GeneratedColumn<String> visionAr = GeneratedColumn<String>(
+    'vision_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _narrativeMeta = const VerificationMeta(
+    'narrative',
+  );
+  @override
+  late final GeneratedColumn<String> narrative = GeneratedColumn<String>(
+    'narrative',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _factsMeta = const VerificationMeta('facts');
+  @override
+  late final GeneratedColumn<String> facts = GeneratedColumn<String>(
+    'facts',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    foundingEn,
+    foundingAr,
+    missionEn,
+    missionAr,
+    visionEn,
+    visionAr,
+    narrative,
+    facts,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'history_contents';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<HistoryContent> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('founding_en')) {
+      context.handle(
+        _foundingEnMeta,
+        foundingEn.isAcceptableOrUnknown(data['founding_en']!, _foundingEnMeta),
+      );
+    }
+    if (data.containsKey('founding_ar')) {
+      context.handle(
+        _foundingArMeta,
+        foundingAr.isAcceptableOrUnknown(data['founding_ar']!, _foundingArMeta),
+      );
+    }
+    if (data.containsKey('mission_en')) {
+      context.handle(
+        _missionEnMeta,
+        missionEn.isAcceptableOrUnknown(data['mission_en']!, _missionEnMeta),
+      );
+    }
+    if (data.containsKey('mission_ar')) {
+      context.handle(
+        _missionArMeta,
+        missionAr.isAcceptableOrUnknown(data['mission_ar']!, _missionArMeta),
+      );
+    }
+    if (data.containsKey('vision_en')) {
+      context.handle(
+        _visionEnMeta,
+        visionEn.isAcceptableOrUnknown(data['vision_en']!, _visionEnMeta),
+      );
+    }
+    if (data.containsKey('vision_ar')) {
+      context.handle(
+        _visionArMeta,
+        visionAr.isAcceptableOrUnknown(data['vision_ar']!, _visionArMeta),
+      );
+    }
+    if (data.containsKey('narrative')) {
+      context.handle(
+        _narrativeMeta,
+        narrative.isAcceptableOrUnknown(data['narrative']!, _narrativeMeta),
+      );
+    }
+    if (data.containsKey('facts')) {
+      context.handle(
+        _factsMeta,
+        facts.isAcceptableOrUnknown(data['facts']!, _factsMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  HistoryContent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return HistoryContent(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      foundingEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}founding_en'],
+      )!,
+      foundingAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}founding_ar'],
+      )!,
+      missionEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mission_en'],
+      )!,
+      missionAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mission_ar'],
+      )!,
+      visionEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}vision_en'],
+      )!,
+      visionAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}vision_ar'],
+      )!,
+      narrative: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}narrative'],
+      )!,
+      facts: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}facts'],
+      )!,
+    );
+  }
+
+  @override
+  $HistoryContentsTable createAlias(String alias) {
+    return $HistoryContentsTable(attachedDatabase, alias);
+  }
+}
+
+class HistoryContent extends DataClass implements Insertable<HistoryContent> {
+  final String id;
+  final String foundingEn;
+  final String foundingAr;
+  final String missionEn;
+  final String missionAr;
+  final String visionEn;
+  final String visionAr;
+
+  /// JSON array of `{"en":..,"ar":..}` story paragraphs.
+  final String narrative;
+
+  /// JSON array of `{"value":..,"en":..,"ar":..,"iconKey":..,"accent":int}`.
+  final String facts;
+  const HistoryContent({
+    required this.id,
+    required this.foundingEn,
+    required this.foundingAr,
+    required this.missionEn,
+    required this.missionAr,
+    required this.visionEn,
+    required this.visionAr,
+    required this.narrative,
+    required this.facts,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['founding_en'] = Variable<String>(foundingEn);
+    map['founding_ar'] = Variable<String>(foundingAr);
+    map['mission_en'] = Variable<String>(missionEn);
+    map['mission_ar'] = Variable<String>(missionAr);
+    map['vision_en'] = Variable<String>(visionEn);
+    map['vision_ar'] = Variable<String>(visionAr);
+    map['narrative'] = Variable<String>(narrative);
+    map['facts'] = Variable<String>(facts);
+    return map;
+  }
+
+  HistoryContentsCompanion toCompanion(bool nullToAbsent) {
+    return HistoryContentsCompanion(
+      id: Value(id),
+      foundingEn: Value(foundingEn),
+      foundingAr: Value(foundingAr),
+      missionEn: Value(missionEn),
+      missionAr: Value(missionAr),
+      visionEn: Value(visionEn),
+      visionAr: Value(visionAr),
+      narrative: Value(narrative),
+      facts: Value(facts),
+    );
+  }
+
+  factory HistoryContent.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return HistoryContent(
+      id: serializer.fromJson<String>(json['id']),
+      foundingEn: serializer.fromJson<String>(json['foundingEn']),
+      foundingAr: serializer.fromJson<String>(json['foundingAr']),
+      missionEn: serializer.fromJson<String>(json['missionEn']),
+      missionAr: serializer.fromJson<String>(json['missionAr']),
+      visionEn: serializer.fromJson<String>(json['visionEn']),
+      visionAr: serializer.fromJson<String>(json['visionAr']),
+      narrative: serializer.fromJson<String>(json['narrative']),
+      facts: serializer.fromJson<String>(json['facts']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'foundingEn': serializer.toJson<String>(foundingEn),
+      'foundingAr': serializer.toJson<String>(foundingAr),
+      'missionEn': serializer.toJson<String>(missionEn),
+      'missionAr': serializer.toJson<String>(missionAr),
+      'visionEn': serializer.toJson<String>(visionEn),
+      'visionAr': serializer.toJson<String>(visionAr),
+      'narrative': serializer.toJson<String>(narrative),
+      'facts': serializer.toJson<String>(facts),
+    };
+  }
+
+  HistoryContent copyWith({
+    String? id,
+    String? foundingEn,
+    String? foundingAr,
+    String? missionEn,
+    String? missionAr,
+    String? visionEn,
+    String? visionAr,
+    String? narrative,
+    String? facts,
+  }) => HistoryContent(
+    id: id ?? this.id,
+    foundingEn: foundingEn ?? this.foundingEn,
+    foundingAr: foundingAr ?? this.foundingAr,
+    missionEn: missionEn ?? this.missionEn,
+    missionAr: missionAr ?? this.missionAr,
+    visionEn: visionEn ?? this.visionEn,
+    visionAr: visionAr ?? this.visionAr,
+    narrative: narrative ?? this.narrative,
+    facts: facts ?? this.facts,
+  );
+  HistoryContent copyWithCompanion(HistoryContentsCompanion data) {
+    return HistoryContent(
+      id: data.id.present ? data.id.value : this.id,
+      foundingEn: data.foundingEn.present
+          ? data.foundingEn.value
+          : this.foundingEn,
+      foundingAr: data.foundingAr.present
+          ? data.foundingAr.value
+          : this.foundingAr,
+      missionEn: data.missionEn.present ? data.missionEn.value : this.missionEn,
+      missionAr: data.missionAr.present ? data.missionAr.value : this.missionAr,
+      visionEn: data.visionEn.present ? data.visionEn.value : this.visionEn,
+      visionAr: data.visionAr.present ? data.visionAr.value : this.visionAr,
+      narrative: data.narrative.present ? data.narrative.value : this.narrative,
+      facts: data.facts.present ? data.facts.value : this.facts,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HistoryContent(')
+          ..write('id: $id, ')
+          ..write('foundingEn: $foundingEn, ')
+          ..write('foundingAr: $foundingAr, ')
+          ..write('missionEn: $missionEn, ')
+          ..write('missionAr: $missionAr, ')
+          ..write('visionEn: $visionEn, ')
+          ..write('visionAr: $visionAr, ')
+          ..write('narrative: $narrative, ')
+          ..write('facts: $facts')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    foundingEn,
+    foundingAr,
+    missionEn,
+    missionAr,
+    visionEn,
+    visionAr,
+    narrative,
+    facts,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is HistoryContent &&
+          other.id == this.id &&
+          other.foundingEn == this.foundingEn &&
+          other.foundingAr == this.foundingAr &&
+          other.missionEn == this.missionEn &&
+          other.missionAr == this.missionAr &&
+          other.visionEn == this.visionEn &&
+          other.visionAr == this.visionAr &&
+          other.narrative == this.narrative &&
+          other.facts == this.facts);
+}
+
+class HistoryContentsCompanion extends UpdateCompanion<HistoryContent> {
+  final Value<String> id;
+  final Value<String> foundingEn;
+  final Value<String> foundingAr;
+  final Value<String> missionEn;
+  final Value<String> missionAr;
+  final Value<String> visionEn;
+  final Value<String> visionAr;
+  final Value<String> narrative;
+  final Value<String> facts;
+  final Value<int> rowid;
+  const HistoryContentsCompanion({
+    this.id = const Value.absent(),
+    this.foundingEn = const Value.absent(),
+    this.foundingAr = const Value.absent(),
+    this.missionEn = const Value.absent(),
+    this.missionAr = const Value.absent(),
+    this.visionEn = const Value.absent(),
+    this.visionAr = const Value.absent(),
+    this.narrative = const Value.absent(),
+    this.facts = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  HistoryContentsCompanion.insert({
+    this.id = const Value.absent(),
+    this.foundingEn = const Value.absent(),
+    this.foundingAr = const Value.absent(),
+    this.missionEn = const Value.absent(),
+    this.missionAr = const Value.absent(),
+    this.visionEn = const Value.absent(),
+    this.visionAr = const Value.absent(),
+    this.narrative = const Value.absent(),
+    this.facts = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  static Insertable<HistoryContent> custom({
+    Expression<String>? id,
+    Expression<String>? foundingEn,
+    Expression<String>? foundingAr,
+    Expression<String>? missionEn,
+    Expression<String>? missionAr,
+    Expression<String>? visionEn,
+    Expression<String>? visionAr,
+    Expression<String>? narrative,
+    Expression<String>? facts,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (foundingEn != null) 'founding_en': foundingEn,
+      if (foundingAr != null) 'founding_ar': foundingAr,
+      if (missionEn != null) 'mission_en': missionEn,
+      if (missionAr != null) 'mission_ar': missionAr,
+      if (visionEn != null) 'vision_en': visionEn,
+      if (visionAr != null) 'vision_ar': visionAr,
+      if (narrative != null) 'narrative': narrative,
+      if (facts != null) 'facts': facts,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  HistoryContentsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? foundingEn,
+    Value<String>? foundingAr,
+    Value<String>? missionEn,
+    Value<String>? missionAr,
+    Value<String>? visionEn,
+    Value<String>? visionAr,
+    Value<String>? narrative,
+    Value<String>? facts,
+    Value<int>? rowid,
+  }) {
+    return HistoryContentsCompanion(
+      id: id ?? this.id,
+      foundingEn: foundingEn ?? this.foundingEn,
+      foundingAr: foundingAr ?? this.foundingAr,
+      missionEn: missionEn ?? this.missionEn,
+      missionAr: missionAr ?? this.missionAr,
+      visionEn: visionEn ?? this.visionEn,
+      visionAr: visionAr ?? this.visionAr,
+      narrative: narrative ?? this.narrative,
+      facts: facts ?? this.facts,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (foundingEn.present) {
+      map['founding_en'] = Variable<String>(foundingEn.value);
+    }
+    if (foundingAr.present) {
+      map['founding_ar'] = Variable<String>(foundingAr.value);
+    }
+    if (missionEn.present) {
+      map['mission_en'] = Variable<String>(missionEn.value);
+    }
+    if (missionAr.present) {
+      map['mission_ar'] = Variable<String>(missionAr.value);
+    }
+    if (visionEn.present) {
+      map['vision_en'] = Variable<String>(visionEn.value);
+    }
+    if (visionAr.present) {
+      map['vision_ar'] = Variable<String>(visionAr.value);
+    }
+    if (narrative.present) {
+      map['narrative'] = Variable<String>(narrative.value);
+    }
+    if (facts.present) {
+      map['facts'] = Variable<String>(facts.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HistoryContentsCompanion(')
+          ..write('id: $id, ')
+          ..write('foundingEn: $foundingEn, ')
+          ..write('foundingAr: $foundingAr, ')
+          ..write('missionEn: $missionEn, ')
+          ..write('missionAr: $missionAr, ')
+          ..write('visionEn: $visionEn, ')
+          ..write('visionAr: $visionAr, ')
+          ..write('narrative: $narrative, ')
+          ..write('facts: $facts, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $HistoryMilestonesTable extends HistoryMilestones
+    with TableInfo<$HistoryMilestonesTable, HistoryMilestone> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HistoryMilestonesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _yearMeta = const VerificationMeta('year');
+  @override
+  late final GeneratedColumn<String> year = GeneratedColumn<String>(
+    'year',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _titleArMeta = const VerificationMeta(
+    'titleAr',
+  );
+  @override
+  late final GeneratedColumn<String> titleAr = GeneratedColumn<String>(
+    'title_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _descriptionArMeta = const VerificationMeta(
+    'descriptionAr',
+  );
+  @override
+  late final GeneratedColumn<String> descriptionAr = GeneratedColumn<String>(
+    'description_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _iconKeyMeta = const VerificationMeta(
+    'iconKey',
+  );
+  @override
+  late final GeneratedColumn<String> iconKey = GeneratedColumn<String>(
+    'icon_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('flag'),
+  );
+  static const VerificationMeta _accentMeta = const VerificationMeta('accent');
+  @override
+  late final GeneratedColumn<int> accent = GeneratedColumn<int>(
+    'accent',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0xFF0B5D3B),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    year,
+    title,
+    titleAr,
+    description,
+    descriptionAr,
+    iconKey,
+    accent,
+    sortOrder,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'history_milestones';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<HistoryMilestone> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('year')) {
+      context.handle(
+        _yearMeta,
+        year.isAcceptableOrUnknown(data['year']!, _yearMeta),
+      );
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    }
+    if (data.containsKey('title_ar')) {
+      context.handle(
+        _titleArMeta,
+        titleAr.isAcceptableOrUnknown(data['title_ar']!, _titleArMeta),
+      );
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('description_ar')) {
+      context.handle(
+        _descriptionArMeta,
+        descriptionAr.isAcceptableOrUnknown(
+          data['description_ar']!,
+          _descriptionArMeta,
+        ),
+      );
+    }
+    if (data.containsKey('icon_key')) {
+      context.handle(
+        _iconKeyMeta,
+        iconKey.isAcceptableOrUnknown(data['icon_key']!, _iconKeyMeta),
+      );
+    }
+    if (data.containsKey('accent')) {
+      context.handle(
+        _accentMeta,
+        accent.isAcceptableOrUnknown(data['accent']!, _accentMeta),
+      );
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  HistoryMilestone map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return HistoryMilestone(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      year: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}year'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      titleAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title_ar'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      )!,
+      descriptionAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description_ar'],
+      )!,
+      iconKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}icon_key'],
+      )!,
+      accent: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}accent'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $HistoryMilestonesTable createAlias(String alias) {
+    return $HistoryMilestonesTable(attachedDatabase, alias);
+  }
+}
+
+class HistoryMilestone extends DataClass
+    implements Insertable<HistoryMilestone> {
+  final String id;
+  final String year;
+  final String title;
+  final String titleAr;
+  final String description;
+  final String descriptionAr;
+  final String iconKey;
+  final int accent;
+  final int sortOrder;
+  final DateTime createdAt;
+  const HistoryMilestone({
+    required this.id,
+    required this.year,
+    required this.title,
+    required this.titleAr,
+    required this.description,
+    required this.descriptionAr,
+    required this.iconKey,
+    required this.accent,
+    required this.sortOrder,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['year'] = Variable<String>(year);
+    map['title'] = Variable<String>(title);
+    map['title_ar'] = Variable<String>(titleAr);
+    map['description'] = Variable<String>(description);
+    map['description_ar'] = Variable<String>(descriptionAr);
+    map['icon_key'] = Variable<String>(iconKey);
+    map['accent'] = Variable<int>(accent);
+    map['sort_order'] = Variable<int>(sortOrder);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  HistoryMilestonesCompanion toCompanion(bool nullToAbsent) {
+    return HistoryMilestonesCompanion(
+      id: Value(id),
+      year: Value(year),
+      title: Value(title),
+      titleAr: Value(titleAr),
+      description: Value(description),
+      descriptionAr: Value(descriptionAr),
+      iconKey: Value(iconKey),
+      accent: Value(accent),
+      sortOrder: Value(sortOrder),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory HistoryMilestone.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return HistoryMilestone(
+      id: serializer.fromJson<String>(json['id']),
+      year: serializer.fromJson<String>(json['year']),
+      title: serializer.fromJson<String>(json['title']),
+      titleAr: serializer.fromJson<String>(json['titleAr']),
+      description: serializer.fromJson<String>(json['description']),
+      descriptionAr: serializer.fromJson<String>(json['descriptionAr']),
+      iconKey: serializer.fromJson<String>(json['iconKey']),
+      accent: serializer.fromJson<int>(json['accent']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'year': serializer.toJson<String>(year),
+      'title': serializer.toJson<String>(title),
+      'titleAr': serializer.toJson<String>(titleAr),
+      'description': serializer.toJson<String>(description),
+      'descriptionAr': serializer.toJson<String>(descriptionAr),
+      'iconKey': serializer.toJson<String>(iconKey),
+      'accent': serializer.toJson<int>(accent),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  HistoryMilestone copyWith({
+    String? id,
+    String? year,
+    String? title,
+    String? titleAr,
+    String? description,
+    String? descriptionAr,
+    String? iconKey,
+    int? accent,
+    int? sortOrder,
+    DateTime? createdAt,
+  }) => HistoryMilestone(
+    id: id ?? this.id,
+    year: year ?? this.year,
+    title: title ?? this.title,
+    titleAr: titleAr ?? this.titleAr,
+    description: description ?? this.description,
+    descriptionAr: descriptionAr ?? this.descriptionAr,
+    iconKey: iconKey ?? this.iconKey,
+    accent: accent ?? this.accent,
+    sortOrder: sortOrder ?? this.sortOrder,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  HistoryMilestone copyWithCompanion(HistoryMilestonesCompanion data) {
+    return HistoryMilestone(
+      id: data.id.present ? data.id.value : this.id,
+      year: data.year.present ? data.year.value : this.year,
+      title: data.title.present ? data.title.value : this.title,
+      titleAr: data.titleAr.present ? data.titleAr.value : this.titleAr,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      descriptionAr: data.descriptionAr.present
+          ? data.descriptionAr.value
+          : this.descriptionAr,
+      iconKey: data.iconKey.present ? data.iconKey.value : this.iconKey,
+      accent: data.accent.present ? data.accent.value : this.accent,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HistoryMilestone(')
+          ..write('id: $id, ')
+          ..write('year: $year, ')
+          ..write('title: $title, ')
+          ..write('titleAr: $titleAr, ')
+          ..write('description: $description, ')
+          ..write('descriptionAr: $descriptionAr, ')
+          ..write('iconKey: $iconKey, ')
+          ..write('accent: $accent, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    year,
+    title,
+    titleAr,
+    description,
+    descriptionAr,
+    iconKey,
+    accent,
+    sortOrder,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is HistoryMilestone &&
+          other.id == this.id &&
+          other.year == this.year &&
+          other.title == this.title &&
+          other.titleAr == this.titleAr &&
+          other.description == this.description &&
+          other.descriptionAr == this.descriptionAr &&
+          other.iconKey == this.iconKey &&
+          other.accent == this.accent &&
+          other.sortOrder == this.sortOrder &&
+          other.createdAt == this.createdAt);
+}
+
+class HistoryMilestonesCompanion extends UpdateCompanion<HistoryMilestone> {
+  final Value<String> id;
+  final Value<String> year;
+  final Value<String> title;
+  final Value<String> titleAr;
+  final Value<String> description;
+  final Value<String> descriptionAr;
+  final Value<String> iconKey;
+  final Value<int> accent;
+  final Value<int> sortOrder;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const HistoryMilestonesCompanion({
+    this.id = const Value.absent(),
+    this.year = const Value.absent(),
+    this.title = const Value.absent(),
+    this.titleAr = const Value.absent(),
+    this.description = const Value.absent(),
+    this.descriptionAr = const Value.absent(),
+    this.iconKey = const Value.absent(),
+    this.accent = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  HistoryMilestonesCompanion.insert({
+    required String id,
+    this.year = const Value.absent(),
+    this.title = const Value.absent(),
+    this.titleAr = const Value.absent(),
+    this.description = const Value.absent(),
+    this.descriptionAr = const Value.absent(),
+    this.iconKey = const Value.absent(),
+    this.accent = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id);
+  static Insertable<HistoryMilestone> custom({
+    Expression<String>? id,
+    Expression<String>? year,
+    Expression<String>? title,
+    Expression<String>? titleAr,
+    Expression<String>? description,
+    Expression<String>? descriptionAr,
+    Expression<String>? iconKey,
+    Expression<int>? accent,
+    Expression<int>? sortOrder,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (year != null) 'year': year,
+      if (title != null) 'title': title,
+      if (titleAr != null) 'title_ar': titleAr,
+      if (description != null) 'description': description,
+      if (descriptionAr != null) 'description_ar': descriptionAr,
+      if (iconKey != null) 'icon_key': iconKey,
+      if (accent != null) 'accent': accent,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  HistoryMilestonesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? year,
+    Value<String>? title,
+    Value<String>? titleAr,
+    Value<String>? description,
+    Value<String>? descriptionAr,
+    Value<String>? iconKey,
+    Value<int>? accent,
+    Value<int>? sortOrder,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return HistoryMilestonesCompanion(
+      id: id ?? this.id,
+      year: year ?? this.year,
+      title: title ?? this.title,
+      titleAr: titleAr ?? this.titleAr,
+      description: description ?? this.description,
+      descriptionAr: descriptionAr ?? this.descriptionAr,
+      iconKey: iconKey ?? this.iconKey,
+      accent: accent ?? this.accent,
+      sortOrder: sortOrder ?? this.sortOrder,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (year.present) {
+      map['year'] = Variable<String>(year.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (titleAr.present) {
+      map['title_ar'] = Variable<String>(titleAr.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (descriptionAr.present) {
+      map['description_ar'] = Variable<String>(descriptionAr.value);
+    }
+    if (iconKey.present) {
+      map['icon_key'] = Variable<String>(iconKey.value);
+    }
+    if (accent.present) {
+      map['accent'] = Variable<int>(accent.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HistoryMilestonesCompanion(')
+          ..write('id: $id, ')
+          ..write('year: $year, ')
+          ..write('title: $title, ')
+          ..write('titleAr: $titleAr, ')
+          ..write('description: $description, ')
+          ..write('descriptionAr: $descriptionAr, ')
+          ..write('iconKey: $iconKey, ')
+          ..write('accent: $accent, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PreviousLeadersTable extends PreviousLeaders
+    with TableInfo<$PreviousLeadersTable, PreviousLeader> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PreviousLeadersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _memberIdMeta = const VerificationMeta(
+    'memberId',
+  );
+  @override
+  late final GeneratedColumn<String> memberId = GeneratedColumn<String>(
+    'member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES members (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<String> position = GeneratedColumn<String>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _positionArMeta = const VerificationMeta(
+    'positionAr',
+  );
+  @override
+  late final GeneratedColumn<String> positionAr = GeneratedColumn<String>(
+    'position_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _termYearsMeta = const VerificationMeta(
+    'termYears',
+  );
+  @override
+  late final GeneratedColumn<String> termYears = GeneratedColumn<String>(
+    'term_years',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _noteArMeta = const VerificationMeta('noteAr');
+  @override
+  late final GeneratedColumn<String> noteAr = GeneratedColumn<String>(
+    'note_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _accentMeta = const VerificationMeta('accent');
+  @override
+  late final GeneratedColumn<int> accent = GeneratedColumn<int>(
+    'accent',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0xFF16243D),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    memberId,
+    position,
+    positionAr,
+    termYears,
+    note,
+    noteAr,
+    accent,
+    sortOrder,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'previous_leaders';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PreviousLeader> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('member_id')) {
+      context.handle(
+        _memberIdMeta,
+        memberId.isAcceptableOrUnknown(data['member_id']!, _memberIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_memberIdMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
+    if (data.containsKey('position_ar')) {
+      context.handle(
+        _positionArMeta,
+        positionAr.isAcceptableOrUnknown(data['position_ar']!, _positionArMeta),
+      );
+    }
+    if (data.containsKey('term_years')) {
+      context.handle(
+        _termYearsMeta,
+        termYears.isAcceptableOrUnknown(data['term_years']!, _termYearsMeta),
+      );
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('note_ar')) {
+      context.handle(
+        _noteArMeta,
+        noteAr.isAcceptableOrUnknown(data['note_ar']!, _noteArMeta),
+      );
+    }
+    if (data.containsKey('accent')) {
+      context.handle(
+        _accentMeta,
+        accent.isAcceptableOrUnknown(data['accent']!, _accentMeta),
+      );
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PreviousLeader map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PreviousLeader(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      memberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}member_id'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}position'],
+      )!,
+      positionAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}position_ar'],
+      )!,
+      termYears: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}term_years'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      )!,
+      noteAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note_ar'],
+      )!,
+      accent: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}accent'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PreviousLeadersTable createAlias(String alias) {
+    return $PreviousLeadersTable(attachedDatabase, alias);
+  }
+}
+
+class PreviousLeader extends DataClass implements Insertable<PreviousLeader> {
+  final String id;
+  final String memberId;
+  final String position;
+  final String positionAr;
+  final String termYears;
+  final String note;
+  final String noteAr;
+  final int accent;
+  final int sortOrder;
+  final DateTime createdAt;
+  const PreviousLeader({
+    required this.id,
+    required this.memberId,
+    required this.position,
+    required this.positionAr,
+    required this.termYears,
+    required this.note,
+    required this.noteAr,
+    required this.accent,
+    required this.sortOrder,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['member_id'] = Variable<String>(memberId);
+    map['position'] = Variable<String>(position);
+    map['position_ar'] = Variable<String>(positionAr);
+    map['term_years'] = Variable<String>(termYears);
+    map['note'] = Variable<String>(note);
+    map['note_ar'] = Variable<String>(noteAr);
+    map['accent'] = Variable<int>(accent);
+    map['sort_order'] = Variable<int>(sortOrder);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  PreviousLeadersCompanion toCompanion(bool nullToAbsent) {
+    return PreviousLeadersCompanion(
+      id: Value(id),
+      memberId: Value(memberId),
+      position: Value(position),
+      positionAr: Value(positionAr),
+      termYears: Value(termYears),
+      note: Value(note),
+      noteAr: Value(noteAr),
+      accent: Value(accent),
+      sortOrder: Value(sortOrder),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory PreviousLeader.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PreviousLeader(
+      id: serializer.fromJson<String>(json['id']),
+      memberId: serializer.fromJson<String>(json['memberId']),
+      position: serializer.fromJson<String>(json['position']),
+      positionAr: serializer.fromJson<String>(json['positionAr']),
+      termYears: serializer.fromJson<String>(json['termYears']),
+      note: serializer.fromJson<String>(json['note']),
+      noteAr: serializer.fromJson<String>(json['noteAr']),
+      accent: serializer.fromJson<int>(json['accent']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'memberId': serializer.toJson<String>(memberId),
+      'position': serializer.toJson<String>(position),
+      'positionAr': serializer.toJson<String>(positionAr),
+      'termYears': serializer.toJson<String>(termYears),
+      'note': serializer.toJson<String>(note),
+      'noteAr': serializer.toJson<String>(noteAr),
+      'accent': serializer.toJson<int>(accent),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  PreviousLeader copyWith({
+    String? id,
+    String? memberId,
+    String? position,
+    String? positionAr,
+    String? termYears,
+    String? note,
+    String? noteAr,
+    int? accent,
+    int? sortOrder,
+    DateTime? createdAt,
+  }) => PreviousLeader(
+    id: id ?? this.id,
+    memberId: memberId ?? this.memberId,
+    position: position ?? this.position,
+    positionAr: positionAr ?? this.positionAr,
+    termYears: termYears ?? this.termYears,
+    note: note ?? this.note,
+    noteAr: noteAr ?? this.noteAr,
+    accent: accent ?? this.accent,
+    sortOrder: sortOrder ?? this.sortOrder,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  PreviousLeader copyWithCompanion(PreviousLeadersCompanion data) {
+    return PreviousLeader(
+      id: data.id.present ? data.id.value : this.id,
+      memberId: data.memberId.present ? data.memberId.value : this.memberId,
+      position: data.position.present ? data.position.value : this.position,
+      positionAr: data.positionAr.present
+          ? data.positionAr.value
+          : this.positionAr,
+      termYears: data.termYears.present ? data.termYears.value : this.termYears,
+      note: data.note.present ? data.note.value : this.note,
+      noteAr: data.noteAr.present ? data.noteAr.value : this.noteAr,
+      accent: data.accent.present ? data.accent.value : this.accent,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PreviousLeader(')
+          ..write('id: $id, ')
+          ..write('memberId: $memberId, ')
+          ..write('position: $position, ')
+          ..write('positionAr: $positionAr, ')
+          ..write('termYears: $termYears, ')
+          ..write('note: $note, ')
+          ..write('noteAr: $noteAr, ')
+          ..write('accent: $accent, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    memberId,
+    position,
+    positionAr,
+    termYears,
+    note,
+    noteAr,
+    accent,
+    sortOrder,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PreviousLeader &&
+          other.id == this.id &&
+          other.memberId == this.memberId &&
+          other.position == this.position &&
+          other.positionAr == this.positionAr &&
+          other.termYears == this.termYears &&
+          other.note == this.note &&
+          other.noteAr == this.noteAr &&
+          other.accent == this.accent &&
+          other.sortOrder == this.sortOrder &&
+          other.createdAt == this.createdAt);
+}
+
+class PreviousLeadersCompanion extends UpdateCompanion<PreviousLeader> {
+  final Value<String> id;
+  final Value<String> memberId;
+  final Value<String> position;
+  final Value<String> positionAr;
+  final Value<String> termYears;
+  final Value<String> note;
+  final Value<String> noteAr;
+  final Value<int> accent;
+  final Value<int> sortOrder;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const PreviousLeadersCompanion({
+    this.id = const Value.absent(),
+    this.memberId = const Value.absent(),
+    this.position = const Value.absent(),
+    this.positionAr = const Value.absent(),
+    this.termYears = const Value.absent(),
+    this.note = const Value.absent(),
+    this.noteAr = const Value.absent(),
+    this.accent = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PreviousLeadersCompanion.insert({
+    required String id,
+    required String memberId,
+    this.position = const Value.absent(),
+    this.positionAr = const Value.absent(),
+    this.termYears = const Value.absent(),
+    this.note = const Value.absent(),
+    this.noteAr = const Value.absent(),
+    this.accent = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       memberId = Value(memberId);
+  static Insertable<PreviousLeader> custom({
+    Expression<String>? id,
+    Expression<String>? memberId,
+    Expression<String>? position,
+    Expression<String>? positionAr,
+    Expression<String>? termYears,
+    Expression<String>? note,
+    Expression<String>? noteAr,
+    Expression<int>? accent,
+    Expression<int>? sortOrder,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (memberId != null) 'member_id': memberId,
+      if (position != null) 'position': position,
+      if (positionAr != null) 'position_ar': positionAr,
+      if (termYears != null) 'term_years': termYears,
+      if (note != null) 'note': note,
+      if (noteAr != null) 'note_ar': noteAr,
+      if (accent != null) 'accent': accent,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PreviousLeadersCompanion copyWith({
+    Value<String>? id,
+    Value<String>? memberId,
+    Value<String>? position,
+    Value<String>? positionAr,
+    Value<String>? termYears,
+    Value<String>? note,
+    Value<String>? noteAr,
+    Value<int>? accent,
+    Value<int>? sortOrder,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return PreviousLeadersCompanion(
+      id: id ?? this.id,
+      memberId: memberId ?? this.memberId,
+      position: position ?? this.position,
+      positionAr: positionAr ?? this.positionAr,
+      termYears: termYears ?? this.termYears,
+      note: note ?? this.note,
+      noteAr: noteAr ?? this.noteAr,
+      accent: accent ?? this.accent,
+      sortOrder: sortOrder ?? this.sortOrder,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (memberId.present) {
+      map['member_id'] = Variable<String>(memberId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<String>(position.value);
+    }
+    if (positionAr.present) {
+      map['position_ar'] = Variable<String>(positionAr.value);
+    }
+    if (termYears.present) {
+      map['term_years'] = Variable<String>(termYears.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (noteAr.present) {
+      map['note_ar'] = Variable<String>(noteAr.value);
+    }
+    if (accent.present) {
+      map['accent'] = Variable<int>(accent.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PreviousLeadersCompanion(')
+          ..write('id: $id, ')
+          ..write('memberId: $memberId, ')
+          ..write('position: $position, ')
+          ..write('positionAr: $positionAr, ')
+          ..write('termYears: $termYears, ')
+          ..write('note: $note, ')
+          ..write('noteAr: $noteAr, ')
+          ..write('accent: $accent, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PreviousLeaderSectionsTable extends PreviousLeaderSections
+    with TableInfo<$PreviousLeaderSectionsTable, PreviousLeaderSection> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PreviousLeaderSectionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _previousLeaderIdMeta = const VerificationMeta(
+    'previousLeaderId',
+  );
+  @override
+  late final GeneratedColumn<String> previousLeaderId = GeneratedColumn<String>(
+    'previous_leader_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES previous_leaders (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _titleArMeta = const VerificationMeta(
+    'titleAr',
+  );
+  @override
+  late final GeneratedColumn<String> titleAr = GeneratedColumn<String>(
+    'title_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _bodyArMeta = const VerificationMeta('bodyAr');
+  @override
+  late final GeneratedColumn<String> bodyAr = GeneratedColumn<String>(
+    'body_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    previousLeaderId,
+    title,
+    titleAr,
+    body,
+    bodyAr,
+    sortOrder,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'previous_leader_sections';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PreviousLeaderSection> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('previous_leader_id')) {
+      context.handle(
+        _previousLeaderIdMeta,
+        previousLeaderId.isAcceptableOrUnknown(
+          data['previous_leader_id']!,
+          _previousLeaderIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_previousLeaderIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    }
+    if (data.containsKey('title_ar')) {
+      context.handle(
+        _titleArMeta,
+        titleAr.isAcceptableOrUnknown(data['title_ar']!, _titleArMeta),
+      );
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    }
+    if (data.containsKey('body_ar')) {
+      context.handle(
+        _bodyArMeta,
+        bodyAr.isAcceptableOrUnknown(data['body_ar']!, _bodyArMeta),
+      );
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PreviousLeaderSection map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PreviousLeaderSection(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      previousLeaderId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}previous_leader_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      titleAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title_ar'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      bodyAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body_ar'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+    );
+  }
+
+  @override
+  $PreviousLeaderSectionsTable createAlias(String alias) {
+    return $PreviousLeaderSectionsTable(attachedDatabase, alias);
+  }
+}
+
+class PreviousLeaderSection extends DataClass
+    implements Insertable<PreviousLeaderSection> {
+  final String id;
+  final String previousLeaderId;
+  final String title;
+  final String titleAr;
+  final String body;
+  final String bodyAr;
+  final int sortOrder;
+  const PreviousLeaderSection({
+    required this.id,
+    required this.previousLeaderId,
+    required this.title,
+    required this.titleAr,
+    required this.body,
+    required this.bodyAr,
+    required this.sortOrder,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['previous_leader_id'] = Variable<String>(previousLeaderId);
+    map['title'] = Variable<String>(title);
+    map['title_ar'] = Variable<String>(titleAr);
+    map['body'] = Variable<String>(body);
+    map['body_ar'] = Variable<String>(bodyAr);
+    map['sort_order'] = Variable<int>(sortOrder);
+    return map;
+  }
+
+  PreviousLeaderSectionsCompanion toCompanion(bool nullToAbsent) {
+    return PreviousLeaderSectionsCompanion(
+      id: Value(id),
+      previousLeaderId: Value(previousLeaderId),
+      title: Value(title),
+      titleAr: Value(titleAr),
+      body: Value(body),
+      bodyAr: Value(bodyAr),
+      sortOrder: Value(sortOrder),
+    );
+  }
+
+  factory PreviousLeaderSection.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PreviousLeaderSection(
+      id: serializer.fromJson<String>(json['id']),
+      previousLeaderId: serializer.fromJson<String>(json['previousLeaderId']),
+      title: serializer.fromJson<String>(json['title']),
+      titleAr: serializer.fromJson<String>(json['titleAr']),
+      body: serializer.fromJson<String>(json['body']),
+      bodyAr: serializer.fromJson<String>(json['bodyAr']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'previousLeaderId': serializer.toJson<String>(previousLeaderId),
+      'title': serializer.toJson<String>(title),
+      'titleAr': serializer.toJson<String>(titleAr),
+      'body': serializer.toJson<String>(body),
+      'bodyAr': serializer.toJson<String>(bodyAr),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+    };
+  }
+
+  PreviousLeaderSection copyWith({
+    String? id,
+    String? previousLeaderId,
+    String? title,
+    String? titleAr,
+    String? body,
+    String? bodyAr,
+    int? sortOrder,
+  }) => PreviousLeaderSection(
+    id: id ?? this.id,
+    previousLeaderId: previousLeaderId ?? this.previousLeaderId,
+    title: title ?? this.title,
+    titleAr: titleAr ?? this.titleAr,
+    body: body ?? this.body,
+    bodyAr: bodyAr ?? this.bodyAr,
+    sortOrder: sortOrder ?? this.sortOrder,
+  );
+  PreviousLeaderSection copyWithCompanion(
+    PreviousLeaderSectionsCompanion data,
+  ) {
+    return PreviousLeaderSection(
+      id: data.id.present ? data.id.value : this.id,
+      previousLeaderId: data.previousLeaderId.present
+          ? data.previousLeaderId.value
+          : this.previousLeaderId,
+      title: data.title.present ? data.title.value : this.title,
+      titleAr: data.titleAr.present ? data.titleAr.value : this.titleAr,
+      body: data.body.present ? data.body.value : this.body,
+      bodyAr: data.bodyAr.present ? data.bodyAr.value : this.bodyAr,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PreviousLeaderSection(')
+          ..write('id: $id, ')
+          ..write('previousLeaderId: $previousLeaderId, ')
+          ..write('title: $title, ')
+          ..write('titleAr: $titleAr, ')
+          ..write('body: $body, ')
+          ..write('bodyAr: $bodyAr, ')
+          ..write('sortOrder: $sortOrder')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    previousLeaderId,
+    title,
+    titleAr,
+    body,
+    bodyAr,
+    sortOrder,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PreviousLeaderSection &&
+          other.id == this.id &&
+          other.previousLeaderId == this.previousLeaderId &&
+          other.title == this.title &&
+          other.titleAr == this.titleAr &&
+          other.body == this.body &&
+          other.bodyAr == this.bodyAr &&
+          other.sortOrder == this.sortOrder);
+}
+
+class PreviousLeaderSectionsCompanion
+    extends UpdateCompanion<PreviousLeaderSection> {
+  final Value<String> id;
+  final Value<String> previousLeaderId;
+  final Value<String> title;
+  final Value<String> titleAr;
+  final Value<String> body;
+  final Value<String> bodyAr;
+  final Value<int> sortOrder;
+  final Value<int> rowid;
+  const PreviousLeaderSectionsCompanion({
+    this.id = const Value.absent(),
+    this.previousLeaderId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.titleAr = const Value.absent(),
+    this.body = const Value.absent(),
+    this.bodyAr = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PreviousLeaderSectionsCompanion.insert({
+    required String id,
+    required String previousLeaderId,
+    this.title = const Value.absent(),
+    this.titleAr = const Value.absent(),
+    this.body = const Value.absent(),
+    this.bodyAr = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       previousLeaderId = Value(previousLeaderId);
+  static Insertable<PreviousLeaderSection> custom({
+    Expression<String>? id,
+    Expression<String>? previousLeaderId,
+    Expression<String>? title,
+    Expression<String>? titleAr,
+    Expression<String>? body,
+    Expression<String>? bodyAr,
+    Expression<int>? sortOrder,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (previousLeaderId != null) 'previous_leader_id': previousLeaderId,
+      if (title != null) 'title': title,
+      if (titleAr != null) 'title_ar': titleAr,
+      if (body != null) 'body': body,
+      if (bodyAr != null) 'body_ar': bodyAr,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PreviousLeaderSectionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? previousLeaderId,
+    Value<String>? title,
+    Value<String>? titleAr,
+    Value<String>? body,
+    Value<String>? bodyAr,
+    Value<int>? sortOrder,
+    Value<int>? rowid,
+  }) {
+    return PreviousLeaderSectionsCompanion(
+      id: id ?? this.id,
+      previousLeaderId: previousLeaderId ?? this.previousLeaderId,
+      title: title ?? this.title,
+      titleAr: titleAr ?? this.titleAr,
+      body: body ?? this.body,
+      bodyAr: bodyAr ?? this.bodyAr,
+      sortOrder: sortOrder ?? this.sortOrder,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (previousLeaderId.present) {
+      map['previous_leader_id'] = Variable<String>(previousLeaderId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (titleAr.present) {
+      map['title_ar'] = Variable<String>(titleAr.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (bodyAr.present) {
+      map['body_ar'] = Variable<String>(bodyAr.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PreviousLeaderSectionsCompanion(')
+          ..write('id: $id, ')
+          ..write('previousLeaderId: $previousLeaderId, ')
+          ..write('title: $title, ')
+          ..write('titleAr: $titleAr, ')
+          ..write('body: $body, ')
+          ..write('bodyAr: $bodyAr, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -11921,6 +14171,16 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $MinutesReportsTable minutesReports = $MinutesReportsTable(this);
   late final $LeadershipGroupInfoTable leadershipGroupInfo =
       $LeadershipGroupInfoTable(this);
+  late final $HistoryContentsTable historyContents = $HistoryContentsTable(
+    this,
+  );
+  late final $HistoryMilestonesTable historyMilestones =
+      $HistoryMilestonesTable(this);
+  late final $PreviousLeadersTable previousLeaders = $PreviousLeadersTable(
+    this,
+  );
+  late final $PreviousLeaderSectionsTable previousLeaderSections =
+      $PreviousLeaderSectionsTable(this);
   late final Index idxUsersDepartment = Index(
     'idx_users_department',
     'CREATE INDEX idx_users_department ON users (department_id)',
@@ -11993,6 +14253,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_reports_dept_year',
     'CREATE INDEX idx_reports_dept_year ON reports (department_id, year)',
   );
+  late final Index idxHistoryMilestonesSort = Index(
+    'idx_history_milestones_sort',
+    'CREATE INDEX idx_history_milestones_sort ON history_milestones (sort_order)',
+  );
+  late final Index idxPreviousLeadersSort = Index(
+    'idx_previous_leaders_sort',
+    'CREATE INDEX idx_previous_leaders_sort ON previous_leaders (sort_order)',
+  );
+  late final Index idxPreviousLeaderSectionsLeader = Index(
+    'idx_previous_leader_sections_leader',
+    'CREATE INDEX idx_previous_leader_sections_leader ON previous_leader_sections (previous_leader_id)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -12020,6 +14292,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     galleryPhotos,
     minutesReports,
     leadershipGroupInfo,
+    historyContents,
+    historyMilestones,
+    previousLeaders,
+    previousLeaderSections,
     idxUsersDepartment,
     idxLeadersCategory,
     idxAuditTimestamp,
@@ -12038,6 +14314,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     idxDeptStaffDept,
     idxDeptActivitiesDept,
     idxReportsDeptYear,
+    idxHistoryMilestonesSort,
+    idxPreviousLeadersSort,
+    idxPreviousLeaderSectionsLeader,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -12173,6 +14452,29 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('dept_activities', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'reports',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('gallery_photos', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'members',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('previous_leaders', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'previous_leaders',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('previous_leader_sections', kind: UpdateKind.delete),
+      ],
     ),
   ]);
 }
@@ -13247,6 +15549,26 @@ final class $$MembersTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$PreviousLeadersTable, List<PreviousLeader>>
+  _previousLeadersRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.previousLeaders,
+    aliasName: 'members__id__previous_leaders__member_id',
+  );
+
+  $$PreviousLeadersTableProcessedTableManager get previousLeadersRefs {
+    final manager = $$PreviousLeadersTableTableManager(
+      $_db,
+      $_db.previousLeaders,
+    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _previousLeadersRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$MembersTableFilterComposer
@@ -13695,6 +16017,31 @@ class $$MembersTableFilterComposer
           }) => $$DepartmentStaffTableFilterComposer(
             $db: $db,
             $table: $db.departmentStaff,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> previousLeadersRefs(
+    Expression<bool> Function($$PreviousLeadersTableFilterComposer f) f,
+  ) {
+    final $$PreviousLeadersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.previousLeaders,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PreviousLeadersTableFilterComposer(
+            $db: $db,
+            $table: $db.previousLeaders,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -14311,6 +16658,31 @@ class $$MembersTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> previousLeadersRefs<T extends Object>(
+    Expression<T> Function($$PreviousLeadersTableAnnotationComposer a) f,
+  ) {
+    final $$PreviousLeadersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.previousLeaders,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PreviousLeadersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.previousLeaders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$MembersTableTableManager
@@ -14340,6 +16712,7 @@ class $$MembersTableTableManager
             bool memberDonationsRefs,
             bool memberRolesRefs,
             bool departmentStaffRefs,
+            bool previousLeadersRefs,
           })
         > {
   $$MembersTableTableManager(_$AppDatabase db, $MembersTable table)
@@ -14496,6 +16869,7 @@ class $$MembersTableTableManager
                 memberDonationsRefs = false,
                 memberRolesRefs = false,
                 departmentStaffRefs = false,
+                previousLeadersRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -14511,6 +16885,7 @@ class $$MembersTableTableManager
                     if (memberDonationsRefs) db.memberDonations,
                     if (memberRolesRefs) db.memberRoles,
                     if (departmentStaffRefs) db.departmentStaff,
+                    if (previousLeadersRefs) db.previousLeaders,
                   ],
                   addJoins:
                       <
@@ -14790,6 +17165,27 @@ class $$MembersTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (previousLeadersRefs)
+                        await $_getPrefetchedData<
+                          Member,
+                          $MembersTable,
+                          PreviousLeader
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._previousLeadersRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).previousLeadersRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.memberId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -14824,6 +17220,7 @@ typedef $$MembersTableProcessedTableManager =
         bool memberDonationsRefs,
         bool memberRolesRefs,
         bool departmentStaffRefs,
+        bool previousLeadersRefs,
       })
     >;
 typedef $$DepartmentsTableCreateCompanionBuilder =
@@ -21398,6 +23795,24 @@ final class $$ReportsTableReferences
       manager.$state.copyWith(prefetchedData: [item]),
     );
   }
+
+  static MultiTypedResultKey<$GalleryPhotosTable, List<GalleryPhoto>>
+  _galleryPhotosRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.galleryPhotos,
+    aliasName: 'reports__id__gallery_photos__report_id',
+  );
+
+  $$GalleryPhotosTableProcessedTableManager get galleryPhotosRefs {
+    final manager = $$GalleryPhotosTableTableManager(
+      $_db,
+      $_db.galleryPhotos,
+    ).filter((f) => f.reportId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_galleryPhotosRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$ReportsTableFilterComposer
@@ -21485,6 +23900,31 @@ class $$ReportsTableFilterComposer
           ),
     );
     return composer;
+  }
+
+  Expression<bool> galleryPhotosRefs(
+    Expression<bool> Function($$GalleryPhotosTableFilterComposer f) f,
+  ) {
+    final $$GalleryPhotosTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.galleryPhotos,
+      getReferencedColumn: (t) => t.reportId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GalleryPhotosTableFilterComposer(
+            $db: $db,
+            $table: $db.galleryPhotos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 }
 
@@ -21640,6 +24080,31 @@ class $$ReportsTableAnnotationComposer
     );
     return composer;
   }
+
+  Expression<T> galleryPhotosRefs<T extends Object>(
+    Expression<T> Function($$GalleryPhotosTableAnnotationComposer a) f,
+  ) {
+    final $$GalleryPhotosTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.galleryPhotos,
+      getReferencedColumn: (t) => t.reportId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GalleryPhotosTableAnnotationComposer(
+            $db: $db,
+            $table: $db.galleryPhotos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ReportsTableTableManager
@@ -21655,7 +24120,7 @@ class $$ReportsTableTableManager
           $$ReportsTableUpdateCompanionBuilder,
           (Report, $$ReportsTableReferences),
           Report,
-          PrefetchHooks Function({bool departmentId})
+          PrefetchHooks Function({bool departmentId, bool galleryPhotosRefs})
         > {
   $$ReportsTableTableManager(_$AppDatabase db, $ReportsTable table)
     : super(
@@ -21736,47 +24201,72 @@ class $$ReportsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({departmentId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (departmentId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.departmentId,
-                                referencedTable: $$ReportsTableReferences
-                                    ._departmentIdTable(db),
-                                referencedColumn: $$ReportsTableReferences
-                                    ._departmentIdTable(db)
-                                    .id,
-                              )
-                              as T;
-                    }
+          prefetchHooksCallback:
+              ({departmentId = false, galleryPhotosRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (galleryPhotosRefs) db.galleryPhotos,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (departmentId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.departmentId,
+                                    referencedTable: $$ReportsTableReferences
+                                        ._departmentIdTable(db),
+                                    referencedColumn: $$ReportsTableReferences
+                                        ._departmentIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (galleryPhotosRefs)
+                        await $_getPrefetchedData<
+                          Report,
+                          $ReportsTable,
+                          GalleryPhoto
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ReportsTableReferences
+                              ._galleryPhotosRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ReportsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).galleryPhotosRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.reportId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -21793,7 +24283,7 @@ typedef $$ReportsTableProcessedTableManager =
       $$ReportsTableUpdateCompanionBuilder,
       (Report, $$ReportsTableReferences),
       Report,
-      PrefetchHooks Function({bool departmentId})
+      PrefetchHooks Function({bool departmentId, bool galleryPhotosRefs})
     >;
 typedef $$GalleryPhotosTableCreateCompanionBuilder =
     GalleryPhotosCompanion Function({
@@ -21808,6 +24298,7 @@ typedef $$GalleryPhotosTableCreateCompanionBuilder =
       Value<String> imagePath,
       Value<String> imagePaths,
       Value<int> heightHint,
+      Value<String?> reportId,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
@@ -21824,9 +24315,36 @@ typedef $$GalleryPhotosTableUpdateCompanionBuilder =
       Value<String> imagePath,
       Value<String> imagePaths,
       Value<int> heightHint,
+      Value<String?> reportId,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
+
+final class $$GalleryPhotosTableReferences
+    extends BaseReferences<_$AppDatabase, $GalleryPhotosTable, GalleryPhoto> {
+  $$GalleryPhotosTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ReportsTable _reportIdTable(_$AppDatabase db) =>
+      db.reports.createAlias('gallery_photos__report_id__reports__id');
+
+  $$ReportsTableProcessedTableManager? get reportId {
+    final $_column = $_itemColumn<String>('report_id');
+    if ($_column == null) return null;
+    final manager = $$ReportsTableTableManager(
+      $_db,
+      $_db.reports,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_reportIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
 
 class $$GalleryPhotosTableFilterComposer
     extends Composer<_$AppDatabase, $GalleryPhotosTable> {
@@ -21896,6 +24414,29 @@ class $$GalleryPhotosTableFilterComposer
     column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  $$ReportsTableFilterComposer get reportId {
+    final $$ReportsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.reportId,
+      referencedTable: $db.reports,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReportsTableFilterComposer(
+            $db: $db,
+            $table: $db.reports,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$GalleryPhotosTableOrderingComposer
@@ -21966,6 +24507,29 @@ class $$GalleryPhotosTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  $$ReportsTableOrderingComposer get reportId {
+    final $$ReportsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.reportId,
+      referencedTable: $db.reports,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReportsTableOrderingComposer(
+            $db: $db,
+            $table: $db.reports,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$GalleryPhotosTableAnnotationComposer
@@ -22016,6 +24580,29 @@ class $$GalleryPhotosTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$ReportsTableAnnotationComposer get reportId {
+    final $$ReportsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.reportId,
+      referencedTable: $db.reports,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReportsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.reports,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$GalleryPhotosTableTableManager
@@ -22029,12 +24616,9 @@ class $$GalleryPhotosTableTableManager
           $$GalleryPhotosTableAnnotationComposer,
           $$GalleryPhotosTableCreateCompanionBuilder,
           $$GalleryPhotosTableUpdateCompanionBuilder,
-          (
-            GalleryPhoto,
-            BaseReferences<_$AppDatabase, $GalleryPhotosTable, GalleryPhoto>,
-          ),
+          (GalleryPhoto, $$GalleryPhotosTableReferences),
           GalleryPhoto,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool reportId})
         > {
   $$GalleryPhotosTableTableManager(_$AppDatabase db, $GalleryPhotosTable table)
     : super(
@@ -22060,6 +24644,7 @@ class $$GalleryPhotosTableTableManager
                 Value<String> imagePath = const Value.absent(),
                 Value<String> imagePaths = const Value.absent(),
                 Value<int> heightHint = const Value.absent(),
+                Value<String?> reportId = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GalleryPhotosCompanion(
@@ -22074,6 +24659,7 @@ class $$GalleryPhotosTableTableManager
                 imagePath: imagePath,
                 imagePaths: imagePaths,
                 heightHint: heightHint,
+                reportId: reportId,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -22090,6 +24676,7 @@ class $$GalleryPhotosTableTableManager
                 Value<String> imagePath = const Value.absent(),
                 Value<String> imagePaths = const Value.absent(),
                 Value<int> heightHint = const Value.absent(),
+                Value<String?> reportId = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GalleryPhotosCompanion.insert(
@@ -22104,13 +24691,59 @@ class $$GalleryPhotosTableTableManager
                 imagePath: imagePath,
                 imagePaths: imagePaths,
                 heightHint: heightHint,
+                reportId: reportId,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$GalleryPhotosTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({reportId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (reportId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.reportId,
+                                referencedTable: $$GalleryPhotosTableReferences
+                                    ._reportIdTable(db),
+                                referencedColumn: $$GalleryPhotosTableReferences
+                                    ._reportIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ),
       );
 }
@@ -22125,12 +24758,9 @@ typedef $$GalleryPhotosTableProcessedTableManager =
       $$GalleryPhotosTableAnnotationComposer,
       $$GalleryPhotosTableCreateCompanionBuilder,
       $$GalleryPhotosTableUpdateCompanionBuilder,
-      (
-        GalleryPhoto,
-        BaseReferences<_$AppDatabase, $GalleryPhotosTable, GalleryPhoto>,
-      ),
+      (GalleryPhoto, $$GalleryPhotosTableReferences),
       GalleryPhoto,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool reportId})
     >;
 typedef $$MinutesReportsTableCreateCompanionBuilder =
     MinutesReportsCompanion Function({
@@ -22556,6 +25186,1516 @@ typedef $$LeadershipGroupInfoTableProcessedTableManager =
       LeadershipGroupInfoData,
       PrefetchHooks Function()
     >;
+typedef $$HistoryContentsTableCreateCompanionBuilder =
+    HistoryContentsCompanion Function({
+      Value<String> id,
+      Value<String> foundingEn,
+      Value<String> foundingAr,
+      Value<String> missionEn,
+      Value<String> missionAr,
+      Value<String> visionEn,
+      Value<String> visionAr,
+      Value<String> narrative,
+      Value<String> facts,
+      Value<int> rowid,
+    });
+typedef $$HistoryContentsTableUpdateCompanionBuilder =
+    HistoryContentsCompanion Function({
+      Value<String> id,
+      Value<String> foundingEn,
+      Value<String> foundingAr,
+      Value<String> missionEn,
+      Value<String> missionAr,
+      Value<String> visionEn,
+      Value<String> visionAr,
+      Value<String> narrative,
+      Value<String> facts,
+      Value<int> rowid,
+    });
+
+class $$HistoryContentsTableFilterComposer
+    extends Composer<_$AppDatabase, $HistoryContentsTable> {
+  $$HistoryContentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get foundingEn => $composableBuilder(
+    column: $table.foundingEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get foundingAr => $composableBuilder(
+    column: $table.foundingAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get missionEn => $composableBuilder(
+    column: $table.missionEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get missionAr => $composableBuilder(
+    column: $table.missionAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get visionEn => $composableBuilder(
+    column: $table.visionEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get visionAr => $composableBuilder(
+    column: $table.visionAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get narrative => $composableBuilder(
+    column: $table.narrative,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get facts => $composableBuilder(
+    column: $table.facts,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$HistoryContentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $HistoryContentsTable> {
+  $$HistoryContentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get foundingEn => $composableBuilder(
+    column: $table.foundingEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get foundingAr => $composableBuilder(
+    column: $table.foundingAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get missionEn => $composableBuilder(
+    column: $table.missionEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get missionAr => $composableBuilder(
+    column: $table.missionAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get visionEn => $composableBuilder(
+    column: $table.visionEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get visionAr => $composableBuilder(
+    column: $table.visionAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get narrative => $composableBuilder(
+    column: $table.narrative,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get facts => $composableBuilder(
+    column: $table.facts,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$HistoryContentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $HistoryContentsTable> {
+  $$HistoryContentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get foundingEn => $composableBuilder(
+    column: $table.foundingEn,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get foundingAr => $composableBuilder(
+    column: $table.foundingAr,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get missionEn =>
+      $composableBuilder(column: $table.missionEn, builder: (column) => column);
+
+  GeneratedColumn<String> get missionAr =>
+      $composableBuilder(column: $table.missionAr, builder: (column) => column);
+
+  GeneratedColumn<String> get visionEn =>
+      $composableBuilder(column: $table.visionEn, builder: (column) => column);
+
+  GeneratedColumn<String> get visionAr =>
+      $composableBuilder(column: $table.visionAr, builder: (column) => column);
+
+  GeneratedColumn<String> get narrative =>
+      $composableBuilder(column: $table.narrative, builder: (column) => column);
+
+  GeneratedColumn<String> get facts =>
+      $composableBuilder(column: $table.facts, builder: (column) => column);
+}
+
+class $$HistoryContentsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $HistoryContentsTable,
+          HistoryContent,
+          $$HistoryContentsTableFilterComposer,
+          $$HistoryContentsTableOrderingComposer,
+          $$HistoryContentsTableAnnotationComposer,
+          $$HistoryContentsTableCreateCompanionBuilder,
+          $$HistoryContentsTableUpdateCompanionBuilder,
+          (
+            HistoryContent,
+            BaseReferences<
+              _$AppDatabase,
+              $HistoryContentsTable,
+              HistoryContent
+            >,
+          ),
+          HistoryContent,
+          PrefetchHooks Function()
+        > {
+  $$HistoryContentsTableTableManager(
+    _$AppDatabase db,
+    $HistoryContentsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$HistoryContentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$HistoryContentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$HistoryContentsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> foundingEn = const Value.absent(),
+                Value<String> foundingAr = const Value.absent(),
+                Value<String> missionEn = const Value.absent(),
+                Value<String> missionAr = const Value.absent(),
+                Value<String> visionEn = const Value.absent(),
+                Value<String> visionAr = const Value.absent(),
+                Value<String> narrative = const Value.absent(),
+                Value<String> facts = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HistoryContentsCompanion(
+                id: id,
+                foundingEn: foundingEn,
+                foundingAr: foundingAr,
+                missionEn: missionEn,
+                missionAr: missionAr,
+                visionEn: visionEn,
+                visionAr: visionAr,
+                narrative: narrative,
+                facts: facts,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> foundingEn = const Value.absent(),
+                Value<String> foundingAr = const Value.absent(),
+                Value<String> missionEn = const Value.absent(),
+                Value<String> missionAr = const Value.absent(),
+                Value<String> visionEn = const Value.absent(),
+                Value<String> visionAr = const Value.absent(),
+                Value<String> narrative = const Value.absent(),
+                Value<String> facts = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HistoryContentsCompanion.insert(
+                id: id,
+                foundingEn: foundingEn,
+                foundingAr: foundingAr,
+                missionEn: missionEn,
+                missionAr: missionAr,
+                visionEn: visionEn,
+                visionAr: visionAr,
+                narrative: narrative,
+                facts: facts,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$HistoryContentsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $HistoryContentsTable,
+      HistoryContent,
+      $$HistoryContentsTableFilterComposer,
+      $$HistoryContentsTableOrderingComposer,
+      $$HistoryContentsTableAnnotationComposer,
+      $$HistoryContentsTableCreateCompanionBuilder,
+      $$HistoryContentsTableUpdateCompanionBuilder,
+      (
+        HistoryContent,
+        BaseReferences<_$AppDatabase, $HistoryContentsTable, HistoryContent>,
+      ),
+      HistoryContent,
+      PrefetchHooks Function()
+    >;
+typedef $$HistoryMilestonesTableCreateCompanionBuilder =
+    HistoryMilestonesCompanion Function({
+      required String id,
+      Value<String> year,
+      Value<String> title,
+      Value<String> titleAr,
+      Value<String> description,
+      Value<String> descriptionAr,
+      Value<String> iconKey,
+      Value<int> accent,
+      Value<int> sortOrder,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$HistoryMilestonesTableUpdateCompanionBuilder =
+    HistoryMilestonesCompanion Function({
+      Value<String> id,
+      Value<String> year,
+      Value<String> title,
+      Value<String> titleAr,
+      Value<String> description,
+      Value<String> descriptionAr,
+      Value<String> iconKey,
+      Value<int> accent,
+      Value<int> sortOrder,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$HistoryMilestonesTableFilterComposer
+    extends Composer<_$AppDatabase, $HistoryMilestonesTable> {
+  $$HistoryMilestonesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get titleAr => $composableBuilder(
+    column: $table.titleAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get descriptionAr => $composableBuilder(
+    column: $table.descriptionAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get iconKey => $composableBuilder(
+    column: $table.iconKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get accent => $composableBuilder(
+    column: $table.accent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$HistoryMilestonesTableOrderingComposer
+    extends Composer<_$AppDatabase, $HistoryMilestonesTable> {
+  $$HistoryMilestonesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get titleAr => $composableBuilder(
+    column: $table.titleAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get descriptionAr => $composableBuilder(
+    column: $table.descriptionAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get iconKey => $composableBuilder(
+    column: $table.iconKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get accent => $composableBuilder(
+    column: $table.accent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$HistoryMilestonesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $HistoryMilestonesTable> {
+  $$HistoryMilestonesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get year =>
+      $composableBuilder(column: $table.year, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get titleAr =>
+      $composableBuilder(column: $table.titleAr, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get descriptionAr => $composableBuilder(
+    column: $table.descriptionAr,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get iconKey =>
+      $composableBuilder(column: $table.iconKey, builder: (column) => column);
+
+  GeneratedColumn<int> get accent =>
+      $composableBuilder(column: $table.accent, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$HistoryMilestonesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $HistoryMilestonesTable,
+          HistoryMilestone,
+          $$HistoryMilestonesTableFilterComposer,
+          $$HistoryMilestonesTableOrderingComposer,
+          $$HistoryMilestonesTableAnnotationComposer,
+          $$HistoryMilestonesTableCreateCompanionBuilder,
+          $$HistoryMilestonesTableUpdateCompanionBuilder,
+          (
+            HistoryMilestone,
+            BaseReferences<
+              _$AppDatabase,
+              $HistoryMilestonesTable,
+              HistoryMilestone
+            >,
+          ),
+          HistoryMilestone,
+          PrefetchHooks Function()
+        > {
+  $$HistoryMilestonesTableTableManager(
+    _$AppDatabase db,
+    $HistoryMilestonesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$HistoryMilestonesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$HistoryMilestonesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$HistoryMilestonesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> year = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> titleAr = const Value.absent(),
+                Value<String> description = const Value.absent(),
+                Value<String> descriptionAr = const Value.absent(),
+                Value<String> iconKey = const Value.absent(),
+                Value<int> accent = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HistoryMilestonesCompanion(
+                id: id,
+                year: year,
+                title: title,
+                titleAr: titleAr,
+                description: description,
+                descriptionAr: descriptionAr,
+                iconKey: iconKey,
+                accent: accent,
+                sortOrder: sortOrder,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String> year = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> titleAr = const Value.absent(),
+                Value<String> description = const Value.absent(),
+                Value<String> descriptionAr = const Value.absent(),
+                Value<String> iconKey = const Value.absent(),
+                Value<int> accent = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HistoryMilestonesCompanion.insert(
+                id: id,
+                year: year,
+                title: title,
+                titleAr: titleAr,
+                description: description,
+                descriptionAr: descriptionAr,
+                iconKey: iconKey,
+                accent: accent,
+                sortOrder: sortOrder,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$HistoryMilestonesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $HistoryMilestonesTable,
+      HistoryMilestone,
+      $$HistoryMilestonesTableFilterComposer,
+      $$HistoryMilestonesTableOrderingComposer,
+      $$HistoryMilestonesTableAnnotationComposer,
+      $$HistoryMilestonesTableCreateCompanionBuilder,
+      $$HistoryMilestonesTableUpdateCompanionBuilder,
+      (
+        HistoryMilestone,
+        BaseReferences<
+          _$AppDatabase,
+          $HistoryMilestonesTable,
+          HistoryMilestone
+        >,
+      ),
+      HistoryMilestone,
+      PrefetchHooks Function()
+    >;
+typedef $$PreviousLeadersTableCreateCompanionBuilder =
+    PreviousLeadersCompanion Function({
+      required String id,
+      required String memberId,
+      Value<String> position,
+      Value<String> positionAr,
+      Value<String> termYears,
+      Value<String> note,
+      Value<String> noteAr,
+      Value<int> accent,
+      Value<int> sortOrder,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$PreviousLeadersTableUpdateCompanionBuilder =
+    PreviousLeadersCompanion Function({
+      Value<String> id,
+      Value<String> memberId,
+      Value<String> position,
+      Value<String> positionAr,
+      Value<String> termYears,
+      Value<String> note,
+      Value<String> noteAr,
+      Value<int> accent,
+      Value<int> sortOrder,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$PreviousLeadersTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $PreviousLeadersTable, PreviousLeader> {
+  $$PreviousLeadersTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $MembersTable _memberIdTable(_$AppDatabase db) =>
+      db.members.createAlias('previous_leaders__member_id__members__id');
+
+  $$MembersTableProcessedTableManager get memberId {
+    final $_column = $_itemColumn<String>('member_id')!;
+
+    final manager = $$MembersTableTableManager(
+      $_db,
+      $_db.members,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_memberIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $PreviousLeaderSectionsTable,
+    List<PreviousLeaderSection>
+  >
+  _previousLeaderSectionsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.previousLeaderSections,
+    aliasName:
+        'previous_leaders__id__previous_leader_sections__previous_leader_id',
+  );
+
+  $$PreviousLeaderSectionsTableProcessedTableManager
+  get previousLeaderSectionsRefs {
+    final manager =
+        $$PreviousLeaderSectionsTableTableManager(
+          $_db,
+          $_db.previousLeaderSections,
+        ).filter(
+          (f) => f.previousLeaderId.id.sqlEquals($_itemColumn<String>('id')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(
+      _previousLeaderSectionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$PreviousLeadersTableFilterComposer
+    extends Composer<_$AppDatabase, $PreviousLeadersTable> {
+  $$PreviousLeadersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get positionAr => $composableBuilder(
+    column: $table.positionAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get termYears => $composableBuilder(
+    column: $table.termYears,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get noteAr => $composableBuilder(
+    column: $table.noteAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get accent => $composableBuilder(
+    column: $table.accent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$MembersTableFilterComposer get memberId {
+    final $$MembersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableFilterComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> previousLeaderSectionsRefs(
+    Expression<bool> Function($$PreviousLeaderSectionsTableFilterComposer f) f,
+  ) {
+    final $$PreviousLeaderSectionsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.previousLeaderSections,
+          getReferencedColumn: (t) => t.previousLeaderId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$PreviousLeaderSectionsTableFilterComposer(
+                $db: $db,
+                $table: $db.previousLeaderSections,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$PreviousLeadersTableOrderingComposer
+    extends Composer<_$AppDatabase, $PreviousLeadersTable> {
+  $$PreviousLeadersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get positionAr => $composableBuilder(
+    column: $table.positionAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get termYears => $composableBuilder(
+    column: $table.termYears,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get noteAr => $composableBuilder(
+    column: $table.noteAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get accent => $composableBuilder(
+    column: $table.accent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$MembersTableOrderingComposer get memberId {
+    final $$MembersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableOrderingComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PreviousLeadersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PreviousLeadersTable> {
+  $$PreviousLeadersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<String> get positionAr => $composableBuilder(
+    column: $table.positionAr,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get termYears =>
+      $composableBuilder(column: $table.termYears, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<String> get noteAr =>
+      $composableBuilder(column: $table.noteAr, builder: (column) => column);
+
+  GeneratedColumn<int> get accent =>
+      $composableBuilder(column: $table.accent, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$MembersTableAnnotationComposer get memberId {
+    final $$MembersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> previousLeaderSectionsRefs<T extends Object>(
+    Expression<T> Function($$PreviousLeaderSectionsTableAnnotationComposer a) f,
+  ) {
+    final $$PreviousLeaderSectionsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.previousLeaderSections,
+          getReferencedColumn: (t) => t.previousLeaderId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$PreviousLeaderSectionsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.previousLeaderSections,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$PreviousLeadersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PreviousLeadersTable,
+          PreviousLeader,
+          $$PreviousLeadersTableFilterComposer,
+          $$PreviousLeadersTableOrderingComposer,
+          $$PreviousLeadersTableAnnotationComposer,
+          $$PreviousLeadersTableCreateCompanionBuilder,
+          $$PreviousLeadersTableUpdateCompanionBuilder,
+          (PreviousLeader, $$PreviousLeadersTableReferences),
+          PreviousLeader,
+          PrefetchHooks Function({
+            bool memberId,
+            bool previousLeaderSectionsRefs,
+          })
+        > {
+  $$PreviousLeadersTableTableManager(
+    _$AppDatabase db,
+    $PreviousLeadersTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PreviousLeadersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PreviousLeadersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PreviousLeadersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> memberId = const Value.absent(),
+                Value<String> position = const Value.absent(),
+                Value<String> positionAr = const Value.absent(),
+                Value<String> termYears = const Value.absent(),
+                Value<String> note = const Value.absent(),
+                Value<String> noteAr = const Value.absent(),
+                Value<int> accent = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PreviousLeadersCompanion(
+                id: id,
+                memberId: memberId,
+                position: position,
+                positionAr: positionAr,
+                termYears: termYears,
+                note: note,
+                noteAr: noteAr,
+                accent: accent,
+                sortOrder: sortOrder,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String memberId,
+                Value<String> position = const Value.absent(),
+                Value<String> positionAr = const Value.absent(),
+                Value<String> termYears = const Value.absent(),
+                Value<String> note = const Value.absent(),
+                Value<String> noteAr = const Value.absent(),
+                Value<int> accent = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PreviousLeadersCompanion.insert(
+                id: id,
+                memberId: memberId,
+                position: position,
+                positionAr: positionAr,
+                termYears: termYears,
+                note: note,
+                noteAr: noteAr,
+                accent: accent,
+                sortOrder: sortOrder,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$PreviousLeadersTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({memberId = false, previousLeaderSectionsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (previousLeaderSectionsRefs) db.previousLeaderSections,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (memberId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.memberId,
+                                    referencedTable:
+                                        $$PreviousLeadersTableReferences
+                                            ._memberIdTable(db),
+                                    referencedColumn:
+                                        $$PreviousLeadersTableReferences
+                                            ._memberIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (previousLeaderSectionsRefs)
+                        await $_getPrefetchedData<
+                          PreviousLeader,
+                          $PreviousLeadersTable,
+                          PreviousLeaderSection
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PreviousLeadersTableReferences
+                              ._previousLeaderSectionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$PreviousLeadersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).previousLeaderSectionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.previousLeaderId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$PreviousLeadersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PreviousLeadersTable,
+      PreviousLeader,
+      $$PreviousLeadersTableFilterComposer,
+      $$PreviousLeadersTableOrderingComposer,
+      $$PreviousLeadersTableAnnotationComposer,
+      $$PreviousLeadersTableCreateCompanionBuilder,
+      $$PreviousLeadersTableUpdateCompanionBuilder,
+      (PreviousLeader, $$PreviousLeadersTableReferences),
+      PreviousLeader,
+      PrefetchHooks Function({bool memberId, bool previousLeaderSectionsRefs})
+    >;
+typedef $$PreviousLeaderSectionsTableCreateCompanionBuilder =
+    PreviousLeaderSectionsCompanion Function({
+      required String id,
+      required String previousLeaderId,
+      Value<String> title,
+      Value<String> titleAr,
+      Value<String> body,
+      Value<String> bodyAr,
+      Value<int> sortOrder,
+      Value<int> rowid,
+    });
+typedef $$PreviousLeaderSectionsTableUpdateCompanionBuilder =
+    PreviousLeaderSectionsCompanion Function({
+      Value<String> id,
+      Value<String> previousLeaderId,
+      Value<String> title,
+      Value<String> titleAr,
+      Value<String> body,
+      Value<String> bodyAr,
+      Value<int> sortOrder,
+      Value<int> rowid,
+    });
+
+final class $$PreviousLeaderSectionsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $PreviousLeaderSectionsTable,
+          PreviousLeaderSection
+        > {
+  $$PreviousLeaderSectionsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $PreviousLeadersTable _previousLeaderIdTable(_$AppDatabase db) =>
+      db.previousLeaders.createAlias(
+        'previous_leader_sections__previous_leader_id__previous_leaders__id',
+      );
+
+  $$PreviousLeadersTableProcessedTableManager get previousLeaderId {
+    final $_column = $_itemColumn<String>('previous_leader_id')!;
+
+    final manager = $$PreviousLeadersTableTableManager(
+      $_db,
+      $_db.previousLeaders,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_previousLeaderIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$PreviousLeaderSectionsTableFilterComposer
+    extends Composer<_$AppDatabase, $PreviousLeaderSectionsTable> {
+  $$PreviousLeaderSectionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get titleAr => $composableBuilder(
+    column: $table.titleAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bodyAr => $composableBuilder(
+    column: $table.bodyAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$PreviousLeadersTableFilterComposer get previousLeaderId {
+    final $$PreviousLeadersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.previousLeaderId,
+      referencedTable: $db.previousLeaders,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PreviousLeadersTableFilterComposer(
+            $db: $db,
+            $table: $db.previousLeaders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PreviousLeaderSectionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PreviousLeaderSectionsTable> {
+  $$PreviousLeaderSectionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get titleAr => $composableBuilder(
+    column: $table.titleAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bodyAr => $composableBuilder(
+    column: $table.bodyAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$PreviousLeadersTableOrderingComposer get previousLeaderId {
+    final $$PreviousLeadersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.previousLeaderId,
+      referencedTable: $db.previousLeaders,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PreviousLeadersTableOrderingComposer(
+            $db: $db,
+            $table: $db.previousLeaders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PreviousLeaderSectionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PreviousLeaderSectionsTable> {
+  $$PreviousLeaderSectionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get titleAr =>
+      $composableBuilder(column: $table.titleAr, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<String> get bodyAr =>
+      $composableBuilder(column: $table.bodyAr, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  $$PreviousLeadersTableAnnotationComposer get previousLeaderId {
+    final $$PreviousLeadersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.previousLeaderId,
+      referencedTable: $db.previousLeaders,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PreviousLeadersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.previousLeaders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PreviousLeaderSectionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PreviousLeaderSectionsTable,
+          PreviousLeaderSection,
+          $$PreviousLeaderSectionsTableFilterComposer,
+          $$PreviousLeaderSectionsTableOrderingComposer,
+          $$PreviousLeaderSectionsTableAnnotationComposer,
+          $$PreviousLeaderSectionsTableCreateCompanionBuilder,
+          $$PreviousLeaderSectionsTableUpdateCompanionBuilder,
+          (PreviousLeaderSection, $$PreviousLeaderSectionsTableReferences),
+          PreviousLeaderSection,
+          PrefetchHooks Function({bool previousLeaderId})
+        > {
+  $$PreviousLeaderSectionsTableTableManager(
+    _$AppDatabase db,
+    $PreviousLeaderSectionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PreviousLeaderSectionsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$PreviousLeaderSectionsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$PreviousLeaderSectionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> previousLeaderId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> titleAr = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<String> bodyAr = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PreviousLeaderSectionsCompanion(
+                id: id,
+                previousLeaderId: previousLeaderId,
+                title: title,
+                titleAr: titleAr,
+                body: body,
+                bodyAr: bodyAr,
+                sortOrder: sortOrder,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String previousLeaderId,
+                Value<String> title = const Value.absent(),
+                Value<String> titleAr = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<String> bodyAr = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PreviousLeaderSectionsCompanion.insert(
+                id: id,
+                previousLeaderId: previousLeaderId,
+                title: title,
+                titleAr: titleAr,
+                body: body,
+                bodyAr: bodyAr,
+                sortOrder: sortOrder,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$PreviousLeaderSectionsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({previousLeaderId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (previousLeaderId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.previousLeaderId,
+                                referencedTable:
+                                    $$PreviousLeaderSectionsTableReferences
+                                        ._previousLeaderIdTable(db),
+                                referencedColumn:
+                                    $$PreviousLeaderSectionsTableReferences
+                                        ._previousLeaderIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$PreviousLeaderSectionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PreviousLeaderSectionsTable,
+      PreviousLeaderSection,
+      $$PreviousLeaderSectionsTableFilterComposer,
+      $$PreviousLeaderSectionsTableOrderingComposer,
+      $$PreviousLeaderSectionsTableAnnotationComposer,
+      $$PreviousLeaderSectionsTableCreateCompanionBuilder,
+      $$PreviousLeaderSectionsTableUpdateCompanionBuilder,
+      (PreviousLeaderSection, $$PreviousLeaderSectionsTableReferences),
+      PreviousLeaderSection,
+      PrefetchHooks Function({bool previousLeaderId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -22604,4 +26744,15 @@ class $AppDatabaseManager {
       $$MinutesReportsTableTableManager(_db, _db.minutesReports);
   $$LeadershipGroupInfoTableTableManager get leadershipGroupInfo =>
       $$LeadershipGroupInfoTableTableManager(_db, _db.leadershipGroupInfo);
+  $$HistoryContentsTableTableManager get historyContents =>
+      $$HistoryContentsTableTableManager(_db, _db.historyContents);
+  $$HistoryMilestonesTableTableManager get historyMilestones =>
+      $$HistoryMilestonesTableTableManager(_db, _db.historyMilestones);
+  $$PreviousLeadersTableTableManager get previousLeaders =>
+      $$PreviousLeadersTableTableManager(_db, _db.previousLeaders);
+  $$PreviousLeaderSectionsTableTableManager get previousLeaderSections =>
+      $$PreviousLeaderSectionsTableTableManager(
+        _db,
+        _db.previousLeaderSections,
+      );
 }

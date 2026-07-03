@@ -100,9 +100,6 @@ class DepartmentsScreen extends StatelessWidget {
       description: r.description,
       descriptionAr: r.descriptionAr,
       iconKey: r.iconKey,
-      headName: r.headName,
-      contactEmail: r.contactEmail,
-      contactPhone: r.contactPhone,
     );
   }
 

@@ -188,4 +188,127 @@ class LeaderRepository {
           ),
         );
   }
+
+  // ── Previous Leadership (former office-holders, linked to members) ─────────
+  /// Former office-holders joined with the member they reference, in display
+  /// order.
+  Stream<List<PreviousLeaderView>> watchPreviousLeaders() {
+    final query = _db.select(_db.previousLeaders).join([
+      innerJoin(_db.members,
+          _db.members.id.equalsExp(_db.previousLeaders.memberId)),
+    ])
+      ..orderBy([
+        OrderingTerm(expression: _db.previousLeaders.sortOrder),
+        OrderingTerm(expression: _db.previousLeaders.createdAt),
+      ]);
+    return query.watch().map((rows) => [
+          for (final row in rows)
+            (
+              entry: row.readTable(_db.previousLeaders),
+              member: row.readTable(_db.members),
+            ),
+        ]);
+  }
+
+  Future<String> addPreviousLeader({
+    required String memberId,
+    required String position,
+    required String positionAr,
+    required String termYears,
+    String note = '',
+    String noteAr = '',
+    int accent = 0xFF16243D,
+  }) async {
+    final all = await _db.select(_db.previousLeaders).get();
+    final nextSort =
+        all.fold<int>(0, (m, e) => e.sortOrder >= m ? e.sortOrder + 1 : m);
+    final id = newId('prevleader');
+    await _db.into(_db.previousLeaders).insert(
+          PreviousLeadersCompanion.insert(
+            id: id,
+            memberId: memberId,
+            position: Value(position),
+            positionAr: Value(positionAr.isEmpty ? position : positionAr),
+            termYears: Value(termYears),
+            note: Value(note),
+            noteAr: Value(noteAr),
+            accent: Value(accent),
+            sortOrder: Value(nextSort),
+          ),
+        );
+    return id;
+  }
+
+  Future<void> updatePreviousLeader(
+    String id, {
+    required String memberId,
+    required String position,
+    required String positionAr,
+    required String termYears,
+    required String note,
+    required String noteAr,
+    required int accent,
+  }) =>
+      (_db.update(_db.previousLeaders)..where((p) => p.id.equals(id))).write(
+        PreviousLeadersCompanion(
+          memberId: Value(memberId),
+          position: Value(position),
+          positionAr: Value(positionAr.isEmpty ? position : positionAr),
+          termYears: Value(termYears),
+          note: Value(note),
+          noteAr: Value(noteAr),
+          accent: Value(accent),
+        ),
+      );
+
+  Future<void> deletePreviousLeader(String id) =>
+      (_db.delete(_db.previousLeaders)..where((p) => p.id.equals(id))).go();
+
+  /// A member's former-leadership history (their own entries only, not joined
+  /// with the member row since callers already have it) — e.g. for showing
+  /// "Former Leadership" on that member's profile. Most recently added first.
+  Stream<List<PreviousLeader>> watchPreviousLeadershipForMember(
+      String memberId) {
+    return (_db.select(_db.previousLeaders)
+          ..where((p) => p.memberId.equals(memberId))
+          ..orderBy([
+            (p) => OrderingTerm(expression: p.sortOrder),
+            (p) => OrderingTerm(expression: p.createdAt),
+          ]))
+        .watch();
+  }
+
+  // ── Biography sections (repeatable, attached to a Previous Leader) ────────
+  Stream<List<PreviousLeaderSection>> watchSections(String previousLeaderId) =>
+      (_db.select(_db.previousLeaderSections)
+            ..where((s) => s.previousLeaderId.equals(previousLeaderId))
+            ..orderBy([(s) => OrderingTerm(expression: s.sortOrder)]))
+          .watch();
+
+  Future<void> addSection({
+    required String previousLeaderId,
+    required String title,
+    required String titleAr,
+    required String body,
+    required String bodyAr,
+    required int sortOrder,
+  }) =>
+      _db.into(_db.previousLeaderSections).insert(
+            PreviousLeaderSectionsCompanion.insert(
+              id: newId('prevsection'),
+              previousLeaderId: previousLeaderId,
+              title: Value(title),
+              titleAr: Value(titleAr),
+              body: Value(body),
+              bodyAr: Value(bodyAr),
+              sortOrder: Value(sortOrder),
+            ),
+          );
+
+  Future<void> deleteSection(String id) =>
+      (_db.delete(_db.previousLeaderSections)..where((s) => s.id.equals(id)))
+          .go();
 }
+
+/// A former office-holder joined with the member they reference.
+typedef PreviousLeaderView = ({PreviousLeader entry, Member member});

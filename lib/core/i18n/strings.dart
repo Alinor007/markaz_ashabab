@@ -79,7 +79,7 @@ class AppStrings {
 }
 
 /// Arabic org name shown in both language modes (proper noun).
-const String _arabicBrand = 'مركز الشباب المسلم بالفلبين';
+const String _arabicBrand = 'مؤسسة مركز الشباب المسلم في الفلبين';
 
 class _Strings {
   const _Strings({
@@ -172,7 +172,7 @@ class _Strings {
 }
 
 const _Strings _englishStrings = _Strings(
-  orgName: 'Markazosshabab Al-Muslim',
+  orgName: 'Markazosshabab Al-Muslim Fil-Filibbin Foundation, Inc.',
   missionStatement:
       'Preserving the legacy, nurturing the leaders, and serving the Muslim '
       'youth of the Philippines through knowledge, da‘wah, and sincere service.',
@@ -221,7 +221,7 @@ const _Strings _englishStrings = _Strings(
 );
 
 const _Strings _arabicStrings = _Strings(
-  orgName: 'مركز الشباب المسلم في الفلبين',
+  orgName: 'مؤسسة مركز الشباب المسلم في الفلبين',
   missionStatement:
       'حفظ الإرث، وتربية القادة، وخدمة الشباب المسلم في الفلبين عبر العلم '
       'والدعوة والعمل المخلص.',

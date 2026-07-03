@@ -15,13 +15,11 @@ class MinutesReportResult {
     required this.title,
     required this.year,
     required this.type,
-    required this.content,
     required this.imagePaths,
   });
   final String title;
   final int year;
   final String type;
-  final String content;
   final List<String> imagePaths;
 }
 
@@ -48,8 +46,6 @@ class _MinutesReportFormState extends State<_MinutesReportForm> {
   late final _title = TextEditingController(text: widget.existing?.title ?? '');
   late final _year = TextEditingController(
       text: (widget.existing?.year ?? DateTime.now().year).toString());
-  late final _content =
-      TextEditingController(text: widget.existing?.content ?? '');
   late String _type = widget.existing?.type ?? 'minutes';
   late final List<String> _images = widget.existing != null
       ? MinutesReportRepository.imagesOf(widget.existing!)
@@ -59,7 +55,6 @@ class _MinutesReportFormState extends State<_MinutesReportForm> {
   void dispose() {
     _title.dispose();
     _year.dispose();
-    _content.dispose();
     super.dispose();
   }
 
@@ -77,7 +72,6 @@ class _MinutesReportFormState extends State<_MinutesReportForm> {
         title: _title.text.trim(),
         year: int.tryParse(_year.text.trim()) ?? DateTime.now().year,
         type: _type,
-        content: _content.text.trim(),
         imagePaths: List.of(_images),
       ),
     );
@@ -149,17 +143,6 @@ class _MinutesReportFormState extends State<_MinutesReportForm> {
                           Expanded(child: _typeSelector(context)),
                         ],
                       ),
-                      const SizedBox(height: AppSpacing.md),
-                      TextFormField(
-                        controller: _content,
-                        minLines: 4,
-                        maxLines: 10,
-                        keyboardType: TextInputType.multiline,
-                        decoration: InputDecoration(
-                          labelText: context.tr('Content / Body', 'المحتوى'),
-                          alignLabelWithHint: true,
-                        ),
-                      ),
                       const SizedBox(height: AppSpacing.lg),
                       _imagesSection(context),
                     ],
@@ -192,23 +175,19 @@ class _MinutesReportFormState extends State<_MinutesReportForm> {
   }
 
   Widget _typeSelector(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(context.tr('Type', 'النوع'),
-            style: Theme.of(context).textTheme.labelMedium),
-        const SizedBox(height: AppSpacing.xs),
-        SegmentedButton<String>(
-          segments: [
-            for (final t in ReportType.values)
-              if (t != ReportType.programCompletion)
-                ButtonSegment(value: t.code, label: Text(t.label(context.isArabic))),
-          ],
-          selected: {_type},
-          showSelectedIcon: false,
-          onSelectionChanged: (s) => setState(() => _type = s.first),
-        ),
+    // A dropdown scales to the full set of report types (Minutes, Resolution,
+    // and the other report kinds) without crowding the row.
+    return DropdownButtonFormField<String>(
+      initialValue: _type,
+      isExpanded: true,
+      decoration: InputDecoration(labelText: context.tr('Type', 'النوع')),
+      items: [
+        for (final t in ReportType.values)
+          if (t != ReportType.programCompletion)
+            DropdownMenuItem(
+                value: t.code, child: Text(t.label(context.isArabic))),
       ],
+      onChanged: (v) => setState(() => _type = v ?? _type),
     );
   }
 

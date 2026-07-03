@@ -60,7 +60,7 @@ class _BrandHero extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const BrandEmblem(size: 495, onLight: true),
+            const BrandEmblem(size: 493, onLight: true),
             const SizedBox(height: AppSpacing.lg),
             Text(
               s.orgNameArabic,

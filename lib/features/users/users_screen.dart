@@ -415,9 +415,18 @@ class _UserFormDialogState extends State<_UserFormDialog> {
               const SizedBox(height: AppSpacing.md),
               TextFormField(
                 controller: _username,
+                // The username is permanent: it cannot be changed after the
+                // account is created.
+                readOnly: isEditing,
+                enabled: !isEditing,
                 validator: _required,
                 decoration: InputDecoration(
-                    labelText: context.tr('Username', 'اسم المستخدم')),
+                  labelText: context.tr('Username', 'اسم المستخدم'),
+                  helperText: isEditing
+                      ? context.tr('Username cannot be changed',
+                          'لا يمكن تغيير اسم المستخدم')
+                      : null,
+                ),
               ),
               const SizedBox(height: AppSpacing.md),
               TextFormField(

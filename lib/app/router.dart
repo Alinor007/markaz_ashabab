@@ -4,14 +4,17 @@ import 'package:go_router/go_router.dart';
 import '../core/auth/session_controller.dart';
 import '../features/audit/audit_screen.dart';
 import '../features/home/home_screen.dart';
+import '../features/departments/department_activity_view_screen.dart';
 import '../features/departments/department_detail_screen.dart';
 import '../features/departments/departments_screen.dart';
 import '../features/gallery/gallery_screen.dart';
 import '../features/history/history_screen.dart';
 import '../features/leadership/leader_profile_screen.dart';
 import '../features/leadership/leadership_screen.dart';
+import '../features/leadership/previous_leadership_screen.dart';
 import '../features/login/login_screen.dart';
 import '../features/members/members_management_screen.dart';
+import '../features/reports/department_report_view_screen.dart';
 import '../features/reports/reports_screen.dart';
 import '../features/search/search_screen.dart';
 import '../features/settings/settings_screen.dart';
@@ -126,6 +129,10 @@ GoRouter createRouter(SessionController session) {
             ),
           ),
           GoRoute(
+            path: '/leadership/previous',
+            builder: (context, state) => const PreviousLeadershipScreen(),
+          ),
+          GoRoute(
             path: '/leadership/member/:memberId',
             builder: (context, state) => LeaderProfileScreen(
               memberId: state.pathParameters['memberId']!,
@@ -139,6 +146,20 @@ GoRouter createRouter(SessionController session) {
             path: '/departments/:id',
             builder: (context, state) => DepartmentDetailScreen(
               departmentId: state.pathParameters['id']!,
+            ),
+          ),
+          GoRoute(
+            path: '/departments/:id/activities/:activityId',
+            builder: (context, state) => DepartmentActivityViewScreen(
+              departmentId: state.pathParameters['id']!,
+              activityId: state.pathParameters['activityId']!,
+            ),
+          ),
+          GoRoute(
+            path: '/departments/:id/reports/:reportId',
+            builder: (context, state) => DepartmentReportViewScreen(
+              departmentId: state.pathParameters['id']!,
+              reportId: state.pathParameters['reportId']!,
             ),
           ),
           GoRoute(

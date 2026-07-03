@@ -347,6 +347,11 @@ class _LeadershipNavGroupState extends State<_LeadershipNavGroup> {
               ),
             ],
           ),
+          _LeadershipSubTile(
+            label: isArabic ? 'القيادة السابقة' : 'Previous Leadership',
+            route: '/leadership/previous',
+            selected: widget.currentRoute == '/leadership/previous',
+          ),
         ],
       ],
     );

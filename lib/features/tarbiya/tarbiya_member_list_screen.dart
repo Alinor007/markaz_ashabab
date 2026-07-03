@@ -41,6 +41,7 @@ class _TarbiyaMemberListScreenState extends State<TarbiyaMemberListScreen> {
   String _query = '';
   _Sort _sort = _Sort.nameAsc;
   int _statusFilter = 0; // 0 all, 1 active, 2 inactive
+  int _genderFilter = 0; // 0 all, 1 male, 2 female
 
   List<Member> _apply(List<Member> members) {
     var list = members.where((m) {
@@ -51,7 +52,10 @@ class _TarbiyaMemberListScreenState extends State<TarbiyaMemberListScreen> {
       final matchesStatus = _statusFilter == 0 ||
           (_statusFilter == 1 && m.isActive) ||
           (_statusFilter == 2 && !m.isActive);
-      return matchesQuery && matchesStatus;
+      final matchesGender = _genderFilter == 0 ||
+          (_genderFilter == 1 && m.gender == 'M') ||
+          (_genderFilter == 2 && m.gender == 'F');
+      return matchesQuery && matchesStatus && matchesGender;
     }).toList();
     list.sort((a, b) {
       switch (_sort) {
@@ -129,6 +133,8 @@ class _TarbiyaMemberListScreenState extends State<TarbiyaMemberListScreen> {
                     active: all.where((m) => m.isActive).length,
                     statusFilter: _statusFilter,
                     onStatus: (i) => setState(() => _statusFilter = i),
+                    genderFilter: _genderFilter,
+                    onGender: (i) => setState(() => _genderFilter = i),
                     sort: _sort,
                     onSort: (s) => setState(() => _sort = s),
                   ),
@@ -170,6 +176,8 @@ class _Toolbar extends StatelessWidget {
     required this.active,
     required this.statusFilter,
     required this.onStatus,
+    required this.genderFilter,
+    required this.onGender,
     required this.sort,
     required this.onSort,
   });
@@ -177,6 +185,8 @@ class _Toolbar extends StatelessWidget {
   final int active;
   final int statusFilter;
   final ValueChanged<int> onStatus;
+  final int genderFilter;
+  final ValueChanged<int> onGender;
   final _Sort sort;
   final ValueChanged<_Sort> onSort;
 
@@ -193,18 +203,42 @@ class _Toolbar extends StatelessWidget {
         const SizedBox(width: AppSpacing.sm),
         _Count(label: context.tr('Inactive', 'غير نشط'), value: total - active,
             color: AppColors.textFaint),
-        const Spacer(),
-        FilterBar(
-          options: [
-            context.tr('All', 'الكل'),
-            context.tr('Active', 'نشط'),
-            context.tr('Inactive', 'غير نشط'),
-          ],
-          selectedIndex: statusFilter,
-          onSelected: onStatus,
+        const SizedBox(width: AppSpacing.lg),
+        Expanded(
+          child: Wrap(
+            alignment: WrapAlignment.end,
+            spacing: AppSpacing.md,
+            runSpacing: AppSpacing.sm,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              FilterBar(
+                options: [
+                  context.tr('All', 'الكل'),
+                  context.tr('Male', 'ذكر'),
+                  context.tr('Female', 'أنثى'),
+                ],
+                selectedIndex: genderFilter,
+                onSelected: onGender,
+              ),
+              FilterBar(
+                options: [
+                  context.tr('All', 'الكل'),
+                  context.tr('Active', 'نشط'),
+                  context.tr('Inactive', 'غير نشط'),
+                ],
+                selectedIndex: statusFilter,
+                onSelected: onStatus,
+              ),
+              _sortButton(context, theme),
+            ],
+          ),
         ),
-        const SizedBox(width: AppSpacing.md),
-        PopupMenuButton<_Sort>(
+      ],
+    );
+  }
+
+  Widget _sortButton(BuildContext context, ThemeData theme) {
+    return PopupMenuButton<_Sort>(
           initialValue: sort,
           onSelected: onSort,
           child: Container(
@@ -235,9 +269,7 @@ class _Toolbar extends StatelessWidget {
                 value: _Sort.statusFirst,
                 child: Text(context.trRead('Active first', 'النشط أولاً'))),
           ],
-        ),
-      ],
-    );
+        );
   }
 }
 
