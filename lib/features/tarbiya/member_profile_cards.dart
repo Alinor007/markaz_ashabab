@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -6,12 +8,14 @@ import '../../core/data/app_database.dart';
 import '../../core/data/models.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/repositories/member_repository.dart';
+import '../../core/repositories/report_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/util/validators.dart';
 import '../../widgets/common/info_panel.dart';
 import '../../widgets/common/portrait_avatar.dart';
 import '../../widgets/common/search_field.dart';
+import '../reports/report_form_dialog.dart' show ProgramReport;
 import 'widgets/confirm_dialog.dart';
 
 // ════════════════════════════ shared helpers ════════════════════════════
@@ -158,43 +162,53 @@ class FamilyChildrenCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!single)
-            _KvRows([
-              (context.tr('Spouse Name', 'اسم الزوج/ة'), member.spouseName),
-              (context.tr('Date', 'التاريخ'), member.spouseDate),
-            ]),
           if (single)
             Text(context.tr('Single', 'أعزب'),
                 style: Theme.of(context).textTheme.bodyMedium),
-          // Wives (up to 4) — only shown when any are recorded.
-          StreamBuilder<List<MemberWife>>(
-            stream: repo.watchWives(member.id),
-            builder: (context, snap) {
-              final wives = snap.data ?? const [];
-              if (wives.isEmpty) return const SizedBox.shrink();
-              return Padding(
-                padding: const EdgeInsets.only(top: AppSpacing.md),
-                child: Column(
+          // Spouses (1 for a female, up to 4 for a male) — stored in the
+          // MemberWives table for all genders.
+          if (!single)
+            StreamBuilder<List<MemberWife>>(
+              stream: repo.watchWives(member.id),
+              builder: (context, snap) {
+                final spouses = snap.data ?? const <MemberWife>[];
+                // Back-compat: fall back to the legacy denormalized spouse for
+                // older records that predate the unified store.
+                final entries = spouses.isNotEmpty
+                    ? [
+                        for (final s in spouses)
+                          (s.name, s.marriageDate),
+                      ]
+                    : (member.spouseName.trim().isNotEmpty
+                        ? [(member.spouseName, member.spouseDate)]
+                        : const <(String, String)>[]);
+                final isMale = member.gender == 'M';
+                final heading = isMale
+                    ? context.tr('Spouse', 'الزوج/ة')
+                    : context.tr('Spouse', 'الزوج/ة');
+                if (entries.isEmpty) {
+                  return Text(
+                      context.tr('No spouse recorded', 'لا يوجد زوج/ة'),
+                      style: Theme.of(context).textTheme.bodySmall);
+                }
+                return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(context.tr('Wives', 'الزوجات'),
+                    Text(heading,
                         style: Theme.of(context).textTheme.titleSmall),
                     const SizedBox(height: AppSpacing.sm),
-                    for (final w in wives)
+                    for (final (name, date) in entries)
                       Padding(
                         padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                         child: Text(
-                          w.marriageDate.isEmpty
-                              ? w.name
-                              : '${w.name} — ${w.marriageDate}',
+                          date.isEmpty ? name : '$name — $date',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ),
                   ],
-                ),
-              );
-            },
-          ),
+                );
+              },
+            ),
           const SizedBox(height: AppSpacing.md),
           Text(context.tr('Children', 'الأبناء'),
               style: Theme.of(context).textTheme.titleSmall),
@@ -325,20 +339,45 @@ class NaqibUsraCard extends StatelessWidget {
           Text(context.tr('Naqib', 'النقيب'),
               style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: AppSpacing.sm),
+          // ── Navigatable Naqib ──────────────────────────────────────
           FutureBuilder<Member?>(
             future: member.naqibMemberId == null
                 ? Future.value(null)
                 : repo.getMember(member.naqibMemberId!),
             builder: (context, snap) {
               final naqib = snap.data;
-              return Text(
-                naqib == null
-                    ? context.tr('Not assigned', 'غير معيّن')
-                    : naqib.displayName(context.isArabic),
-                style: Theme.of(context).textTheme.bodyMedium,
+              if (naqib == null) {
+                return Text(
+                  context.tr('Not assigned', 'غير معيّن'),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                );
+              }
+              return InkWell(
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+                onTap: () => context.go('/tarbiya/member/${naqib.id}'),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 4, AppSpacing.md, 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      PortraitAvatar(
+                          initials: naqib.initials, size: 28, ring: false),
+                      const SizedBox(width: AppSpacing.sm),
+                      Text(
+                        naqib.displayName(context.isArabic),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.emerald,
+                              decoration: TextDecoration.underline,
+                              decorationColor: AppColors.emerald,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           ),
+          // ──────────────────────────────────────────────────────────
           const SizedBox(height: AppSpacing.md),
           Text(context.tr('Usra Members', 'أعضاء الأسرة'),
               style: Theme.of(context).textTheme.titleSmall),
@@ -859,6 +898,20 @@ class ActivityHistoryCard extends StatefulWidget {
   State<ActivityHistoryCard> createState() => _ActivityHistoryCardState();
 }
 
+/// A unified, sortable/searchable Activity History row: either a manually
+/// added [MemberActivity] or an auto-populated entry (see [_ParticipatedReportRow]).
+typedef _HistoryRow = ({String date, String search, Widget widget});
+
+/// If [report] is from a participant-tracked department (Da'wah, Human
+/// Capital) and lists [memberId] in its Participation Data, returns the
+/// decoded payload; otherwise null.
+ProgramReport? _participationOf(Report report, String memberId) {
+  if (report.formData.trim().isEmpty) return null;
+  final data =
+      ProgramReport.fromJson(jsonDecode(report.formData) as Map<String, dynamic>);
+  return data.participantIds.contains(memberId) ? data : null;
+}
+
 class _ActivityHistoryCardState extends State<ActivityHistoryCard> {
   String _query = '';
   int _page = 0;
@@ -867,92 +920,208 @@ class _ActivityHistoryCardState extends State<ActivityHistoryCard> {
   @override
   Widget build(BuildContext context) {
     final repo = context.read<MemberRepository>();
+    final reportRepo = context.read<ReportRepository>();
+    final isArabic = context.isArabic;
     return InfoPanel(
       icon: Icons.timeline_outlined,
       title: context.tr('Activity History', 'سجل الأنشطة'),
       child: StreamBuilder<List<MemberActivity>>(
         stream: repo.watchActivities(widget.member.id),
-        builder: (context, snap) {
-          final all = snap.data ?? const [];
-          final filtered = _query.isEmpty
-              ? all
-              : all
-                  .where((a) =>
-                      a.name.toLowerCase().contains(_query.toLowerCase()) ||
-                      a.type.toLowerCase().contains(_query.toLowerCase()))
-                  .toList();
-          final pages = (filtered.length / _pageSize).ceil().clamp(1, 9999);
-          if (_page >= pages) _page = pages - 1;
-          final start = _page * _pageSize;
-          final pageItems =
-              filtered.skip(start).take(_pageSize).toList();
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: SearchField(
-                      hint: context.tr('Search activities…', 'ابحث في الأنشطة…'),
-                      onChanged: (v) => setState(() {
-                        _query = v;
-                        _page = 0;
-                      }),
+        builder: (context, activitySnap) {
+          final manual = activitySnap.data ?? const <MemberActivity>[];
+          return StreamBuilder<List<Report>>(
+            stream: reportRepo.watchParticipantTrackedReports(),
+            builder: (context, reportSnap) {
+              final trackedReports = reportSnap.data ?? const <Report>[];
+
+              final rows = <_HistoryRow>[
+                for (final a in manual)
+                  (
+                    date: a.date,
+                    search: '${a.name} ${a.type}'.toLowerCase(),
+                    widget: _ActivityRow(
+                      activity: a,
+                      canManage: widget.canManage,
+                      onDelete: () async {
+                        final ok = await confirmDialog(context,
+                            title: context.trRead(
+                                'Delete activity?', 'حذف النشاط؟'),
+                            message: a.name);
+                        if (ok) await repo.deleteActivity(a.id);
+                      },
                     ),
                   ),
-                  if (widget.canManage) ...[
-                    const SizedBox(width: AppSpacing.sm),
-                    IconButton.filled(
-                      style: IconButton.styleFrom(
-                          backgroundColor: AppColors.emerald),
-                      icon: const Icon(Icons.add, size: 18),
-                      onPressed: () =>
-                          _showActivityDialog(context, repo, widget.member),
+              ];
+              // Auto-populated: reports where this member appears as a
+              // Da'wah / Human Capital participant — passive, no manual entry.
+              for (final r in trackedReports) {
+                final data = _participationOf(r, widget.member.id);
+                if (data == null) continue;
+                final title = data.programTitle.isEmpty ? r.title : data.programTitle;
+                rows.add((
+                  date: r.date,
+                  search: title.toLowerCase(),
+                  widget: _ParticipatedReportRow(
+                    title: title,
+                    departmentId: r.departmentId,
+                    date: r.date,
+                    isArabic: isArabic,
+                    onTap: () => context
+                        .push('/departments/${r.departmentId}/reports/${r.id}'),
+                  ),
+                ));
+              }
+              rows.sort((x, y) => y.date.compareTo(x.date));
+
+              final filtered = _query.isEmpty
+                  ? rows
+                  : rows
+                      .where((r) => r.search.contains(_query.toLowerCase()))
+                      .toList();
+              final pages = (filtered.length / _pageSize).ceil().clamp(1, 9999);
+              if (_page >= pages) _page = pages - 1;
+              final start = _page * _pageSize;
+              final pageItems = filtered.skip(start).take(_pageSize).toList();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SearchField(
+                          hint: context.tr(
+                              'Search activities…', 'ابحث في الأنشطة…'),
+                          onChanged: (v) => setState(() {
+                            _query = v;
+                            _page = 0;
+                          }),
+                        ),
+                      ),
+                      if (widget.canManage) ...[
+                        const SizedBox(width: AppSpacing.sm),
+                        IconButton.filled(
+                          style: IconButton.styleFrom(
+                              backgroundColor: AppColors.emerald),
+                          icon: const Icon(Icons.add, size: 18),
+                          onPressed: () =>
+                              _showActivityDialog(context, repo, widget.member),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  if (pageItems.isEmpty)
+                    Text(context.tr('No activities', 'لا توجد أنشطة'),
+                        style: Theme.of(context).textTheme.bodySmall)
+                  else
+                    for (final row in pageItems) row.widget,
+                  if (pages > 1) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.chevron_left),
+                          onPressed:
+                              _page > 0 ? () => setState(() => _page--) : null,
+                        ),
+                        Text('${_page + 1} / $pages',
+                            style: Theme.of(context).textTheme.bodySmall),
+                        IconButton(
+                          icon: const Icon(Icons.chevron_right),
+                          onPressed: _page < pages - 1
+                              ? () => setState(() => _page++)
+                              : null,
+                        ),
+                      ],
                     ),
                   ],
                 ],
-              ),
-              const SizedBox(height: AppSpacing.md),
-              if (pageItems.isEmpty)
-                Text(context.tr('No activities', 'لا توجد أنشطة'),
-                    style: Theme.of(context).textTheme.bodySmall)
-              else
-                for (final a in pageItems)
-                  _ActivityRow(
-                    activity: a,
-                    canManage: widget.canManage,
-                    onDelete: () async {
-                      final ok = await confirmDialog(context,
-                          title:
-                              context.trRead('Delete activity?', 'حذف النشاط؟'),
-                          message: a.name);
-                      if (ok) await repo.deleteActivity(a.id);
-                    },
-                  ),
-              if (pages > 1) ...[
-                const SizedBox(height: AppSpacing.sm),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.chevron_left),
-                      onPressed:
-                          _page > 0 ? () => setState(() => _page--) : null,
-                    ),
-                    Text('${_page + 1} / $pages',
-                        style: Theme.of(context).textTheme.bodySmall),
-                    IconButton(
-                      icon: const Icon(Icons.chevron_right),
-                      onPressed: _page < pages - 1
-                          ? () => setState(() => _page++)
-                          : null,
-                    ),
-                  ],
-                ),
-              ],
-            ],
+              );
+            },
           );
         },
+      ),
+    );
+  }
+}
+
+/// An auto-populated Activity History row for a Da'wah / Human Capital report
+/// this member participated in — passive (no manual entry, not deletable
+/// here) and tappable to the report's Department Report View Screen.
+class _ParticipatedReportRow extends StatelessWidget {
+  const _ParticipatedReportRow({
+    required this.title,
+    required this.departmentId,
+    required this.date,
+    required this.isArabic,
+    required this.onTap,
+  });
+  final String title;
+  final String departmentId;
+  final String date;
+  final bool isArabic;
+  final VoidCallback onTap;
+
+  /// A short label for the two participant-tracking departments — avoids a
+  /// repository round-trip just to show a subtitle.
+  (String, String) get _deptLabel => switch (departmentId) {
+        'dawah' => ('Da‘wah', 'الدعوة'),
+        'human_capital' => (
+            'Human Capital (Tarbiya)',
+            'رأس المال البشري (التربية)'
+          ),
+        _ => (departmentId, departmentId),
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final (en, ar) = _deptLabel;
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppRadius.sm),
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 30,
+              height: 30,
+              margin: const EdgeInsets.only(top: 1),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.emeraldTint,
+                borderRadius: BorderRadius.circular(AppRadius.sm),
+              ),
+              child: const Icon(Icons.description_outlined,
+                  size: 16, color: AppColors.emerald),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: AppColors.emerald,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.emerald,
+                        ),
+                  ),
+                  Text(
+                    [isArabic ? ar : en, date]
+                        .where((s) => s.isNotEmpty)
+                        .join(' · '),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, size: 18, color: AppColors.textFaint),
+          ],
+        ),
       ),
     );
   }

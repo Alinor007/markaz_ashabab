@@ -9,6 +9,8 @@ import '../theme/app_colors.dart';
 enum UserRole {
   administrator('administrator', 'Administrator', 'مدير النظام', AppColors.emerald),
   president('president', 'President', 'الرئيس', AppColors.navy),
+  vicePresident(
+      'vice_president', 'Vice President', 'نائب الرئيس', AppColors.info),
   secretaryGeneral(
       'secretary_general', 'Secretary General', 'الأمين العام', AppColors.goldDeep),
   treasurer('treasurer', 'Treasurer', 'أمين الصندوق', AppColors.emeraldDark),
@@ -30,6 +32,7 @@ enum UserRole {
   bool get isExecutive =>
       this == administrator ||
       this == president ||
+      this == vicePresident ||
       this == secretaryGeneral ||
       this == treasurer;
 
@@ -104,4 +107,7 @@ class Permissions {
   // Gallery uploads are open to every signed-in role (deleting a photo still
   // requires [manageContent]).
   bool get uploadGallery => true;
+
+  // The global search bar is hidden from department heads.
+  bool get globalSearch => role != UserRole.departmentHead;
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/data/app_database.dart';
 import '../../core/data/models.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/patterns/geometric_pattern.dart';
+import '../../core/repositories/department_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_typography.dart';
@@ -144,15 +146,24 @@ class DepartmentCard extends StatelessWidget {
                             size: 16, color: AppColors.emerald),
                         const SizedBox(width: AppSpacing.xs),
                         Expanded(
-                          child: Text(
-                            department.headName.isEmpty
-                                ? context.tr('No head assigned', 'بدون رئيس')
-                                : (isArabic && department.headNameAr.isNotEmpty
-                                    ? department.headNameAr
-                                    : department.headName),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall,
+                          // Read the assigned Head member (same source as the
+                          // Department Detail screen) so both stay in sync.
+                          child: StreamBuilder<Member?>(
+                            stream: context
+                                .read<DepartmentRepository>()
+                                .watchHead(department.id),
+                            builder: (context, snap) {
+                              final head = snap.data;
+                              return Text(
+                                head == null
+                                    ? context.tr(
+                                        'No head assigned', 'بدون رئيس')
+                                    : head.displayName(isArabic),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.bodySmall,
+                              );
+                            },
                           ),
                         ),
                         Icon(

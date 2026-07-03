@@ -1,30 +1,8 @@
-import 'package:flutter/material.dart';
-
-import '../theme/app_colors.dart';
-
-/// Institutional history content (the organization's actual milestones and
-/// founding statement) — fixed app content, not sample data.
-
-/// A milestone in the organization's history.
-class Milestone {
-  const Milestone({
-    required this.year,
-    required this.title,
-    required this.titleAr,
-    required this.description,
-    required this.descriptionAr,
-    required this.icon,
-    required this.color,
-  });
-
-  final String year;
-  final String title;
-  final String titleAr;
-  final String description;
-  final String descriptionAr;
-  final IconData icon;
-  final Color color;
-}
+/// Default institutional history content used to **seed** the editable History
+/// page on first launch / upgrade. After seeding, the live content lives in the
+/// database (`history_contents`, `history_milestones`) and is editable by
+/// executives — these constants are only the starting point.
+library;
 
 /// A bilingual paragraph of narrative text.
 typedef Bilingual = ({String en, String ar});
@@ -32,7 +10,7 @@ typedef Bilingual = ({String en, String ar});
 /// Founding statement shown on the History hero (a concise lead).
 const String kFoundingEn =
     'Founded in 1978 by young Filipino Muslim students abroad and formally '
-    'registered in 1983, Markaz As-Shabab Al-Muslim has grown into one of the '
+    'registered in 1983, Markazosshabab Al-Muslim Fil-Filibbin Foundation, Inc. has grown into one of the '
     'largest Islamic youth organizations in the Philippines, with 64 branches '
     'nationwide.';
 
@@ -74,7 +52,7 @@ const List<Bilingual> kHistoryNarrative = [
     en: 'Five years later, in 1983, after more Filipino students returned home '
         'from Middle Eastern universities, the group was formally reorganized '
         'and registered with the Securities and Exchange Commission in Manila '
-        'under its present name: Markazosshabab Al-Muslim Fil-Filibbin '
+        'under its present name: Markazosshabab Al-Muslim Fil-Filibbin Foundation, Inc. '
         '(Philippine Muslim Youth Center).',
     ar: 'وبعد خمس سنوات، في عام ١٩٨٣م، وعقب عودة المزيد من الطلاب الفلبينيين من '
         'جامعات الشرق الأوسط، أُعيد تنظيم الجماعة رسميًا وسُجِّلت لدى هيئة '
@@ -109,8 +87,41 @@ const Bilingual kVision = (
       'وتنمية المجتمع.',
 );
 
-const List<Milestone> kMilestones = [
-  Milestone(
+/// A seed stat card for the History hero (value + bilingual label + icon/accent).
+typedef FactSeed = ({
+  String value,
+  String en,
+  String ar,
+  String iconKey,
+  int accent,
+});
+
+/// Default stat cards.
+const List<FactSeed> kDefaultFacts = [
+  (value: '1978', en: 'Founded', ar: 'التأسيس', iconKey: 'flag', accent: 0xFF0B5D3B),
+  (value: '64', en: 'Branches', ar: 'الفروع', iconKey: 'group', accent: 0xFF16243D),
+  (
+    value: '40+',
+    en: 'Years of Service',
+    ar: 'عامًا من الخدمة',
+    iconKey: 'star',
+    accent: 0xFFA8862F
+  ),
+];
+
+/// A seed milestone (timeline entry) in DB-friendly form (icon key + accent int).
+typedef MilestoneSeed = ({
+  String year,
+  String title,
+  String titleAr,
+  String description,
+  String descriptionAr,
+  String iconKey,
+  int accent,
+});
+
+const List<MilestoneSeed> kDefaultMilestones = [
+  (
     year: '1978',
     title: 'Founding Abroad',
     titleAr: 'النشأة في المهجر',
@@ -120,23 +131,23 @@ const List<Milestone> kMilestones = [
     descriptionAr:
         'طلابٌ مسلمون فلبينيون في الكويت، بقيادة المرحوم محمد قاسم تاروسان، '
         'يؤسسون جماعةً عُرفت باسم «شباب المسلم».',
-    icon: Icons.public_outlined,
-    color: AppColors.emerald,
+    iconKey: 'mosque',
+    accent: 0xFF0B5D3B,
   ),
-  Milestone(
+  (
     year: '1983',
     title: 'Formal Registration',
     titleAr: 'التسجيل الرسمي',
     description:
         'Reorganized as returning students come home, and registered with the '
-        'SEC in Manila as Markazosshabab Al-Muslim Fil-Filibbin.',
+        'SEC in Manila as Markazosshabab Al-Muslim Fil-Filibbin Foundation, Inc.',
     descriptionAr:
         'إعادة التنظيم مع عودة الطلاب، والتسجيل لدى هيئة الأوراق المالية في '
         'مانيلا باسم مركز الشباب المسلم في الفلبين.',
-    icon: Icons.verified_outlined,
-    color: AppColors.navy,
+    iconKey: 'flag',
+    accent: 0xFF16243D,
   ),
-  Milestone(
+  (
     year: 'Today',
     title: 'A Nationwide Brotherhood',
     titleAr: 'أخوّةٌ على امتداد الوطن',
@@ -146,7 +157,7 @@ const List<Milestone> kMilestones = [
     descriptionAr:
         'نمت لتصبح من أكبر المنظمات الإسلامية غير الربحية في الفلبين، ولها '
         'أربعة وستون فرعًا في أنحاء البلاد.',
-    icon: Icons.hub_outlined,
-    color: AppColors.goldDeep,
+    iconKey: 'group',
+    accent: 0xFFA8862F,
   ),
 ];

@@ -86,23 +86,27 @@ class _GalleryScreenState extends State<GalleryScreen> {
           final years = (all.map((p) => p.year).where((y) => y > 0).toSet()
                 .toList()
                 ..sort((a, b) => b - a));
-          final filtered = _yearFilter == null
+          // No "All Years" option — a specific year is always selected,
+          // defaulting to the most recent one.
+          final effectiveYear = years.isEmpty
+              ? null
+              : (_yearFilter != null && years.contains(_yearFilter)
+                  ? _yearFilter
+                  : years.first);
+          final filtered = effectiveYear == null
               ? all
-              : all.where((p) => p.year == _yearFilter).toList();
+              : all.where((p) => p.year == effectiveYear).toList();
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              FilterBar(
-                options: [
-                  context.tr('All Years', 'كل السنوات'),
-                  for (final y in years) '$y',
-                ],
-                selectedIndex:
-                    _yearFilter == null ? 0 : years.indexOf(_yearFilter!) + 1,
-                onSelected: (i) => setState(
-                    () => _yearFilter = i == 0 ? null : years[i - 1]),
-              ),
-              const SizedBox(height: AppSpacing.lg),
+              if (years.isNotEmpty) ...[
+                FilterBar(
+                  options: [for (final y in years) '$y'],
+                  selectedIndex: years.indexOf(effectiveYear!),
+                  onSelected: (i) => setState(() => _yearFilter = years[i]),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+              ],
               Expanded(
                 child: SingleChildScrollView(
                   child: _Masonry(

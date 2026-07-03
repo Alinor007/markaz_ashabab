@@ -14,18 +14,12 @@ class DepartmentFormResult {
     required this.nameAr,
     required this.description,
     required this.descriptionAr,
-    required this.headName,
-    required this.contactEmail,
-    required this.contactPhone,
     required this.iconKey,
   });
   final String name;
   final String nameAr;
   final String description;
   final String descriptionAr;
-  final String headName;
-  final String contactEmail;
-  final String contactPhone;
   final String iconKey;
 }
 
@@ -56,17 +50,11 @@ class _DepartmentFormDialogState extends State<_DepartmentFormDialog> {
       TextEditingController(text: widget.existing?.description ?? '');
   late final _descAr =
       TextEditingController(text: widget.existing?.descriptionAr ?? '');
-  late final _head =
-      TextEditingController(text: widget.existing?.headName ?? '');
-  late final _email =
-      TextEditingController(text: widget.existing?.contactEmail ?? '');
-  late final _phone =
-      TextEditingController(text: widget.existing?.contactPhone ?? '');
   late String _iconKey = widget.existing?.iconKey ?? 'group';
 
   @override
   void dispose() {
-    for (final c in [_name, _nameAr, _desc, _descAr, _head, _email, _phone]) {
+    for (final c in [_name, _nameAr, _desc, _descAr]) {
       c.dispose();
     }
     super.dispose();
@@ -118,32 +106,6 @@ class _DepartmentFormDialogState extends State<_DepartmentFormDialog> {
                   decoration: InputDecoration(
                       labelText:
                           context.tr('Description (Arabic)', 'الوصف بالعربية')),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextFormField(
-                  controller: _head,
-                  decoration: InputDecoration(
-                      labelText: context.tr('Department Head', 'رئيس القسم')),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _email,
-                        decoration: InputDecoration(
-                            labelText: context.tr('Email', 'البريد')),
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _phone,
-                        decoration: InputDecoration(
-                            labelText: context.tr('Phone', 'الهاتف')),
-                      ),
-                    ),
-                  ],
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Align(
@@ -202,9 +164,6 @@ class _DepartmentFormDialogState extends State<_DepartmentFormDialog> {
                 nameAr: _nameAr.text.trim(),
                 description: _desc.text.trim(),
                 descriptionAr: _descAr.text.trim(),
-                headName: _head.text.trim(),
-                contactEmail: _email.text.trim(),
-                contactPhone: _phone.text.trim(),
                 iconKey: _iconKey,
               ),
             );
@@ -223,9 +182,6 @@ DepartmentsCompanion departmentUpdateCompanion(DepartmentFormResult r) {
     nameAr: Value(r.nameAr.isEmpty ? r.name : r.nameAr),
     description: Value(r.description),
     descriptionAr: Value(r.descriptionAr),
-    headName: Value(r.headName),
-    contactEmail: Value(r.contactEmail),
-    contactPhone: Value(r.contactPhone),
     iconKey: Value(r.iconKey),
   );
 }

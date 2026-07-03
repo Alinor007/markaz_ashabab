@@ -50,7 +50,6 @@ class MinutesReportRepository {
     required String title,
     required int year,
     required String type,
-    required String content,
     required List<String> imagePaths,
   }) {
     return (_db.update(_db.minutesReports)..where((r) => r.id.equals(id))).write(
@@ -58,7 +57,6 @@ class MinutesReportRepository {
         title: Value(title),
         year: Value(year),
         type: Value(type),
-        content: Value(content),
         imagePaths: Value(jsonEncode(imagePaths)),
       ),
     );

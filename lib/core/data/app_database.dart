@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:drift/drift.dart';
@@ -7,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../auth/password_hasher.dart';
 import '../auth/roles.dart';
+import '../content/history_content.dart';
 
 part 'app_database.g.dart';
 
@@ -225,7 +227,7 @@ class MemberUsraLinks extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-/// stage: elementary | highschool | college | postgraduate
+/// stage: elementary | junior_high | senior_high | vocational | college
 @TableIndex(name: 'idx_member_education_member', columns: {#memberId})
 class MemberEducation extends Table {
   TextColumn get id => text()();
@@ -440,6 +442,11 @@ class GalleryPhotos extends Table {
   /// JSON array of all stored image paths in this entry's album.
   TextColumn get imagePaths => text().withDefault(const Constant(''))();
   IntColumn get heightHint => integer().withDefault(const Constant(220))();
+
+  /// Optional owning Program Completion Report (Form P-2). When set, this album
+  /// holds the report's uploaded photos and is removed with the report.
+  TextColumn get reportId =>
+      text().nullable().references(Reports, #id, onDelete: KeyAction.cascade)();
   DateTimeColumn get createdAt =>
       dateTime().withDefault(currentDateAndTime)();
 
@@ -480,6 +487,87 @@ class MinutesReports extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Singleton editable content for the History page (founding statement,
+/// mission, vision, the "Our Story" narrative, and the stat cards). Exactly one
+/// row, keyed `history`. Narrative and facts are stored as JSON arrays.
+class HistoryContents extends Table {
+  TextColumn get id => text().withDefault(const Constant('history'))();
+  TextColumn get foundingEn => text().withDefault(const Constant(''))();
+  TextColumn get foundingAr => text().withDefault(const Constant(''))();
+  TextColumn get missionEn => text().withDefault(const Constant(''))();
+  TextColumn get missionAr => text().withDefault(const Constant(''))();
+  TextColumn get visionEn => text().withDefault(const Constant(''))();
+  TextColumn get visionAr => text().withDefault(const Constant(''))();
+
+  /// JSON array of `{"en":..,"ar":..}` story paragraphs.
+  TextColumn get narrative => text().withDefault(const Constant('[]'))();
+
+  /// JSON array of `{"value":..,"en":..,"ar":..,"iconKey":..,"accent":int}`.
+  TextColumn get facts => text().withDefault(const Constant('[]'))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Editable history milestones (the timeline). Add / edit / delete.
+@DataClassName('HistoryMilestone')
+@TableIndex(name: 'idx_history_milestones_sort', columns: {#sortOrder})
+class HistoryMilestones extends Table {
+  TextColumn get id => text()();
+  TextColumn get year => text().withDefault(const Constant(''))();
+  TextColumn get title => text().withDefault(const Constant(''))();
+  TextColumn get titleAr => text().withDefault(const Constant(''))();
+  TextColumn get description => text().withDefault(const Constant(''))();
+  TextColumn get descriptionAr => text().withDefault(const Constant(''))();
+  TextColumn get iconKey => text().withDefault(const Constant('flag'))();
+  IntColumn get accent => integer().withDefault(const Constant(0xFF0B5D3B))();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+  DateTimeColumn get createdAt =>
+      dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Former leadership office-holders, each linked to an existing member.
+@DataClassName('PreviousLeader')
+@TableIndex(name: 'idx_previous_leaders_sort', columns: {#sortOrder})
+class PreviousLeaders extends Table {
+  TextColumn get id => text()();
+  TextColumn get memberId =>
+      text().references(Members, #id, onDelete: KeyAction.cascade)();
+  TextColumn get position => text().withDefault(const Constant(''))();
+  TextColumn get positionAr => text().withDefault(const Constant(''))();
+  TextColumn get termYears => text().withDefault(const Constant(''))();
+  TextColumn get note => text().withDefault(const Constant(''))();
+  TextColumn get noteAr => text().withDefault(const Constant(''))();
+  IntColumn get accent => integer().withDefault(const Constant(0xFF16243D))();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+  DateTimeColumn get createdAt =>
+      dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Repeatable biography sections (e.g. "Early Life", "Achievements") attached
+/// to a former leadership office-holder.
+@DataClassName('PreviousLeaderSection')
+@TableIndex(name: 'idx_previous_leader_sections_leader', columns: {#previousLeaderId})
+class PreviousLeaderSections extends Table {
+  TextColumn get id => text()();
+  TextColumn get previousLeaderId =>
+      text().references(PreviousLeaders, #id, onDelete: KeyAction.cascade)();
+  TextColumn get title => text().withDefault(const Constant(''))();
+  TextColumn get titleAr => text().withDefault(const Constant(''))();
+  TextColumn get body => text().withDefault(const Constant(''))();
+  TextColumn get bodyAr => text().withDefault(const Constant(''))();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 @DriftDatabase(tables: [
   Users,
   Leaders,
@@ -503,6 +591,10 @@ class MinutesReports extends Table {
   GalleryPhotos,
   MinutesReports,
   LeadershipGroupInfo,
+  HistoryContents,
+  HistoryMilestones,
+  PreviousLeaders,
+  PreviousLeaderSections,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openOnDevice());
@@ -511,7 +603,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.memory() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 18;
+  int get schemaVersion => 22;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -523,6 +615,7 @@ class AppDatabase extends _$AppDatabase {
           await _seedDefaultAccounts();
           await _seedLeadershipPositions();
           await _seedLeadershipGroupInfo();
+          await _seedHistory();
         },
         beforeOpen: (details) async {
           // Foreign keys are off by default in SQLite and must be enabled per
@@ -631,6 +724,33 @@ class AppDatabase extends _$AppDatabase {
                 "('pos_vice_president','pos_secretary_general','pos_treasurer') "
                 "AND member_id IS NULL");
           }
+          if (from < 19) {
+            // Gallery albums can now belong to a Program Completion Report
+            // (P-2), and the Human Capital (Tarbiya) department is added.
+            await m.addColumn(galleryPhotos, galleryPhotos.reportId);
+            await _seedDepartments();
+            await _backfillDepartmentContent();
+            await _seedDefaultAccounts();
+          }
+          if (from < 20) {
+            // The History page becomes editable (content + milestones), and a
+            // Previous Leadership registry is added.
+            await m.createTable(historyContents);
+            await m.createTable(historyMilestones);
+            await m.createTable(previousLeaders);
+            await _seedHistory();
+          }
+          if (from < 21) {
+            // Biography sections (repeatable title + body, bilingual) added
+            // to Previous Leadership entries in schema v21.
+            await m.createTable(previousLeaderSections);
+          }
+          if (from < 22) {
+            // A Vice President executive account is added to the default
+            // seed in schema v22 (insertOrIgnore, so existing accounts are
+            // untouched).
+            await _seedDefaultAccounts();
+          }
         },
       );
 
@@ -699,7 +819,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Creates the default Administrator account on first launch so the system
   /// can be accessed before any data exists. Username `admin`, password
-  /// `admin123` (change immediately in production).
+  /// `Admin@markazosshabab` (change immediately in production).
   Future<void> _seedAdministrator() async {
     await into(users).insert(
       UsersCompanion.insert(
@@ -708,7 +828,7 @@ class AppDatabase extends _$AppDatabase {
         fullNameAr: 'مدير النظام',
         username: 'admin',
         email: const Value('admin@markaz.org'),
-        passwordHash: PasswordHasher.hash('admin123'),
+        passwordHash: PasswordHasher.hash('Admin@markazosshabab'),
         roleCode: UserRole.administrator.code,
       ),
     );
@@ -767,6 +887,8 @@ class AppDatabase extends _$AppDatabase {
     // Executive accounts (no department link).
     const executives = [
       ('president', 'president', 'President', 'الرئيس', 'president'),
+      ('vice_president', 'vicepresident', 'Vice President', 'نائب الرئيس',
+          'vice_president'),
       ('secretary_general', 'secretary', 'Secretary General', 'الأمين العام',
           'secretary_general'),
       ('treasurer', 'treasurer', 'Treasurer', 'أمين الصندوق', 'treasurer'),
@@ -805,6 +927,9 @@ class AppDatabase extends _$AppDatabase {
           'رئيس قسم السياسة', 'politics'),
       ('head_women', 'head.women', 'Head of Women Affairs',
           'رئيس قسم شؤون المرأة', 'women'),
+      ('head_human_capital', 'head.human_capital',
+          'Head of Human Capital (Tarbiya)',
+          'رئيس قسم رأس المال البشري (التربية)', 'human_capital'),
     ];
     for (final (id, username, name, nameAr, deptId) in heads) {
       await into(users).insert(
@@ -861,7 +986,7 @@ class AppDatabase extends _$AppDatabase {
     const seed = [
       (
         'office_president',
-        'The executive leadership of Markaz As-Shabab. It sets the '
+        'The executive leadership of Markazosshabab. It sets the '
             'organization’s direction, oversees all departments and '
             'committees, represents the organization externally, and ensures '
             'its programs serve the mission.',
@@ -908,6 +1033,57 @@ class AppDatabase extends _$AppDatabase {
         ),
         mode: InsertMode.insertOrIgnore,
       );
+    }
+  }
+
+  /// Seeds the editable History page from the bundled defaults: the singleton
+  /// content row plus the milestones timeline. insertOrIgnore keeps any admin
+  /// edits on re-run, and milestones are only seeded when the table is empty.
+  Future<void> _seedHistory() async {
+    await into(historyContents).insert(
+      HistoryContentsCompanion.insert(
+        id: const Value('history'),
+        foundingEn: const Value(kFoundingEn),
+        foundingAr: const Value(kFoundingAr),
+        missionEn: Value(kMission.en),
+        missionAr: Value(kMission.ar),
+        visionEn: Value(kVision.en),
+        visionAr: Value(kVision.ar),
+        narrative: Value(jsonEncode([
+          for (final p in kHistoryNarrative) {'en': p.en, 'ar': p.ar}
+        ])),
+        facts: Value(jsonEncode([
+          for (final f in kDefaultFacts)
+            {
+              'value': f.value,
+              'en': f.en,
+              'ar': f.ar,
+              'iconKey': f.iconKey,
+              'accent': f.accent,
+            }
+        ])),
+      ),
+      mode: InsertMode.insertOrIgnore,
+    );
+
+    final existing = await select(historyMilestones).get();
+    if (existing.isEmpty) {
+      for (var i = 0; i < kDefaultMilestones.length; i++) {
+        final m = kDefaultMilestones[i];
+        await into(historyMilestones).insert(
+          HistoryMilestonesCompanion.insert(
+            id: 'milestone_$i',
+            year: Value(m.year),
+            title: Value(m.title),
+            titleAr: Value(m.titleAr),
+            description: Value(m.description),
+            descriptionAr: Value(m.descriptionAr),
+            iconKey: Value(m.iconKey),
+            accent: Value(m.accent),
+            sortOrder: Value(i),
+          ),
+        );
+      }
     }
   }
 
@@ -1112,5 +1288,19 @@ const _departmentSeed = <({
         "community workers.",
     descriptionAr:
         'إيمانًا بأن المرأة المسلمة الفلبينية ركيزةٌ أساسية لا غنى عنها في المجتمع، يسعى هذا القسم إلى تمكين المرأة بوصفها شريكًا أساسيًّا للرجل في جميع ميادين العمل، بما في ذلك صنع القرار والتخطيط والتنفيذ. وبفضل هذا الدعم المؤسّسي والتمكين، تبوّأت المنتسبات إليه أدوارًا حيوية داعياتٍ ومعلّماتٍ ومتطوّعاتٍ وعاملاتٍ في الصفوف الأمامية لخدمة المجتمع.',
+  ),
+  (
+    id: 'human_capital',
+    name: 'Human Capital (Tarbiya)',
+    nameAr: 'رأس المال البشري (التربية)',
+    icon: 'group',
+    accent: 0xFF16243D,
+    description:
+        "The Human Capital (Tarbiya) Department develops the organization's "
+        "people — its members and volunteers — through structured nurturing, "
+        "mentoring, and capacity-building so that every individual grows in "
+        "faith, character, and competence to serve the mission.",
+    descriptionAr:
+        'يُعنى قسم رأس المال البشري (التربية) بتنمية كوادر المنظمة من أعضاء ومتطوّعين عبر التنشئة المنظّمة والتوجيه وبناء القدرات، بحيث ينمو كل فردٍ في إيمانه وخُلُقه وكفاءته لخدمة الرسالة.',
   ),
 ];

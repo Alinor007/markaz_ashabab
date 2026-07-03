@@ -74,12 +74,6 @@ const List<NavItem> kPrimaryNav = [
     labelBuilder: _members,
     requiresExecutive: true,
   ),
-  NavItem(
-    route: '/settings',
-    icon: Icons.settings_outlined,
-    activeIcon: Icons.settings,
-    labelBuilder: _settings,
-  ),
 ];
 
 /// Administrator-only navigation.
@@ -96,6 +90,13 @@ const List<NavItem> kAdminNav = [
     icon: Icons.fact_check_outlined,
     activeIcon: Icons.fact_check,
     labelBuilder: _auditLogs,
+    adminOnly: true,
+  ),
+  NavItem(
+    route: '/settings',
+    icon: Icons.settings_outlined,
+    activeIcon: Icons.settings,
+    labelBuilder: _settings,
     adminOnly: true,
   ),
 ];

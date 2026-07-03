@@ -1,7 +1,23 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(taskkill /F /IM qemu-system-x86_64.exe 2>$null | Out-Null; taskkill /F /IM emulator.exe 2>$null | Out-Null; Start-Sleep -Seconds 4; Get-Process -Name \"qemu-system-x86_64\",\"emulator\" -ErrorAction SilentlyContinue | Select-Object Name,Id; Write-Output \"=== launching cold-boot Medium_Tablet \\(background\\) ===\"; $env:ANDROID_HOME=\"C:\\\\Android\\\\Sdk\"; $env:ANDROID_SDK_ROOT=\"C:\\\\Android\\\\Sdk\"; Start-Process -FilePath \"C:\\\\Android\\\\Sdk\\\\emulator\\\\emulator.exe\" -ArgumentList \"-avd\",\"Medium_Tablet\",\"-no-snapshot-load\",\"-no-boot-anim\",\"-gpu\",\"auto\" -RedirectStandardOutput \"C:\\\\Users\\\\User\\(Ooz\\)\\\\AppData\\\\Local\\\\Temp\\\\emu_out.log\" -RedirectStandardError \"C:\\\\Users\\\\User\\(Ooz\\)\\\\AppData\\\\Local\\\\Temp\\\\emu_err.log\" -WindowStyle Minimized; Write-Output \"launched; waiting 10s\"; Start-Sleep -Seconds 10; Write-Output \"=== emu_err \\(tail\\) ===\"; if \\(Test-Path \"C:\\\\Users\\\\User\\(Ooz\\)\\\\AppData\\\\Local\\\\Temp\\\\emu_err.log\"\\) { Get-Content \"C:\\\\Users\\\\User\\(Ooz\\)\\\\AppData\\\\Local\\\\Temp\\\\emu_err.log\" -Tail 20 })"
+      "PowerShell(taskkill /F /IM qemu-system-x86_64.exe 2>$null | Out-Null; taskkill /F /IM emulator.exe 2>$null | Out-Null; Start-Sleep -Seconds 4; Get-Process -Name \"qemu-system-x86_64\",\"emulator\" -ErrorAction SilentlyContinue | Select-Object Name,Id; Write-Output \"=== launching cold-boot Medium_Tablet \\(background\\) ===\"; $env:ANDROID_HOME=\"C:\\\\Android\\\\Sdk\"; $env:ANDROID_SDK_ROOT=\"C:\\\\Android\\\\Sdk\"; Start-Process -FilePath \"C:\\\\Android\\\\Sdk\\\\emulator\\\\emulator.exe\" -ArgumentList \"-avd\",\"Medium_Tablet\",\"-no-snapshot-load\",\"-no-boot-anim\",\"-gpu\",\"auto\" -RedirectStandardOutput \"C:\\\\Users\\\\User\\(Ooz\\)\\\\AppData\\\\Local\\\\Temp\\\\emu_out.log\" -RedirectStandardError \"C:\\\\Users\\\\User\\(Ooz\\)\\\\AppData\\\\Local\\\\Temp\\\\emu_err.log\" -WindowStyle Minimized; Write-Output \"launched; waiting 10s\"; Start-Sleep -Seconds 10; Write-Output \"=== emu_err \\(tail\\) ===\"; if \\(Test-Path \"C:\\\\Users\\\\User\\(Ooz\\)\\\\AppData\\\\Local\\\\Temp\\\\emu_err.log\"\\) { Get-Content \"C:\\\\Users\\\\User\\(Ooz\\)\\\\AppData\\\\Local\\\\Temp\\\\emu_err.log\" -Tail 20 })",
+      "Bash(rm -f test/_probe.dart)",
+      "Bash(timeout 240 flutter test)",
+      "Bash(dir /B)",
+      "Bash(dart run *)",
+      "Bash(flutter test *)",
+      "Bash(grep -vE \"^00:|^\\\\s*$\")",
+      "Bash(cd \"C:\\\\Users\\\\User\\(Ooz\\)\\\\Desktop\\\\Project Folder\\\\Mobile\\\\Markaz As-shabab\\\\markaz_ashabab\" && flutter test --plain-name \"department head member + staff assignment\" > /tmp/staff_test.log 2>&1; grep -nE \"Expected|Actual|Exception|Error|SqliteException|constraint|line [0-9]+\" /tmp/staff_test.log | head -25)",
+      "Bash(git rm *)",
+      "Bash(flutter analyze *)",
+      "Read(//c/Users/User\\(Ooz\\)/.claude/skills/frontend-design/**)",
+      "Read(//c/Users/User\\(Ooz\\)/.claude/plugins/**)",
+      "Bash(xargs grep -l \"P-1\\\\|P-2\\\\|Program Proposal\\\\|Program Completion\")",
+      "Bash(xargs grep -l \"Program Proposal\\\\|Form P-1\\\\|formData\")",
+      "Bash(cp \"C:/Users/User\\(Ooz\\)/Downloads/files \\(2\\)/Logo/logo.jpg\" \"C:/Users/User\\(Ooz\\)/Desktop/Project Folder/Mobile/Markaz As-shabab/markaz_ashabab/assets/images/logo.png\")",
+      "PowerShell(flutter analyze 2>&1)",
+      "PowerShell(flutter test 2>&1)"
     ]
   }
 }

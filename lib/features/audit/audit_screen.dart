@@ -7,14 +7,34 @@ import '../../core/repositories/audit_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../widgets/cards/timeline_item.dart';
+import '../../widgets/feedback/app_snackbar.dart';
 import '../../widgets/feedback/empty_state.dart';
 import '../../widgets/feedback/error_state.dart';
 import '../../widgets/feedback/loading_state.dart';
 import '../../widgets/layout/module_page.dart';
+import '../tarbiya/widgets/confirm_dialog.dart';
 
 /// Admin Audit Logs: a live, database-backed timeline of user actions.
 class AuditScreen extends StatelessWidget {
   const AuditScreen({super.key});
+
+  Future<void> _clear(BuildContext context) async {
+    final repo = context.read<AuditRepository>();
+    final ok = await confirmDialog(
+      context,
+      title: context.trRead('Clear audit log?', 'مسح سجل التدقيق؟'),
+      message: context.trRead(
+          'This permanently deletes all audit log entries and cannot be undone.',
+          'سيؤدي هذا إلى حذف جميع إدخالات السجل نهائيًا ولا يمكن التراجع.'),
+    );
+    if (!ok || !context.mounted) return;
+    await repo.clearAll();
+    if (context.mounted) {
+      showAppSnackBar(
+          context, context.trRead('Audit log cleared.', 'تم مسح السجل.'),
+          tone: SnackTone.info);
+    }
+  }
 
   IconData _iconFor(String module) {
     switch (module) {
@@ -55,6 +75,17 @@ class AuditScreen extends StatelessWidget {
     return ModulePage(
       english: 'Audit Logs',
       arabic: 'سجلات التدقيق',
+      actions: [
+        OutlinedButton.icon(
+          onPressed: () => _clear(context),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.error,
+            side: const BorderSide(color: AppColors.error),
+          ),
+          icon: const Icon(Icons.delete_sweep_outlined, size: 18),
+          label: Text(context.tr('Clear Log', 'مسح السجل')),
+        ),
+      ],
       child: StreamBuilder<List<AuditLog>>(
         stream: context.read<AuditRepository>().watchAll(),
         builder: (context, snapshot) {

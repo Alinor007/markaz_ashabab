@@ -62,12 +62,15 @@ enum CivilStatus {
       .firstWhere((c) => c.code == code, orElse: () => CivilStatus.single);
 }
 
-/// Educational background stages.
+/// Educational background stages. Which fields apply (Degree, and the
+/// Program-like field's meaning) varies by stage — see [hasDegree],
+/// [hasProgram], and [programLabel].
 enum EducationStage {
   elementary('elementary', 'Elementary', 'الابتدائية'),
-  highschool('highschool', 'High School', 'الثانوية'),
-  college('college', 'College', 'الجامعة'),
-  postgraduate('postgraduate', 'Post Graduate', 'الدراسات العليا');
+  juniorHigh('junior_high', 'Junior High School', 'المرحلة الإعدادية'),
+  seniorHigh('senior_high', 'Senior High School', 'المرحلة الثانوية العليا'),
+  vocational('vocational', 'Vocational / TESDA', 'مهني / TESDA'),
+  college('college', 'College / Graduate School', 'الجامعة / الدراسات العليا');
 
   const EducationStage(this.code, this.en, this.ar);
   final String code;
@@ -75,6 +78,33 @@ enum EducationStage {
   final String ar;
 
   String label(bool isArabic) => isArabic ? ar : en;
+
+  /// Only College / Graduate School records a Degree (e.g. Bachelor of
+  /// Science).
+  bool get hasDegree => this == EducationStage.college;
+
+  /// Senior High, Vocational, and College all record a second field, though
+  /// its meaning differs — see [programLabel].
+  bool get hasProgram =>
+      this == EducationStage.seniorHigh ||
+      this == EducationStage.vocational ||
+      this == EducationStage.college;
+
+  /// The bilingual label for the Program field, which changes meaning by
+  /// stage (Strand/Track, Course/Certificate, or Program/Major).
+  String programLabel(bool isArabic) {
+    switch (this) {
+      case EducationStage.seniorHigh:
+        return isArabic ? 'المسار / التخصص' : 'Strand / Track';
+      case EducationStage.vocational:
+        return isArabic ? 'الدورة / الشهادة' : 'Course / Certificate';
+      case EducationStage.college:
+        return isArabic ? 'البرنامج / التخصص' : 'Program / Major';
+      case EducationStage.elementary:
+      case EducationStage.juniorHigh:
+        return isArabic ? 'البرنامج' : 'Program';
+    }
+  }
 
   static EducationStage fromCode(String code) => EducationStage.values
       .firstWhere((s) => s.code == code, orElse: () => EducationStage.college);
@@ -87,6 +117,7 @@ const List<int> kTarbiyaLevels = [1, 2, 3, 4, 5];
 enum ReportType {
   minutes('minutes', 'Minutes of Meeting', 'محضر اجتماع'),
   resolution('resolution', 'Resolution', 'قرار'),
+  other('other', 'Other Report', 'تقرير آخر'),
   programCompletion(
       'program_completion', 'Program Completion (P-2)', 'تقرير إنجاز برنامج');
 

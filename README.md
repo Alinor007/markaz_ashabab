@@ -1,6 +1,6 @@
 # Markazosshabab Al-Muslim Fil-Filibbin Foundation, Inc. 
 
-مركز الشباب المسلم بالفلبين
+مؤسسة مركز الشباب المسلم بالفلبين
 
 An **offline internal Documentation & Archive System** for the Muslim youth
 organization in the Philippines. Built with Flutter for **Android tablets in
@@ -43,8 +43,8 @@ all major modules wired with mock data.
   reset-password.
 - **Audit Logs** (admin) — chronological action timeline.
 - **History** — founding hero, key facts, and a milestones timeline.
-- **Settings** — account summary, language (EN/AR) switch, notification
-  toggles, and application/about info.
+- **Settings** — account summary, language (EN/AR) switch, and
+  application/about info.
 
 Every sidebar destination is now a fully built screen.
 

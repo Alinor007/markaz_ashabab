@@ -8,17 +8,21 @@ import '../../core/data/app_database.dart';
 import '../../core/data/models.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/repositories/department_repository.dart';
+import '../../core/repositories/gallery_repository.dart';
 import '../../core/repositories/member_repository.dart';
 import '../../core/repositories/report_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_typography.dart';
 import '../../widgets/cards/report_card.dart';
+import '../../widgets/common/hover_lift.dart';
 import '../../widgets/common/info_panel.dart';
 import '../../widgets/common/member_picker.dart';
 import '../../widgets/common/portrait_avatar.dart';
 import '../../widgets/common/profile_header.dart';
+import '../../widgets/common/search_field.dart';
 import '../../widgets/common/stat_card.dart';
+import '../../widgets/feedback/app_snackbar.dart';
 import '../../widgets/feedback/empty_state.dart';
 import '../../widgets/feedback/loading_state.dart';
 import '../reports/report_form_dialog.dart';
@@ -483,37 +487,48 @@ class _ActivitiesTab extends StatefulWidget {
 }
 
 class _ActivitiesTabState extends State<_ActivitiesTab> {
-  bool _calendar = false;
+  static const _pageSize = 8;
+  int _visible = _pageSize;
+  String _query = '';
+  int _statusFilter = 0; // 0 = all, else ActivityStatus.values[i - 1]
+
+  Department get department => widget.department;
+
+  List<DeptActivity> _apply(List<DeptActivity> items) {
+    final q = _query.trim().toLowerCase();
+    return items.where((a) {
+      final matchesQuery = q.isEmpty ||
+          a.title.toLowerCase().contains(q) ||
+          a.titleAr.contains(_query.trim());
+      final matchesStatus =
+          _statusFilter == 0 || a.status == ActivityStatus.values[_statusFilter - 1].code;
+      return matchesQuery && matchesStatus;
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     final repo = context.read<DepartmentRepository>();
     final session = context.watch<SessionController>();
     final canManage = session.can?.manageActivityForDepartment(
-            session.user?.departmentId, widget.department.id) ??
+            session.user?.departmentId, department.id) ??
         false;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            _Toggle(
-              calendar: _calendar,
-              onChanged: (c) => setState(() => _calendar = c),
+        if (canManage)
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: FilledButton.icon(
+              onPressed: () => _add(context, repo),
+              icon: const Icon(Icons.add, size: 18),
+              label: Text(context.tr('Add Activity', 'إضافة نشاط')),
             ),
-            const Spacer(),
-            if (canManage)
-              FilledButton.icon(
-                onPressed: () => _add(context, repo),
-                icon: const Icon(Icons.add, size: 18),
-                label: Text(context.tr('Add Activity', 'إضافة نشاط')),
-              ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.lg),
+          ),
+        if (canManage) const SizedBox(height: AppSpacing.md),
         Expanded(
           child: StreamBuilder<List<DeptActivity>>(
-            stream: repo.watchActivities(widget.department.id),
+            stream: repo.watchActivities(department.id),
             builder: (context, snap) {
               if (!snap.hasData) return const LoadingState();
               final items = snap.data!;
@@ -523,19 +538,42 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
                   title: context.tr('No activities yet', 'لا توجد أنشطة بعد'),
                 );
               }
-              return _calendar
-                  ? _CalendarView(activities: items)
-                  : ListView.separated(
-                      itemCount: items.length,
-                      separatorBuilder: (_, _) =>
-                          const SizedBox(height: AppSpacing.sm),
-                      itemBuilder: (context, i) => _ActivityTile(
-                        activity: items[i],
-                        canManage: canManage,
-                        onEdit: () => _edit(context, repo, items[i]),
-                        onDelete: () => _delete(context, repo, items[i]),
-                      ),
-                    );
+              final filtered = _apply(items);
+              final shown = filtered.take(_visible).toList();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _ActivityFilterBar(
+                    query: _query,
+                    onQuery: (v) => setState(() => _query = v),
+                    statusFilter: _statusFilter,
+                    onStatus: (i) => setState(() => _statusFilter = i),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Expanded(
+                    child: filtered.isEmpty
+                        ? EmptyState(
+                            icon: Icons.filter_alt_off_outlined,
+                            title: context.tr(
+                                'No matching activities', 'لا توجد نتائج مطابقة'),
+                          )
+                        : _PagedList(
+                            shownCount: shown.length,
+                            total: filtered.length,
+                            onLoadMore: () =>
+                                setState(() => _visible += _pageSize),
+                            itemBuilder: (context, i) => _ActivityTile(
+                              activity: shown[i],
+                              canManage: canManage,
+                              onTap: () => context.go(
+                                  '/departments/${department.id}/activities/${shown[i].id}'),
+                              onEdit: () => _edit(context, repo, shown[i]),
+                              onDelete: () => _delete(context, repo, shown[i]),
+                            ),
+                          ),
+                  ),
+                ],
+              );
             },
           ),
         ),
@@ -544,31 +582,57 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
   }
 
   Future<void> _add(BuildContext context, DepartmentRepository repo) async {
-    final r = await showActivityForm(context, department: widget.department);
+    final r = await showActivityForm(context, department: department);
     if (r == null) return;
-    await repo.addActivity(
-      departmentId: widget.department.id,
-      title: r.title,
-      description: r.description,
-      date: r.date,
-      status: r.status,
-      attendance: r.attendance,
-      formData: r.formData,
-    );
-  }
-
-  Future<void> _edit(
-      BuildContext context, DepartmentRepository repo, DeptActivity a) async {
-    final r = await showActivityForm(context,
-        department: widget.department, existing: a);
-    if (r == null) return;
-    await repo.updateActivity(a.id,
+    try {
+      await repo.addActivity(
+        departmentId: department.id,
         title: r.title,
         description: r.description,
         date: r.date,
         status: r.status,
         attendance: r.attendance,
-        formData: r.formData);
+        formData: r.formData,
+      );
+      if (context.mounted) {
+        showAppSnackBar(
+            context, context.trRead('Activity saved.', 'تم حفظ النشاط.'));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showAppSnackBar(
+            context, context.trRead('Could not save activity: $e',
+                'تعذّر حفظ النشاط: $e'),
+            tone: SnackTone.error);
+      }
+    }
+  }
+
+  Future<void> _edit(
+      BuildContext context, DepartmentRepository repo, DeptActivity a) async {
+    final r = await showActivityForm(context,
+        department: department, existing: a);
+    if (r == null) return;
+    try {
+      await repo.updateActivity(a.id,
+          title: r.title,
+          description: r.description,
+          date: r.date,
+          status: r.status,
+          attendance: r.attendance,
+          formData: r.formData);
+      if (context.mounted) {
+        showAppSnackBar(
+            context, context.trRead('Activity updated.', 'تم تحديث النشاط.'));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showAppSnackBar(
+            context, context.trRead('Could not save activity: $e',
+                'تعذّر حفظ النشاط: $e'),
+            tone: SnackTone.error);
+      }
+    }
   }
 
   Future<void> _delete(
@@ -580,187 +644,302 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
   }
 }
 
-class _Toggle extends StatelessWidget {
-  const _Toggle({required this.calendar, required this.onChanged});
-  final bool calendar;
-  final ValueChanged<bool> onChanged;
+/// Search + status filter row for the Activities tab. Wraps responsively on
+/// narrow screens.
+class _ActivityFilterBar extends StatelessWidget {
+  const _ActivityFilterBar({
+    required this.query,
+    required this.onQuery,
+    required this.statusFilter,
+    required this.onStatus,
+  });
+  final String query;
+  final ValueChanged<String> onQuery;
+  final int statusFilter;
+  final ValueChanged<int> onStatus;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.border),
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _seg(context, Icons.view_list_outlined,
-              context.tr('List', 'قائمة'), !calendar, () => onChanged(false)),
-          _seg(context, Icons.calendar_month_outlined,
-              context.tr('Calendar', 'تقويم'), calendar, () => onChanged(true)),
-        ],
-      ),
-    );
-  }
-
-  Widget _seg(BuildContext context, IconData icon, String label, bool active,
-      VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-        color: active ? AppColors.emerald : Colors.transparent,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon,
-                size: 16,
-                color: active ? AppColors.onEmerald : AppColors.textMuted),
-            const SizedBox(width: AppSpacing.xs),
-            Text(label,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color:
-                        active ? AppColors.onEmerald : AppColors.textMuted)),
-          ],
+    return Wrap(
+      spacing: AppSpacing.md,
+      runSpacing: AppSpacing.sm,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        SearchField(
+          width: 240,
+          hint: context.tr('Search activities…', 'ابحث عن الأنشطة…'),
+          onChanged: onQuery,
         ),
-      ),
+        FilterBar(
+          options: [
+            context.tr('All', 'الكل'),
+            for (final s in ActivityStatus.values) s.label(context.isArabic),
+          ],
+          selectedIndex: statusFilter,
+          onSelected: onStatus,
+        ),
+      ],
     );
   }
 }
+
+/// Search + year filter row for the Reports tab. Wraps responsively on narrow
+/// screens; the year filter is hidden entirely when there's only one year.
+class _ReportFilterBar extends StatelessWidget {
+  const _ReportFilterBar({
+    required this.query,
+    required this.onQuery,
+    required this.years,
+    required this.yearFilter,
+    required this.onYear,
+  });
+  final String query;
+  final ValueChanged<String> onQuery;
+  final List<int> years;
+  final int? yearFilter;
+  final ValueChanged<int?> onYear;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: AppSpacing.md,
+      runSpacing: AppSpacing.sm,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        SearchField(
+          width: 240,
+          hint: context.tr('Search reports…', 'ابحث عن التقارير…'),
+          onChanged: onQuery,
+        ),
+        if (years.length > 1)
+          FilterBar(
+            options: [
+              context.tr('All Years', 'كل السنوات'),
+              for (final y in years) '$y',
+            ],
+            selectedIndex: yearFilter == null ? 0 : years.indexOf(yearFilter!) + 1,
+            onSelected: (i) => onYear(i == 0 ? null : years[i - 1]),
+          ),
+      ],
+    );
+  }
+}
+
+/// A paginated vertical list: shows [shownCount] of [total] items with a
+/// "Load more" button while more remain.
+class _PagedList extends StatelessWidget {
+  const _PagedList({
+    required this.shownCount,
+    required this.total,
+    required this.onLoadMore,
+    required this.itemBuilder,
+  });
+  final int shownCount;
+  final int total;
+  final VoidCallback onLoadMore;
+  final IndexedWidgetBuilder itemBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasMore = total > shownCount;
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.separated(
+            itemCount: shownCount,
+            separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+            itemBuilder: itemBuilder,
+          ),
+        ),
+        if (hasMore)
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.md),
+            child: OutlinedButton.icon(
+              onPressed: onLoadMore,
+              icon: const Icon(Icons.expand_more, size: 18),
+              label: Text(context.tr('Load more (${total - shownCount})',
+                  'تحميل المزيد (${total - shownCount})')),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+const List<String> _kMonthAbbrev = [
+  'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+  'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',
+];
 
 class _ActivityTile extends StatelessWidget {
   const _ActivityTile({
     required this.activity,
     required this.canManage,
+    required this.onTap,
     required this.onEdit,
     required this.onDelete,
   });
   final DeptActivity activity;
   final bool canManage;
+  final VoidCallback onTap;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isArabic = context.isArabic;
     final status = activity.statusEnum;
-    return Container(
-      decoration: BoxDecoration(
+    final parsedDate = DateTime.tryParse(activity.date);
+
+    return HoverLift(
+      radius: AppRadius.card,
+      child: Material(
         color: AppColors.surface,
         borderRadius: AppRadius.card,
-        border: Border.all(color: AppColors.border),
-      ),
-      padding: const EdgeInsets.all(AppSpacing.md),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Ink(
             decoration: BoxDecoration(
-              color: status.color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(AppRadius.sm),
+              borderRadius: AppRadius.card,
+              border: Border.all(color: AppColors.border),
             ),
-            child: Icon(Icons.event_outlined, color: status.color),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Row(
               children: [
-                Text(activity.title, style: theme.textTheme.titleSmall),
-                Text(
-                  [
-                    activity.date,
-                    if (activity.attendance > 0)
-                      '${activity.attendance} ${context.tr('attended', 'حضروا')}'
-                  ].where((s) => s.isNotEmpty).join(' · '),
-                  style: theme.textTheme.bodySmall,
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md, vertical: 2),
-            decoration: BoxDecoration(
-              color: status.color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(AppRadius.pill),
-            ),
-            child: Text(status.label(context.isArabic),
-                style: theme.textTheme.labelSmall
-                    ?.copyWith(color: status.color, fontWeight: FontWeight.w700)),
-          ),
-          if (canManage)
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert, size: 18),
-              onSelected: (v) {
-                if (v == 'edit') onEdit();
-                if (v == 'delete') onDelete();
-              },
-              itemBuilder: (context) => [
-                PopupMenuItem(value: 'edit', child: Text(context.trRead('Edit', 'تعديل'))),
-                PopupMenuItem(
-                    value: 'delete', child: Text(context.trRead('Delete', 'حذف'))),
-              ],
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-/// A lightweight calendar: activities grouped by month.
-class _CalendarView extends StatelessWidget {
-  const _CalendarView({required this.activities});
-  final List<DeptActivity> activities;
-
-  @override
-  Widget build(BuildContext context) {
-    final groups = <String, List<DeptActivity>>{};
-    for (final a in activities) {
-      final key = a.date.isEmpty
-          ? context.tr('Undated', 'بدون تاريخ')
-          : a.date.substring(0, a.date.length >= 7 ? 7 : a.date.length);
-      groups.putIfAbsent(key, () => []).add(a);
-    }
-    final keys = groups.keys.toList()..sort((a, b) => b.compareTo(a));
-    return ListView(
-      children: [
-        for (final key in keys) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-            child: Text(key, style: Theme.of(context).textTheme.titleSmall),
-          ),
-          for (final a in groups[key]!)
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: Row(
-                children: [
-                  Container(
-                    width: 6,
-                    height: 6,
-                    decoration: BoxDecoration(
-                        color: a.statusEnum.color, shape: BoxShape.circle),
+                // A ticket-stub date badge — day (bold) over a 3-letter month.
+                Container(
+                  width: 52,
+                  height: 52,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: status.color.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                    border: Border.all(color: status.color.withValues(alpha: 0.3)),
                   ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(child: Text(a.title)),
-                  Text(a.date, style: Theme.of(context).textTheme.bodySmall),
-                ],
-              ),
+                  child: parsedDate == null
+                      ? Icon(Icons.event_outlined, color: status.color)
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('${parsedDate.day}',
+                                style: TextStyle(
+                                  fontFamily: AppTypography.serif,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                  color: status.color,
+                                  height: 1.0,
+                                )),
+                            Text(_kMonthAbbrev[parsedDate.month - 1],
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                    color: status.color,
+                                    letterSpacing: 0.6)),
+                          ],
+                        ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        activity.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleSmall,
+                      ),
+                      if (activity.attendance > 0) ...[
+                        const SizedBox(height: 2),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.groups_outlined,
+                                size: 14, color: AppColors.textFaint),
+                            const SizedBox(width: AppSpacing.xs),
+                            Text(
+                              '${activity.attendance} ${context.tr('attended', 'حضروا')}',
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: status.color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                  ),
+                  child: Text(status.label(isArabic),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                          color: status.color, fontWeight: FontWeight.w700)),
+                ),
+                if (canManage)
+                  SizedBox(
+                    height: 24,
+                    child: PopupMenuButton<String>(
+                      padding: EdgeInsets.zero,
+                      icon: const Icon(Icons.more_vert, size: 18),
+                      onSelected: (v) {
+                        if (v == 'edit') onEdit();
+                        if (v == 'delete') onDelete();
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                            value: 'edit',
+                            child: Text(context.trRead('Edit', 'تعديل'))),
+                        PopupMenuItem(
+                            value: 'delete',
+                            child: Text(context.trRead('Delete', 'حذف'))),
+                      ],
+                    ),
+                  )
+                else
+                  Icon(isArabic ? Icons.arrow_back : Icons.arrow_forward,
+                      size: 16, color: AppColors.textFaint),
+              ],
             ),
-        ],
-      ],
+          ),
+        ),
+      ),
     );
   }
 }
 
 // ════════════════════════════ Reports ════════════════════════════
 
-class _ReportsTab extends StatelessWidget {
+class _ReportsTab extends StatefulWidget {
   const _ReportsTab({required this.department});
   final Department department;
+
+  @override
+  State<_ReportsTab> createState() => _ReportsTabState();
+}
+
+class _ReportsTabState extends State<_ReportsTab> {
+  static const _pageSize = 6;
+  int _visible = _pageSize;
+  String _query = '';
+  int? _yearFilter;
+
+  Department get department => widget.department;
+
+  List<Report> _apply(List<Report> reports) {
+    final q = _query.trim().toLowerCase();
+    return reports.where((r) {
+      final matchesQuery = q.isEmpty ||
+          r.title.toLowerCase().contains(q) ||
+          r.titleAr.contains(_query.trim()) ||
+          r.summary.toLowerCase().contains(q);
+      final matchesYear = _yearFilter == null || r.year == _yearFilter;
+      return matchesQuery && matchesYear;
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -795,38 +974,84 @@ class _ReportsTab extends StatelessWidget {
                   title: context.tr('No reports yet', 'لا توجد تقارير بعد'),
                 );
               }
-              return LayoutBuilder(
-                builder: (context, constraints) {
-                  const spacing = AppSpacing.lg;
-                  final columns = constraints.maxWidth > 1000 ? 2 : 1;
-                  final itemWidth = (constraints.maxWidth -
-                          spacing * (columns - 1)) /
-                      columns;
-                  return SingleChildScrollView(
-                    child: Wrap(
-                      spacing: spacing,
-                      runSpacing: spacing,
-                      children: [
-                        for (final r in reports)
-                          SizedBox(
-                            width: itemWidth,
-                            child: ReportCard(
-                              report: r,
-                              departmentName:
-                                  department.displayName(context.isArabic),
-                              onTap: () {},
-                              onEdit: canManage
-                                  ? () => _edit(context, repo, r)
-                                  : null,
-                              onDelete: canManage
-                                  ? () => _delete(context, repo, r)
-                                  : null,
-                            ),
+              final years = reports.map((r) => r.year).where((y) => y > 0).toSet().toList()
+                ..sort((a, b) => b - a);
+              final filtered = _apply(reports);
+              final shown = filtered.take(_visible).toList();
+              final hasMore = filtered.length > shown.length;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _ReportFilterBar(
+                    query: _query,
+                    onQuery: (v) => setState(() => _query = v),
+                    years: years,
+                    yearFilter: _yearFilter,
+                    onYear: (y) => setState(() => _yearFilter = y),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Expanded(
+                    child: filtered.isEmpty
+                        ? EmptyState(
+                            icon: Icons.filter_alt_off_outlined,
+                            title: context.tr(
+                                'No matching reports', 'لا توجد تقارير مطابقة'),
+                          )
+                        : LayoutBuilder(
+                            builder: (context, constraints) {
+                              const spacing = AppSpacing.lg;
+                              final columns =
+                                  constraints.maxWidth > 1000 ? 2 : 1;
+                              final itemWidth = (constraints.maxWidth -
+                                      spacing * (columns - 1)) /
+                                  columns;
+                              return SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.center,
+                                  children: [
+                                    Wrap(
+                                      spacing: spacing,
+                                      runSpacing: spacing,
+                                      children: [
+                                        for (final r in shown)
+                                          SizedBox(
+                                            width: itemWidth,
+                                            child: ReportCard(
+                                              report: r,
+                                              onTap: () => context.go(
+                                                  '/departments/${department.id}/reports/${r.id}'),
+                                              onEdit: canManage
+                                                  ? () =>
+                                                      _edit(context, repo, r)
+                                                  : null,
+                                              onDelete: canManage
+                                                  ? () => _delete(
+                                                      context, repo, r)
+                                                  : null,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                    if (hasMore) ...[
+                                      const SizedBox(height: AppSpacing.lg),
+                                      OutlinedButton.icon(
+                                        onPressed: () => setState(
+                                            () => _visible += _pageSize),
+                                        icon: const Icon(Icons.expand_more,
+                                            size: 18),
+                                        label: Text(context.tr(
+                                            'Load more (${filtered.length - shown.length})',
+                                            'تحميل المزيد (${filtered.length - shown.length})')),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              );
+                            },
                           ),
-                      ],
-                    ),
-                  );
-                },
+                  ),
+                ],
               );
             },
           ),
@@ -836,45 +1061,91 @@ class _ReportsTab extends StatelessWidget {
   }
 
   Future<void> _add(BuildContext context, ReportRepository repo) async {
+    final galleryRepo = context.read<GalleryRepository>();
     final r = await showReportForm(context,
         departments: [department], lockedDepartmentId: department.id);
     if (r == null) return;
-    await repo.create(
-      departmentId: department.id,
-      title: r.title,
-      summary: r.summary,
-      date: r.date,
-      year: r.year,
-      type: r.type,
-      formData: r.formData,
-    );
+    try {
+      final id = await repo.create(
+        departmentId: department.id,
+        title: r.title,
+        summary: r.summary,
+        date: r.date,
+        year: r.year,
+        type: r.type,
+        formData: r.formData,
+      );
+      await galleryRepo.setAlbumForReport(
+        reportId: id,
+        title: r.title,
+        year: r.year,
+        imagePaths: r.photoPaths,
+      );
+      if (context.mounted) {
+        showAppSnackBar(
+            context, context.trRead('Report saved.', 'تم حفظ التقرير.'));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showAppSnackBar(
+            context, context.trRead('Could not save report: $e',
+                'تعذّر حفظ التقرير: $e'),
+            tone: SnackTone.error);
+      }
+    }
   }
 
   Future<void> _edit(
       BuildContext context, ReportRepository repo, Report report) async {
+    final galleryRepo = context.read<GalleryRepository>();
     final r = await showReportForm(context,
         departments: [department],
         existing: report,
         lockedDepartmentId: department.id);
     if (r == null) return;
-    await repo.update(
-      report.id,
-      ReportsCompanion(
-        title: Value(r.title),
-        summary: Value(r.summary),
-        date: Value(r.date),
-        year: Value(r.year),
-        type: Value(r.type),
-        formData: Value(r.formData),
-      ),
-    );
+    try {
+      await repo.update(
+        report.id,
+        ReportsCompanion(
+          title: Value(r.title),
+          summary: Value(r.summary),
+          date: Value(r.date),
+          year: Value(r.year),
+          type: Value(r.type),
+          formData: Value(r.formData),
+        ),
+      );
+      await galleryRepo.setAlbumForReport(
+        reportId: report.id,
+        title: r.title,
+        year: r.year,
+        imagePaths: r.photoPaths,
+      );
+      if (context.mounted) {
+        showAppSnackBar(
+            context, context.trRead('Report updated.', 'تم تحديث التقرير.'));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showAppSnackBar(
+            context, context.trRead('Could not save report: $e',
+                'تعذّر حفظ التقرير: $e'),
+            tone: SnackTone.error);
+      }
+    }
   }
 
   Future<void> _delete(
       BuildContext context, ReportRepository repo, Report report) async {
+    final galleryRepo = context.read<GalleryRepository>();
     final ok = await confirmDialog(context,
         title: context.trRead('Delete report?', 'حذف التقرير؟'),
         message: report.title);
-    if (ok) await repo.delete(report.id);
+    if (!ok) return;
+    // Remove the linked photo album (and its files) before the report; the DB
+    // cascade would drop the album row but leave the image files on disk.
+    final album = await galleryRepo.getForReport(report.id);
+    if (album != null) await galleryRepo.delete(album.id);
+    await repo.delete(report.id);
   }
 }

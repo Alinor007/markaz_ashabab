@@ -8,6 +8,7 @@ import '../../core/data/models.dart';
 import '../../core/i18n/locale_controller.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/repositories/audit_repository.dart';
+import '../../core/repositories/department_repository.dart';
 import '../../core/repositories/user_repository.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../widgets/cards/user_card.dart';
@@ -101,30 +102,39 @@ class _UsersScreenState extends State<UsersScreen> {
     final actor = _actor;
     final ar = context.read<LocaleController>().isArabic;
     final controller = TextEditingController();
+    var obscured = true;
     final newPassword = await showDialog<String>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(context.tr('Reset Password', 'إعادة تعيين كلمة المرور')),
-        content: SizedBox(
-          width: 360,
-          child: TextField(
-            controller: controller,
-            obscureText: true,
-            decoration: InputDecoration(
-              labelText: context.tr('New Password', 'كلمة المرور الجديدة'),
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setLocal) => AlertDialog(
+          title: Text(context.tr('Reset Password', 'إعادة تعيين كلمة المرور')),
+          content: SizedBox(
+            width: 360,
+            child: TextField(
+              controller: controller,
+              obscureText: obscured,
+              decoration: InputDecoration(
+                labelText: context.tr('New Password', 'كلمة المرور الجديدة'),
+                suffixIcon: IconButton(
+                  icon: Icon(obscured
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined),
+                  onPressed: () => setLocal(() => obscured = !obscured),
+                ),
+              ),
             ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(context.tr('Cancel', 'إلغاء')),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, controller.text),
+              child: Text(context.tr('Reset', 'إعادة تعيين')),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(context.tr('Cancel', 'إلغاء')),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, controller.text),
-            child: Text(context.tr('Reset', 'إعادة تعيين')),
-          ),
-        ],
       ),
     );
     if (newPassword == null || newPassword.length < 4) {
@@ -200,6 +210,7 @@ class _UsersScreenState extends State<UsersScreen> {
         email: result.email,
         password: result.password,
         role: result.role,
+        departmentId: result.departmentId,
       );
       await audit.log(
         username: actor,
@@ -217,6 +228,7 @@ class _UsersScreenState extends State<UsersScreen> {
         username: result.username,
         email: result.email,
         role: result.role,
+        departmentId: result.departmentId,
       );
       await audit.log(
         username: actor,
@@ -305,6 +317,7 @@ class _UserFormResult {
     required this.email,
     required this.password,
     required this.role,
+    this.departmentId,
   });
   final String fullName;
   final String fullNameAr;
@@ -312,6 +325,9 @@ class _UserFormResult {
   final String email;
   final String password;
   final UserRole role;
+
+  /// Set only for Department Head accounts — the department they manage.
+  final String? departmentId;
 }
 
 class _UserFormDialog extends StatefulWidget {
@@ -334,6 +350,9 @@ class _UserFormDialogState extends State<_UserFormDialog> {
   late final _email = TextEditingController(text: widget.existing?.email ?? '');
   final _password = TextEditingController();
   late UserRole _role = widget.existing?.role ?? UserRole.departmentHead;
+  late String? _departmentId = widget.existing?.departmentId;
+  late final Stream<List<Department>> _departments =
+      context.read<DepartmentRepository>().watchAll();
   bool _saving = false;
 
   @override
@@ -374,6 +393,8 @@ class _UserFormDialogState extends State<_UserFormDialog> {
         email: _email.text.trim(),
         password: _password.text.isEmpty ? 'changeme123' : _password.text,
         role: _role,
+        // Only a Department Head carries a department assignment.
+        departmentId: _role == UserRole.departmentHead ? _departmentId : null,
       ),
     );
   }
@@ -415,9 +436,18 @@ class _UserFormDialogState extends State<_UserFormDialog> {
               const SizedBox(height: AppSpacing.md),
               TextFormField(
                 controller: _username,
+                // The username is permanent: it cannot be changed after the
+                // account is created.
+                readOnly: isEditing,
+                enabled: !isEditing,
                 validator: _required,
                 decoration: InputDecoration(
-                    labelText: context.tr('Username', 'اسم المستخدم')),
+                  labelText: context.tr('Username', 'اسم المستخدم'),
+                  helperText: isEditing
+                      ? context.tr('Username cannot be changed',
+                          'لا يمكن تغيير اسم المستخدم')
+                      : null,
+                ),
               ),
               const SizedBox(height: AppSpacing.md),
               TextFormField(
@@ -450,6 +480,40 @@ class _UserFormDialogState extends State<_UserFormDialog> {
                 ],
                 onChanged: (v) => setState(() => _role = v ?? _role),
               ),
+              if (_role == UserRole.departmentHead) ...[
+                const SizedBox(height: AppSpacing.md),
+                StreamBuilder<List<Department>>(
+                  stream: _departments,
+                  builder: (context, snap) {
+                    final depts = snap.data ?? const <Department>[];
+                    // Drop a stale selection that no longer matches a
+                    // department (e.g. it was deleted) so the dropdown
+                    // doesn't crash on an unknown value.
+                    final value =
+                        depts.any((d) => d.id == _departmentId)
+                            ? _departmentId
+                            : null;
+                    return DropdownButtonFormField<String>(
+                      initialValue: value,
+                      decoration: InputDecoration(
+                          labelText: context.tr('Department', 'القسم')),
+                      items: [
+                        for (final d in depts)
+                          DropdownMenuItem(
+                            value: d.id,
+                            child: Text(context.isArabic && d.nameAr.isNotEmpty
+                                ? d.nameAr
+                                : d.name),
+                          ),
+                      ],
+                      onChanged: (v) => setState(() => _departmentId = v),
+                      validator: (v) => (v == null || v.isEmpty)
+                          ? context.trRead('Required', 'مطلوب')
+                          : null,
+                    );
+                  },
+                ),
+              ],
             ],
           ),
         ),

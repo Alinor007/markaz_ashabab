@@ -16,6 +16,9 @@ class AuditRepository {
         .watch();
   }
 
+  /// Deletes every audit log entry. Returns the number of rows removed.
+  Future<int> clearAll() => _db.delete(_db.auditLogs).go();
+
   /// Append an audit entry. Bilingual fields are optional.
   Future<void> log({
     required String username,

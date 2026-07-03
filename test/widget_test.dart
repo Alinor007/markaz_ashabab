@@ -6,18 +6,18 @@ import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:markaz_ashabab/app/markaz_app.dart';
-import 'package:markaz_ashabab/core/auth/roles.dart';
-import 'package:markaz_ashabab/core/data/app_database.dart';
-import 'package:markaz_ashabab/core/data/models.dart';
-import 'package:markaz_ashabab/core/repositories/department_repository.dart';
-import 'package:markaz_ashabab/core/repositories/gallery_repository.dart';
-import 'package:markaz_ashabab/core/repositories/leader_repository.dart';
-import 'package:markaz_ashabab/core/repositories/member_repository.dart';
-import 'package:markaz_ashabab/core/repositories/minutes_report_repository.dart';
-import 'package:markaz_ashabab/core/repositories/report_repository.dart';
-import 'package:markaz_ashabab/core/repositories/tarbiya_repository.dart';
-import 'package:markaz_ashabab/core/repositories/user_repository.dart';
+import 'package:markazosshabab/app/markaz_app.dart';
+import 'package:markazosshabab/core/auth/roles.dart';
+import 'package:markazosshabab/core/data/app_database.dart';
+import 'package:markazosshabab/core/data/models.dart';
+import 'package:markazosshabab/core/repositories/department_repository.dart';
+import 'package:markazosshabab/core/repositories/gallery_repository.dart';
+import 'package:markazosshabab/core/repositories/leader_repository.dart';
+import 'package:markazosshabab/core/repositories/member_repository.dart';
+import 'package:markazosshabab/core/repositories/minutes_report_repository.dart';
+import 'package:markazosshabab/core/repositories/report_repository.dart';
+import 'package:markazosshabab/core/repositories/tarbiya_repository.dart';
+import 'package:markazosshabab/core/repositories/user_repository.dart';
 
 void main() {
   group('data layer', () {
@@ -28,18 +28,22 @@ void main() {
 
     test('seeds an administrator account on first launch', () async {
       final users = await UserRepository(db).watchAll().first;
-      // 1 admin + 3 executives + 9 department heads seeded by default.
-      expect(users, hasLength(13));
+      // 1 admin + 4 executives (incl. Vice President) + 10 department heads
+      // seeded by default.
+      expect(users, hasLength(15));
       final admin = users.firstWhere((u) => u.username == 'admin');
       expect(admin.role, UserRole.administrator);
+      final vp = users.firstWhere((u) => u.username == 'vicepresident');
+      expect(vp.role, UserRole.vicePresident);
     });
 
     test('authenticates the seeded admin and rejects bad credentials',
         () async {
       final repo = UserRepository(db);
-      expect(await repo.authenticate('admin', 'admin123'), isNotNull);
+      expect(await repo.authenticate('admin', 'Admin@markazosshabab'),
+          isNotNull);
       expect(await repo.authenticate('admin', 'wrong'), isNull);
-      expect(await repo.authenticate('ghost', 'admin123'), isNull);
+      expect(await repo.authenticate('ghost', 'Admin@markazosshabab'), isNull);
     });
 
     test('creates users and enforces unique usernames', () async {
@@ -55,7 +59,7 @@ void main() {
       expect(await repo.usernameExists('a.lomondot'), isTrue);
       expect(await repo.usernameExists('unique.name'), isFalse);
       final users = await repo.watchAll().first;
-      expect(users, hasLength(14)); // 13 seeded + 1 created
+      expect(users, hasLength(16)); // 15 seeded + 1 created
     });
 
     test('leadership CRUD by category', () async {
@@ -283,10 +287,11 @@ void main() {
     setUp(() => db = AppDatabase.memory());
     tearDown(() => db.close());
 
-    test('seeds the nine standing departments with overviews', () async {
+    test('seeds the ten standing departments with overviews', () async {
       final depts = await DepartmentRepository(db).getAll();
-      expect(depts, hasLength(9));
+      expect(depts, hasLength(10));
       expect(depts.map((d) => d.name), contains('Tarbiyah'));
+      expect(depts.map((d) => d.name), contains('Human Capital (Tarbiya)'));
       expect(depts.map((d) => d.name), contains('Economy and Investments'));
       // Youth & Students was added in schema v7.
       final youth = depts.firstWhere((d) => d.id == 'youth');
@@ -619,6 +624,17 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
     }
 
+    // The login fields are no longer pre-filled, so every test that needs to
+    // get past the login screen must type the seeded admin credentials in
+    // before tapping Sign In.
+    Future<void> signIn(WidgetTester tester) async {
+      final fields = find.byType(TextField);
+      await tester.enterText(fields.at(0), 'admin');
+      await tester.enterText(fields.at(1), 'Admin@markazosshabab');
+      await tester.tap(find.text('Sign In'));
+      await tester.pumpAndSettle();
+    }
+
     testWidgets('boots to login, signs in, reaches home, toggles AR',
         (tester) async {
       useTabletSurface(tester);
@@ -628,10 +644,9 @@ void main() {
       await tester.pumpWidget(MarkazApp(database: db));
       await tester.pumpAndSettle();
 
-      // Login screen (credentials are pre-filled with the seeded admin).
+      // Login screen — enter the seeded admin credentials and sign in.
       expect(find.text('Sign In'), findsOneWidget);
-      await tester.tap(find.text('Sign In'));
-      await tester.pumpAndSettle();
+      await signIn(tester);
 
       // Reached the app shell (left the login screen).
       expect(find.text('Sign In'), findsNothing);
@@ -650,8 +665,7 @@ void main() {
 
       await tester.pumpWidget(MarkazApp(database: db));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Sign In'));
-      await tester.pumpAndSettle();
+      await signIn(tester);
 
       // Expand the Leadership group in the sidebar; it reveals three pages.
       // The Home page also surfaces a "Leadership" quick-access tile, so target
@@ -672,8 +686,7 @@ void main() {
 
       await tester.pumpWidget(MarkazApp(database: db));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Sign In'));
-      await tester.pumpAndSettle();
+      await signIn(tester);
 
       // Tarbiya has no sidebar entry — reach it via the Departments section.
       await tester.tap(find.text('Departments'));
@@ -725,8 +738,7 @@ void main() {
 
       await tester.pumpWidget(MarkazApp(database: db));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Sign In'));
-      await tester.pumpAndSettle();
+      await signIn(tester);
 
       await tester.tap(find.text('User Management'));
       await tester.pumpAndSettle();
@@ -771,8 +783,7 @@ void main() {
       final db = AppDatabase.memory();
       await tester.pumpWidget(MarkazApp(database: db));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Sign In'));
-      await tester.pumpAndSettle();
+      await signIn(tester);
 
       // Open User Management (empty → shows the EmptyState that overflowed).
       await tester.tap(find.text('User Management'));
