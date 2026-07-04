@@ -22,16 +22,14 @@ class AuditScreen extends StatelessWidget {
     final repo = context.read<AuditRepository>();
     final ok = await confirmDialog(
       context,
-      title: context.trRead('Clear audit log?', 'مسح سجل التدقيق؟'),
-      message: context.trRead(
-          'This permanently deletes all audit log entries and cannot be undone.',
-          'سيؤدي هذا إلى حذف جميع إدخالات السجل نهائيًا ولا يمكن التراجع.'),
+      title: 'Clear audit log?',
+      message: 'This permanently deletes all audit log entries and cannot be undone.',
     );
     if (!ok || !context.mounted) return;
     await repo.clearAll();
     if (context.mounted) {
       showAppSnackBar(
-          context, context.trRead('Audit log cleared.', 'تم مسح السجل.'),
+          context, 'Audit log cleared.',
           tone: SnackTone.info);
     }
   }
@@ -83,7 +81,7 @@ class AuditScreen extends StatelessWidget {
             side: const BorderSide(color: AppColors.error),
           ),
           icon: const Icon(Icons.delete_sweep_outlined, size: 18),
-          label: Text(context.tr('Clear Log', 'مسح السجل')),
+          label: Text('Clear Log'),
         ),
       ],
       child: StreamBuilder<List<AuditLog>>(
@@ -91,15 +89,14 @@ class AuditScreen extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return ErrorState(
-                title: context.tr(
-                    'Failed to load audit logs.', 'تعذّر تحميل السجلات.'));
+                title: 'Failed to load audit logs.');
           }
           if (!snapshot.hasData) return const LoadingState();
           final logs = snapshot.data!;
           if (logs.isEmpty) {
             return EmptyState(
               icon: Icons.fact_check_outlined,
-              title: context.tr('No activity yet', 'لا يوجد نشاط بعد'),
+              title: 'No activity yet',
             );
           }
           return Container(

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/i18n/localized.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_dimens.dart';
 
 /// Result of [NameFormDialog].
 typedef NameFormResult = ({String name, String nameAr});
@@ -43,12 +41,10 @@ class NameFormDialog extends StatefulWidget {
 class _NameFormDialogState extends State<NameFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final _name = TextEditingController(text: widget.initialName);
-  late final _nameAr = TextEditingController(text: widget.initialNameAr);
 
   @override
   void dispose() {
     _name.dispose();
-    _nameAr.dispose();
     super.dispose();
   }
 
@@ -68,17 +64,10 @@ class _NameFormDialogState extends State<NameFormDialog> {
                 controller: _name,
                 autofocus: true,
                 decoration: InputDecoration(
-                    labelText: context.tr('Name (English)', 'الاسم (إنجليزي)')),
+                    labelText: 'Name'),
                 validator: (v) => (v == null || v.trim().isEmpty)
-                    ? context.trRead('Required', 'مطلوب')
+                    ? 'Required'
                     : null,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              TextFormField(
-                controller: _nameAr,
-                textDirection: TextDirection.rtl,
-                decoration: InputDecoration(
-                    labelText: context.tr('Name (Arabic)', 'الاسم (عربي)')),
               ),
             ],
           )),
@@ -87,15 +76,14 @@ class _NameFormDialogState extends State<NameFormDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(context.tr('Cancel', 'إلغاء')),
+          child: Text('Cancel'),
         ),
         FilledButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
-            Navigator.pop(context,
-                (name: _name.text.trim(), nameAr: _nameAr.text.trim()));
+            Navigator.pop(context, (name: _name.text.trim(), nameAr: ''));
           },
-          child: Text(context.tr('Save', 'حفظ')),
+          child: Text('Save'),
         ),
       ],
     );

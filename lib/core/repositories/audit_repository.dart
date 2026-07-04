@@ -19,13 +19,11 @@ class AuditRepository {
   /// Deletes every audit log entry. Returns the number of rows removed.
   Future<int> clearAll() => _db.delete(_db.auditLogs).go();
 
-  /// Append an audit entry. Bilingual fields are optional.
+  /// Append an audit entry.
   Future<void> log({
     required String username,
     required String action,
     required String module,
-    String actionAr = '',
-    String moduleAr = '',
   }) {
     return _db.into(_db.auditLogs).insert(
           AuditLogsCompanion.insert(
@@ -33,8 +31,6 @@ class AuditRepository {
             username: username,
             action: action,
             module: module,
-            actionAr: Value(actionAr),
-            moduleAr: Value(moduleAr),
           ),
         );
   }

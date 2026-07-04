@@ -79,21 +79,21 @@ class UserCard extends StatelessWidget {
           ),
           PopupMenuButton<UserAction>(
             icon: const Icon(Icons.more_vert, color: AppColors.textMuted),
-            tooltip: context.tr('User actions', 'إجراءات المستخدم'),
+            tooltip: 'User actions',
             onSelected: onAction,
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: UserAction.edit,
                 child: _MenuRow(
                     icon: Icons.edit_outlined,
-                    label: context.trRead('Edit User', 'تعديل المستخدم')),
+                    label: 'Edit User'),
               ),
               PopupMenuItem(
                 value: UserAction.resetPassword,
                 child: _MenuRow(
                     icon: Icons.lock_reset_outlined,
                     label:
-                        context.trRead('Reset Password', 'إعادة تعيين كلمة المرور')),
+                        'Reset Password'),
               ),
               PopupMenuItem(
                 value: UserAction.toggleActive,
@@ -102,15 +102,15 @@ class UserCard extends StatelessWidget {
                       ? Icons.block_outlined
                       : Icons.check_circle_outline,
                   label: user.active
-                      ? context.trRead('Disable User', 'تعطيل المستخدم')
-                      : context.trRead('Enable User', 'تفعيل المستخدم'),
+                      ? 'Disable User'
+                      : 'Enable User',
                 ),
               ),
               PopupMenuItem(
                 value: UserAction.delete,
                 child: _MenuRow(
                     icon: Icons.delete_outline,
-                    label: context.trRead('Delete User', 'حذف المستخدم'),
+                    label: 'Delete User',
                     danger: true),
               ),
             ],
@@ -139,8 +139,8 @@ class _StatusPill extends StatelessWidget {
         ),
         child: Text(
           active
-              ? context.tr('Active', 'نشط')
-              : context.tr('Disabled', 'معطّل'),
+              ? 'Active'
+              : 'Disabled',
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: color,
                 fontWeight: FontWeight.w700,

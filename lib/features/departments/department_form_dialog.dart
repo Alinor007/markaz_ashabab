@@ -2,7 +2,6 @@ import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 
 import '../../core/data/app_database.dart';
-import '../../core/i18n/localized.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/util/icon_catalog.dart';
@@ -44,17 +43,13 @@ class _DepartmentFormDialog extends StatefulWidget {
 class _DepartmentFormDialogState extends State<_DepartmentFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final _name = TextEditingController(text: widget.existing?.name ?? '');
-  late final _nameAr =
-      TextEditingController(text: widget.existing?.nameAr ?? '');
   late final _desc =
       TextEditingController(text: widget.existing?.description ?? '');
-  late final _descAr =
-      TextEditingController(text: widget.existing?.descriptionAr ?? '');
   late String _iconKey = widget.existing?.iconKey ?? 'group';
 
   @override
   void dispose() {
-    for (final c in [_name, _nameAr, _desc, _descAr]) {
+    for (final c in [_name, _desc]) {
       c.dispose();
     }
     super.dispose();
@@ -66,8 +61,8 @@ class _DepartmentFormDialogState extends State<_DepartmentFormDialog> {
     return AlertDialog(
       backgroundColor: AppColors.surface,
       title: Text(editing
-          ? context.tr('Edit Department', 'تعديل القسم')
-          : context.tr('Add Department', 'إضافة قسم')),
+          ? 'Edit Department'
+          : 'Add Department'),
       content: SizedBox(
         width: 460,
         child: Form(
@@ -79,38 +74,22 @@ class _DepartmentFormDialogState extends State<_DepartmentFormDialog> {
                 TextFormField(
                   controller: _name,
                   decoration: InputDecoration(
-                      labelText: context.tr('Name', 'الاسم')),
+                      labelText: 'Name'),
                   validator: (v) => (v == null || v.trim().isEmpty)
-                      ? context.trRead('Required', 'مطلوب')
+                      ? 'Required'
                       : null,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextFormField(
-                  controller: _nameAr,
-                  textDirection: TextDirection.rtl,
-                  decoration: InputDecoration(
-                      labelText: context.tr('Name (Arabic)', 'الاسم بالعربية')),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 TextFormField(
                   controller: _desc,
                   maxLines: 2,
                   decoration: InputDecoration(
-                      labelText: context.tr('Description', 'الوصف')),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextFormField(
-                  controller: _descAr,
-                  maxLines: 2,
-                  textDirection: TextDirection.rtl,
-                  decoration: InputDecoration(
-                      labelText:
-                          context.tr('Description (Arabic)', 'الوصف بالعربية')),
+                      labelText: 'Description'),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: Text(context.tr('Icon', 'الأيقونة'),
+                  child: Text('Icon',
                       style: Theme.of(context).textTheme.labelMedium),
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -153,7 +132,7 @@ class _DepartmentFormDialogState extends State<_DepartmentFormDialog> {
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(context.tr('Cancel', 'إلغاء'))),
+            child: Text('Cancel')),
         FilledButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
@@ -161,14 +140,14 @@ class _DepartmentFormDialogState extends State<_DepartmentFormDialog> {
               context,
               DepartmentFormResult(
                 name: _name.text.trim(),
-                nameAr: _nameAr.text.trim(),
+                nameAr: '',
                 description: _desc.text.trim(),
-                descriptionAr: _descAr.text.trim(),
+                descriptionAr: '',
                 iconKey: _iconKey,
               ),
             );
           },
-          child: Text(context.tr('Save', 'حفظ')),
+          child: Text('Save'),
         ),
       ],
     );
@@ -179,9 +158,9 @@ class _DepartmentFormDialogState extends State<_DepartmentFormDialog> {
 DepartmentsCompanion departmentUpdateCompanion(DepartmentFormResult r) {
   return DepartmentsCompanion(
     name: Value(r.name),
-    nameAr: Value(r.nameAr.isEmpty ? r.name : r.nameAr),
+    nameAr: const Value(''),
     description: Value(r.description),
-    descriptionAr: Value(r.descriptionAr),
+    descriptionAr: const Value(''),
     iconKey: Value(r.iconKey),
   );
 }

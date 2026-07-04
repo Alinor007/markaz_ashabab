@@ -45,7 +45,7 @@ class TarbiyaShubasScreen extends StatelessWidget {
             arabic: 'الشُّعبة',
             child: EmptyState(
               icon: Icons.map_outlined,
-              title: context.tr('Area not found', 'المنطقة غير موجودة'),
+              title: 'Area not found',
             ),
           );
         }
@@ -56,7 +56,7 @@ class TarbiyaShubasScreen extends StatelessWidget {
           breadcrumb: HierarchyBreadcrumb(
             crumbs: [
               Crumb(
-                label: context.tr('Tarbiya Al-Kawadeer', 'تربية الكوادر'),
+                label: 'Tarbiya Al-Kawadeer',
                 route: '/tarbiya',
                 icon: Icons.hub_outlined,
               ),
@@ -68,7 +68,7 @@ class TarbiyaShubasScreen extends StatelessWidget {
               FilledButton.icon(
                 onPressed: () => _addShuba(context, repo),
                 icon: const Icon(Icons.add, size: 18),
-                label: Text(context.tr("Add Shu'ba", 'إضافة شُعبة')),
+                label: Text("Add Shu'ba"),
               ),
           ],
           child: StreamBuilder<List<Shuba>>(
@@ -79,10 +79,9 @@ class TarbiyaShubasScreen extends StatelessWidget {
               if (shubas.isEmpty) {
                 return EmptyState(
                   icon: Icons.location_city_outlined,
-                  title: context.tr("No Shu'bas yet", 'لا توجد شُعب بعد'),
+                  title: "No Shu'bas yet",
                   message: canManage
-                      ? context.tr(
-                          "Add the first Shu'ba.", 'أضف أول شُعبة.')
+                      ? "Add the first Shu'ba."
                       : null,
                 );
               }
@@ -116,7 +115,7 @@ class TarbiyaShubasScreen extends StatelessWidget {
     // trRead (not tr) — these run inside an event handler, outside build, so a
     // listening lookup would throw "listen from outside the widget tree".
     final result = await NameFormDialog.show(context,
-        title: context.trRead("Add Shu'ba", 'إضافة شُعبة'));
+        title: "Add Shu'ba");
     if (result == null) return;
     await repo.createShuba(
         areaId: areaId, name: result.name, nameAr: result.nameAr);
@@ -125,7 +124,7 @@ class TarbiyaShubasScreen extends StatelessWidget {
   Future<void> _editShuba(
       BuildContext context, TarbiyaRepository repo, Shuba shuba) async {
     final result = await NameFormDialog.show(context,
-        title: context.trRead("Edit Shu'ba", 'تعديل الشُّعبة'),
+        title: "Edit Shu'ba",
         name: shuba.name,
         nameAr: shuba.nameAr);
     if (result == null) return;
@@ -136,11 +135,8 @@ class TarbiyaShubasScreen extends StatelessWidget {
       BuildContext context, TarbiyaRepository repo, Shuba shuba) async {
     final ok = await confirmDialog(
       context,
-      title: context.trRead(
-          'Delete “${shuba.name}”?', 'حذف «${shuba.nameAr}»؟'),
-      message: context.trRead(
-          'Members under it will be permanently deleted.',
-          'سيُحذف الأعضاء التابعون لها نهائيًا.'),
+      title: context.trRead('Delete “${shuba.name}”?'),
+      message: 'Members under it will be permanently deleted.',
     );
     if (ok) await repo.deleteShuba(shuba.id);
   }
@@ -157,7 +153,7 @@ class _MasulFooter extends StatelessWidget {
   Future<void> _assign(BuildContext context) async {
     final memberRepo = context.read<MemberRepository>();
     final picked = await pickMember(context, memberRepo,
-        title: context.trRead('Assign Mas\'ul', 'تعيين المسؤول'));
+        title: 'Assign Mas\'ul');
     if (picked == null || !context.mounted) return;
     await context.read<TarbiyaRepository>().assignMasul(shuba.id, picked.id);
   }
@@ -187,7 +183,7 @@ class _MasulFooter extends StatelessWidget {
             Expanded(
               child: Text(
                 masul == null
-                    ? context.tr('Unassigned', 'غير معيّن')
+                    ? 'Unassigned'
                     : masul.displayName(context.isArabic),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -203,12 +199,12 @@ class _MasulFooter extends StatelessWidget {
                 onPressed: () => _assign(context),
                 icon: const Icon(Icons.person_search_outlined, size: 16),
                 label: Text(masul == null
-                    ? context.tr('Assign', 'تعيين')
-                    : context.tr('Change', 'تغيير')),
+                    ? 'Assign'
+                    : 'Change'),
               ),
               if (masul != null)
                 IconButton(
-                  tooltip: context.tr('Clear', 'مسح'),
+                  tooltip: 'Clear',
                   visualDensity: VisualDensity.compact,
                   icon: const Icon(Icons.close, size: 16),
                   onPressed: () => _clear(context),

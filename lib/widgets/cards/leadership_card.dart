@@ -65,11 +65,11 @@ class LeadershipCard extends StatelessWidget {
                       if (onEdit != null)
                         PopupMenuItem(
                             value: 'edit',
-                            child: Text(context.trRead('Edit', 'تعديل'))),
+                            child: Text('Edit')),
                       if (onDelete != null)
                         PopupMenuItem(
                             value: 'delete',
-                            child: Text(context.trRead('Delete', 'حذف'))),
+                            child: Text('Delete')),
                     ],
                   ),
                 ),
@@ -130,7 +130,7 @@ class LeadershipCard extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: onView,
                     icon: const Icon(Icons.person_outline, size: 16),
-                    label: Text(context.tr('View Profile', 'عرض الملف')),
+                    label: Text('View Profile'),
                   ),
                 ),
               ],

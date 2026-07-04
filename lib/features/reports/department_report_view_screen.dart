@@ -46,7 +46,7 @@ class DepartmentReportViewScreen extends StatelessWidget {
         if (report == null) {
           return EmptyState(
             icon: Icons.description_outlined,
-            title: context.tr('Report not found', 'التقرير غير موجود'),
+            title: 'Report not found',
           );
         }
         return _Body(departmentId: departmentId, report: report);
@@ -65,21 +65,21 @@ class _Body extends StatelessWidget {
 
   (String, Color) _statusChip(BuildContext context, String code) =>
       switch (code) {
-        'achieved' => (context.tr('Achieved', 'تحقق'), AppColors.emerald),
+        'achieved' => ('Achieved', AppColors.emerald),
         'partial' => (
-            context.tr('Partially Achieved', 'تحقق جزئيًا'),
+            'Partially Achieved',
             AppColors.goldDeep
           ),
-        'not' => (context.tr('Not Achieved', 'لم يتحقق'), AppColors.error),
+        'not' => ('Not Achieved', AppColors.error),
         _ => (code, AppColors.textMuted),
       };
 
   (String, Color) _flowChip(BuildContext context, String code) =>
       switch (code) {
-        'best' => (context.tr('Best', 'ممتاز'), AppColors.emerald),
-        'good' => (context.tr('Good', 'جيد'), AppColors.navy),
+        'best' => ('Best', AppColors.emerald),
+        'good' => ('Good', AppColors.navy),
         'needs' => (
-            context.tr('Needs Improvement', 'يحتاج إلى تحسين'),
+            'Needs Improvement',
             AppColors.goldDeep
           ),
         _ => (code, AppColors.textMuted),
@@ -103,15 +103,15 @@ class _Body extends StatelessWidget {
     final sections = <Widget>[
       DocSection(
         letter: 'B',
-        title: context.tr('Objectives Review', 'مراجعة الأهداف'),
+        title: 'Objectives Review',
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DocProse(r.objective, label: context.tr('Objective', 'الهدف')),
+            DocProse(r.objective, label: 'Objective'),
             const SizedBox(height: AppSpacing.md),
             Row(
               children: [
-                Text('${context.tr('Status', 'الحالة')}:  ',
+                Text('${'Status'}:  ',
                     style: Theme.of(context).textTheme.labelMedium),
                 DocStatusPill(label: statusLabel, color: statusColor),
               ],
@@ -126,24 +126,23 @@ class _Body extends StatelessWidget {
       DocSection(
         letter: 'C',
         title:
-            context.tr('Program Implementation Summary', 'ملخص تنفيذ البرنامج'),
+            'Program Implementation Summary',
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             DocProse(r.briefDescription,
-                label: context.tr('Brief description of what actually happened',
-                    'وصف موجز لما حدث فعليًا')),
+                label: 'Brief description of what actually happened'),
             const SizedBox(height: AppSpacing.md),
             Row(
               children: [
-                Text('${context.tr('Flow of the Event', 'سير الفعالية')}:  ',
+                Text('${'Flow of the Event'}:  ',
                     style: Theme.of(context).textTheme.labelMedium),
                 DocStatusPill(label: flowLabel, color: flowColor),
               ],
             ),
             if (r.keyActivities.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.md),
-              Text(context.tr('Key Activities Conducted', 'الأنشطة الرئيسية'),
+              Text('Key Activities Conducted',
                   style: Theme.of(context).textTheme.labelMedium),
               const SizedBox(height: AppSpacing.sm),
               DocBullets(items: r.keyActivities),
@@ -154,57 +153,56 @@ class _Body extends StatelessWidget {
       if (_memberBased)
         DocSection(
           letter: 'D',
-          title: context.tr('Participation Data', 'بيانات المشاركة'),
+          title: 'Participation Data',
           child: _Participation(report: r),
         ),
       DocSection(
         letter: 'E',
-        title: context.tr(
-            'Resource Utilization — Budget', 'استخدام الموارد — الميزانية'),
+        title: 'Resource Utilization — Budget',
         child: Wrap(
           spacing: AppSpacing.lg,
           runSpacing: AppSpacing.lg,
           children: [
             DocMetric(
                 value: r.approvedBudget,
-                caption: context.tr('Approved Budget', 'الميزانية المعتمدة'),
+                caption: 'Approved Budget',
                 accent: AppColors.navy),
             DocMetric(
                 value: r.actualExpenses,
-                caption: context.tr('Actual Expenses', 'المصروفات الفعلية'),
+                caption: 'Actual Expenses',
                 accent: AppColors.goldDeep),
             DocMetric(
                 value: variance.toStringAsFixed(2),
                 caption:
-                    context.tr('Variance', 'الفرق'),
+                    'Variance',
                 accent: variance < 0 ? AppColors.error : AppColors.emerald),
           ],
         ),
       ),
       DocSection(
         letter: 'F',
-        title: context.tr('Outputs & Results', 'المخرجات والنتائج'),
+        title: 'Outputs & Results',
         child: r.outputs.isEmpty
             ? _empty(context)
             : DocBullets(items: r.outputs),
       ),
       DocSection(
         letter: 'G',
-        title: context.tr('Challenges Encountered', 'التحديات المواجهة'),
+        title: 'Challenges Encountered',
         child: r.challenges.isEmpty
             ? _empty(context)
             : DocBullets(items: r.challenges),
       ),
       DocSection(
         letter: 'H',
-        title: context.tr('Solutions Applied', 'الحلول المطبقة'),
+        title: 'Solutions Applied',
         child: r.solutions.isEmpty
             ? _empty(context)
             : DocBullets(items: r.solutions),
       ),
       DocSection(
         letter: 'I',
-        title: context.tr('Photos', 'الصور'),
+        title: 'Photos',
         child: _Photos(reportId: report.id),
       ),
     ];
@@ -225,14 +223,14 @@ class _Body extends StatelessWidget {
               accent: AppColors.goldDeep,
               meta: [
                 DocMeta(Icons.apartment_outlined,
-                    context.tr('Lead Office', 'المكتب الرئيسي'), r.leadOffice),
+                    'Lead Office', r.leadOffice),
                 DocMeta(Icons.event_outlined,
-                    context.tr('Date Conducted', 'تاريخ التنفيذ'),
+                    'Date Conducted',
                     r.dateConducted),
                 DocMeta(Icons.place_outlined,
-                    context.tr('Venue', 'المكان'), r.venue),
+                    'Venue', r.venue),
                 DocMeta(Icons.person_outline,
-                    context.tr('Program Head', 'رئيس البرنامج'), r.programHead),
+                    'Program Head', r.programHead),
               ],
             ),
           ),
@@ -248,7 +246,7 @@ class _Body extends StatelessWidget {
   }
 
   Widget _empty(BuildContext context) => Text(
-        context.tr('None.', 'لا يوجد.'),
+        'None.',
         style: Theme.of(context)
             .textTheme
             .bodySmall
@@ -278,7 +276,7 @@ class _BackLink extends StatelessWidget {
             Icon(isArabic ? Icons.arrow_forward : Icons.arrow_back,
                 size: 18, color: AppColors.emerald),
             const SizedBox(width: AppSpacing.sm),
-            Text(context.tr('Back', 'رجوع'),
+            Text('Back',
                 style: Theme.of(context)
                     .textTheme
                     .labelLarge
@@ -314,12 +312,12 @@ class _Participation extends StatelessWidget {
             DocMetric(
                 value: report.targetParticipants,
                 caption:
-                    context.tr('Target Participants', 'المشاركون المستهدفون'),
+                    'Target Participants',
                 accent: AppColors.navy),
             DocMetric(
                 value: '${report.participantIds.length}',
                 caption:
-                    context.tr('Actual Participants', 'المشاركون الفعليون'),
+                    'Actual Participants',
                 accent: AppColors.emerald),
           ],
         ),
@@ -421,7 +419,7 @@ class _Photos extends StatelessWidget {
             album == null ? const <String>[] : GalleryRepository.imagesOf(album);
         if (paths.isEmpty) {
           return Text(
-            context.tr('No photos uploaded.', 'لم يتم رفع صور.'),
+            'No photos uploaded.',
             style: Theme.of(context)
                 .textTheme
                 .bodySmall

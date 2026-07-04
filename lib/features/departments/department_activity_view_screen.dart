@@ -41,7 +41,7 @@ class DepartmentActivityViewScreen extends StatelessWidget {
         if (activity == null) {
           return EmptyState(
             icon: Icons.event_busy_outlined,
-            title: context.tr('Activity not found', 'النشاط غير موجود'),
+            title: 'Activity not found',
           );
         }
         return _Body(departmentId: departmentId, activity: activity);
@@ -66,46 +66,43 @@ class _Body extends StatelessWidget {
     final sections = <Widget>[
       DocSection(
         letter: 'A',
-        title: context.tr('Basic Information', 'المعلومات الأساسية'),
+        title: 'Basic Information',
         child: Wrap(
           spacing: AppSpacing.xl,
           runSpacing: AppSpacing.lg,
           children: [
-            DocField(context.tr('Program Title', 'عنوان البرنامج'),
+            DocField('Program Title',
                 p.programTitle),
-            DocField(context.tr('Proposed Date', 'التاريخ المقترح'),
+            DocField('Proposed Date',
                 p.proposedDate),
-            DocField(context.tr('Venue / Location', 'المكان / الموقع'), p.venue),
-            DocField(context.tr('Target Participants', 'المشاركون المستهدفون'),
+            DocField('Venue / Location', p.venue),
+            DocField('Target Participants',
                 p.targetParticipants),
             DocField(
-                context.tr('Expected Number of Participants',
-                    'العدد المتوقع للمشاركين'),
+                'Expected Number of Participants',
                 p.expectedParticipants),
           ],
         ),
       ),
       DocSection(
         letter: 'B',
-        title: context.tr('Objectives', 'الأهداف'),
+        title: 'Objectives',
         child: p.objectives.isEmpty
             ? _empty(context)
             : DocBullets(items: p.objectives),
       ),
       DocSection(
         letter: 'H',
-        title: context.tr('Expected', 'المتوقع'),
+        title: 'Expected',
         child: Wrap(
           spacing: AppSpacing.xl,
           runSpacing: AppSpacing.lg,
           children: [
             DocField(
-                context.tr('Output (Short-term results)',
-                    'المخرجات (نتائج قصيرة المدى)'),
+                'Output (Short-term results)',
                 p.output),
             DocField(
-                context.tr('Outcome (Long-term impact / Changes)',
-                    'النتائج (أثر طويل المدى / تغييرات)'),
+                'Outcome (Long-term impact / Changes)',
                 p.outcome),
           ],
         ),
@@ -128,14 +125,14 @@ class _Body extends StatelessWidget {
               accent: AppColors.emerald,
               meta: [
                 DocMeta(Icons.event_outlined,
-                    context.tr('Proposed Date', 'التاريخ المقترح'),
+                    'Proposed Date',
                     p.proposedDate),
                 DocMeta(Icons.place_outlined,
-                    context.tr('Venue', 'المكان'), p.venue),
+                    'Venue', p.venue),
                 DocMeta(Icons.groups_outlined,
-                    context.tr('Target', 'المستهدف'), p.targetParticipants),
+                    'Target', p.targetParticipants),
                 DocMeta(Icons.tag_outlined,
-                    context.tr('Expected', 'المتوقع'), p.expectedParticipants),
+                    'Expected', p.expectedParticipants),
               ],
             ),
           ),
@@ -151,7 +148,7 @@ class _Body extends StatelessWidget {
   }
 
   Widget _empty(BuildContext context) => Text(
-        context.tr('None.', 'لا يوجد.'),
+        'None.',
         style: Theme.of(context)
             .textTheme
             .bodySmall
@@ -181,7 +178,7 @@ class _BackLink extends StatelessWidget {
             Icon(isArabic ? Icons.arrow_forward : Icons.arrow_back,
                 size: 18, color: AppColors.emerald),
             const SizedBox(width: AppSpacing.sm),
-            Text(context.tr('Back', 'رجوع'),
+            Text('Back',
                 style: Theme.of(context)
                     .textTheme
                     .labelLarge

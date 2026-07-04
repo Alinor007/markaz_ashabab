@@ -80,10 +80,7 @@ class _UsersScreenState extends State<UsersScreen> {
           username: actor,
           action:
               '${user.active ? 'Disabled' : 'Enabled'} user "${user.username}"',
-          actionAr:
-              '${user.active ? 'عطّل' : 'فعّل'} المستخدم «${user.username}»',
           module: 'User Management',
-          moduleAr: 'إدارة المستخدمين',
         );
       case UserAction.delete:
         if (user.id == selfId) {
@@ -107,14 +104,14 @@ class _UsersScreenState extends State<UsersScreen> {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setLocal) => AlertDialog(
-          title: Text(context.tr('Reset Password', 'إعادة تعيين كلمة المرور')),
+          title: Text('Reset Password'),
           content: SizedBox(
             width: 360,
             child: TextField(
               controller: controller,
               obscureText: obscured,
               decoration: InputDecoration(
-                labelText: context.tr('New Password', 'كلمة المرور الجديدة'),
+                labelText: 'New Password',
                 suffixIcon: IconButton(
                   icon: Icon(obscured
                       ? Icons.visibility_outlined
@@ -127,11 +124,11 @@ class _UsersScreenState extends State<UsersScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: Text(context.tr('Cancel', 'إلغاء')),
+              child: Text('Cancel'),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(dialogContext, controller.text),
-              child: Text(context.tr('Reset', 'إعادة تعيين')),
+              child: Text('Reset'),
             ),
           ],
         ),
@@ -149,9 +146,7 @@ class _UsersScreenState extends State<UsersScreen> {
     await audit.log(
       username: actor,
       action: 'Reset password for "${user.username}"',
-      actionAr: 'أعاد تعيين كلمة مرور «${user.username}»',
       module: 'User Management',
-      moduleAr: 'إدارة المستخدمين',
     );
     _toast(ar ? 'تم تحديث كلمة المرور.' : 'Password updated.');
   }
@@ -164,18 +159,16 @@ class _UsersScreenState extends State<UsersScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(context.tr('Delete User', 'حذف المستخدم')),
-        content: Text(context.tr(
-            'Delete "${user.username}"? This cannot be undone.',
-            'حذف «${user.username}»؟ لا يمكن التراجع.')),
+        title: Text('Delete User'),
+        content: Text('Delete "${user.username}"? This cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(context.tr('Cancel', 'إلغاء')),
+            child: Text('Cancel'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(context.tr('Delete', 'حذف')),
+            child: Text('Delete'),
           ),
         ],
       ),
@@ -185,9 +178,7 @@ class _UsersScreenState extends State<UsersScreen> {
     await audit.log(
       username: actor,
       action: 'Deleted user "${user.username}"',
-      actionAr: 'حذف المستخدم «${user.username}»',
       module: 'User Management',
-      moduleAr: 'إدارة المستخدمين',
     );
     _toast(ar ? 'تم حذف المستخدم.' : 'User deleted.');
   }
@@ -215,9 +206,7 @@ class _UsersScreenState extends State<UsersScreen> {
       await audit.log(
         username: actor,
         action: 'Created user "${result.username}"',
-        actionAr: 'أنشأ المستخدم «${result.username}»',
         module: 'User Management',
-        moduleAr: 'إدارة المستخدمين',
       );
       _toast(ar ? 'تم إنشاء المستخدم.' : 'User created.');
     } else {
@@ -233,9 +222,7 @@ class _UsersScreenState extends State<UsersScreen> {
       await audit.log(
         username: actor,
         action: 'Updated user "${result.username}"',
-        actionAr: 'حدّث المستخدم «${result.username}»',
         module: 'User Management',
-        moduleAr: 'إدارة المستخدمين',
       );
       _toast(ar ? 'تم تحديث المستخدم.' : 'User updated.');
     }
@@ -244,7 +231,7 @@ class _UsersScreenState extends State<UsersScreen> {
   @override
   Widget build(BuildContext context) {
     final roles = [
-      context.tr('All Roles', 'كل الأدوار'),
+      'All Roles',
       for (final r in UserRole.values) r.label(context.isArabic),
     ];
 
@@ -254,13 +241,13 @@ class _UsersScreenState extends State<UsersScreen> {
       actions: [
         SearchField(
           width: 240,
-          hint: context.tr('Search users…', 'ابحث عن المستخدمين…'),
+          hint: 'Search users…',
           onChanged: (v) => setState(() => _query = v),
         ),
         FilledButton.icon(
           onPressed: () => _openUserDialog(),
           icon: const Icon(Icons.person_add_alt_1, size: 18),
-          label: Text(context.tr('Create User', 'إنشاء مستخدم')),
+          label: Text('Create User'),
         ),
       ],
       child: Column(
@@ -278,8 +265,7 @@ class _UsersScreenState extends State<UsersScreen> {
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return ErrorState(
-                      title: context.tr('Failed to load users.',
-                          'تعذّر تحميل المستخدمين.'));
+                      title: 'Failed to load users.');
                 }
                 if (!snapshot.hasData) {
                   return const LoadingState();
@@ -288,7 +274,7 @@ class _UsersScreenState extends State<UsersScreen> {
                 if (filtered.isEmpty) {
                   return EmptyState(
                     icon: Icons.group_off_outlined,
-                    title: context.tr('No users found', 'لا يوجد مستخدمون'),
+                    title: 'No users found',
                   );
                 }
                 return ListView.separated(
@@ -366,7 +352,7 @@ class _UserFormDialogState extends State<_UserFormDialog> {
   }
 
   String? _required(String? v) => (v == null || v.trim().isEmpty)
-      ? context.trRead('Required', 'مطلوب')
+      ? 'Required'
       : null;
 
   Future<void> _save() async {
@@ -410,8 +396,8 @@ class _UserFormDialogState extends State<_UserFormDialog> {
     final isEditing = widget.existing != null;
     return AlertDialog(
       title: Text(isEditing
-          ? context.tr('Edit User', 'تعديل المستخدم')
-          : context.tr('Create User', 'إنشاء مستخدم')),
+          ? 'Edit User'
+          : 'Create User'),
       content: SizedBox(
         width: 440,
         child: Form(
@@ -423,15 +409,14 @@ class _UserFormDialogState extends State<_UserFormDialog> {
                 controller: _fullName,
                 validator: _required,
                 decoration: InputDecoration(
-                    labelText: context.tr('Full Name', 'الاسم الكامل')),
+                    labelText: 'Full Name'),
               ),
               const SizedBox(height: AppSpacing.md),
               TextFormField(
                 controller: _fullNameAr,
                 textDirection: TextDirection.rtl,
                 decoration: InputDecoration(
-                    labelText: context.tr('Full Name (Arabic)',
-                        'الاسم الكامل (عربي)')),
+                    labelText: 'Full Name (Arabic)'),
               ),
               const SizedBox(height: AppSpacing.md),
               TextFormField(
@@ -442,10 +427,9 @@ class _UserFormDialogState extends State<_UserFormDialog> {
                 enabled: !isEditing,
                 validator: _required,
                 decoration: InputDecoration(
-                  labelText: context.tr('Username', 'اسم المستخدم'),
+                  labelText: 'Username',
                   helperText: isEditing
-                      ? context.tr('Username cannot be changed',
-                          'لا يمكن تغيير اسم المستخدم')
+                      ? 'Username cannot be changed'
                       : null,
                 ),
               ),
@@ -453,7 +437,7 @@ class _UserFormDialogState extends State<_UserFormDialog> {
               TextFormField(
                 controller: _email,
                 decoration: InputDecoration(
-                    labelText: context.tr('Email', 'البريد الإلكتروني')),
+                    labelText: 'Email'),
               ),
               if (!isEditing) ...[
                 const SizedBox(height: AppSpacing.md),
@@ -461,18 +445,17 @@ class _UserFormDialogState extends State<_UserFormDialog> {
                   controller: _password,
                   obscureText: true,
                   validator: (v) => (v == null || v.length < 4)
-                      ? context.trRead('At least 4 characters',
-                          '4 أحرف على الأقل')
+                      ? 'At least 4 characters'
                       : null,
                   decoration: InputDecoration(
-                      labelText: context.tr('Password', 'كلمة المرور')),
+                      labelText: 'Password'),
                 ),
               ],
               const SizedBox(height: AppSpacing.md),
               DropdownButtonFormField<UserRole>(
                 initialValue: _role,
                 decoration:
-                    InputDecoration(labelText: context.tr('Role', 'الدور')),
+                    InputDecoration(labelText: 'Role'),
                 items: [
                   for (final r in UserRole.values)
                     DropdownMenuItem(
@@ -496,7 +479,7 @@ class _UserFormDialogState extends State<_UserFormDialog> {
                     return DropdownButtonFormField<String>(
                       initialValue: value,
                       decoration: InputDecoration(
-                          labelText: context.tr('Department', 'القسم')),
+                          labelText: 'Department'),
                       items: [
                         for (final d in depts)
                           DropdownMenuItem(
@@ -508,7 +491,7 @@ class _UserFormDialogState extends State<_UserFormDialog> {
                       ],
                       onChanged: (v) => setState(() => _departmentId = v),
                       validator: (v) => (v == null || v.isEmpty)
-                          ? context.trRead('Required', 'مطلوب')
+                          ? 'Required'
                           : null,
                     );
                   },
@@ -521,7 +504,7 @@ class _UserFormDialogState extends State<_UserFormDialog> {
       actions: [
         TextButton(
           onPressed: _saving ? null : () => Navigator.pop(context),
-          child: Text(context.tr('Cancel', 'إلغاء')),
+          child: Text('Cancel'),
         ),
         FilledButton(
           onPressed: _saving ? null : _save,
@@ -530,7 +513,7 @@ class _UserFormDialogState extends State<_UserFormDialog> {
                   width: 18,
                   height: 18,
                   child: CircularProgressIndicator(strokeWidth: 2))
-              : Text(context.tr('Save', 'حفظ')),
+              : Text('Save'),
         ),
       ],
     );

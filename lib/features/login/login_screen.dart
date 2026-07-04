@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/auth/session_controller.dart';
-import '../../core/i18n/locale_controller.dart';
 import '../../core/i18n/strings.dart';
 import '../../core/patterns/geometric_pattern.dart';
 import '../../core/theme/app_colors.dart';
@@ -59,13 +58,9 @@ class _LoginScreenState extends State<LoginScreen> {
   String _errorMessage(bool isArabic) {
     switch (_errorKey) {
       case 'empty':
-        return isArabic
-            ? 'الرجاء إدخال اسم المستخدم وكلمة المرور.'
-            : 'Please enter your username and password.';
+        return 'Please enter your username and password.';
       case 'invalid':
-        return isArabic
-            ? 'اسم المستخدم أو كلمة المرور غير صحيحة.'
-            : 'Invalid username or password.';
+        return 'Invalid username or password.';
       default:
         return '';
     }
@@ -109,11 +104,6 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Align(
-                alignment: AlignmentDirectional.topEnd,
-                child: _MiniLanguageToggle(),
-              ),
-              const SizedBox(height: AppSpacing.lg),
               Text(s.loginTitle, style: theme.textTheme.headlineMedium),
               const SizedBox(height: AppSpacing.sm),
               Text(s.loginSubtitle, style: theme.textTheme.bodyMedium),
@@ -156,8 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
-                        _errorMessage(
-                            context.watch<LocaleController>().isArabic),
+                        _errorMessage(false),
                         style: theme.textTheme.bodySmall
                             ?.copyWith(color: AppColors.error),
                       ),
@@ -189,26 +178,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-/// A compact EN/ع toggle for the login panel.
-class _MiniLanguageToggle extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final locale = context.watch<LocaleController>();
-    return OutlinedButton.icon(
-      onPressed: locale.toggle,
-      icon: const Icon(Icons.translate, size: 16),
-      label: Text(locale.isArabic ? 'English' : 'العربية'),
-      style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.navy,
-        side: const BorderSide(color: AppColors.borderStrong),
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.sm,
-        ),
-      ),
-    );
-  }
-}
 
 class _BrandPanel extends StatelessWidget {
   const _BrandPanel();

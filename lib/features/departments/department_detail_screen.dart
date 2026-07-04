@@ -50,7 +50,7 @@ class DepartmentDetailScreen extends StatelessWidget {
         if (dept == null) {
           return EmptyState(
             icon: Icons.account_tree_outlined,
-            title: context.tr('Department not found', 'القسم غير موجود'),
+            title: 'Department not found',
           );
         }
         return _DetailBody(department: dept);
@@ -83,7 +83,7 @@ class _DetailBody extends StatelessWidget {
                     Icon(isArabic ? Icons.arrow_forward : Icons.arrow_back,
                         size: 18, color: AppColors.emerald),
                     const SizedBox(width: AppSpacing.sm),
-                    Text(context.tr('Back to Departments', 'العودة إلى الأقسام'),
+                    Text('Back to Departments',
                         style: Theme.of(context)
                             .textTheme
                             .labelLarge
@@ -122,10 +122,10 @@ class _DetailBody extends StatelessWidget {
                 unselectedLabelColor: AppColors.textMuted,
                 labelStyle: AppTypography.textTheme.labelLarge,
                 tabs: [
-                  Tab(text: context.tr('Overview', 'نظرة عامة')),
-                  Tab(text: context.tr('Staffs', 'الطاقم')),
-                  Tab(text: context.tr('Activities', 'الأنشطة')),
-                  Tab(text: context.tr('Reports', 'التقارير')),
+                  Tab(text: 'Overview'),
+                  Tab(text: 'Staffs'),
+                  Tab(text: 'Activities'),
+                  Tab(text: 'Reports'),
                 ],
               ),
             ),
@@ -170,12 +170,12 @@ class _OverviewTab extends StatelessWidget {
         children: [
           InfoPanel(
             icon: Icons.info_outline,
-            title: context.tr('About', 'نبذة'),
+            title: 'About',
             action: editAction,
             child: Text(
               (isArabic ? department.descriptionAr : department.description)
                       .isEmpty
-                  ? context.tr('No description provided.', 'لا يوجد وصف.')
+                  ? 'No description provided.'
                   : (isArabic
                       ? department.descriptionAr
                       : department.description),
@@ -234,7 +234,7 @@ class _StaffsTab extends StatelessWidget {
     final deptRepo = context.read<DepartmentRepository>();
     final memberRepo = context.read<MemberRepository>();
     final picked = await pickMember(context, memberRepo,
-        title: context.trRead('Assign Head', 'تعيين رئيس القسم'));
+        title: 'Assign Head');
     if (picked == null || !context.mounted) return;
     await deptRepo.assignHead(department.id, picked.id);
   }
@@ -254,7 +254,7 @@ class _StaffsTab extends StatelessWidget {
       if (head != null) head.id,
     };
     final picked = await pickMember(context, memberRepo,
-        title: context.trRead('Add Staff', 'إضافة عضو'), excludeIds: exclude);
+        title: 'Add Staff', excludeIds: exclude);
     if (picked == null || !context.mounted) return;
     await deptRepo.addStaff(department.id, picked.id);
   }
@@ -274,11 +274,11 @@ class _StaffsTab extends StatelessWidget {
         children: [
           InfoPanel(
             icon: Icons.workspace_premium_outlined,
-            title: context.tr('Head of Department', 'رئيس القسم'),
+            title: 'Head of Department',
             action: canManage
                 ? _StaffActionButton(
                     icon: Icons.person_search_outlined,
-                    label: context.tr('Assign', 'تعيين'),
+                    label: 'Assign',
                     onPressed: () => _assignHead(context),
                   )
                 : null,
@@ -288,13 +288,13 @@ class _StaffsTab extends StatelessWidget {
                 final head = snap.data;
                 if (head == null) {
                   return _UnassignedRow(
-                      label: context.tr('Unassigned', 'غير معيّن'));
+                      label: 'Unassigned');
                 }
                 return _MemberRow(
                   member: head,
                   trailing: canManage
                       ? IconButton(
-                          tooltip: context.tr('Clear', 'مسح'),
+                          tooltip: 'Clear',
                           icon: const Icon(Icons.person_remove_outlined,
                               size: 18),
                           onPressed: () => _clearHead(context),
@@ -307,11 +307,11 @@ class _StaffsTab extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           InfoPanel(
             icon: Icons.groups_outlined,
-            title: context.tr('Department Staffs', 'طاقم القسم'),
+            title: 'Department Staffs',
             action: canManage
                 ? _StaffActionButton(
                     icon: Icons.person_add_alt_1_outlined,
-                    label: context.tr('Add', 'إضافة'),
+                    label: 'Add',
                     onPressed: () => _addStaff(context),
                   )
                 : null,
@@ -321,7 +321,7 @@ class _StaffsTab extends StatelessWidget {
                 final staff = snap.data ?? const <Member>[];
                 if (staff.isEmpty) {
                   return Text(
-                    context.tr('No staff added yet', 'لم تتم إضافة طاقم بعد'),
+                    'No staff added yet',
                     style: Theme.of(context)
                         .textTheme
                         .bodySmall
@@ -336,7 +336,7 @@ class _StaffsTab extends StatelessWidget {
                         member: staff[i],
                         trailing: canManage
                             ? IconButton(
-                                tooltip: context.tr('Remove', 'إزالة'),
+                                tooltip: 'Remove',
                                 icon: const Icon(Icons.delete_outline,
                                     size: 18, color: AppColors.error),
                                 onPressed: () =>
@@ -460,7 +460,7 @@ class _EditDepartmentButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      tooltip: context.tr('Edit', 'تعديل'),
+      tooltip: 'Edit',
       icon: const Icon(Icons.edit_outlined, size: 18),
       color: AppColors.emerald,
       visualDensity: VisualDensity.compact,
@@ -522,7 +522,7 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
             child: FilledButton.icon(
               onPressed: () => _add(context, repo),
               icon: const Icon(Icons.add, size: 18),
-              label: Text(context.tr('Add Activity', 'إضافة نشاط')),
+              label: Text('Add Activity'),
             ),
           ),
         if (canManage) const SizedBox(height: AppSpacing.md),
@@ -535,7 +535,7 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
               if (items.isEmpty) {
                 return EmptyState(
                   icon: Icons.event_busy_outlined,
-                  title: context.tr('No activities yet', 'لا توجد أنشطة بعد'),
+                  title: 'No activities yet',
                 );
               }
               final filtered = _apply(items);
@@ -554,8 +554,7 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
                     child: filtered.isEmpty
                         ? EmptyState(
                             icon: Icons.filter_alt_off_outlined,
-                            title: context.tr(
-                                'No matching activities', 'لا توجد نتائج مطابقة'),
+                            title: 'No matching activities',
                           )
                         : _PagedList(
                             shownCount: shown.length,
@@ -596,13 +595,12 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
       );
       if (context.mounted) {
         showAppSnackBar(
-            context, context.trRead('Activity saved.', 'تم حفظ النشاط.'));
+            context, 'Activity saved.');
       }
     } catch (e) {
       if (context.mounted) {
         showAppSnackBar(
-            context, context.trRead('Could not save activity: $e',
-                'تعذّر حفظ النشاط: $e'),
+            context, 'Could not save activity: $e',
             tone: SnackTone.error);
       }
     }
@@ -623,13 +621,12 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
           formData: r.formData);
       if (context.mounted) {
         showAppSnackBar(
-            context, context.trRead('Activity updated.', 'تم تحديث النشاط.'));
+            context, 'Activity updated.');
       }
     } catch (e) {
       if (context.mounted) {
         showAppSnackBar(
-            context, context.trRead('Could not save activity: $e',
-                'تعذّر حفظ النشاط: $e'),
+            context, 'Could not save activity: $e',
             tone: SnackTone.error);
       }
     }
@@ -638,7 +635,7 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
   Future<void> _delete(
       BuildContext context, DepartmentRepository repo, DeptActivity a) async {
     final ok = await confirmDialog(context,
-        title: context.trRead('Delete activity?', 'حذف النشاط؟'),
+        title: 'Delete activity?',
         message: a.title);
     if (ok) await repo.deleteActivity(a.id);
   }
@@ -667,12 +664,12 @@ class _ActivityFilterBar extends StatelessWidget {
       children: [
         SearchField(
           width: 240,
-          hint: context.tr('Search activities…', 'ابحث عن الأنشطة…'),
+          hint: 'Search activities…',
           onChanged: onQuery,
         ),
         FilterBar(
           options: [
-            context.tr('All', 'الكل'),
+            'All',
             for (final s in ActivityStatus.values) s.label(context.isArabic),
           ],
           selectedIndex: statusFilter,
@@ -708,13 +705,13 @@ class _ReportFilterBar extends StatelessWidget {
       children: [
         SearchField(
           width: 240,
-          hint: context.tr('Search reports…', 'ابحث عن التقارير…'),
+          hint: 'Search reports…',
           onChanged: onQuery,
         ),
         if (years.length > 1)
           FilterBar(
             options: [
-              context.tr('All Years', 'كل السنوات'),
+              'All Years',
               for (final y in years) '$y',
             ],
             selectedIndex: yearFilter == null ? 0 : years.indexOf(yearFilter!) + 1,
@@ -757,8 +754,7 @@ class _PagedList extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: onLoadMore,
               icon: const Icon(Icons.expand_more, size: 18),
-              label: Text(context.tr('Load more (${total - shownCount})',
-                  'تحميل المزيد (${total - shownCount})')),
+              label: Text(context.tr('Load more (${total - shownCount})')),
             ),
           ),
       ],
@@ -858,7 +854,7 @@ class _ActivityTile extends StatelessWidget {
                                 size: 14, color: AppColors.textFaint),
                             const SizedBox(width: AppSpacing.xs),
                             Text(
-                              '${activity.attendance} ${context.tr('attended', 'حضروا')}',
+                              '${activity.attendance} ${'attended'}',
                               style: theme.textTheme.bodySmall,
                             ),
                           ],
@@ -892,10 +888,10 @@ class _ActivityTile extends StatelessWidget {
                       itemBuilder: (context) => [
                         PopupMenuItem(
                             value: 'edit',
-                            child: Text(context.trRead('Edit', 'تعديل'))),
+                            child: Text('Edit')),
                         PopupMenuItem(
                             value: 'delete',
-                            child: Text(context.trRead('Delete', 'حذف'))),
+                            child: Text('Delete')),
                       ],
                     ),
                   )
@@ -958,7 +954,7 @@ class _ReportsTabState extends State<_ReportsTab> {
             child: FilledButton.icon(
               onPressed: () => _add(context, repo),
               icon: const Icon(Icons.add, size: 18),
-              label: Text(context.tr('Add Report', 'إضافة تقرير')),
+              label: Text('Add Report'),
             ),
           ),
         if (canManage) const SizedBox(height: AppSpacing.md),
@@ -971,7 +967,7 @@ class _ReportsTabState extends State<_ReportsTab> {
               if (reports.isEmpty) {
                 return EmptyState(
                   icon: Icons.description_outlined,
-                  title: context.tr('No reports yet', 'لا توجد تقارير بعد'),
+                  title: 'No reports yet',
                 );
               }
               final years = reports.map((r) => r.year).where((y) => y > 0).toSet().toList()
@@ -994,8 +990,7 @@ class _ReportsTabState extends State<_ReportsTab> {
                     child: filtered.isEmpty
                         ? EmptyState(
                             icon: Icons.filter_alt_off_outlined,
-                            title: context.tr(
-                                'No matching reports', 'لا توجد تقارير مطابقة'),
+                            title: 'No matching reports',
                           )
                         : LayoutBuilder(
                             builder: (context, constraints) {
@@ -1041,8 +1036,7 @@ class _ReportsTabState extends State<_ReportsTab> {
                                         icon: const Icon(Icons.expand_more,
                                             size: 18),
                                         label: Text(context.tr(
-                                            'Load more (${filtered.length - shown.length})',
-                                            'تحميل المزيد (${filtered.length - shown.length})')),
+                                            'Load more (${filtered.length - shown.length})')),
                                       ),
                                     ],
                                   ],
@@ -1083,13 +1077,12 @@ class _ReportsTabState extends State<_ReportsTab> {
       );
       if (context.mounted) {
         showAppSnackBar(
-            context, context.trRead('Report saved.', 'تم حفظ التقرير.'));
+            context, 'Report saved.');
       }
     } catch (e) {
       if (context.mounted) {
         showAppSnackBar(
-            context, context.trRead('Could not save report: $e',
-                'تعذّر حفظ التقرير: $e'),
+            context, 'Could not save report: $e',
             tone: SnackTone.error);
       }
     }
@@ -1123,13 +1116,12 @@ class _ReportsTabState extends State<_ReportsTab> {
       );
       if (context.mounted) {
         showAppSnackBar(
-            context, context.trRead('Report updated.', 'تم تحديث التقرير.'));
+            context, 'Report updated.');
       }
     } catch (e) {
       if (context.mounted) {
         showAppSnackBar(
-            context, context.trRead('Could not save report: $e',
-                'تعذّر حفظ التقرير: $e'),
+            context, 'Could not save report: $e',
             tone: SnackTone.error);
       }
     }
@@ -1139,7 +1131,7 @@ class _ReportsTabState extends State<_ReportsTab> {
       BuildContext context, ReportRepository repo, Report report) async {
     final galleryRepo = context.read<GalleryRepository>();
     final ok = await confirmDialog(context,
-        title: context.trRead('Delete report?', 'حذف التقرير؟'),
+        title: 'Delete report?',
         message: report.title);
     if (!ok) return;
     // Remove the linked photo album (and its files) before the report; the DB

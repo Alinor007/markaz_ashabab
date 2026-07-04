@@ -69,13 +69,12 @@ class _GroupDescription extends StatelessWidget {
   Future<void> _edit(
       BuildContext context, LeadershipGroupInfoData? info) async {
     final desc = TextEditingController(text: info?.description ?? '');
-    final descAr = TextEditingController(text: info?.descriptionAr ?? '');
     final repo = context.read<LeaderRepository>();
     final ok = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: Text(context.tr('Edit Description', 'تعديل الوصف')),
+        title: Text('Edit Description'),
         content: SizedBox(
           width: 480,
           child: SingleChildScrollView(
@@ -89,18 +88,7 @@ class _GroupDescription extends StatelessWidget {
                   minLines: 3,
                   maxLines: 8,
                   decoration: InputDecoration(
-                      labelText: context.tr('Description', 'الوصف'),
-                      alignLabelWithHint: true),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextField(
-                  controller: descAr,
-                  minLines: 3,
-                  maxLines: 8,
-                  textDirection: TextDirection.rtl,
-                  decoration: InputDecoration(
-                      labelText:
-                          context.tr('Description (Arabic)', 'الوصف (عربي)'),
+                      labelText: 'Description',
                       alignLabelWithHint: true),
                 ),
               ],
@@ -110,19 +98,17 @@ class _GroupDescription extends StatelessWidget {
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: Text(context.tr('Cancel', 'إلغاء'))),
+              child: Text('Cancel')),
           FilledButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: Text(context.tr('Save', 'حفظ'))),
+              child: Text('Save')),
         ],
       ),
     );
     if (ok == true && context.mounted) {
-      await repo.setGroupDescription(
-          code, desc.text.trim(), descAr.text.trim());
+      await repo.setGroupDescription(code, desc.text.trim(), '');
     }
     desc.dispose();
-    descAr.dispose();
   }
 
   @override
@@ -151,13 +137,12 @@ class _GroupDescription extends StatelessWidget {
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
-                        context.tr('Functions of this group',
-                            'وظائف هذه المجموعة'),
+                        'Functions of this group',
                         style: Theme.of(context).textTheme.titleSmall),
                   ),
                   if (canManage)
                     IconButton(
-                      tooltip: context.tr('Edit', 'تعديل'),
+                      tooltip: 'Edit',
                       visualDensity: VisualDensity.compact,
                       icon: const Icon(Icons.edit_outlined,
                           size: 18, color: AppColors.emerald),
@@ -168,7 +153,7 @@ class _GroupDescription extends StatelessWidget {
               const SizedBox(height: AppSpacing.sm),
               Text(
                 text.trim().isEmpty
-                    ? context.tr('No description provided.', 'لا يوجد وصف.')
+                    ? 'No description provided.'
                     : text,
                 textDirection:
                     isArabic ? TextDirection.rtl : TextDirection.ltr,
@@ -239,7 +224,7 @@ class _PositionsGroup extends StatelessWidget {
 
   Future<void> _add(BuildContext context) async {
     final r = await NameFormDialog.show(context,
-        title: context.trRead('Add Position', 'إضافة منصب'));
+        title: 'Add Position');
     if (r == null || !context.mounted) return;
     await _leaders(context)
         .addPosition(code: code, title: r.name, titleAr: r.nameAr);
@@ -248,7 +233,7 @@ class _PositionsGroup extends StatelessWidget {
   Future<void> _edit(BuildContext context, Leader p) async {
     final r = await NameFormDialog.show(
       context,
-      title: context.trRead('Edit Position', 'تعديل المنصب'),
+      title: 'Edit Position',
       name: p.position,
       nameAr: p.positionAr,
     );
@@ -259,10 +244,9 @@ class _PositionsGroup extends StatelessWidget {
   Future<void> _delete(BuildContext context, Leader p) async {
     final ok = await confirmDialog(
       context,
-      title: context.trRead('Remove position?', 'إزالة المنصب؟'),
-      message: context.trRead(
+      title: 'Remove position?',
+      message:
           'Remove the "${p.position}" position? This cannot be undone.',
-          'إزالة منصب «${p.positionAr}»؟ لا يمكن التراجع.'),
     );
     if (!ok || !context.mounted) return;
     await _leaders(context).delete(p.id);
@@ -271,16 +255,14 @@ class _PositionsGroup extends StatelessWidget {
   Future<void> _assign(BuildContext context, Leader p) async {
     final repo = context.read<MemberRepository>();
     final picked = await pickMember(context, repo,
-        title: context.trRead('Assign a Member', 'تعيين عضو'));
+        title: 'Assign a Member');
     if (picked == null || !context.mounted) return;
     await _leaders(context).assignMember(p.id, picked.id);
     if (!context.mounted) return;
     await _audit(context).log(
       username: _actor(context),
       action: 'Assigned "${picked.fullName}" as ${p.position}',
-      actionAr: 'عيّن «${picked.fullName}» في منصب ${p.positionAr}',
       module: 'Leadership',
-      moduleAr: 'القيادة',
     );
   }
 
@@ -290,9 +272,7 @@ class _PositionsGroup extends StatelessWidget {
     await _audit(context).log(
       username: _actor(context),
       action: 'Vacated the ${p.position} position',
-      actionAr: 'أخلى منصب ${p.positionAr}',
       module: 'Leadership',
-      moduleAr: 'القيادة',
     );
   }
 
@@ -307,7 +287,7 @@ class _PositionsGroup extends StatelessWidget {
             child: FilledButton.icon(
               onPressed: () => _add(context),
               icon: const Icon(Icons.add, size: 18),
-              label: Text(context.tr('Add Position', 'إضافة منصب')),
+              label: Text('Add Position'),
             ),
           ),
         if (canManage) const SizedBox(height: AppSpacing.lg),
@@ -322,9 +302,9 @@ class _PositionsGroup extends StatelessWidget {
             if (positions.isEmpty) {
               return EmptyState(
                 icon: Icons.workspace_premium_outlined,
-                title: context.tr('No positions yet', 'لا توجد مناصب بعد'),
+                title: 'No positions yet',
                 message: canManage
-                    ? context.tr('Add the first position.', 'أضف أول منصب.')
+                    ? 'Add the first position.'
                     : null,
               );
             }
@@ -640,7 +620,7 @@ class _PositionCard extends StatelessWidget {
     final isArabic = context.isArabic;
     final office = isArabic ? position.positionAr : position.position;
     final name = member?.displayName(isArabic) ??
-        context.tr('Vacant Position', 'منصب شاغر');
+        'Vacant Position';
     final secondaryAr =
         (!isArabic && member != null && member.nameAr.trim().isNotEmpty)
             ? member.nameAr
@@ -735,7 +715,7 @@ class _ManageMenu extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: PopupMenuButton<String>(
-        tooltip: context.trRead('Manage', 'إدارة'),
+        tooltip: 'Manage',
         icon: const Icon(Icons.more_vert, size: 18, color: AppColors.charcoal),
         onSelected: (v) {
           if (v == 'assign') onAssign();
@@ -747,18 +727,18 @@ class _ManageMenu extends StatelessWidget {
           PopupMenuItem(
               value: 'assign',
               child: Text(member == null
-                  ? context.trRead('Assign member', 'تعيين عضو')
-                  : context.trRead('Reassign member', 'إعادة تعيين عضو'))),
+                  ? 'Assign member'
+                  : 'Reassign member')),
           PopupMenuItem(
               value: 'edit',
-              child: Text(context.trRead('Edit position', 'تعديل المنصب'))),
+              child: Text('Edit position')),
           if (member != null)
             PopupMenuItem(
                 value: 'clear',
-                child: Text(context.trRead('Unassign', 'إلغاء التعيين'))),
+                child: Text('Unassign')),
           PopupMenuItem(
               value: 'delete',
-              child: Text(context.trRead('Delete position', 'حذف المنصب'))),
+              child: Text('Delete position')),
         ],
       ),
     );

@@ -99,8 +99,8 @@ class _MinutesReportFormState extends State<_MinutesReportForm> {
                     Expanded(
                       child: Text(
                         widget.existing == null
-                            ? context.tr('Add Report', 'إضافة تقرير')
-                            : context.tr('Edit Report', 'تعديل التقرير'),
+                            ? 'Add Report'
+                            : 'Edit Report',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
@@ -121,9 +121,9 @@ class _MinutesReportFormState extends State<_MinutesReportForm> {
                       TextFormField(
                         controller: _title,
                         decoration: InputDecoration(
-                            labelText: context.tr('Title', 'العنوان')),
+                            labelText: 'Title'),
                         validator: (v) => (v == null || v.trim().isEmpty)
-                            ? context.trRead('Required', 'مطلوب')
+                            ? 'Required'
                             : null,
                       ),
                       const SizedBox(height: AppSpacing.md),
@@ -136,7 +136,7 @@ class _MinutesReportFormState extends State<_MinutesReportForm> {
                               controller: _year,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
-                                  labelText: context.tr('Year', 'السنة')),
+                                  labelText: 'Year'),
                             ),
                           ),
                           const SizedBox(width: AppSpacing.lg),
@@ -157,12 +157,12 @@ class _MinutesReportFormState extends State<_MinutesReportForm> {
                   children: [
                     TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text(context.tr('Cancel', 'إلغاء'))),
+                        child: Text('Cancel')),
                     const SizedBox(width: AppSpacing.sm),
                     FilledButton.icon(
                       onPressed: _save,
                       icon: const Icon(Icons.save_outlined, size: 18),
-                      label: Text(context.tr('Save', 'حفظ')),
+                      label: Text('Save'),
                     ),
                   ],
                 ),
@@ -180,7 +180,7 @@ class _MinutesReportFormState extends State<_MinutesReportForm> {
     return DropdownButtonFormField<String>(
       initialValue: _type,
       isExpanded: true,
-      decoration: InputDecoration(labelText: context.tr('Type', 'النوع')),
+      decoration: InputDecoration(labelText: 'Type'),
       items: [
         for (final t in ReportType.values)
           if (t != ReportType.programCompletion)
@@ -198,19 +198,19 @@ class _MinutesReportFormState extends State<_MinutesReportForm> {
         Row(
           children: [
             Expanded(
-              child: Text(context.tr('Attached Images', 'الصور المرفقة'),
+              child: Text('Attached Images',
                   style: Theme.of(context).textTheme.labelMedium),
             ),
             TextButton.icon(
               onPressed: _addImage,
               icon: const Icon(Icons.add_photo_alternate_outlined, size: 18),
-              label: Text(context.tr('Add Image', 'إضافة صورة')),
+              label: Text('Add Image'),
             ),
           ],
         ),
         const SizedBox(height: AppSpacing.xs),
         if (_images.isEmpty)
-          Text(context.tr('No images attached.', 'لا توجد صور مرفقة.'),
+          Text('No images attached.',
               style: Theme.of(context)
                   .textTheme
                   .bodySmall

@@ -114,8 +114,7 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
       actions: [
         SearchField(
           width: 260,
-          hint: context.tr('Search name, occupation, contact…',
-              'ابحث بالاسم أو المهنة أو رقم التواصل…'),
+          hint: 'Search name, occupation, contact…',
           onChanged: (v) => setState(() {
             _query = v;
             _resetPage();
@@ -124,7 +123,7 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
         FilledButton.icon(
           onPressed: _addMember,
           icon: const Icon(Icons.person_add_alt_1, size: 18),
-          label: Text(context.tr('Add Member', 'إضافة عضو')),
+          label: Text('Add Member'),
         ),
       ],
       child: StreamBuilder<List<Member>>(
@@ -170,13 +169,11 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
                     ? EmptyState(
                         icon: Icons.person_off_outlined,
                         title: all.isEmpty
-                            ? context.tr('No members yet', 'لا يوجد أعضاء بعد')
-                            : context.tr('No matches', 'لا توجد نتائج'),
+                            ? 'No members yet'
+                            : 'No matches',
                         message: all.isEmpty
-                            ? context.tr('Add the first member to begin.',
-                                'أضف أول عضو للبدء.')
-                            : context.tr('Try adjusting your filters.',
-                                'حاول تعديل عوامل التصفية.'),
+                            ? 'Add the first member to begin.'
+                            : 'Try adjusting your filters.',
                       )
                     : ListView.separated(
                         itemCount: pageItems.length,
@@ -234,16 +231,14 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
     final repo = context.read<MemberRepository>();
     final ok = await confirmDialog(
       context,
-      title: context.trRead('Delete member?', 'حذف العضو؟'),
-      message: context.trRead(
-        '${m.fullName} and all their records will be permanently deleted.',
-        'سيُحذف ${m.displayName(true)} وجميع سجلاته نهائيًا.',
-      ),
+      title: 'Delete member?',
+      message:
+          '${m.fullName} and all their records will be permanently deleted.',
     );
     if (!ok) return;
     await repo.deleteMember(m.id);
     if (mounted) {
-      showAppSnackBar(context, context.trRead('Member deleted.', 'تم حذف العضو.'),
+      showAppSnackBar(context, 'Member deleted.',
           tone: SnackTone.info);
     }
   }
@@ -281,34 +276,34 @@ class _FilterRow extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         _CountChip(
-            label: context.tr('Showing', 'المعروض'),
+            label: 'Showing',
             value: '$shown / $total',
             color: AppColors.navy),
         FilterBar(
           options: [
-            context.tr('All', 'الكل'),
-            context.tr('Active', 'نشط'),
-            context.tr('Inactive', 'غير نشط'),
+            'All',
+            'Active',
+            'Inactive',
           ],
           selectedIndex: statusFilter,
           onSelected: onStatus,
         ),
         AppDropdown<String?>(
-          label: context.tr('Area', 'المنطقة'),
+          label: 'Area',
           value: areaFilter,
           items: {
-            null: context.tr('All Areas', 'كل المناطق'),
+            null: 'All Areas',
             for (final a in areas) a.id: isArabic ? a.nameAr : a.name,
           },
           onChanged: onArea,
         ),
         AppDropdown<int?>(
-          label: context.tr('Level', 'المستوى'),
+          label: 'Level',
           value: levelFilter,
           items: {
-            null: context.tr('All Levels', 'كل المستويات'),
+            null: 'All Levels',
             for (final l in kTarbiyaLevels)
-              l: context.tr('Level $l', 'المستوى $l'),
+              l: 'Level $l',
           },
           onChanged: onLevel,
         ),
@@ -422,7 +417,7 @@ class _MemberRow extends StatelessWidget {
               _StatusPill(active: member.isActive),
               const SizedBox(width: AppSpacing.sm),
               PopupMenuButton<String>(
-                tooltip: context.tr('Member actions', 'إجراءات العضو'),
+                tooltip: 'Member actions',
                 icon: const Icon(Icons.more_vert, color: AppColors.textMuted),
                 onSelected: (v) {
                   switch (v) {
@@ -439,19 +434,19 @@ class _MemberRow extends StatelessWidget {
                     value: 'view',
                     child: _MenuRow(
                         icon: Icons.visibility_outlined,
-                        label: context.trRead('View Profile', 'عرض الملف')),
+                        label: 'View Profile'),
                   ),
                   PopupMenuItem(
                     value: 'edit',
                     child: _MenuRow(
                         icon: Icons.edit_outlined,
-                        label: context.trRead('Edit', 'تعديل')),
+                        label: 'Edit'),
                   ),
                   PopupMenuItem(
                     value: 'delete',
                     child: _MenuRow(
                         icon: Icons.delete_outline,
-                        label: context.trRead('Delete', 'حذف'),
+                        label: 'Delete',
                         danger: true),
                   ),
                 ],
@@ -479,7 +474,7 @@ class _LevelChip extends StatelessWidget {
         border: Border.all(color: AppColors.border),
       ),
       child: Text(
-        level <= 0 ? '—' : context.tr('L$level', 'م$level'),
+        level <= 0 ? '—' : 'L$level',
         style: Theme.of(context)
             .textTheme
             .labelSmall
@@ -504,7 +499,7 @@ class _StatusPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Text(
-        active ? context.tr('Active', 'نشط') : context.tr('Inactive', 'غير نشط'),
+        active ? 'Active' : 'Inactive',
         style: Theme.of(context)
             .textTheme
             .labelSmall
@@ -559,23 +554,22 @@ class _Pagination extends StatelessWidget {
     return Row(
       children: [
         Text(
-          context.tr('$start–$end of $total', '$start–$end من $total'),
+          '$start–$end of $total',
           style: theme.textTheme.bodySmall,
         ),
         const Spacer(),
         IconButton(
           onPressed: onPrev,
-          tooltip: context.tr('Previous', 'السابق'),
+          tooltip: 'Previous',
           icon: Icon(context.isArabic ? Icons.chevron_right : Icons.chevron_left),
         ),
         Text(
-          context.tr('Page ${page + 1} of $pageCount',
-              'صفحة ${page + 1} من $pageCount'),
+          context.tr('Page ${page + 1} of $pageCount'),
           style: theme.textTheme.labelMedium,
         ),
         IconButton(
           onPressed: onNext,
-          tooltip: context.tr('Next', 'التالي'),
+          tooltip: 'Next',
           icon: Icon(context.isArabic ? Icons.chevron_left : Icons.chevron_right),
         ),
       ],
@@ -607,7 +601,7 @@ class _AddLocationDialogState extends State<_AddLocationDialog> {
 
     return AlertDialog(
       backgroundColor: AppColors.surface,
-      title: Text(context.tr('Add Member — Location', 'إضافة عضو — الموقع')),
+      title: Text('Add Member — Location'),
       content: SizedBox(
         width: 380,
         child: Column(
@@ -615,8 +609,7 @@ class _AddLocationDialogState extends State<_AddLocationDialog> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              context.tr('Choose where this member belongs.',
-                  'اختر الموقع الذي ينتمي إليه هذا العضو.'),
+              'Choose where this member belongs.',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: AppSpacing.lg),
@@ -624,7 +617,7 @@ class _AddLocationDialogState extends State<_AddLocationDialog> {
               initialValue: _areaId,
               isExpanded: true,
               decoration:
-                  InputDecoration(labelText: context.tr('Area', 'المنطقة')),
+                  InputDecoration(labelText: 'Area'),
               items: [
                 for (final a in widget.areas)
                   DropdownMenuItem(
@@ -640,7 +633,7 @@ class _AddLocationDialogState extends State<_AddLocationDialog> {
               initialValue: _shubaId,
               isExpanded: true,
               decoration:
-                  InputDecoration(labelText: context.tr("Shu'ba", 'الشُّعبة')),
+                  InputDecoration(labelText: "Shu'ba"),
               items: [
                 for (final s in shubas)
                   DropdownMenuItem(
@@ -655,12 +648,12 @@ class _AddLocationDialogState extends State<_AddLocationDialog> {
               initialValue: _level,
               isExpanded: true,
               decoration:
-                  InputDecoration(labelText: context.tr('Level', 'المستوى')),
+                  InputDecoration(labelText: 'Level'),
               items: [
                 for (final l in kTarbiyaLevels)
                   DropdownMenuItem(
                       value: l,
-                      child: Text(context.tr('Level $l', 'المستوى $l'))),
+                      child: Text('Level $l')),
               ],
               onChanged: (v) => setState(() => _level = v ?? 1),
             ),
@@ -670,14 +663,14 @@ class _AddLocationDialogState extends State<_AddLocationDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(context.tr('Cancel', 'إلغاء')),
+          child: Text('Cancel'),
         ),
         FilledButton(
           onPressed: _shubaId == null
               ? null
               : () => Navigator.of(context)
                   .pop((shubaId: _shubaId!, level: _level)),
-          child: Text(context.tr('Continue', 'متابعة')),
+          child: Text('Continue'),
         ),
       ],
     );

@@ -146,7 +146,7 @@ class _FormStamp extends StatelessWidget {
         color: AppColors.goldTint.withValues(alpha: 0.5),
       ),
       child: Text(
-        '${context.tr('FORM', 'نموذج')} $code',
+        '${'FORM'} $code',
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: AppColors.goldDeep,
               fontWeight: FontWeight.w700,

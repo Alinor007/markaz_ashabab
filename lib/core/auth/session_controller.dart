@@ -49,9 +49,7 @@ class SessionController extends ChangeNotifier {
     await _audit.log(
       username: user.username,
       action: 'Signed in',
-      actionAr: 'سجّل الدخول',
       module: 'Authentication',
-      moduleAr: 'المصادقة',
     );
     notifyListeners();
     return null;

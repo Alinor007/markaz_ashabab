@@ -43,7 +43,7 @@ class LeaderProfileScreen extends StatelessWidget {
         if (member == null) {
           return EmptyState(
             icon: Icons.person_off_outlined,
-            title: context.tr('Member not found', 'العضو غير موجود'),
+            title: 'Member not found',
           );
         }
         return _Body(member: member);
@@ -80,7 +80,7 @@ class _Body extends StatelessWidget {
                   Icon(isArabic ? Icons.arrow_forward : Icons.arrow_back,
                       size: 18, color: AppColors.emerald),
                   const SizedBox(width: AppSpacing.sm),
-                  Text(context.tr('Back', 'رجوع'),
+                  Text('Back',
                       style: Theme.of(context)
                           .textTheme
                           .labelLarge
@@ -174,29 +174,29 @@ class _Body extends StatelessWidget {
     final isArabic = context.isArabic;
     return InfoPanel(
       icon: Icons.person_outline,
-      title: context.tr('Personal Information', 'المعلومات الشخصية'),
+      title: 'Personal Information',
       child: Wrap(
         spacing: AppSpacing.xl,
         runSpacing: AppSpacing.lg,
         children: [
-          _Field(context.tr('Full Name', 'الاسم الكامل'), member.fullName),
+          _Field('Full Name', member.fullName),
           _Field(
-              context.tr('Gender', 'الجنس'),
+              'Gender',
               member.gender == 'F'
-                  ? context.tr('Female', 'أنثى')
-                  : context.tr('Male', 'ذكر')),
-          _Field(context.tr('Date of Birth', 'تاريخ الميلاد'), member.dob),
-          _Field(context.tr('Place of Birth', 'مكان الميلاد'),
+                  ? 'Female'
+                  : 'Male'),
+          _Field('Date of Birth', member.dob),
+          _Field('Place of Birth',
               member.placeOfBirth),
-          _Field(context.tr('Contact Number', 'رقم الهاتف'),
+          _Field('Contact Number',
               member.contactNumber),
-          _Field(context.tr('Address', 'العنوان'), member.address),
-          _Field(context.tr('Civil Status', 'الحالة الاجتماعية'),
+          _Field('Address', member.address),
+          _Field('Civil Status',
               member.civilStatusEnum.label(isArabic)),
-          _Field(context.tr('Email', 'البريد الإلكتروني'), member.email),
-          _Field(context.tr('Ethnicity / Tribe', 'العرق / القبيلة'),
+          _Field('Email', member.email),
+          _Field('Ethnicity / Tribe',
               member.ethnicity),
-          _Field(context.tr('Occupation', 'المهنة'), member.occupation),
+          _Field('Occupation', member.occupation),
         ],
       ),
     );
@@ -206,7 +206,7 @@ class _Body extends StatelessWidget {
     final memberRepo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.school_outlined,
-      title: context.tr('Educational Background', 'المؤهلات الدراسية'),
+      title: 'Educational Background',
       child: StreamBuilder<List<MemberEducationData>>(
         stream: memberRepo.watchEducation(member.id),
         builder: (context, snap) {
@@ -217,12 +217,12 @@ class _Body extends StatelessWidget {
               for (var i = 0; i < rows.length; i++) ...[
                 if (i > 0) const Divider(height: AppSpacing.xl),
                 _Record(fields: [
-                  _Field(context.tr('Degree / Course', 'الدرجة / التخصص'),
+                  _Field('Degree / Course',
                       rows[i].degree.isEmpty ? rows[i].program : rows[i].degree),
                   _Field(
-                      context.tr('School / University', 'المدرسة / الجامعة'),
+                      'School / University',
                       rows[i].schoolName),
-                  _Field(context.tr('Year Graduated', 'سنة التخرج'),
+                  _Field('Year Graduated',
                       rows[i].yearGraduated),
                 ]),
               ],
@@ -237,7 +237,7 @@ class _Body extends StatelessWidget {
     final memberRepo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.badge_outlined,
-      title: context.tr('Role in Organization', 'الدور في المنظمة'),
+      title: 'Role in Organization',
       child: StreamBuilder<List<MemberRole>>(
         stream: memberRepo.watchRoles(member.id),
         builder: (context, snap) {
@@ -248,12 +248,12 @@ class _Body extends StatelessWidget {
               for (var i = 0; i < roles.length; i++) ...[
                 if (i > 0) const Divider(height: AppSpacing.xl),
                 _Record(fields: [
-                  _Field(context.tr('Current Position', 'المنصب الحالي'),
+                  _Field('Current Position',
                       roles[i].positionTitle),
                   _Field(
-                      context.tr('Department', 'القسم'), roles[i].department),
+                      'Department', roles[i].department),
                   _Field(
-                      context.tr('Term / Period', 'الفترة'), _term(roles[i])),
+                      'Term / Period', _term(roles[i])),
                 ]),
               ],
             ],
@@ -270,7 +270,7 @@ class _Body extends StatelessWidget {
   }
 
   Widget _empty(BuildContext context) => Text(
-        context.tr('No records.', 'لا توجد سجلات.'),
+        'No records.',
         style: Theme.of(context)
             .textTheme
             .bodySmall
@@ -296,7 +296,7 @@ class _LeaderProfileCard extends StatelessWidget {
           : (isArabic ? entry!.positionAr : entry!.position).trim();
       if (p.isNotEmpty) return p;
       return member.occupation.trim().isEmpty
-          ? context.tr('Member', 'عضو')
+          ? 'Member'
           : member.occupation;
     }();
     final term = entry?.termYears.trim() ?? '';
@@ -436,14 +436,14 @@ class _EntryBiography extends StatelessWidget {
           if (note.isNotEmpty)
             _BiographyCard(
               title: office.isEmpty
-                  ? context.tr('Biography', 'نبذة')
+                  ? 'Biography'
                   : office,
               body: note,
             ),
           for (final s in sections)
             _BiographyCard(
               title: (isArabic ? s.titleAr : s.title).trim().isEmpty
-                  ? context.tr('Biography', 'نبذة')
+                  ? 'Biography'
                   : (isArabic ? s.titleAr : s.title),
               body: isArabic ? s.bodyAr : s.body,
             ),

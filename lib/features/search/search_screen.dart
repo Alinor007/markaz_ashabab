@@ -109,8 +109,8 @@ class _SearchScreenState extends State<SearchScreen> {
     for (final l in _leaders) {
       if (_match(q, [l.name, l.nameAr, l.position, l.positionAr])) {
         add('leaders', _Hit(
-          title: context.tr(l.name, l.nameAr),
-          subtitle: context.tr(l.position, l.positionAr),
+          title: l.name,
+          subtitle: l.position,
           icon: Icons.workspace_premium_outlined,
           categoryEn: 'Leaders', categoryAr: 'القادة',
           color: AppColors.navy,
@@ -135,7 +135,7 @@ class _SearchScreenState extends State<SearchScreen> {
       if (_match(q, [d.name, d.nameAr, d.description, d.descriptionAr])) {
         add('departments', _Hit(
           title: d.displayName(context.isArabic),
-          subtitle: context.tr('Department', 'قسم'),
+          subtitle: 'Department',
           icon: d.icon,
           categoryEn: 'Departments', categoryAr: 'الأقسام',
           color: AppColors.goldDeep,
@@ -146,9 +146,9 @@ class _SearchScreenState extends State<SearchScreen> {
     for (final r in _reports) {
       if (_match(q, [r.title, r.titleAr])) {
         add('reports', _Hit(
-          title: context.tr(r.title, r.titleAr.isEmpty ? r.title : r.titleAr),
+          title: r.title,
           subtitle: _deptById[r.departmentId]?.displayName(context.isArabic) ??
-              context.tr('Report', 'تقرير'),
+              'Report',
           icon: Icons.description_outlined,
           categoryEn: 'Reports', categoryAr: 'التقارير',
           color: AppColors.navy,
@@ -160,9 +160,9 @@ class _SearchScreenState extends State<SearchScreen> {
       if (_match(q, [p.title, p.titleAr, p.event, p.eventAr])) {
         add('photos', _Hit(
           title: p.titleAr.isNotEmpty
-              ? context.tr(p.title, p.titleAr)
+              ? p.title
               : p.title,
-          subtitle: '${context.tr(p.event, p.eventAr.isEmpty ? p.event : p.eventAr)} · ${p.year}',
+          subtitle: '${p.event} · ${p.year}',
           icon: Icons.photo_outlined,
           categoryEn: 'Photos', categoryAr: 'الصور',
           color: AppColors.emerald,
@@ -186,25 +186,21 @@ class _SearchScreenState extends State<SearchScreen> {
         SearchField(
           width: 360,
           controller: _controller,
-          hint: context.tr('Search members, leaders, reports…',
-              'ابحث عن الأعضاء والقادة والتقارير…'),
+          hint: 'Search members, leaders, reports…',
           onChanged: (v) => setState(() => _query = v),
         ),
       ],
       child: _query.trim().isEmpty
           ? EmptyState(
               icon: Icons.search,
-              title: context.tr('Search the archive', 'ابحث في الأرشيف'),
-              message: context.tr(
-                  'Find members, leaders, departments, reports, and photos.',
-                  'اعثر على الأعضاء والقادة والأقسام والتقارير والصور.'),
+              title: 'Search the archive',
+              message: 'Find members, leaders, departments, reports, and photos.',
             )
           : totalCount == 0
               ? EmptyState(
                   icon: Icons.search_off,
-                  title: context.tr('No results', 'لا توجد نتائج'),
-                  message: context.tr(
-                      'No matches for “$_query”.', 'لا تطابق لـ «$_query».'),
+                  title: 'No results',
+                  message: 'No matches for “$_query”.',
                 )
               : ListView(
                   children: [

@@ -1,29 +1,20 @@
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 
-import 'locale_controller.dart';
-
-/// Bilingual (English / Arabic) string table.
+/// English string table for the app (Arabic support was removed).
 ///
-/// Each user-facing string exists in both languages. Resolve the active set
-/// with [AppStrings.of(context)] — it follows the [LocaleController].
+/// The only Arabic retained is the organization's seal name, exposed via
+/// [orgNameArabic]. Resolve the strings with [AppStrings.of(context)].
 class AppStrings {
-  const AppStrings._(this._en, this._ar, this._isArabic);
+  const AppStrings._(this._s);
 
-  final _Strings _en;
-  final _Strings _ar;
-  final bool _isArabic;
+  final _Strings _s;
 
-  _Strings get _s => _isArabic ? _ar : _en;
-
-  static AppStrings of(BuildContext context) {
-    final isArabic = context.watch<LocaleController>().isArabic;
-    return AppStrings._(_englishStrings, _arabicStrings, isArabic);
-  }
+  static AppStrings of(BuildContext context) =>
+      const AppStrings._(_englishStrings);
 
   // Brand
   String get orgName => _s.orgName;
-  String get orgNameArabic => _arabicBrand; // always Arabic, both languages
+  String get orgNameArabic => _arabicBrand; // the organization's Arabic seal name
   String get missionStatement => _s.missionStatement;
 
   // Login
@@ -41,7 +32,7 @@ class AppStrings {
   String get dashboard => _s.dashboard;
   String get history => _s.history;
   String get leadership => _s.leadership;
-  String get tarbiya => _isArabic ? 'تربية الكوادر' : 'Tarbiya Al-Kawadeer';
+  String get tarbiya => 'Tarbiya Al-Kawadeer';
   String get departments => _s.departments;
   String get reports => _s.reports;
   String get gallery => _s.gallery;
@@ -214,51 +205,4 @@ const _Strings _englishStrings = _Strings(
   loadingLabel: 'Loading…',
   errorTitle: 'Something went wrong',
   retry: 'Try again',
-);
-
-const _Strings _arabicStrings = _Strings(
-  orgName: 'مؤسسة مركز الشباب المسلم في الفلبين',
-  missionStatement:
-      'حفظ الإرث، وتربية القادة، وخدمة الشباب المسلم في الفلبين عبر العلم '
-      'والدعوة والعمل المخلص.',
-  loginTitle: 'تسجيل الدخول إلى حسابك',
-  loginSubtitle: 'للمصرّح لهم فقط. الرجاء إدخال بيانات الدخول.',
-  username: 'اسم المستخدم',
-  password: 'كلمة المرور',
-  rememberMe: 'تذكّرني',
-  login: 'تسجيل الدخول',
-  usernameHint: 'أدخل اسم المستخدم',
-  passwordHint: 'أدخل كلمة المرور',
-  home: 'الرئيسية',
-  dashboard: 'لوحة التحكم',
-  history: 'التاريخ',
-  leadership: 'القيادة',
-  departments: 'الأقسام',
-  reports: 'التقارير',
-  gallery: 'المعرض',
-  search: 'البحث',
-  membersManagement: 'إدارة الأعضاء',
-  settings: 'الإعدادات',
-  userManagement: 'إدارة المستخدمين',
-  auditLogs: 'سجلات التدقيق',
-  administration: 'الإدارة',
-  globalSearchHint: 'ابحث عن الأعضاء والقادة والتقارير…',
-  logout: 'تسجيل الخروج',
-  languageName: 'ع',
-  welcome: 'مرحبًا بعودتك',
-  quickAccess: 'الوصول السريع',
-  atAGlance: 'نظرة عامة',
-  statDepartments: 'الأقسام',
-  statLeaders: 'القادة',
-  statMembers: 'الأعضاء',
-  statReports: 'التقارير',
-  statPhotos: 'صور المعرض',
-  statActivities: 'الأنشطة',
-  comingSoon: 'الوحدة قيد التطوير',
-  comingSoonBody:
-      'هذه الوحدة جزء من نظام الأرشيف وستكون متاحة في إصدار قادم بإذن الله.',
-  nothingHere: 'لا يوجد شيء هنا بعد',
-  loadingLabel: 'جارٍ التحميل…',
-  errorTitle: 'حدث خطأ ما',
-  retry: 'إعادة المحاولة',
 );

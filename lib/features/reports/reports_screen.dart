@@ -55,7 +55,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
         );
     if (mounted) {
       showAppSnackBar(
-          context, context.trRead('Report added.', 'تمت إضافة التقرير.'));
+          context, 'Report added.');
     }
   }
 
@@ -71,19 +71,19 @@ class _ReportsScreenState extends State<ReportsScreen> {
         );
     if (mounted) {
       showAppSnackBar(
-          context, context.trRead('Report updated.', 'تم تحديث التقرير.'));
+          context, 'Report updated.');
     }
   }
 
   Future<void> _delete(MinutesReport report) async {
     final ok = await confirmDialog(context,
-        title: context.trRead('Delete report?', 'حذف التقرير؟'),
+        title: 'Delete report?',
         message: report.title);
     if (!ok || !mounted) return;
     await context.read<MinutesReportRepository>().delete(report.id);
     if (mounted) {
       showAppSnackBar(
-          context, context.trRead('Report deleted.', 'تم حذف التقرير.'),
+          context, 'Report deleted.',
           tone: SnackTone.info);
     }
   }
@@ -120,7 +120,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
           FilledButton.icon(
             onPressed: _add,
             icon: const Icon(Icons.add, size: 18),
-            label: Text(context.tr('Add Report', 'إضافة تقرير')),
+            label: Text('Add Report'),
           ),
       ],
       child: StreamBuilder<List<MinutesReport>>(
@@ -131,9 +131,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
           if (all.isEmpty) {
             return EmptyState(
               icon: Icons.description_outlined,
-              title: context.tr('No reports yet', 'لا توجد تقارير بعد'),
+              title: 'No reports yet',
               message: canManage
-                  ? context.tr('Add the first report.', 'أضف أول تقرير.')
+                  ? 'Add the first report.'
                   : null,
             );
           }
@@ -160,7 +160,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
               if (typesPresent.length > 1)
                 FilterBar(
                   options: [
-                    context.tr('All Types', 'كل الأنواع'),
+                    'All Types',
                     for (final t in typesPresent) t.label(context.isArabic),
                   ],
                   selectedIndex: _typeFilter == null
@@ -176,7 +176,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
               if (years.length > 1)
                 FilterBar(
                   options: [
-                    context.tr('All Years', 'كل السنوات'),
+                    'All Years',
                     for (final y in years) '$y',
                   ],
                   selectedIndex:
@@ -189,8 +189,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 child: filtered.isEmpty
                     ? EmptyState(
                         icon: Icons.filter_alt_off_outlined,
-                        title: context.tr('No matching reports',
-                            'لا توجد تقارير مطابقة'),
+                        title: 'No matching reports',
                       )
                     : SingleChildScrollView(
                         child: LayoutBuilder(
@@ -323,11 +322,11 @@ class _ReportGridCard extends StatelessWidget {
                                 PopupMenuItem(
                                     value: 'edit',
                                     child:
-                                        Text(context.trRead('Edit', 'تعديل'))),
+                                        Text('Edit')),
                                 PopupMenuItem(
                                     value: 'delete',
                                     child:
-                                        Text(context.trRead('Delete', 'حذف'))),
+                                        Text('Delete')),
                               ],
                             ),
                           ),
@@ -490,20 +489,20 @@ class _ReportViewer extends StatelessWidget {
                           if (canManage) ...[
                             _RoundIconButton(
                               icon: Icons.edit_outlined,
-                              tooltip: context.tr('Edit', 'تعديل'),
+                              tooltip: 'Edit',
                               onTap: onEdit,
                             ),
                             const SizedBox(width: AppSpacing.sm),
                             _RoundIconButton(
                               icon: Icons.delete_outline,
-                              tooltip: context.tr('Delete', 'حذف'),
+                              tooltip: 'Delete',
                               onTap: onDelete,
                             ),
                             const SizedBox(width: AppSpacing.sm),
                           ],
                           _RoundIconButton(
                             icon: Icons.close,
-                            tooltip: context.tr('Close', 'إغلاق'),
+                            tooltip: 'Close',
                             onTap: () => Navigator.of(context).pop(),
                           ),
                         ],
@@ -524,8 +523,7 @@ class _ReportViewer extends StatelessWidget {
                                   BorderRadius.circular(AppRadius.pill),
                             ),
                             child: Text(
-                              context.tr('Swipe to browse · ${images.length}',
-                                  'اسحب للتصفح · ${images.length}'),
+                              context.tr('Swipe to browse · ${images.length}'),
                               style: Theme.of(context)
                                   .textTheme
                                   .labelSmall

@@ -106,7 +106,7 @@ class _MemberPickerDialogState extends State<MemberPickerDialog> {
               decoration: InputDecoration(
                 isDense: true,
                 prefixIcon: const Icon(Icons.search),
-                labelText: context.tr('Search by name', 'ابحث بالاسم'),
+                labelText: 'Search by name',
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -116,8 +116,7 @@ class _MemberPickerDialogState extends State<MemberPickerDialog> {
                   : _results.isEmpty
                       ? Center(
                           child: Text(
-                            context.tr(
-                                'No members found', 'لا يوجد أعضاء مطابقون'),
+                            'No members found',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         )
@@ -146,7 +145,7 @@ class _MemberPickerDialogState extends State<MemberPickerDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(context.tr('Cancel', 'إلغاء')),
+          child: Text('Cancel'),
         ),
       ],
     );

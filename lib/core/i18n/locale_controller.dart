@@ -1,34 +1,21 @@
 import 'package:flutter/material.dart';
 
-/// App-wide language state. Toggles between English (LTR) and Arabic (RTL).
-///
-/// The whole widget tree reads [locale] / [textDirection] through Provider so
-/// switching language re-lays-out and re-localizes every screen.
+/// App-wide language state. The app is English-only (LTR); Arabic support was
+/// removed. This controller is retained (still provided app-wide) so existing
+/// `context.watch<LocaleController>()` call sites keep compiling, but it always
+/// reports English and never changes.
 class LocaleController extends ChangeNotifier {
-  LocaleController({Locale initial = const Locale('en'), this.onChanged})
-      : _locale = initial;
+  LocaleController({Locale initial = const Locale('en'), this.onChanged});
 
   static const Locale english = Locale('en');
-  static const Locale arabic = Locale('ar');
 
-  /// Invoked whenever the locale changes — used to persist the choice. Optional
-  /// so tests can construct the controller without any storage side effects.
+  /// Retained for constructor compatibility; never invoked (the locale is
+  /// fixed to English).
   final void Function(Locale)? onChanged;
 
-  Locale _locale;
-  Locale get locale => _locale;
+  Locale get locale => english;
 
-  bool get isArabic => _locale.languageCode == 'ar';
+  bool get isArabic => false;
 
-  TextDirection get textDirection =>
-      isArabic ? TextDirection.rtl : TextDirection.ltr;
-
-  void toggle() => setLocale(isArabic ? english : arabic);
-
-  void setLocale(Locale locale) {
-    if (locale == _locale) return;
-    _locale = locale;
-    onChanged?.call(_locale);
-    notifyListeners();
-  }
+  TextDirection get textDirection => TextDirection.ltr;
 }

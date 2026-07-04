@@ -33,7 +33,7 @@ class DepartmentsScreen extends StatelessWidget {
           FilledButton.icon(
             onPressed: () => _add(context, repo),
             icon: const Icon(Icons.add, size: 18),
-            label: Text(context.tr('Add Department', 'إضافة قسم')),
+            label: Text('Add Department'),
           ),
       ],
       child: StreamBuilder<List<Department>>(
@@ -48,7 +48,7 @@ class DepartmentsScreen extends StatelessWidget {
           if (departments.isEmpty) {
             return EmptyState(
               icon: Icons.account_tree_outlined,
-              title: context.tr('No departments yet', 'لا توجد أقسام بعد'),
+              title: 'No departments yet',
             );
           }
           return LayoutBuilder(
@@ -114,9 +114,8 @@ class DepartmentsScreen extends StatelessWidget {
       BuildContext context, DepartmentRepository repo, Department dept) async {
     final ok = await confirmDialog(
       context,
-      title: context.trRead('Delete “${dept.name}”?', 'حذف «${dept.nameAr}»؟'),
-      message: context.trRead('Its activities will also be removed.',
-          'ستُحذف أنشطته أيضًا.'),
+      title: context.trRead('Delete “${dept.name}”?'),
+      message: 'Its activities will also be removed.',
     );
     if (ok) await repo.delete(dept.id);
   }

@@ -23,13 +23,13 @@ import '../common/hover_lift.dart';
     }
   }
   return switch (code) {
-    'achieved' => (context.tr('Achieved', 'تحقق'), AppColors.emerald),
+    'achieved' => ('Achieved', AppColors.emerald),
     'partial' => (
-        context.tr('Partially Achieved', 'تحقق جزئيًا'),
+        'Partially Achieved',
         AppColors.goldDeep
       ),
-    'not' => (context.tr('Not Achieved', 'لم يتحقق'), AppColors.error),
-    _ => (context.tr('Not Reviewed', 'لم تُراجع بعد'), AppColors.textFaint),
+    'not' => ('Not Achieved', AppColors.error),
+    _ => ('Not Reviewed', AppColors.textFaint),
   };
 }
 
@@ -139,12 +139,12 @@ class ReportCard extends StatelessWidget {
                                     PopupMenuItem(
                                         value: 'edit',
                                         child: Text(
-                                            context.trRead('Edit', 'تعديل'))),
+                                            'Edit')),
                                   if (onDelete != null)
                                     PopupMenuItem(
                                         value: 'delete',
                                         child: Text(
-                                            context.trRead('Delete', 'حذف'))),
+                                            'Delete')),
                                 ],
                               ),
                             ),
@@ -158,7 +158,7 @@ class ReportCard extends StatelessWidget {
                           const SizedBox(width: AppSpacing.xs),
                           Text(
                             report.date.isEmpty
-                                ? context.tr('Undated', 'بدون تاريخ')
+                                ? 'Undated'
                                 : report.date,
                             style: theme.textTheme.bodySmall,
                           ),

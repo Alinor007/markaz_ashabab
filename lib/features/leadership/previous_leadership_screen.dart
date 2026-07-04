@@ -42,58 +42,25 @@ typedef _PrevResult = ({
   List<_SectionResult> sections,
 });
 
-/// A group of former leaders sharing the same term/year label.
-typedef _TermGroup = ({String label, List<PreviousLeaderView> entries});
+/// The row-size pattern for the Previous Leadership grid: 1 card on the first
+/// row, 4 on the second, 2 on the third — then repeating for any overflow.
+const List<int> _rowPattern = [1, 3, 2];
 
-/// The first four-digit year in a term string (for sorting), or -1.
-int _termYearKey(String term) {
-  final m = RegExp(r'(\d{4})').firstMatch(term);
-  return m == null ? -1 : int.parse(m.group(1)!);
-}
-
-/// Groups entries by their term, newest term first; the undated group last.
-List<_TermGroup> _groupByTerm(List<PreviousLeaderView> items, String undated) {
-  final map = <String, List<PreviousLeaderView>>{};
-  for (final v in items) {
-    final key =
-        v.entry.termYears.trim().isEmpty ? undated : v.entry.termYears.trim();
-    map.putIfAbsent(key, () => []).add(v);
+/// Splits [items] into consecutive rows whose sizes cycle through [pattern]
+/// (e.g. 1, 4, 2, 1, 4, 2, …). The final row may be short.
+List<List<T>> _chunkByPattern<T>(List<T> items, List<int> pattern) {
+  final rows = <List<T>>[];
+  var index = 0;
+  var rowIndex = 0;
+  while (index < items.length) {
+    final size = pattern[rowIndex % pattern.length];
+    final end =
+        (index + size < items.length) ? index + size : items.length;
+    rows.add(items.sublist(index, end));
+    index = end;
+    rowIndex++;
   }
-  final groups = [
-    for (final e in map.entries) (label: e.key, entries: e.value)
-  ];
-  groups.sort((a, b) {
-    if (a.label == undated) return 1;
-    if (b.label == undated) return -1;
-    return _termYearKey(b.label).compareTo(_termYearKey(a.label));
-  });
-  return groups;
-}
-
-/// A section header for a term group (e.g. "1998 – 2010").
-class _TermHeader extends StatelessWidget {
-  const _TermHeader({required this.label, required this.count});
-  final String label;
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Icon(Icons.event_outlined, size: 18, color: AppColors.goldDeep),
-        const SizedBox(width: AppSpacing.sm),
-        Text(label, style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(child: Container(height: 1, color: AppColors.border)),
-        const SizedBox(width: AppSpacing.sm),
-        Text('$count',
-            style: Theme.of(context)
-                .textTheme
-                .labelMedium
-                ?.copyWith(color: AppColors.textFaint)),
-      ],
-    );
-  }
+  return rows;
 }
 
 /// A registry of former leadership office-holders, each linked to an existing
@@ -160,12 +127,11 @@ class PreviousLeadershipScreen extends StatelessWidget {
   Future<void> _delete(
       BuildContext context, LeaderRepository repo, PreviousLeaderView v) async {
     final ok = await confirmDialog(context,
-        title: context.trRead('Remove entry?', 'إزالة المُدخل؟'),
+        title: 'Remove entry?',
         message: v.member.displayName(context.isArabic));
     if (ok) await repo.deletePreviousLeader(v.entry.id);
   }
-
-  @override
+@override
   Widget build(BuildContext context) {
     final repo = context.read<LeaderRepository>();
     final canManage =
@@ -178,9 +144,7 @@ class PreviousLeadershipScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            context.tr(
-                'Former office-holders who have served the organization.',
-                'من تولّوا المناصب وخدموا المنظمة سابقًا.'),
+            'Former office-holders who have served the organization.',
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium
@@ -193,7 +157,7 @@ class PreviousLeadershipScreen extends StatelessWidget {
               child: FilledButton.icon(
                 onPressed: () => _add(context, repo),
                 icon: const Icon(Icons.add, size: 18),
-                label: Text(context.tr('Add Former Leader', 'إضافة قائد سابق')),
+                label: Text('Add Former Leader'),
               ),
             ),
           ],
@@ -210,53 +174,28 @@ class PreviousLeadershipScreen extends StatelessWidget {
               if (items.isEmpty) {
                 return EmptyState(
                   icon: Icons.history_toggle_off_outlined,
-                  title: context.tr(
-                      'No former leaders yet', 'لا يوجد قادة سابقون بعد'),
+                  title: 'No former leaders yet',
                   message: canManage
-                      ? context.tr('Add the first entry.', 'أضف أول مُدخل.')
+                      ? 'Add the first entry.'
                       : null,
                 );
               }
-              final groups = _groupByTerm(
-                  items, context.tr('No term recorded', 'بدون مدة'));
-              return LayoutBuilder(
-                builder: (context, constraints) {
-                  final columns = constraints.maxWidth > 1000
-                      ? 3
-                      : constraints.maxWidth > 640
-                          ? 2
-                          : 1;
-                  const spacing = AppSpacing.lg;
-                  final itemWidth =
-                      (constraints.maxWidth - spacing * (columns - 1)) /
-                          columns;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      for (final g in groups) ...[
-                        _TermHeader(label: g.label, count: g.entries.length),
-                        const SizedBox(height: AppSpacing.md),
-                        Wrap(
-                          spacing: spacing,
-                          runSpacing: spacing,
-                          children: [
-                            for (final v in g.entries)
-                              SizedBox(
-                                width: itemWidth,
-                                child: _PreviousLeaderCard(
-                                  view: v,
-                                  canManage: canManage,
-                                  onEdit: () => _edit(context, repo, v),
-                                  onDelete: () => _delete(context, repo, v),
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: AppSpacing.xl),
-                      ],
-                    ],
-                  );
-                },
+              // Rank-ordered rows following the 1 → 4 → 2 pattern (repeating),
+              // each row centered — mirroring the Leadership screen's pyramid.
+              final rows = _chunkByPattern(items, _rowPattern);
+              return Column(
+                children: [
+                  for (var r = 0; r < rows.length; r++) ...[
+                    if (r > 0) const SizedBox(height: AppSpacing.xl),
+                    _PreviousLeaderRow(
+                      entries: rows[r],
+                      prominent: rows[r].length == 1,
+                      canManage: canManage,
+                      onEdit: (v) => _edit(context, repo, v),
+                      onDelete: (v) => _delete(context, repo, v),
+                    ),
+                  ],
+                ],
               );
             },
           ),
@@ -270,6 +209,63 @@ class PreviousLeadershipScreen extends StatelessWidget {
     return showDialog<_PrevResult>(
       context: context,
       builder: (_) => _PreviousLeaderForm(existing: existing),
+    );
+  }
+}
+
+/// One centered row of former-leader cards. A single-card row (the lone top
+/// entry) gets a wider "prominent" treatment; multi-card rows share the width
+/// evenly and wrap gracefully on narrow screens. Mirrors the Leadership
+/// screen's `_PyramidRow`.
+class _PreviousLeaderRow extends StatelessWidget {
+  const _PreviousLeaderRow({
+    required this.entries,
+    required this.prominent,
+    required this.canManage,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  final List<PreviousLeaderView> entries;
+  final bool prominent;
+  final bool canManage;
+  final void Function(PreviousLeaderView) onEdit;
+  final void Function(PreviousLeaderView) onDelete;
+
+  /// Smallest a card may shrink to before the row is allowed to wrap onto a
+  /// second line (narrow / mobile screens).
+  static const double _minCardWidth = 220.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final idealWidth = prominent ? 360.0 : 280.0;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final count = entries.length;
+        final fitWidth = count > 1
+            ? (constraints.maxWidth - AppSpacing.lg * (count - 1)) / count
+            : idealWidth;
+        final cardWidth = fitWidth >= _minCardWidth
+            ? (fitWidth < idealWidth ? fitWidth : idealWidth)
+            : idealWidth;
+        return Wrap(
+          alignment: WrapAlignment.center,
+          spacing: AppSpacing.lg,
+          runSpacing: AppSpacing.lg,
+          children: [
+            for (final v in entries)
+              SizedBox(
+                width: cardWidth,
+                child: _PreviousLeaderCard(
+                  view: v,
+                  canManage: canManage,
+                  onEdit: () => onEdit(v),
+                  onDelete: () => onDelete(v),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }
@@ -313,6 +309,8 @@ class _PreviousLeaderCard extends StatelessWidget {
   }
 
   /// The portrait cover with an accent wash, the term pill, and the name +
+  /// Arabic name overlaid along the bottom.
+/// The portrait cover with an accent wash, and the name +
   /// Arabic name overlaid along the bottom.
   Widget _cover(BuildContext context) {
     final isArabic = context.isArabic;
@@ -381,24 +379,8 @@ class _PreviousLeaderCard extends StatelessWidget {
               start: AppSpacing.sm,
               child: _manageMenu(context),
             ),
-          if (e.termYears.trim().isNotEmpty)
-            PositionedDirectional(
-              top: AppSpacing.md,
-              end: AppSpacing.md,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md, vertical: AppSpacing.xs),
-                decoration: BoxDecoration(
-                  color: AppColors.goldDeep,
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                ),
-                child: Text(e.termYears,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: AppColors.onGold,
-                          fontWeight: FontWeight.w700,
-                        )),
-              ),
-            ),
+          // NOTE: term/year pill removed from here — it now lives in the
+          // body, centered below the position.
           PositionedDirectional(
             start: AppSpacing.lg,
             end: AppSpacing.lg,
@@ -436,7 +418,8 @@ class _PreviousLeaderCard extends StatelessWidget {
     );
   }
 
-  /// The white body: office (small-caps), the note, and a View profile action.
+  /// The white body: office (centered), term/year (centered), the note,
+  /// and a centered View profile action.
   Widget _body(BuildContext context) {
     final isArabic = context.isArabic;
     final e = view.entry;
@@ -444,16 +427,30 @@ class _PreviousLeaderCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Position — centered.
           Text(
             (isArabic ? e.positionAr : e.position).toUpperCase(),
+            textAlign: TextAlign.center,
             textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: AppColors.textMuted,
                   letterSpacing: 0.8,
                 ),
           ),
+          // Term / Year — centered, directly below the position.
+          if (e.termYears.trim().isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              e.termYears,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: AppColors.goldDeep,
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+          ],
           if (note.trim().isNotEmpty) ...[
             const SizedBox(height: AppSpacing.md),
             Text(
@@ -527,25 +524,27 @@ class _PreviousLeaderCard extends StatelessWidget {
             },
           ),
           const SizedBox(height: AppSpacing.lg),
-          OutlinedButton(
-            onPressed: () =>
-                context.push('/leadership/member/${view.member.id}'),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
+          // View profile — centered.
+          Center(
+            child: OutlinedButton(
+              onPressed: () =>
+                  context.push('/leadership/member/${view.member.id}'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                side: const BorderSide(color: AppColors.charcoal),
+                foregroundColor: AppColors.charcoal,
               ),
-              side: const BorderSide(color: AppColors.charcoal),
-              foregroundColor: AppColors.charcoal,
+              child: Text('View profile'),
             ),
-            child: Text(context.tr('View profile', 'عرض الملف')),
           ),
         ],
       ),
     );
   }
-
   Widget _manageMenu(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -553,7 +552,7 @@ class _PreviousLeaderCard extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: PopupMenuButton<String>(
-        tooltip: context.trRead('Manage', 'إدارة'),
+        tooltip: 'Manage',
         icon: const Icon(Icons.more_vert, size: 18, color: AppColors.charcoal),
         onSelected: (v) {
           if (v == 'edit') onEdit();
@@ -561,16 +560,16 @@ class _PreviousLeaderCard extends StatelessWidget {
         },
         itemBuilder: (_) => [
           PopupMenuItem(
-              value: 'edit', child: Text(context.trRead('Edit', 'تعديل'))),
+              value: 'edit', child: Text('Edit')),
           PopupMenuItem(
-              value: 'delete', child: Text(context.trRead('Delete', 'حذف'))),
+              value: 'delete', child: Text('Delete')),
         ],
       ),
     );
   }
 }
 
-/// Mutable biography section row in the form (title + body, bilingual).
+/// Mutable biography section row in the form (title + body).
 class _SectionRow {
   _SectionRow({
     String title = '',
@@ -578,19 +577,13 @@ class _SectionRow {
     String body = '',
     String bodyAr = '',
   })  : title = TextEditingController(text: title),
-        titleAr = TextEditingController(text: titleAr),
-        body = TextEditingController(text: body),
-        bodyAr = TextEditingController(text: bodyAr);
+        body = TextEditingController(text: body);
   final TextEditingController title;
-  final TextEditingController titleAr;
   final TextEditingController body;
-  final TextEditingController bodyAr;
 
   void dispose() {
     title.dispose();
-    titleAr.dispose();
     body.dispose();
-    bodyAr.dispose();
   }
 }
 
@@ -605,17 +598,13 @@ class _PreviousLeaderForm extends StatefulWidget {
 class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
   late final _position =
       TextEditingController(text: widget.existing?.entry.position ?? '');
-  late final _positionAr =
-      TextEditingController(text: widget.existing?.entry.positionAr ?? '');
   late final _term =
       TextEditingController(text: widget.existing?.entry.termYears ?? '');
-  // Note / Note (Arabic) are no longer edited here (the "Early Life" field was
-  // removed — the Biography Sections cover it), but their existing values are
-  // preserved unedited through save so nothing is lost.
+  // The note field is no longer edited here (the "Early Life" field was
+  // removed — the Biography Sections cover it), but the existing English value
+  // is preserved unedited through save so nothing is lost.
   late final _note =
       TextEditingController(text: widget.existing?.entry.note ?? '');
-  late final _noteAr =
-      TextEditingController(text: widget.existing?.entry.noteAr ?? '');
   late int _accent = widget.existing?.entry.accent ?? kHistoryAccents[1];
   Member? _member;
   final List<_SectionRow> _sections = [];
@@ -644,7 +633,7 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
 
   @override
   void dispose() {
-    for (final c in [_position, _positionAr, _term, _note, _noteAr]) {
+    for (final c in [_position, _term, _note]) {
       c.dispose();
     }
     for (final s in _sections) {
@@ -656,7 +645,7 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
   Future<void> _pickMember() async {
     final repo = context.read<MemberRepository>();
     final picked = await pickMember(context, repo,
-        title: context.trRead('Choose Member', 'اختر عضوًا'));
+        title: 'Choose Member');
     if (picked != null) setState(() => _member = picked);
   }
 
@@ -667,8 +656,8 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
     return AlertDialog(
       backgroundColor: AppColors.surface,
       title: Text(widget.existing == null
-          ? context.tr('Add Former Leader', 'إضافة قائد سابق')
-          : context.tr('Edit Former Leader', 'تعديل قائد سابق')),
+          ? 'Add Former Leader'
+          : 'Edit Former Leader'),
       content: SizedBox(
         width: 480,
         child: SingleChildScrollView(
@@ -703,15 +692,15 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
                       Expanded(
                         child: Text(
                           member == null
-                              ? context.tr('Choose a member…', 'اختر عضوًا…')
+                              ? 'Choose a member…'
                               : member.displayName(isArabic),
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                       ),
                       Text(
                         member == null
-                            ? context.tr('Select', 'اختيار')
-                            : context.tr('Change', 'تغيير'),
+                            ? 'Select'
+                            : 'Change',
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium
@@ -725,27 +714,18 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
               TextField(
                 controller: _position,
                 decoration: InputDecoration(
-                    labelText: context.tr('Position', 'المنصب')),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
-                controller: _positionAr,
-                textDirection: TextDirection.rtl,
-                decoration: InputDecoration(
-                    labelText:
-                        context.tr('Position (Arabic)', 'المنصب بالعربية')),
+                    labelText: 'Position'),
               ),
               const SizedBox(height: AppSpacing.md),
               TextField(
                 controller: _term,
                 decoration: InputDecoration(
-                    labelText: context.tr(
-                        'Term / Years (e.g. 1983–1990)', 'المدة / السنوات')),
+                    labelText: 'Term / Years (e.g. 1983–1990)'),
               ),
               const SizedBox(height: AppSpacing.lg),
               Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: Text(context.tr('Biography Sections', 'أقسام السيرة الذاتية'),
+                child: Text('Biography Sections',
                     style: Theme.of(context).textTheme.labelMedium),
               ),
               const SizedBox(height: AppSpacing.sm),
@@ -766,8 +746,7 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
                             child: TextField(
                               controller: _sections[i].title,
                               decoration: InputDecoration(
-                                  labelText: context.tr(
-                                      'Section Title', 'عنوان القسم')),
+                                  labelText: 'Section Title'),
                             ),
                           ),
                           IconButton(
@@ -782,30 +761,11 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       TextField(
-                        controller: _sections[i].titleAr,
-                        textDirection: TextDirection.rtl,
-                        decoration: InputDecoration(
-                            labelText: context.tr(
-                                'Section Title (Arabic)', 'عنوان القسم (عربي)')),
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      TextField(
                         controller: _sections[i].body,
                         minLines: 2,
                         maxLines: 5,
                         decoration: InputDecoration(
-                            labelText: context.tr('Content', 'المحتوى'),
-                            alignLabelWithHint: true),
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      TextField(
-                        controller: _sections[i].bodyAr,
-                        minLines: 2,
-                        maxLines: 5,
-                        textDirection: TextDirection.rtl,
-                        decoration: InputDecoration(
-                            labelText:
-                                context.tr('Content (Arabic)', 'المحتوى (عربي)'),
+                            labelText: 'Content',
                             alignLabelWithHint: true),
                       ),
                     ],
@@ -816,13 +776,13 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
                 child: TextButton.icon(
                   onPressed: () => setState(() => _sections.add(_SectionRow())),
                   icon: const Icon(Icons.add, size: 18),
-                  label: Text(context.tr('Add Section', 'إضافة قسم')),
+                  label: Text('Add Section'),
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
               Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: Text(context.tr('Accent', 'اللون'),
+                child: Text('Accent',
                     style: Theme.of(context).textTheme.labelMedium),
               ),
               const SizedBox(height: AppSpacing.sm),
@@ -859,17 +819,17 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(context.tr('Cancel', 'إلغاء'))),
+            child: Text('Cancel')),
         FilledButton(
           onPressed: member == null
               ? null
               : () => Navigator.pop(context, (
                     member: member,
                     position: _position.text.trim(),
-                    positionAr: _positionAr.text.trim(),
+                    positionAr: '',
                     termYears: _term.text.trim(),
                     note: _note.text.trim(),
-                    noteAr: _noteAr.text.trim(),
+                    noteAr: '',
                     accent: _accent,
                     sections: [
                       for (final s in _sections)
@@ -877,13 +837,13 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
                             s.body.text.trim().isNotEmpty)
                           (
                             title: s.title.text.trim(),
-                            titleAr: s.titleAr.text.trim(),
+                            titleAr: '',
                             body: s.body.text.trim(),
-                            bodyAr: s.bodyAr.text.trim(),
+                            bodyAr: '',
                           ),
                     ],
                   )),
-          child: Text(context.tr('Save', 'حفظ')),
+          child: Text('Save'),
         ),
       ],
     );

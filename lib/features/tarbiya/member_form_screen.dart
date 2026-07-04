@@ -80,7 +80,6 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   final _middle = TextEditingController();
   final _last = TextEditingController();
   final _suffix = TextEditingController();
-  final _nameAr = TextEditingController();
   final _placeOfBirth = TextEditingController();
   final _contact = TextEditingController();
   final _email = TextEditingController();
@@ -155,7 +154,6 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     _middle.text = m.middleName;
     _last.text = m.lastName;
     _suffix.text = m.suffix;
-    _nameAr.text = m.nameAr;
     _placeOfBirth.text = m.placeOfBirth;
     _contact.text = m.contactNumber;
     _email.text = m.email;
@@ -204,7 +202,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   @override
   void dispose() {
     for (final c in [
-      _first, _middle, _last, _suffix, _nameAr, _placeOfBirth, _contact,
+      _first, _middle, _last, _suffix, _placeOfBirth, _contact,
       _email, _address, _ethnicity, _occupation, _usraName,
       _usraYear, _usraSchedule,
     ]) {
@@ -248,7 +246,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     if (_shubaId.isEmpty) {
-      _toast(context.trRead('Missing Shu\'ba context.', 'سياق الشُّعبة مفقود.'));
+      _toast('Missing Shu\'ba context.');
       return;
     }
     setState(() => _saving = true);
@@ -261,7 +259,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
       middleName: Value(_middle.text.trim()),
       lastName: Value(_last.text.trim()),
       suffix: Value(_suffix.text.trim()),
-      nameAr: Value(_nameAr.text.trim()),
+      nameAr: const Value(''),
       gender: Value(_gender),
       dob: Value(_dob),
       placeOfBirth: Value(_placeOfBirth.text.trim()),
@@ -333,8 +331,8 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
 
     if (!mounted) return;
     _toast(widget.isEditing
-        ? context.trRead('Member updated.', 'تم تحديث العضو.')
-        : context.trRead('Member added.', 'تمت إضافة العضو.'));
+        ? 'Member updated.'
+        : 'Member added.');
     context.go('/tarbiya/member/$memberId');
   }
 
@@ -345,7 +343,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   }
 
   String? _required(String? v) => (v == null || v.trim().isEmpty)
-      ? context.trRead('Required', 'مطلوب')
+      ? 'Required'
       : null;
 
   @override
@@ -376,7 +374,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                     context.go('/members');
                   }
                 },
-          child: Text(context.tr('Cancel', 'إلغاء')),
+          child: Text('Cancel'),
         ),
         FilledButton.icon(
           onPressed: _saving ? null : _save,
@@ -386,7 +384,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2))
               : const Icon(Icons.save_outlined, size: 18),
-          label: Text(context.tr('Save', 'حفظ')),
+          label: Text('Save'),
         ),
       ],
       child: Form(
@@ -418,7 +416,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   Widget _personalSection() {
     return InfoPanel(
       icon: Icons.person_outline,
-      title: context.tr('Personal Information', 'المعلومات الشخصية'),
+      title: 'Personal Information',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -432,24 +430,22 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                 child: Column(
                   children: [
                     _row([
-                      _field(_first, context.tr('First Name', 'الاسم الأول'),
+                      _field(_first, 'First Name',
                           validator: _required),
-                      _field(_middle, context.tr('Middle Name', 'الاسم الأوسط')),
+                      _field(_middle, 'Middle Name'),
                     ]),
                     _row([
-                      _field(_last, context.tr('Last Name', 'اسم العائلة'),
+                      _field(_last, 'Last Name',
                           validator: _required),
-                      _field(_suffix, context.tr('Suffix', 'اللاحقة')),
+                      _field(_suffix, 'Suffix'),
                     ]),
                     _row([
-                      _field(_nameAr, context.tr('Arabic Name', 'الاسم بالعربية'),
-                          textDirection: TextDirection.rtl),
                       _dropdown<String>(
-                        label: context.tr('Gender', 'الجنس'),
+                        label: 'Gender',
                         value: _gender,
                         items: {
-                          'M': context.tr('Male', 'ذكر'),
-                          'F': context.tr('Female', 'أنثى'),
+                          'M': 'Male',
+                          'F': 'Female',
                         },
                         onChanged: (v) => setState(() {
                           if (v == _gender) return;
@@ -467,18 +463,18 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
           ),
           const SizedBox(height: AppSpacing.md),
           _row([
-            _dateField(context.tr('Date of Birth', 'تاريخ الميلاد'), _dob,
+            _dateField('Date of Birth', _dob,
                 (v) => setState(() => _dob = v)),
-            _field(_placeOfBirth, context.tr('Place of Birth', 'مكان الميلاد')),
+            _field(_placeOfBirth, 'Place of Birth'),
           ]),
           _row([
-            _field(_contact, context.tr('Contact Number', 'رقم الهاتف')),
-            _field(_email, context.tr('Email Address', 'البريد الإلكتروني')),
+            _field(_contact, 'Contact Number'),
+            _field(_email, 'Email Address'),
           ]),
           _row([
-            _field(_address, context.tr('Address', 'العنوان')),
+            _field(_address, 'Address'),
             _dropdown<CivilStatus>(
-              label: context.tr('Civil Status', 'الحالة الاجتماعية'),
+              label: 'Civil Status',
               value: _civil,
               items: {for (final c in CivilStatus.values) c: c.label(context.isArabic)},
               onChanged: (v) => setState(() {
@@ -489,22 +485,22 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
             ),
           ]),
           _row([
-            _field(_ethnicity, context.tr('Ethnicity / Tribe', 'العرق / القبيلة')),
-            _field(_occupation, context.tr('Occupation', 'المهنة')),
+            _field(_ethnicity, 'Ethnicity / Tribe'),
+            _field(_occupation, 'Occupation'),
           ]),
           // Level is not set here — it is driven by the member's Tas'ed records
           // (the initial placement level from the route is kept on creation).
           _row([
             _dropdown<String>(
-              label: context.tr('Status', 'الحالة'),
+              label: 'Status',
               value: _status,
               items: {
-                'active': context.tr('Active', 'نشط'),
-                'inactive': context.tr('Inactive', 'غير نشط'),
+                'active': 'Active',
+                'inactive': 'Inactive',
               },
               onChanged: (v) => setState(() => _status = v),
             ),
-            _dateField(context.tr('Date Joined', 'تاريخ الانضمام'), _dateJoined,
+            _dateField('Date Joined', _dateJoined,
                 (v) => setState(() => _dateJoined = v)),
           ]),
         ],
@@ -515,19 +511,19 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   /// The name label for a spouse row, based on gender and civil status.
   String _spouseNameLabel() => _gender == 'F'
       ? switch (_civil) {
-          CivilStatus.married => context.tr('Husband Name', 'اسم الزوج '),
-          CivilStatus.widowed => context.tr('Spouse Name', 'اسم الزوج/ة'),
+          CivilStatus.married => 'Husband Name',
+          CivilStatus.widowed => 'Spouse Name',
           CivilStatus.divorced =>
-            context.tr('Former Spouse Name', 'اسم الزوج/ة السابق'),
+            'Former Spouse Name',
           CivilStatus.single => '',
         }
-      : context.tr('Wife Name', 'اسم الزوجة');
+      : 'Wife Name';
 
   Widget _familySection() {
     final nameLabel = _spouseNameLabel();
     return InfoPanel(
       icon: Icons.family_restroom_outlined,
-      title: context.tr('Family Information', 'معلومات الأسرة'),
+      title: 'Family Information',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -554,8 +550,8 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                 onPressed: () => setState(() => _spouses.add(_SpouseRow())),
                 icon: const Icon(Icons.add, size: 18),
                 label: Text(_gender == 'F'
-                    ? context.tr('Add Spouse', 'إضافة زوج/ة')
-                    : context.tr('Add Wife', 'إضافة زوجة')),
+                    ? 'Add Spouse'
+                    : 'Add Wife'),
               ),
             ),
         ],
@@ -566,7 +562,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   Widget _childrenSection() {
     return InfoPanel(
       icon: Icons.child_care_outlined,
-      title: context.tr('Children Information', 'معلومات الأبناء'),
+      title: 'Children Information',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -574,8 +570,8 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
               child: _row([
-                _field(_children[i].name, context.tr('Child Name', 'اسم الابن')),
-                _field(_children[i].age, context.tr('Age', 'العمر')),
+                _field(_children[i].name, 'Child Name'),
+                _field(_children[i].age, 'Age'),
                 IconButton(
                   icon: const Icon(Icons.remove_circle_outline,
                       color: AppColors.error),
@@ -588,7 +584,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
             child: TextButton.icon(
               onPressed: () => setState(() => _children.add(_ChildRow())),
               icon: const Icon(Icons.add, size: 18),
-              label: Text(context.tr('Add Child', 'إضافة ابن')),
+              label: Text('Add Child'),
             ),
           ),
         ],
@@ -599,7 +595,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   Widget _educationSection() {
     return InfoPanel(
       icon: Icons.school_outlined,
-      title: context.tr('Educational Background', 'المؤهلات الدراسية'),
+      title: 'Educational Background',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -610,7 +606,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                 children: [
                   _row([
                     _dropdown<EducationStage>(
-                      label: context.tr('Stage', 'المرحلة'),
+                      label: 'Stage',
                       value: _education[i].stage,
                       items: {
                         for (final s in EducationStage.values)
@@ -625,7 +621,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                       }),
                     ),
                     _field(_education[i].school,
-                        context.tr('School Name', 'اسم المدرسة')),
+                        'School Name'),
                     IconButton(
                       icon: const Icon(Icons.remove_circle_outline,
                           color: AppColors.error),
@@ -635,12 +631,12 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                   _row([
                     if (_education[i].stage.hasDegree)
                       _field(_education[i].degree,
-                          context.tr('Degree', 'الدرجة العلمية')),
+                          'Degree'),
                     if (_education[i].stage.hasProgram)
                       _field(_education[i].program,
                           _education[i].stage.programLabel(context.isArabic)),
                     _field(_education[i].year,
-                        context.tr('Year Graduated', 'سنة التخرج')),
+                        'Year Graduated'),
                   ]),
                 ],
               ),
@@ -650,7 +646,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
             child: TextButton.icon(
               onPressed: () => setState(() => _education.add(_EduRow())),
               icon: const Icon(Icons.add, size: 18),
-              label: Text(context.tr('Add Education', 'إضافة مؤهل')),
+              label: Text('Add Education'),
             ),
           ),
         ],
@@ -661,14 +657,14 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   Widget _usraSection() {
     return InfoPanel(
       icon: Icons.groups_2_outlined,
-      title: context.tr('Naqib-Usra Information', 'معلومات النقيب والأسرة'),
+      title: 'Naqib-Usra Information',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _row([
-            _field(_usraName, context.tr('Name of Usra', 'اسم الأسرة')),
-            _field(_usraYear, context.tr('Established Year', 'سنة التأسيس')),
-            _field(_usraSchedule, context.tr('Meeting Schedule', 'موعد اللقاء')),
+            _field(_usraName, 'Name of Usra'),
+            _field(_usraYear, 'Established Year'),
+            _field(_usraSchedule, 'Meeting Schedule'),
           ]),
           const SizedBox(height: AppSpacing.md),
           // Naqib — an existing member, chosen via search.
@@ -677,12 +673,12 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
               Expanded(
                 child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: context.tr('Naqib', 'النقيب'),
+                    labelText: 'Naqib',
                     isDense: true,
                   ),
                   child: Text(
                     _naqib == null
-                        ? context.tr('Not selected', 'غير محدد')
+                        ? 'Not selected'
                         : _naqib!.displayName(context.isArabic),
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
@@ -693,12 +689,12 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                 onPressed: _selectNaqib,
                 icon: const Icon(Icons.person_search_outlined, size: 18),
                 label: Text(_naqib == null
-                    ? context.tr('Select', 'تحديد')
-                    : context.tr('Change', 'تغيير')),
+                    ? 'Select'
+                    : 'Change'),
               ),
               if (_naqib != null)
                 IconButton(
-                  tooltip: context.tr('Clear', 'مسح'),
+                  tooltip: 'Clear',
                   icon: const Icon(Icons.clear, size: 18),
                   onPressed: () => setState(() => _naqib = null),
                 ),
@@ -709,19 +705,19 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
           Row(
             children: [
               Expanded(
-                child: Text(context.tr('Usra Members', 'أعضاء الأسرة'),
+                child: Text('Usra Members',
                     style: Theme.of(context).textTheme.titleSmall),
               ),
               TextButton.icon(
                 onPressed: _addUsraMember,
                 icon: const Icon(Icons.person_add_alt_1_outlined, size: 18),
-                label: Text(context.tr('Add', 'إضافة')),
+                label: Text('Add'),
               ),
             ],
           ),
           const SizedBox(height: AppSpacing.xs),
           if (_usraMembers.isEmpty)
-            Text(context.tr('No usra members added', 'لم تتم إضافة أعضاء'),
+            Text('No usra members added',
                 style: Theme.of(context).textTheme.bodySmall)
           else
             Wrap(
@@ -743,13 +739,13 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
 
   Future<void> _selectNaqib() async {
     // trRead (read), not tr (watch) — this runs in a tap handler, outside build.
-    final title = context.trRead('Select Naqib', 'اختيار النقيب');
+    final title = 'Select Naqib';
     final picked = await _pickMember(title: title, excludeId: widget.memberId);
     if (picked != null && mounted) setState(() => _naqib = picked);
   }
 
   Future<void> _addUsraMember() async {
-    final title = context.trRead('Add Usra Member', 'إضافة عضو أسرة');
+    final title = 'Add Usra Member';
     final excludeIds = _usraMembers.map((m) => m.id).toSet();
     final picked = await _pickMember(
         title: title, excludeId: widget.memberId, excludeIds: excludeIds);
@@ -878,7 +874,7 @@ class _PhotoPicker extends StatelessWidget {
         TextButton.icon(
           onPressed: onPick,
           icon: const Icon(Icons.photo_camera_outlined, size: 18),
-          label: Text(context.tr('Upload Photo', 'رفع صورة')),
+          label: Text('Upload Photo'),
         ),
       ],
     );

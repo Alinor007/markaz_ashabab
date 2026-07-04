@@ -239,7 +239,6 @@ class _LeadershipNavGroupState extends State<_LeadershipNavGroup> {
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
-    final isArabic = context.watch<LocaleController>().isArabic;
     final theme = Theme.of(context);
 
     return Column(
@@ -295,49 +294,43 @@ class _LeadershipNavGroupState extends State<_LeadershipNavGroup> {
         ),
         if (_expanded) ...[
           _LeadershipSubTile(
-            label: isArabic
-                ? LeadershipCategory.officePresident.ar
-                : LeadershipCategory.officePresident.en,
+            label: LeadershipCategory.officePresident.en,
             route: '/leadership/office-president',
             selected: widget.currentRoute == '/leadership/office-president',
           ),
           _LeadershipSubTile(
-            label: isArabic
-                ? LeadershipCategory.board.ar
-                : LeadershipCategory.board.en,
+            label: LeadershipCategory.board.en,
             route: '/leadership/board',
             selected: widget.currentRoute == '/leadership/board',
           ),
           // Consultative Assembly → nested General Membership + Committees.
           _ExpandableSubGroup(
-            label: isArabic
-                ? LeadershipCategory.assembly.ar
-                : LeadershipCategory.assembly.en,
+            label: LeadershipCategory.assembly.en,
             indent: 1,
             autoExpand: widget.currentRoute.startsWith('/leadership/assembly'),
             children: [
               _LeadershipSubTile(
-                label: isArabic ? 'العضوية العامة' : 'General Membership',
+                label: 'General Membership',
                 route: '/leadership/assembly/general',
                 selected:
                     widget.currentRoute == '/leadership/assembly/general',
                 indent: 2,
               ),
               _ExpandableSubGroup(
-                label: isArabic ? 'اللجان' : 'Committees',
+                label: 'Committees',
                 indent: 2,
                 autoExpand: widget.currentRoute
                     .startsWith('/leadership/assembly/committee'),
                 children: [
                   _LeadershipSubTile(
-                    label: isArabic ? 'الهيئة الشرعية' : "Hay-ah Shar'iyyah",
+                    label: "Hay-ah Shar'iyyah",
                     route: '/leadership/assembly/committee/hayah',
                     selected: widget.currentRoute ==
                         '/leadership/assembly/committee/hayah',
                     indent: 3,
                   ),
                   _LeadershipSubTile(
-                    label: isArabic ? 'التدقيق' : 'Audit',
+                    label: 'Audit',
                     route: '/leadership/assembly/committee/audit',
                     selected: widget.currentRoute ==
                         '/leadership/assembly/committee/audit',
@@ -348,7 +341,7 @@ class _LeadershipNavGroupState extends State<_LeadershipNavGroup> {
             ],
           ),
           _LeadershipSubTile(
-            label: isArabic ? 'القيادة السابقة' : 'Previous Leadership',
+            label: 'Previous Leadership',
             route: '/leadership/previous',
             selected: widget.currentRoute == '/leadership/previous',
           ),

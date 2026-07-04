@@ -33,7 +33,7 @@ class TarbiyaAreasScreen extends StatelessWidget {
           if (areas.isEmpty) {
             return EmptyState(
               icon: Icons.map_outlined,
-              title: context.tr('No areas yet', 'لا توجد مناطق بعد'),
+              title: 'No areas yet',
             );
           }
           return TarbiyaCardGrid(
@@ -60,7 +60,7 @@ class TarbiyaAreasScreen extends StatelessWidget {
   Future<void> _editArea(
       BuildContext context, TarbiyaRepository repo, TarbiyaArea area) async {
     final result = await NameFormDialog.show(context,
-        title: context.trRead('Edit Area', 'تعديل المنطقة'),
+        title: 'Edit Area',
         name: area.name,
         nameAr: area.nameAr);
     if (result == null) return;
@@ -71,11 +71,8 @@ class TarbiyaAreasScreen extends StatelessWidget {
       BuildContext context, TarbiyaRepository repo, TarbiyaArea area) async {
     final ok = await confirmDialog(
       context,
-      title: context.trRead(
-          'Delete area “${area.name}”?', 'حذف المنطقة «${area.nameAr}»؟'),
-      message: context.trRead(
-          "Shu'bas and members under it will be permanently deleted.",
-          'ستُحذف الشُّعب والأعضاء التابعون لها نهائيًا.'),
+      title: context.trRead('Delete area “${area.name}”?'),
+      message: "Shu'bas and members under it will be permanently deleted.",
     );
     if (ok) await repo.deleteArea(area.id);
   }

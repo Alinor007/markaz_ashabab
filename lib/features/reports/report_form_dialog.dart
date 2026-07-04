@@ -359,7 +359,7 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
   Future<void> _addParticipant() async {
     final memberRepo = context.read<MemberRepository>();
     final picked = await pickMember(context, memberRepo,
-        title: context.trRead('Add Participant', 'إضافة مشارك'),
+        title: 'Add Participant',
         excludeIds: {for (final m in _participants) m.id});
     if (picked == null) return;
     setState(() => _participants.add(picked));
@@ -398,9 +398,7 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
     if (!_formKey.currentState!.validate() || _deptId.isEmpty) {
       // Show a visible in-dialog error (a SnackBar would render behind the
       // modal) and scroll the required Program Title (Section A) into view.
-      setState(() => _formError = context.trRead(
-          'Please enter the Program Title to save.',
-          'يرجى إدخال عنوان البرنامج للحفظ.'));
+      setState(() => _formError = 'Please enter the Program Title to save.');
       if (_scroll.hasClients) {
         _scroll.animateTo(0,
             duration: const Duration(milliseconds: 300),
@@ -472,8 +470,7 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
                 children: [
                   Expanded(
                     child: Text(
-                      context.tr('Program Completion Report (Form P-2)',
-                          'تقرير إنجاز برنامج (نموذج P-2)'),
+                      'Program Completion Report (Form P-2)',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
@@ -510,12 +507,12 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
                 children: [
                   TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text(context.tr('Cancel', 'إلغاء'))),
+                      child: Text('Cancel')),
                   const SizedBox(width: AppSpacing.sm),
                   FilledButton.icon(
                     onPressed: _save,
                     icon: const Icon(Icons.save_outlined, size: 18),
-                    label: Text(context.tr('Save Report', 'حفظ التقرير')),
+                    label: Text('Save Report'),
                   ),
                 ],
               ),
@@ -529,12 +526,12 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
   List<Widget> _sections(BuildContext context, bool locked) {
     final leadOffice = _leadOfficeName(context.isArabic);
     return [
-      _section('A', context.tr('Basic Information', 'المعلومات الأساسية')),
+      _section('A', 'Basic Information'),
       if (!locked) ...[
         DropdownButtonFormField<String>(
           initialValue: _deptId.isEmpty ? null : _deptId,
           isExpanded: true,
-          decoration: _dec(context.tr('Department', 'القسم')),
+          decoration: _dec('Department'),
           items: [
             for (final d in widget.departments)
               DropdownMenuItem(
@@ -544,14 +541,14 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
         ),
         const SizedBox(height: AppSpacing.md),
       ],
-      _field(_programTitle, '${context.tr('Program Title', 'عنوان البرنامج')} *',
+      _field(_programTitle, '${'Program Title'} *',
           required: true, focusNode: _titleFocus),
       _row2(
         // Lead Office is auto-filled with the (locked/selected) department.
         Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.md),
           child: InputDecorator(
-            decoration: _dec(context.tr('Lead Office', 'المكتب الرئيسي')),
+            decoration: _dec('Lead Office'),
             child: Text(
               leadOffice.isEmpty ? '—' : leadOffice,
               style: Theme.of(context).textTheme.bodyLarge,
@@ -559,44 +556,43 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
           ),
         ),
         _field(_supportOffices,
-            context.tr('Support Offices', 'المكاتب المساندة')),
+            'Support Offices'),
       ),
       _row2(
         _dateField(context),
-        _field(_venue, context.tr('Venue / Location', 'المكان / الموقع')),
+        _field(_venue, 'Venue / Location'),
       ),
       _field(_programHead,
-          context.tr('Program Head / Project Leader', 'رئيس البرنامج / قائد المشروع')),
+          'Program Head / Project Leader'),
 
-      _section('B', context.tr('Objectives Review', 'مراجعة الأهداف')),
-      _field(_objective, context.tr('Objective', 'الهدف'), lines: 2),
+      _section('B', 'Objectives Review'),
+      _field(_objective, 'Objective', lines: 2),
       _choice(
-        context.tr('Status', 'الحالة'),
+        'Status',
         {
-          'achieved': context.tr('Achieved', 'تحقق'),
-          'partial': context.tr('Partially Achieved', 'تحقق جزئيًا'),
-          'not': context.tr('Not Achieved', 'لم يتحقق'),
+          'achieved': 'Achieved',
+          'partial': 'Partially Achieved',
+          'not': 'Not Achieved',
         },
         _objectiveStatus,
         (v) => setState(() => _objectiveStatus = v),
       ),
-      _list(context, context.tr('Remarks', 'ملاحظات'), _remarks),
+      _list(context, 'Remarks', _remarks),
 
       _section('C',
-          context.tr('Program Implementation Summary', 'ملخص تنفيذ البرنامج')),
+          'Program Implementation Summary'),
       _field(
           _brief,
-          context.tr('Brief description of what actually happened',
-              'وصف موجز لما حدث فعليًا'),
+          'Brief description of what actually happened',
           lines: 3),
-      _list(context, context.tr('Key Activities Conducted', 'الأنشطة الرئيسية'),
+      _list(context, 'Key Activities Conducted',
           _keyActivities),
       _choice(
-        context.tr('Flow of the Event', 'سير الفعالية'),
+        'Flow of the Event',
         {
-          'best': context.tr('Best', 'ممتاز'),
-          'good': context.tr('Good', 'جيد'),
-          'needs': context.tr('Needs Improvement', 'يحتاج إلى تحسين'),
+          'best': 'Best',
+          'good': 'Good',
+          'needs': 'Needs Improvement',
         },
         _eventFlow,
         (v) => setState(() => _eventFlow = v),
@@ -605,16 +601,16 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
       // Participation Data — only for the people-centric departments (Human
       // Capital & Da'wah), where participants are tracked as members.
       if (_memberBased) ...[
-        _section('D', context.tr('Participation Data', 'بيانات المشاركة')),
+        _section('D', 'Participation Data'),
         _row2(
           _field(_target,
-              context.tr('Target Participants', 'المشاركون المستهدفون'),
+              'Target Participants',
               keyboard: TextInputType.number),
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.md),
             child: InputDecorator(
               decoration: _dec(
-                  context.tr('Actual Participants', 'المشاركون الفعليون')),
+                  'Actual Participants'),
               child: Text('${_participants.length}',
                   style: Theme.of(context).textTheme.titleMedium),
             ),
@@ -624,16 +620,15 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
       ],
 
       _section('E',
-          context.tr('Resource Utilization — Budget', 'استخدام الموارد — الميزانية')),
+          'Resource Utilization — Budget'),
       _row2(
-        _field(_approved, context.tr('Approved Budget', 'الميزانية المعتمدة'),
+        _field(_approved, 'Approved Budget',
             keyboard: TextInputType.number, onChanged: () => setState(() {})),
-        _field(_expenses, context.tr('Actual Expenses', 'المصروفات الفعلية'),
+        _field(_expenses, 'Actual Expenses',
             keyboard: TextInputType.number, onChanged: () => setState(() {})),
       ),
       InputDecorator(
-        decoration: _dec(context.tr('Variance (Approved − Actual)',
-            'الفرق (المعتمدة − الفعلية)')),
+        decoration: _dec('Variance (Approved − Actual)'),
         child: Text(
           _variance.toStringAsFixed(2),
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -642,17 +637,17 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
         ),
       ),
 
-      _section('F', context.tr('Outputs & Results', 'المخرجات والنتائج')),
-      _list(context, context.tr('Direct Outputs', 'المخرجات المباشرة'),
+      _section('F', 'Outputs & Results'),
+      _list(context, 'Direct Outputs',
           _outputs),
 
-      _section('G', context.tr('Challenges Encountered', 'التحديات المواجهة')),
-      _list(context, context.tr('Challenges', 'التحديات'), _challenges),
+      _section('G', 'Challenges Encountered'),
+      _list(context, 'Challenges', _challenges),
 
-      _section('H', context.tr('Solutions Applied', 'الحلول المطبقة')),
-      _list(context, context.tr('Solutions', 'الحلول'), _solutions),
+      _section('H', 'Solutions Applied'),
+      _list(context, 'Solutions', _solutions),
 
-      _section('I', context.tr('Photos', 'الصور')),
+      _section('I', 'Photos'),
       _photoSection(context),
     ];
   }
@@ -668,15 +663,14 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
           child: TextButton.icon(
             onPressed: _addParticipant,
             icon: const Icon(Icons.person_add_alt_1_outlined, size: 18),
-            label: Text(context.tr('Add Participant', 'إضافة مشارك')),
+            label: Text('Add Participant'),
           ),
         ),
         if (_participants.isEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
             child: Text(
-              context.tr('No participants added yet',
-                  'لم تتم إضافة مشاركين بعد'),
+              'No participants added yet',
               style: Theme.of(context)
                   .textTheme
                   .bodySmall
@@ -699,7 +693,7 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
                       style: Theme.of(context).textTheme.bodyMedium),
                 ),
                 IconButton(
-                  tooltip: context.tr('Remove', 'إزالة'),
+                  tooltip: 'Remove',
                   icon: const Icon(Icons.remove_circle_outline,
                       size: 20, color: AppColors.error),
                   onPressed: () =>
@@ -723,7 +717,7 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
           child: TextButton.icon(
             onPressed: _addPhotos,
             icon: const Icon(Icons.add_photo_alternate_outlined, size: 18),
-            label: Text(context.tr('Add Photos', 'إضافة صور')),
+            label: Text('Add Photos'),
           ),
         ),
         if (_photoPaths.isNotEmpty)
@@ -743,7 +737,7 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
                       top: -6,
                       right: -6,
                       child: IconButton(
-                        tooltip: context.tr('Remove', 'إزالة'),
+                        tooltip: 'Remove',
                         icon: const Icon(Icons.cancel,
                             size: 20, color: AppColors.error),
                         onPressed: () =>
@@ -809,7 +803,7 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
         onChanged: onChanged == null ? null : (_) => onChanged(),
         validator: required
             ? (v) => (v == null || v.trim().isEmpty)
-                ? context.trRead('Required', 'مطلوب')
+                ? 'Required'
                 : null
             : null,
       ),
@@ -822,7 +816,7 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
       child: InkWell(
         onTap: _pickDate,
         child: InputDecorator(
-          decoration: _dec(context.tr('Date Conducted', 'تاريخ التنفيذ'))
+          decoration: _dec('Date Conducted')
               .copyWith(
                   suffixIcon:
                       const Icon(Icons.calendar_today_outlined, size: 18)),
@@ -890,7 +884,7 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
                     ),
                   ),
                   IconButton(
-                    tooltip: context.tr('Remove', 'إزالة'),
+                    tooltip: 'Remove',
                     icon: const Icon(Icons.remove_circle_outline,
                         size: 20, color: AppColors.error),
                     onPressed: () => setState(() {
@@ -906,7 +900,7 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
             child: TextButton.icon(
               onPressed: () => setState(() => list.add(_c())),
               icon: const Icon(Icons.add, size: 18),
-              label: Text(context.tr('Add', 'إضافة')),
+              label: Text('Add'),
             ),
           ),
         ],

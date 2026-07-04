@@ -44,7 +44,7 @@ class TarbiyaLevelsScreen extends StatelessWidget {
             arabic: 'المستويات',
             child: EmptyState(
               icon: Icons.layers_outlined,
-              title: context.tr('Shu\'ba not found', 'الشُّعبة غير موجودة'),
+              title: 'Shu\'ba not found',
             ),
           );
         }
@@ -55,7 +55,7 @@ class TarbiyaLevelsScreen extends StatelessWidget {
           breadcrumb: HierarchyBreadcrumb(
             crumbs: [
               Crumb(
-                label: context.tr('Tarbiya Al-Kawadeer', 'تربية الكوادر'),
+                label: 'Tarbiya Al-Kawadeer',
                 route: '/tarbiya',
                 icon: Icons.hub_outlined,
               ),
@@ -153,9 +153,9 @@ class _LevelCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSpacing.sm),
-              Text(context.tr('Level $level', 'المستوى $level'),
+              Text('Level $level',
                   style: theme.textTheme.titleLarge),
-              Text(context.tr('members', 'عضو'),
+              Text('members',
                   style: theme.textTheme.bodySmall),
               const SizedBox(height: AppSpacing.md),
               const Divider(height: 1),
@@ -164,12 +164,12 @@ class _LevelCard extends StatelessWidget {
                 children: [
                   _Pill(
                       color: AppColors.emerald,
-                      label: context.tr('Active', 'نشط'),
+                      label: 'Active',
                       value: counts.active),
                   const SizedBox(width: AppSpacing.sm),
                   _Pill(
                       color: AppColors.textFaint,
-                      label: context.tr('Inactive', 'غير نشط'),
+                      label: 'Inactive',
                       value: counts.inactive),
                 ],
               ),

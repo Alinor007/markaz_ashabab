@@ -296,9 +296,8 @@ void main() {
       // Youth & Students was added in schema v7.
       final youth = depts.firstWhere((d) => d.id == 'youth');
       expect(youth.description, isNotEmpty);
-      // Bilingual overviews are seeded (Arabic added in schema v8).
-      expect(youth.descriptionAr, isNotEmpty);
-      expect(depts.firstWhere((d) => d.id == 'dawah').descriptionAr, isNotEmpty);
+      // English overviews are seeded for the standing departments.
+      expect(depts.firstWhere((d) => d.id == 'dawah').description, isNotEmpty);
     });
 
     test('report CRUD + department filtering', () async {
@@ -635,8 +634,7 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('boots to login, signs in, reaches home, toggles AR',
-        (tester) async {
+    testWidgets('boots to login, signs in, reaches home', (tester) async {
       useTabletSurface(tester);
       final db = AppDatabase.memory();
       addTearDown(db.close);
@@ -648,13 +646,10 @@ void main() {
       expect(find.text('Sign In'), findsOneWidget);
       await signIn(tester);
 
-      // Reached the app shell (left the login screen).
+      // Reached the app shell (left the login screen); the English home
+      // label is shown in the sidebar (the app is English-only).
       expect(find.text('Sign In'), findsNothing);
-
-      // Language toggle → Arabic home label in the sidebar, RTL.
-      await tester.tap(find.text('ع'));
-      await tester.pumpAndSettle();
-      expect(find.text('الرئيسية'), findsWidgets);
+      expect(find.text('Home'), findsWidgets);
     });
 
     testWidgets('leadership sidebar dropdown reveals the three pages',

@@ -125,22 +125,22 @@ class PersonalInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InfoPanel(
       icon: Icons.person_outline,
-      title: context.tr('Personal Information', 'المعلومات الشخصية'),
+      title: 'Personal Information',
       child: _KvRows([
-        (context.tr('Full Name', 'الاسم الكامل'), member.fullName),
-        (context.tr('Gender', 'الجنس'),
+        ('Full Name', member.fullName),
+        ('Gender',
             member.gender == 'M'
-                ? context.tr('Male', 'ذكر')
-                : context.tr('Female', 'أنثى')),
-        (context.tr('Date of Birth', 'تاريخ الميلاد'), member.dob),
-        (context.tr('Place of Birth', 'مكان الميلاد'), member.placeOfBirth),
-        (context.tr('Contact Number', 'رقم الهاتف'), member.contactNumber),
-        (context.tr('Email', 'البريد الإلكتروني'), member.email),
-        (context.tr('Address', 'العنوان'), member.address),
-        (context.tr('Civil Status', 'الحالة الاجتماعية'),
+                ? 'Male'
+                : 'Female'),
+        ('Date of Birth', member.dob),
+        ('Place of Birth', member.placeOfBirth),
+        ('Contact Number', member.contactNumber),
+        ('Email', member.email),
+        ('Address', member.address),
+        ('Civil Status',
             member.civilStatusEnum.label(context.isArabic)),
-        (context.tr('Ethnicity / Tribe', 'العرق / القبيلة'), member.ethnicity),
-        (context.tr('Occupation', 'المهنة'), member.occupation),
+        ('Ethnicity / Tribe', member.ethnicity),
+        ('Occupation', member.occupation),
       ]),
     );
   }
@@ -158,12 +158,12 @@ class FamilyChildrenCard extends StatelessWidget {
     final single = member.civilStatusEnum == CivilStatus.single;
     return InfoPanel(
       icon: Icons.family_restroom_outlined,
-      title: context.tr('Family Information', 'معلومات الأسرة'),
+      title: 'Family Information',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (single)
-            Text(context.tr('Single', 'أعزب'),
+            Text('Single',
                 style: Theme.of(context).textTheme.bodyMedium),
           // Spouses (1 for a female, up to 4 for a male) — stored in the
           // MemberWives table for all genders.
@@ -184,11 +184,11 @@ class FamilyChildrenCard extends StatelessWidget {
                         : const <(String, String)>[]);
                 final isMale = member.gender == 'M';
                 final heading = isMale
-                    ? context.tr('Spouse', 'الزوج/ة')
-                    : context.tr('Spouse', 'الزوج/ة');
+                    ? 'Spouse'
+                    : 'Spouse';
                 if (entries.isEmpty) {
                   return Text(
-                      context.tr('No spouse recorded', 'لا يوجد زوج/ة'),
+                      'No spouse recorded',
                       style: Theme.of(context).textTheme.bodySmall);
                 }
                 return Column(
@@ -210,7 +210,7 @@ class FamilyChildrenCard extends StatelessWidget {
               },
             ),
           const SizedBox(height: AppSpacing.md),
-          Text(context.tr('Children', 'الأبناء'),
+          Text('Children',
               style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: AppSpacing.sm),
           StreamBuilder<List<MemberChildrenData>>(
@@ -218,7 +218,7 @@ class FamilyChildrenCard extends StatelessWidget {
             builder: (context, snap) {
               final children = snap.data ?? const [];
               if (children.isEmpty) {
-                return Text(context.tr('No children recorded', 'لا يوجد أبناء'),
+                return Text('No children recorded',
                     style: Theme.of(context).textTheme.bodySmall);
               }
               return Column(
@@ -258,13 +258,13 @@ class EducationCard extends StatelessWidget {
     final repo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.school_outlined,
-      title: context.tr('Educational Background', 'المؤهلات الدراسية'),
+      title: 'Educational Background',
       child: StreamBuilder<List<MemberEducationData>>(
         stream: repo.watchEducation(member.id),
         builder: (context, snap) {
           final records = snap.data ?? const [];
           if (records.isEmpty) {
-            return Text(context.tr('No records', 'لا توجد سجلات'),
+            return Text('No records',
                 style: Theme.of(context).textTheme.bodySmall);
           }
           return Column(
@@ -324,19 +324,19 @@ class NaqibUsraCard extends StatelessWidget {
     final repo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.groups_2_outlined,
-      title: context.tr('Naqib-Usra Information', 'معلومات النقيب والأسرة'),
+      title: 'Naqib-Usra Information',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _KvRows([
-            (context.tr('Name of Usra', 'اسم الأسرة'), member.usraName),
-            (context.tr('Established Year', 'سنة التأسيس'),
+            ('Name of Usra', member.usraName),
+            ('Established Year',
                 member.usraEstablishedYear),
-            (context.tr('Meeting Schedule', 'موعد اللقاء'),
+            ('Meeting Schedule',
                 member.usraMeetingSchedule),
           ]),
           const SizedBox(height: AppSpacing.md),
-          Text(context.tr('Naqib', 'النقيب'),
+          Text('Naqib',
               style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: AppSpacing.sm),
           // ── Navigatable Naqib ──────────────────────────────────────
@@ -348,7 +348,7 @@ class NaqibUsraCard extends StatelessWidget {
               final naqib = snap.data;
               if (naqib == null) {
                 return Text(
-                  context.tr('Not assigned', 'غير معيّن'),
+                  'Not assigned',
                   style: Theme.of(context).textTheme.bodyMedium,
                 );
               }
@@ -379,7 +379,7 @@ class NaqibUsraCard extends StatelessWidget {
           ),
           // ──────────────────────────────────────────────────────────
           const SizedBox(height: AppSpacing.md),
-          Text(context.tr('Usra Members', 'أعضاء الأسرة'),
+          Text('Usra Members',
               style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: AppSpacing.sm),
           StreamBuilder<List<Member>>(
@@ -388,7 +388,7 @@ class NaqibUsraCard extends StatelessWidget {
               final members = snap.data ?? const [];
               if (members.isEmpty) {
                 return Text(
-                    context.tr('No other usra members', 'لا يوجد أعضاء آخرون'),
+                    'No other usra members',
                     style: Theme.of(context).textTheme.bodySmall);
               }
               return Wrap(
@@ -449,7 +449,7 @@ class TasedCard extends StatelessWidget {
     final repo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.grading_outlined,
-      title: context.tr("Tas'ed Information", 'معلومات التصعيد'),
+      title: "Tas'ed Information",
       child: StreamBuilder<List<MemberTasedData>>(
         stream: repo.watchTased(member.id),
         builder: (context, snap) {
@@ -458,15 +458,15 @@ class TasedCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _tableHeader(context, [
-                context.tr('Level', 'المستوى'),
-                context.tr('Year', 'السنة'),
-                context.tr('Status', 'الحالة'),
+                'Level',
+                'Year',
+                'Status',
                 '',
               ]),
               if (records.isEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                  child: Text(context.tr('No records', 'لا توجد سجلات'),
+                  child: Text('No records',
                       style: Theme.of(context).textTheme.bodySmall),
                 ),
               for (final r in records)
@@ -476,15 +476,14 @@ class TasedCard extends StatelessWidget {
                   onEdit: () => _showTasedDialog(context, repo, member, r),
                   onDelete: () async {
                     final ok = await confirmDialog(context,
-                        title: context.trRead('Delete record?', 'حذف السجل؟'),
-                        message: context.trRead('Remove this tas\'ed record.',
-                            'إزالة سجل التصعيد هذا.'));
+                        title: 'Delete record?',
+                        message: 'Remove this tas\'ed record.');
                     if (ok) await repo.deleteTased(r.id);
                   },
                 ),
               if (canManage)
                 _AddButton(
-                  label: context.tr('Add Record', 'إضافة سجل'),
+                  label: 'Add Record',
                   onTap: () => _showTasedDialog(context, repo, member, null),
                 ),
             ],
@@ -530,11 +529,11 @@ class _TasedRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
       child: Row(
         children: [
-          Expanded(child: Text(context.tr('Level ${record.level}', 'المستوى ${record.level}'))),
+          Expanded(child: Text(context.tr('Level ${record.level}'))),
           Expanded(child: Text(record.year.isEmpty ? '—' : record.year)),
           Expanded(
             child: Text(
-              active ? context.tr('Active', 'نشط') : context.tr('Inactive', 'غير نشط'),
+              active ? 'Active' : 'Inactive',
               style: TextStyle(color: color, fontWeight: FontWeight.w600),
             ),
           ),
@@ -576,8 +575,8 @@ Future<void> _showTasedDialog(BuildContext context, MemberRepository repo,
       builder: (context, setState) => AlertDialog(
         backgroundColor: AppColors.surface,
         title: Text(existing == null
-            ? context.tr('Add Tas\'ed Record', 'إضافة سجل تصعيد')
-            : context.tr('Edit Tas\'ed Record', 'تعديل سجل التصعيد')),
+            ? 'Add Tas\'ed Record'
+            : 'Edit Tas\'ed Record'),
         content: SizedBox(
           width: 360,
           child: SingleChildScrollView(
@@ -589,7 +588,7 @@ Future<void> _showTasedDialog(BuildContext context, MemberRepository repo,
                   DropdownButtonFormField<int>(
                     initialValue: level,
                     decoration: InputDecoration(
-                        labelText: context.tr('Level', 'المستوى')),
+                        labelText: 'Level'),
                     items: [
                       for (final l in kTarbiyaLevels)
                         DropdownMenuItem(value: l, child: Text('Level $l')),
@@ -602,20 +601,20 @@ Future<void> _showTasedDialog(BuildContext context, MemberRepository repo,
                     keyboardType: TextInputType.number,
                     validator: (v) => Validators.optionalYear(context, v),
                     decoration:
-                        InputDecoration(labelText: context.tr('Year', 'السنة')),
+                        InputDecoration(labelText: 'Year'),
                   ),
                   const SizedBox(height: AppSpacing.md),
                   DropdownButtonFormField<String>(
                     initialValue: status,
                     decoration: InputDecoration(
-                        labelText: context.tr('Status', 'الحالة')),
+                        labelText: 'Status'),
                     items: [
                       DropdownMenuItem(
                           value: 'active',
-                          child: Text(context.tr('Active', 'نشط'))),
+                          child: Text('Active')),
                       DropdownMenuItem(
                           value: 'inactive',
-                          child: Text(context.tr('Inactive', 'غير نشط'))),
+                          child: Text('Inactive')),
                     ],
                     onChanged: (v) => status = v ?? status,
                   ),
@@ -627,13 +626,13 @@ Future<void> _showTasedDialog(BuildContext context, MemberRepository repo,
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text(context.tr('Cancel', 'إلغاء'))),
+              child: Text('Cancel')),
           FilledButton(
               onPressed: () {
                 if (!formKey.currentState!.validate()) return;
                 Navigator.pop(context, true);
               },
-              child: Text(context.tr('Save', 'حفظ'))),
+              child: Text('Save')),
         ],
       ),
     ),
@@ -679,7 +678,7 @@ class _DonationCardState extends State<DonationCard> {
     final isArabic = context.isArabic;
     return InfoPanel(
       icon: Icons.savings_outlined,
-      title: context.tr('Donation Monitoring', 'متابعة التبرعات'),
+      title: 'Donation Monitoring',
       child: StreamBuilder<List<MemberDonation>>(
         stream: repo.watchDonations(widget.member.id, _year),
         builder: (context, snap) {
@@ -727,11 +726,11 @@ class _DonationCardState extends State<DonationCard> {
                 spacing: AppSpacing.lg,
                 runSpacing: AppSpacing.sm,
                 children: [
-                  _summary(context, context.tr('Total Donations', 'إجمالي التبرعات'),
+                  _summary(context, 'Total Donations',
                       total.toStringAsFixed(0)),
-                  _summary(context, context.tr('Months Contributed', 'أشهر التبرع'),
+                  _summary(context, 'Months Contributed',
                       '$donatedCount'),
-                  _summary(context, context.tr('Missing Months', 'الأشهر الفائتة'),
+                  _summary(context, 'Missing Months',
                       '${12 - donatedCount}'),
                 ],
               ),
@@ -778,7 +777,7 @@ class _DonationCardState extends State<DonationCard> {
               children: [
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text(context.tr('Donated', 'تبرّع')),
+                  title: Text('Donated'),
                   value: donated,
                   activeTrackColor: AppColors.emerald,
                   onChanged: (v) => setLocal(() => donated = v),
@@ -787,7 +786,7 @@ class _DonationCardState extends State<DonationCard> {
                   controller: amountCtrl,
                   keyboardType: TextInputType.number,
                   decoration:
-                      InputDecoration(labelText: context.tr('Amount', 'المبلغ')),
+                      InputDecoration(labelText: 'Amount'),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 InkWell(
@@ -798,7 +797,7 @@ class _DonationCardState extends State<DonationCard> {
                   },
                   child: InputDecorator(
                     decoration: InputDecoration(
-                      labelText: context.tr('Date of Donation', 'تاريخ التبرع'),
+                      labelText: 'Date of Donation',
                       suffixIcon: const Icon(Icons.calendar_today_outlined, size: 18),
                     ),
                     child: Text(date.isEmpty ? '—' : date),
@@ -808,7 +807,7 @@ class _DonationCardState extends State<DonationCard> {
                 TextField(
                   controller: notesCtrl,
                   decoration:
-                      InputDecoration(labelText: context.tr('Notes', 'ملاحظات')),
+                      InputDecoration(labelText: 'Notes'),
                 ),
               ],
             ),
@@ -816,10 +815,10 @@ class _DonationCardState extends State<DonationCard> {
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: Text(context.tr('Cancel', 'إلغاء'))),
+                child: Text('Cancel')),
             FilledButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: Text(context.tr('Save', 'حفظ'))),
+                child: Text('Save')),
           ],
         ),
       ),
@@ -924,7 +923,7 @@ class _ActivityHistoryCardState extends State<ActivityHistoryCard> {
     final isArabic = context.isArabic;
     return InfoPanel(
       icon: Icons.timeline_outlined,
-      title: context.tr('Activity History', 'سجل الأنشطة'),
+      title: 'Activity History',
       child: StreamBuilder<List<MemberActivity>>(
         stream: repo.watchActivities(widget.member.id),
         builder: (context, activitySnap) {
@@ -944,8 +943,7 @@ class _ActivityHistoryCardState extends State<ActivityHistoryCard> {
                       canManage: widget.canManage,
                       onDelete: () async {
                         final ok = await confirmDialog(context,
-                            title: context.trRead(
-                                'Delete activity?', 'حذف النشاط؟'),
+                            title: 'Delete activity?',
                             message: a.name);
                         if (ok) await repo.deleteActivity(a.id);
                       },
@@ -989,8 +987,7 @@ class _ActivityHistoryCardState extends State<ActivityHistoryCard> {
                     children: [
                       Expanded(
                         child: SearchField(
-                          hint: context.tr(
-                              'Search activities…', 'ابحث في الأنشطة…'),
+                          hint: 'Search activities…',
                           onChanged: (v) => setState(() {
                             _query = v;
                             _page = 0;
@@ -1011,7 +1008,7 @@ class _ActivityHistoryCardState extends State<ActivityHistoryCard> {
                   ),
                   const SizedBox(height: AppSpacing.md),
                   if (pageItems.isEmpty)
-                    Text(context.tr('No activities', 'لا توجد أنشطة'),
+                    Text('No activities',
                         style: Theme.of(context).textTheme.bodySmall)
                   else
                     for (final row in pageItems) row.widget,
@@ -1170,8 +1167,8 @@ class _ActivityRow extends StatelessWidget {
             ),
             child: Text(
               present
-                  ? context.tr('Present', 'حاضر')
-                  : context.tr('Absent', 'غائب'),
+                  ? 'Present'
+                  : 'Absent',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: present ? AppColors.emerald : AppColors.error),
             ),
@@ -1202,7 +1199,7 @@ Future<void> _showActivityDialog(
       builder: (context, setLocal) => AlertDialog(
         scrollable: true,
         backgroundColor: AppColors.surface,
-        title: Text(context.tr('Add Activity', 'إضافة نشاط')),
+        title: Text('Add Activity'),
         content: SizedBox(
           width: 380,
           child: Column(
@@ -1211,12 +1208,12 @@ Future<void> _showActivityDialog(
               TextField(
                   controller: nameCtrl,
                   decoration: InputDecoration(
-                      labelText: context.tr('Activity Name', 'اسم النشاط'))),
+                      labelText: 'Activity Name')),
               const SizedBox(height: AppSpacing.md),
               TextField(
                   controller: typeCtrl,
                   decoration: InputDecoration(
-                      labelText: context.tr('Activity Type', 'نوع النشاط'))),
+                      labelText: 'Activity Type')),
               const SizedBox(height: AppSpacing.md),
               InkWell(
                 onTap: () async {
@@ -1225,7 +1222,7 @@ Future<void> _showActivityDialog(
                 },
                 child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: context.tr('Date', 'التاريخ'),
+                    labelText: 'Date',
                     suffixIcon:
                         const Icon(Icons.calendar_today_outlined, size: 18),
                   ),
@@ -1236,12 +1233,12 @@ Future<void> _showActivityDialog(
               DropdownButtonFormField<String>(
                 initialValue: attendance,
                 decoration: InputDecoration(
-                    labelText: context.tr('Attendance', 'الحضور')),
+                    labelText: 'Attendance'),
                 items: [
                   DropdownMenuItem(
-                      value: 'present', child: Text(context.tr('Present', 'حاضر'))),
+                      value: 'present', child: Text('Present')),
                   DropdownMenuItem(
-                      value: 'absent', child: Text(context.tr('Absent', 'غائب'))),
+                      value: 'absent', child: Text('Absent')),
                 ],
                 onChanged: (v) => setLocal(() => attendance = v ?? attendance),
               ),
@@ -1249,17 +1246,17 @@ Future<void> _showActivityDialog(
               TextField(
                   controller: remarksCtrl,
                   decoration: InputDecoration(
-                      labelText: context.tr('Remarks', 'ملاحظات'))),
+                      labelText: 'Remarks')),
             ],
           ),
         ),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text(context.tr('Cancel', 'إلغاء'))),
+              child: Text('Cancel')),
           FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text(context.tr('Save', 'حفظ'))),
+              child: Text('Save')),
         ],
       ),
     ),
@@ -1274,7 +1271,7 @@ Future<void> _showActivityDialog(
       remarks: remarksCtrl.text.trim(),
     );
   } else if (context.mounted && result == true) {
-    _toast(context, context.trRead('Activity name is required.', 'اسم النشاط مطلوب.'));
+    _toast(context, 'Activity name is required.');
   }
   nameCtrl.dispose();
   typeCtrl.dispose();
@@ -1294,7 +1291,7 @@ class ContributionsCard extends StatelessWidget {
     final repo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.handshake_outlined,
-      title: context.tr("Contribution to Jama'ah", 'الإسهام في الجماعة'),
+      title: "Contribution to Jama'ah",
       child: StreamBuilder<List<MemberContribution>>(
         stream: repo.watchContributions(member.id),
         builder: (context, snap) {
@@ -1303,7 +1300,7 @@ class ContributionsCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (items.isEmpty)
-                Text(context.tr('No contributions', 'لا توجد إسهامات'),
+                Text('No contributions',
                     style: Theme.of(context).textTheme.bodySmall),
               for (final c in items)
                 Padding(
@@ -1340,8 +1337,7 @@ class ContributionsCard extends StatelessWidget {
                               size: 18, color: AppColors.error),
                           onPressed: () async {
                             final ok = await confirmDialog(context,
-                                title: context.trRead(
-                                    'Delete contribution?', 'حذف الإسهام؟'),
+                                title: 'Delete contribution?',
                                 message: c.title);
                             if (ok) await repo.deleteContribution(c.id);
                           },
@@ -1352,7 +1348,7 @@ class ContributionsCard extends StatelessWidget {
                 ),
               if (canManage)
                 _AddButton(
-                  label: context.tr('Add Contribution', 'إضافة إسهام'),
+                  label: 'Add Contribution',
                   onTap: () =>
                       _showContributionDialog(context, repo, member, null),
                 ),
@@ -1375,7 +1371,7 @@ Widget _statusPill(BuildContext context, String status) {
       borderRadius: BorderRadius.circular(AppRadius.pill),
     ),
     child: Text(
-      active ? context.tr('Active', 'نشط') : context.tr('Completed', 'مكتمل'),
+      active ? 'Active' : 'Completed',
       style: Theme.of(context)
           .textTheme
           .labelSmall
@@ -1396,8 +1392,8 @@ Future<void> _showContributionDialog(BuildContext context,
       builder: (context, setLocal) => AlertDialog(
         backgroundColor: AppColors.surface,
         title: Text(existing == null
-            ? context.tr('Add Contribution', 'إضافة إسهام')
-            : context.tr('Edit Contribution', 'تعديل الإسهام')),
+            ? 'Add Contribution'
+            : 'Edit Contribution'),
         content: SizedBox(
           width: 380,
           child: SingleChildScrollView(child: Column(
@@ -1406,13 +1402,13 @@ Future<void> _showContributionDialog(BuildContext context,
               TextField(
                   controller: titleCtrl,
                   decoration:
-                      InputDecoration(labelText: context.tr('Title', 'العنوان'))),
+                      InputDecoration(labelText: 'Title')),
               const SizedBox(height: AppSpacing.md),
               TextField(
                   controller: descCtrl,
                   maxLines: 2,
                   decoration: InputDecoration(
-                      labelText: context.tr('Description', 'الوصف'))),
+                      labelText: 'Description')),
               const SizedBox(height: AppSpacing.md),
               InkWell(
                 onTap: () async {
@@ -1421,7 +1417,7 @@ Future<void> _showContributionDialog(BuildContext context,
                 },
                 child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: context.tr('Date', 'التاريخ'),
+                    labelText: 'Date',
                     suffixIcon:
                         const Icon(Icons.calendar_today_outlined, size: 18),
                   ),
@@ -1432,13 +1428,13 @@ Future<void> _showContributionDialog(BuildContext context,
               DropdownButtonFormField<String>(
                 initialValue: status,
                 decoration:
-                    InputDecoration(labelText: context.tr('Status', 'الحالة')),
+                    InputDecoration(labelText: 'Status'),
                 items: [
                   DropdownMenuItem(
-                      value: 'active', child: Text(context.tr('Active', 'نشط'))),
+                      value: 'active', child: Text('Active')),
                   DropdownMenuItem(
                       value: 'completed',
-                      child: Text(context.tr('Completed', 'مكتمل'))),
+                      child: Text('Completed')),
                 ],
                 onChanged: (v) => status = v ?? status,
               ),
@@ -1448,10 +1444,10 @@ Future<void> _showContributionDialog(BuildContext context,
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text(context.tr('Cancel', 'إلغاء'))),
+              child: Text('Cancel')),
           FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text(context.tr('Save', 'حفظ'))),
+              child: Text('Save')),
         ],
       ),
     ),
@@ -1488,7 +1484,7 @@ class OrgRolesCard extends StatelessWidget {
     final repo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.badge_outlined,
-      title: context.tr('Role in Organization', 'الدور في المنظمة'),
+      title: 'Role in Organization',
       child: StreamBuilder<List<MemberRole>>(
         stream: repo.watchRoles(member.id),
         builder: (context, snap) {
@@ -1497,7 +1493,7 @@ class OrgRolesCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (roles.isEmpty)
-                Text(context.tr('No roles recorded', 'لا توجد أدوار'),
+                Text('No roles recorded',
                     style: Theme.of(context).textTheme.bodySmall),
               for (final r in roles)
                 Padding(
@@ -1537,8 +1533,7 @@ class OrgRolesCard extends StatelessWidget {
                               size: 18, color: AppColors.error),
                           onPressed: () async {
                             final ok = await confirmDialog(context,
-                                title: context.trRead(
-                                    'Delete role?', 'حذف الدور؟'),
+                                title: 'Delete role?',
                                 message: r.positionTitle);
                             if (ok) await repo.deleteRole(r.id);
                           },
@@ -1549,7 +1544,7 @@ class OrgRolesCard extends StatelessWidget {
                 ),
               if (canManage)
                 _AddButton(
-                  label: context.tr('Add Role', 'إضافة دور'),
+                  label: 'Add Role',
                   onTap: () => _showRoleDialog(context, repo, member, null),
                 ),
             ],
@@ -1573,8 +1568,8 @@ Future<void> _showRoleDialog(BuildContext context, MemberRepository repo,
       builder: (context, setLocal) => AlertDialog(
         backgroundColor: AppColors.surface,
         title: Text(existing == null
-            ? context.tr('Add Role', 'إضافة دور')
-            : context.tr('Edit Role', 'تعديل الدور')),
+            ? 'Add Role'
+            : 'Edit Role'),
         content: SizedBox(
           width: 380,
           child: SingleChildScrollView(child: Column(
@@ -1583,12 +1578,12 @@ Future<void> _showRoleDialog(BuildContext context, MemberRepository repo,
               TextField(
                   controller: titleCtrl,
                   decoration: InputDecoration(
-                      labelText: context.tr('Position Title', 'المسمى الوظيفي'))),
+                      labelText: 'Position Title')),
               const SizedBox(height: AppSpacing.md),
               TextField(
                   controller: deptCtrl,
                   decoration: InputDecoration(
-                      labelText: context.tr('Department', 'القسم'))),
+                      labelText: 'Department')),
               const SizedBox(height: AppSpacing.md),
               Row(
                 children: [
@@ -1600,7 +1595,7 @@ Future<void> _showRoleDialog(BuildContext context, MemberRepository repo,
                       },
                       child: InputDecorator(
                         decoration: InputDecoration(
-                            labelText: context.tr('Start Date', 'تاريخ البدء')),
+                            labelText: 'Start Date'),
                         child: Text(startDate.isEmpty ? '—' : startDate),
                       ),
                     ),
@@ -1614,7 +1609,7 @@ Future<void> _showRoleDialog(BuildContext context, MemberRepository repo,
                       },
                       child: InputDecorator(
                         decoration: InputDecoration(
-                            labelText: context.tr('End Date', 'تاريخ الانتهاء')),
+                            labelText: 'End Date'),
                         child: Text(endDate.isEmpty ? '—' : endDate),
                       ),
                     ),
@@ -1625,13 +1620,13 @@ Future<void> _showRoleDialog(BuildContext context, MemberRepository repo,
               DropdownButtonFormField<String>(
                 initialValue: status,
                 decoration:
-                    InputDecoration(labelText: context.tr('Status', 'الحالة')),
+                    InputDecoration(labelText: 'Status'),
                 items: [
                   DropdownMenuItem(
-                      value: 'active', child: Text(context.tr('Active', 'نشط'))),
+                      value: 'active', child: Text('Active')),
                   DropdownMenuItem(
                       value: 'completed',
-                      child: Text(context.tr('Completed', 'منتهٍ'))),
+                      child: Text('Completed')),
                 ],
                 onChanged: (v) => status = v ?? status,
               ),
@@ -1641,10 +1636,10 @@ Future<void> _showRoleDialog(BuildContext context, MemberRepository repo,
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text(context.tr('Cancel', 'إلغاء'))),
+              child: Text('Cancel')),
           FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text(context.tr('Save', 'حفظ'))),
+              child: Text('Save')),
         ],
       ),
     ),

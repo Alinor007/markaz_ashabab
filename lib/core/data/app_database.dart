@@ -603,7 +603,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.memory() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 22;
+  int get schemaVersion => 23;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -751,8 +751,47 @@ class AppDatabase extends _$AppDatabase {
             // untouched).
             await _seedDefaultAccounts();
           }
+          if (from < 23) {
+            // Arabic support was removed in schema v23. The bilingual `*_ar`
+            // columns are retained (to avoid a risky table rebuild) but every
+            // stored Arabic value is blanked so no Arabic data remains.
+            await _wipeArabicData();
+          }
         },
       );
+
+  /// Blanks every Arabic (`*_ar`) column so no Arabic text remains in the
+  /// database after Arabic support was removed (schema v23). The columns are
+  /// kept in the schema but are never written again.
+  Future<void> _wipeArabicData() async {
+    const wipes = <String, List<String>>{
+      'users': ['full_name_ar'],
+      'leaders': [
+        'name_ar',
+        'position_ar',
+        'bio_ar',
+        'achievements_ar',
+        'responsibilities_ar',
+      ],
+      'members': ['name_ar'],
+      'departments': ['name_ar', 'description_ar', 'head_name_ar'],
+      'dept_activities': ['title_ar'],
+      'reports': ['title_ar', 'summary_ar'],
+      'tarbiya_areas': ['name_ar', 'region_ar'],
+      'shubas': ['name_ar'],
+      'gallery_photos': ['title_ar', 'event_ar'],
+      'leadership_group_info': ['description_ar'],
+      'history_contents': ['founding_ar', 'mission_ar', 'vision_ar'],
+      'history_milestones': ['title_ar', 'description_ar'],
+      'previous_leaders': ['position_ar', 'note_ar'],
+      'previous_leader_sections': ['title_ar', 'body_ar'],
+      'audit_logs': ['action_ar', 'module_ar'],
+    };
+    for (final entry in wipes.entries) {
+      final assignments = entry.value.map((c) => "$c = ''").join(', ');
+      await customStatement('UPDATE ${entry.key} SET $assignments');
+    }
+  }
 
   /// Rebuilds the tables that gained constraints so existing installs get the
   /// same integrity as a fresh v5 database, repairing data first so the new
@@ -825,7 +864,7 @@ class AppDatabase extends _$AppDatabase {
       UsersCompanion.insert(
         id: 'admin',
         fullName: 'System Administrator',
-        fullNameAr: 'مدير النظام',
+        fullNameAr: '',
         username: 'admin',
         email: const Value('admin@markaz.org'),
         passwordHash: PasswordHasher.hash('Admin@markazosshabab'),
@@ -845,9 +884,7 @@ class AppDatabase extends _$AppDatabase {
         DepartmentsCompanion.insert(
           id: d.id,
           name: d.name,
-          nameAr: Value(d.nameAr),
           description: Value(d.description),
-          descriptionAr: Value(d.descriptionAr),
           iconKey: Value(d.icon),
           accent: Value(d.accent),
           sortOrder: Value(i),
@@ -871,9 +908,6 @@ class AppDatabase extends _$AppDatabase {
       await (update(departments)
             ..where((t) => t.id.equals(d.id) & t.description.equals('')))
           .write(DepartmentsCompanion(description: Value(d.description)));
-      await (update(departments)
-            ..where((t) => t.id.equals(d.id) & t.descriptionAr.equals('')))
-          .write(DepartmentsCompanion(descriptionAr: Value(d.descriptionAr)));
     }
   }
 
@@ -886,19 +920,18 @@ class AppDatabase extends _$AppDatabase {
 
     // Executive accounts (no department link).
     const executives = [
-      ('president', 'president', 'President', 'الرئيس', 'president'),
-      ('vice_president', 'vicepresident', 'Vice President', 'نائب الرئيس',
-          'vice_president'),
-      ('secretary_general', 'secretary', 'Secretary General', 'الأمين العام',
+      ('president', 'president', 'President', 'president'),
+      ('vice_president', 'vicepresident', 'Vice President', 'vice_president'),
+      ('secretary_general', 'secretary', 'Secretary General',
           'secretary_general'),
-      ('treasurer', 'treasurer', 'Treasurer', 'أمين الصندوق', 'treasurer'),
+      ('treasurer', 'treasurer', 'Treasurer', 'treasurer'),
     ];
-    for (final (id, username, name, nameAr, role) in executives) {
+    for (final (id, username, name, role) in executives) {
       await into(users).insert(
         UsersCompanion.insert(
           id: id,
           fullName: name,
-          fullNameAr: nameAr,
+          fullNameAr: '',
           username: username,
           passwordHash: tempHash,
           roleCode: role,
@@ -909,34 +942,25 @@ class AppDatabase extends _$AppDatabase {
 
     // One department-head account per department (must run after _seedDepartments).
     const heads = [
-      ('head_dawah', 'head.dawah', "Head of Da'wah", 'رئيس قسم الدعوة',
-          'dawah'),
-      ('head_tarbiyah', 'head.tarbiyah', 'Head of Tarbiyah',
-          'رئيس قسم التربية', 'tarbiyah'),
-      ('head_education', 'head.education', 'Head of Education',
-          'رئيس قسم التعليم', 'education'),
-      ('head_youth', 'head.youth', 'Head of Youth and Students',
-          'رئيس قسم الطلبة والشباب', 'youth'),
-      ('head_economy', 'head.economy', 'Head of Economy',
-          'رئيس قسم الاقتصاد', 'economy'),
+      ('head_dawah', 'head.dawah', "Head of Da'wah", 'dawah'),
+      ('head_tarbiyah', 'head.tarbiyah', 'Head of Tarbiyah', 'tarbiyah'),
+      ('head_education', 'head.education', 'Head of Education', 'education'),
+      ('head_youth', 'head.youth', 'Head of Youth and Students', 'youth'),
+      ('head_economy', 'head.economy', 'Head of Economy', 'economy'),
       ('head_charity', 'head.charity', 'Head of Charitable Programs',
-          'رئيس قسم البرامج الخيرية', 'charity'),
-      ('head_media', 'head.media', 'Head of Public Relations',
-          'رئيس قسم العلاقات العامة', 'media'),
-      ('head_politics', 'head.politics', 'Head of Politics',
-          'رئيس قسم السياسة', 'politics'),
-      ('head_women', 'head.women', 'Head of Women Affairs',
-          'رئيس قسم شؤون المرأة', 'women'),
+          'charity'),
+      ('head_media', 'head.media', 'Head of Public Relations', 'media'),
+      ('head_politics', 'head.politics', 'Head of Politics', 'politics'),
+      ('head_women', 'head.women', 'Head of Women Affairs', 'women'),
       ('head_human_capital', 'head.human_capital',
-          'Head of Human Capital (Tarbiya)',
-          'رئيس قسم رأس المال البشري (التربية)', 'human_capital'),
+          'Head of Human Capital (Tarbiya)', 'human_capital'),
     ];
-    for (final (id, username, name, nameAr, deptId) in heads) {
+    for (final (id, username, name, deptId) in heads) {
       await into(users).insert(
         UsersCompanion.insert(
           id: id,
           fullName: name,
-          fullNameAr: nameAr,
+          fullNameAr: '',
           username: username,
           passwordHash: tempHash,
           roleCode: UserRole.departmentHead.code,
@@ -960,18 +984,18 @@ class AppDatabase extends _$AppDatabase {
     // Only the President (Office) and Chairman (Assembly General Membership)
     // are pre-seeded; admins add any other positions via "Add Position".
     const seed = [
-      // (id, title, titleAr, categoryCode, sortOrder)
-      ('pos_president', 'President', 'الرئيس', 'office_president', 0),
-      ('pos_chairman', 'Chairman', 'رئيس المجلس', 'assembly_general', 0),
+      // (id, title, categoryCode, sortOrder)
+      ('pos_president', 'President', 'office_president', 0),
+      ('pos_chairman', 'Chairman', 'assembly_general', 0),
     ];
-    for (final (id, title, titleAr, category, order) in seed) {
+    for (final (id, title, category, order) in seed) {
       await into(leaders).insert(
         LeadersCompanion.insert(
           id: id,
           name: title,
-          nameAr: titleAr,
+          nameAr: '',
           position: title,
-          positionAr: titleAr,
+          positionAr: '',
           category: category,
           sortOrder: Value(order),
         ),
@@ -990,46 +1014,35 @@ class AppDatabase extends _$AppDatabase {
             'organization’s direction, oversees all departments and '
             'committees, represents the organization externally, and ensures '
             'its programs serve the mission.',
-        'القيادة التنفيذية لمركز الشباب: تحدّد توجّه المنظمة، وتشرف على جميع '
-            'الأقسام واللجان، وتمثّل المنظمة، وتضمن خدمة برامجها للرسالة.'
       ),
       (
         'board',
         'Provides governance and strategic oversight — safeguarding the '
             'organization’s mission, assets, and long-term direction, and '
             'holding the leadership accountable.',
-        'يوفّر الحوكمة والإشراف الاستراتيجي، ويصون رسالة المنظمة وأصولها '
-            'وتوجّهها بعيد المدى، ويُسائل القيادة.'
       ),
       (
         'assembly_general',
         'The consultative body of the Assembly. It deliberates on policies, '
             'advises the leadership, and represents the general membership.',
-        'الهيئة الاستشارية للمجلس: تتداول في السياسات، وتنصح القيادة، وتمثّل '
-            'العضوية العامة.'
       ),
       (
         'committee_hayah',
         'The Shari’ah committee. It ensures the organization’s '
             'activities conform to Islamic principles and provides religious '
             'guidance.',
-        'اللجنة الشرعية: تضمن توافق أنشطة المنظمة مع المبادئ الإسلامية وتقدّم '
-            'التوجيه الشرعي.'
       ),
       (
         'committee_audit',
         'The audit committee. It reviews finances and operations to ensure '
             'accountability, transparency, and the proper use of resources.',
-        'لجنة التدقيق: تراجع المالية والعمليات لضمان المساءلة والشفافية وحسن '
-            'استخدام الموارد.'
       ),
     ];
-    for (final (code, description, descriptionAr) in seed) {
+    for (final (code, description) in seed) {
       await into(leadershipGroupInfo).insert(
         LeadershipGroupInfoCompanion.insert(
           code: code,
           description: Value(description),
-          descriptionAr: Value(descriptionAr),
         ),
         mode: InsertMode.insertOrIgnore,
       );
@@ -1044,20 +1057,16 @@ class AppDatabase extends _$AppDatabase {
       HistoryContentsCompanion.insert(
         id: const Value('history'),
         foundingEn: const Value(kFoundingEn),
-        foundingAr: const Value(kFoundingAr),
         missionEn: Value(kMission.en),
-        missionAr: Value(kMission.ar),
         visionEn: Value(kVision.en),
-        visionAr: Value(kVision.ar),
         narrative: Value(jsonEncode([
-          for (final p in kHistoryNarrative) {'en': p.en, 'ar': p.ar}
+          for (final p in kHistoryNarrative) {'en': p.en}
         ])),
         facts: Value(jsonEncode([
           for (final f in kDefaultFacts)
             {
               'value': f.value,
               'en': f.en,
-              'ar': f.ar,
               'iconKey': f.iconKey,
               'accent': f.accent,
             }
@@ -1075,9 +1084,7 @@ class AppDatabase extends _$AppDatabase {
             id: 'milestone_$i',
             year: Value(m.year),
             title: Value(m.title),
-            titleAr: Value(m.titleAr),
             description: Value(m.description),
-            descriptionAr: Value(m.descriptionAr),
             iconKey: Value(m.iconKey),
             accent: Value(m.accent),
             sortOrder: Value(i),
@@ -1092,21 +1099,20 @@ class AppDatabase extends _$AppDatabase {
   Future<void> _seedTarbiyaAreas() async {
     const accents = [0xFF0B5D3B, 0xFF16243D, 0xFFA8862F];
     const seed = [
-      ('area-1', 'Area 1', 'المنطقة ١'),
-      ('area-2', 'Area 2', 'المنطقة ٢'),
-      ('area-3', 'Area 3', 'المنطقة ٣'),
-      ('area-4', 'Area 4', 'المنطقة ٤'),
-      ('area-5', 'Area 5', 'المنطقة ٥'),
-      ('area-6', 'Area 6', 'المنطقة ٦'),
-      ('area-special', 'Special Area', 'المنطقة الخاصة'),
+      ('area-1', 'Area 1'),
+      ('area-2', 'Area 2'),
+      ('area-3', 'Area 3'),
+      ('area-4', 'Area 4'),
+      ('area-5', 'Area 5'),
+      ('area-6', 'Area 6'),
+      ('area-special', 'Special Area'),
     ];
     var order = 0;
-    for (final (id, name, nameAr) in seed) {
+    for (final (id, name) in seed) {
       await into(tarbiyaAreas).insert(
         TarbiyaAreasCompanion.insert(
           id: id,
           name: name,
-          nameAr: Value(nameAr),
           accent: Value(accents[order % accents.length]),
           sortOrder: Value(order),
         ),
@@ -1133,16 +1139,13 @@ LazyDatabase _openOnDevice() {
 const _departmentSeed = <({
   String id,
   String name,
-  String nameAr,
   String icon,
   int accent,
   String description,
-  String descriptionAr,
 })>[
   (
     id: 'dawah',
     name: 'Da‘wah',
-    nameAr: 'الدعوة',
     icon: 'dawah',
     accent: 0xFF0B5D3B,
     description:
@@ -1152,13 +1155,10 @@ const _departmentSeed = <({
         "mobilized across the country, utilizing mosque pulpits, conferences, "
         "and public gatherings to call people to complete devotion and the "
         "adoption of Islam as a comprehensive way of life.",
-    descriptionAr:
-        'يُمثّل قسم الدعوة جوهر رسالة المنظمة وأساسها المطلق، إذ يستحوذ على القدر الأكبر من وقتها وجهدها ومواردها. وعلى مدى أكثر من أربعة عقود، انتشر دعاته في أنحاء البلاد مستفيدين من منابر المساجد والمؤتمرات والتجمّعات العامة لدعوة الناس إلى إخلاص العبادة لله واتخاذ الإسلام منهج حياة شاملًا.',
   ),
   (
     id: 'tarbiyah',
     name: 'Tarbiyah',
-    nameAr: 'التربية',
     icon: 'tarbiyah',
     accent: 0xFF16243D,
     description:
@@ -1168,13 +1168,10 @@ const _departmentSeed = <({
         "dedication to their religion and community. Its methodologies are "
         "firmly rooted in following the path of early righteous predecessors "
         "and reformist thinkers to ensure robust character formation.",
-    descriptionAr:
-        'يُعدّ قسم التربية العمود الفقري للتطوير الداخلي للمنظمة وإصلاح المجتمع، فهو يُعنى عناية بالغة بتنشئة أفرادٍ ذوي عقيدة صحيحة وعبادة سليمة وتعلّقٍ راسخ بدينهم ومجتمعهم. وتقوم مناهجه على اتباع نهج السلف الصالح والمفكّرين الإصلاحيين لضمان بناءٍ متينٍ للشخصية.',
   ),
   (
     id: 'education',
     name: 'Education',
-    nameAr: 'التعليم',
     icon: 'education',
     accent: 0xFFA8862F,
     description:
@@ -1185,13 +1182,10 @@ const _departmentSeed = <({
         "1995 and has been recognized as a model school by both the national "
         "government and the ARMM Ministry of Education for its integrated "
         "academic curriculum and outstanding competition record.",
-    descriptionAr:
-        'انطلاقًا من الإيمان بأن التعليم هو أساس بناء الأجيال وتماسك المجتمع، يُشرف هذا القسم على شبكة واسعة من المدارس في أنحاء الفلبين. وقد افتُتحت مؤسسته الرائدة، مدرسة ابن سينا التكاملية في مدينة مراوي، عام 1995م، ونالت اعتراف الحكومة الوطنية ووزارة التعليم في إقليم مينداناو المسلم ذاتيّ الحكم (ARMM) بوصفها مدرسةً نموذجية لما تتميّز به من منهجٍ أكاديميٍّ متكامل وسجلٍّ متميّزٍ في المسابقات.',
   ),
   (
     id: 'youth',
     name: 'Jihazu Thalaba (Youth and Students)',
-    nameAr: 'جهاز الطلبة والشباب',
     icon: 'group',
     accent: 0xFF16243D,
     description:
@@ -1201,13 +1195,10 @@ const _departmentSeed = <({
         "Philippines shortly after the center's founding and continues to "
         "oversee various youth associations designed to prepare young people to "
         "eventually take up the reins of leadership.",
-    descriptionAr:
-        'إيمانًا بأن الشباب والطلاب هم أمل المستقبل والطاقة البشرية الأساسية للأمة، يُكرّس هذا القسم جهوده لتنميتهم تنميةً شاملة. وقد أسّس اتحاد الطلبة المسلمين في الفلبين بُعَيد تأسيس المركز، ولا يزال يُشرف على جمعيات شبابية متنوّعة تهدف إلى إعداد الشباب لتولّي مقاليد القيادة مستقبلًا.',
   ),
   (
     id: 'economy',
     name: 'Economy and Investments',
-    nameAr: 'الاقتصاد والاستثمار',
     icon: 'economy',
     accent: 0xFF0B5D3B,
     description:
@@ -1218,13 +1209,10 @@ const _departmentSeed = <({
         "initiatives include regional market integration through the World "
         "Halal Chamber of Commerce and Industry in the Philippines and the "
         "recently launched Tabatuj Cooperative Association.",
-    descriptionAr:
-        'يهدف قسم الاقتصاد إلى تحقيق الاكتفاء الذاتي للمنظمة، مع مساعدة الناس عبر توفير السلع الأساسية بأسعارٍ في المتناول. وإلى جانب اشتهاره تاريخيًّا بمشروعات خدمية كصيدلية راناو ومطحنة الصحابة للأرز، تشمل مبادراته الحديثة تكامل الأسواق الإقليمية من خلال الغرفة العالمية للتجارة والصناعة الحلال في الفلبين، وجمعية تباتوج التعاونية التي أُطلقت حديثًا.',
   ),
   (
     id: 'charity',
     name: 'Charitable Programs',
-    nameAr: 'البرامج الخيرية',
     icon: 'charity',
     accent: 0xFF16243D,
     description:
@@ -1235,13 +1223,10 @@ const _departmentSeed = <({
         "students, digging drinking-water wells, and constructing mosques, "
         "schools, and hospitals in cooperation with various local and "
         "international relief organizations.",
-    descriptionAr:
-        'يعمل هذا القسم بوصفه جسرًا إنسانيًّا حيويًّا بين المُحسنين والمحتاجين، ملتزمًا التزامًا صارمًا بمبادئ المساواة والعدل والإنصاف دون تحيّزٍ قبليٍّ أو جغرافي. وتشمل جهوده الإغاثية الشاملة كفالة الأيتام والطلاب، وحفر آبار مياه الشرب، وبناء المساجد والمدارس والمستشفيات بالتعاون مع مختلف المنظمات الإغاثية المحلية والدولية.',
   ),
   (
     id: 'media',
     name: 'Public Relations and Information',
-    nameAr: 'العلاقات العامة والإعلام',
     icon: 'media',
     accent: 0xFFA8862F,
     description:
@@ -1252,13 +1237,10 @@ const _departmentSeed = <({
         "cohesion and government policies, raising its voice against "
         "corruption, drugs, and extremism while advocating for human rights and "
         "virtuous societal values.",
-    descriptionAr:
-        'رفضًا منه للانغلاق والتعصّب الفكري، يحرص هذا القسم على تعزيز الحوار والتعاون البنّاء مع جميع فئات المجتمع، بصرف النظر عن الانتماءات السياسية أو الطائفية أو العرقية. وهو يحشد طاقات المنظمة لدعم التماسك الوطني والسياسات الحكومية، رافعًا صوته ضد الفساد والمخدرات والتطرّف، ومنافحًا عن حقوق الإنسان والقيم الفاضلة في المجتمع.',
   ),
   (
     id: 'politics',
     name: 'Politics',
-    nameAr: 'السياسة',
     icon: 'politics',
     accent: 0xFF0B5D3B,
     description:
@@ -1269,13 +1251,10 @@ const _departmentSeed = <({
         "honest candidates and forming strategic alliances, even as it "
         "continues to navigate and challenge the systemic deterioration of the "
         "political climate and the spread of corruption.",
-    descriptionAr:
-        'يسعى قسم السياسة إلى إصلاحٍ مجتمعيٍّ شامل عبر الانخراط في الساحة السياسية، مدركًا أنها طريقٌ شاقّ لكنه ضروري. وتحت شعار «لنُصلح المجتمع ونُنقذ الناس»، أسّس حزب الأمة عام 1998م، فدفع بمرشّحين أمناء وأقام تحالفاتٍ استراتيجية، مع استمراره في مواجهة التدهور البنيوي للمناخ السياسي وتفشّي الفساد والتعامل معه.',
   ),
   (
     id: 'women',
     name: 'Women Affairs',
-    nameAr: 'شؤون المرأة',
     icon: 'women',
     accent: 0xFF16243D,
     description:
@@ -1286,13 +1265,10 @@ const _departmentSeed = <({
         "support and empowerment, affiliated women have successfully taken on "
         "vital roles as preachers, educators, volunteers, and frontline "
         "community workers.",
-    descriptionAr:
-        'إيمانًا بأن المرأة المسلمة الفلبينية ركيزةٌ أساسية لا غنى عنها في المجتمع، يسعى هذا القسم إلى تمكين المرأة بوصفها شريكًا أساسيًّا للرجل في جميع ميادين العمل، بما في ذلك صنع القرار والتخطيط والتنفيذ. وبفضل هذا الدعم المؤسّسي والتمكين، تبوّأت المنتسبات إليه أدوارًا حيوية داعياتٍ ومعلّماتٍ ومتطوّعاتٍ وعاملاتٍ في الصفوف الأمامية لخدمة المجتمع.',
   ),
   (
     id: 'human_capital',
     name: 'Human Capital (Tarbiya)',
-    nameAr: 'رأس المال البشري (التربية)',
     icon: 'group',
     accent: 0xFF16243D,
     description:
@@ -1300,7 +1276,5 @@ const _departmentSeed = <({
         "people — its members and volunteers — through structured nurturing, "
         "mentoring, and capacity-building so that every individual grows in "
         "faith, character, and competence to serve the mission.",
-    descriptionAr:
-        'يُعنى قسم رأس المال البشري (التربية) بتنمية كوادر المنظمة من أعضاء ومتطوّعين عبر التنشئة المنظّمة والتوجيه وبناء القدرات، بحيث ينمو كل فردٍ في إيمانه وخُلُقه وكفاءته لخدمة الرسالة.',
   ),
 ];

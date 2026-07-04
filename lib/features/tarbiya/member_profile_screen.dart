@@ -44,7 +44,7 @@ class MemberProfileScreen extends StatelessWidget {
         if (member == null) {
           return EmptyState(
             icon: Icons.person_off_outlined,
-            title: context.tr('Member not found', 'العضو غير موجود'),
+            title: 'Member not found',
           );
         }
         return FutureBuilder<(Shuba?, TarbiyaArea?)>(
@@ -134,7 +134,7 @@ class MemberProfileScreen extends StatelessWidget {
     return HierarchyBreadcrumb(
       crumbs: [
         Crumb(
-          label: context.tr('Tarbiya Al-Kawadeer', 'تربية الكوادر'),
+          label: 'Tarbiya Al-Kawadeer',
           route: '/tarbiya',
           icon: Icons.hub_outlined,
         ),
@@ -160,10 +160,9 @@ class MemberProfileScreen extends StatelessWidget {
       BuildContext context, MemberRepository repo, Member member) async {
     final ok = await confirmDialog(
       context,
-      title: context.trRead('Delete member?', 'حذف العضو؟'),
+      title: 'Delete member?',
       message: context.trRead(
-          'This permanently removes ${member.fullName} and all their records.',
-          'سيؤدي هذا إلى حذف ${member.fullName} وجميع سجلاته نهائيًا.'),
+          'This permanently removes ${member.fullName} and all their records.'),
     );
     if (!ok) return;
     final shubaId = member.shubaId;
@@ -260,11 +259,11 @@ class _Header extends StatelessWidget {
                             ? Icons.check_circle_outline
                             : Icons.cancel_outlined,
                         member.isActive
-                            ? context.tr('Active', 'نشط')
-                            : context.tr('Inactive', 'غير نشط')),
+                            ? 'Active'
+                            : 'Inactive'),
                     if (member.dateJoined.isNotEmpty)
                       _chip(context, Icons.event_outlined,
-                          '${context.tr('Joined', 'انضم')} ${member.dateJoined}'),
+                          '${'Joined'} ${member.dateJoined}'),
                   ],
                 ),
               ],
@@ -273,12 +272,12 @@ class _Header extends StatelessWidget {
           if (canManage) ...[
             _HeaderAction(
                 icon: Icons.edit_outlined,
-                label: context.tr('Edit', 'تعديل'),
+                label: 'Edit',
                 onTap: onEdit),
             const SizedBox(width: AppSpacing.sm),
             _HeaderAction(
                 icon: Icons.delete_outline,
-                label: context.tr('Delete', 'حذف'),
+                label: 'Delete',
                 onTap: onDelete),
           ],
         ],

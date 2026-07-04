@@ -94,7 +94,7 @@ class _MarkazAppState extends State<MarkazApp> {
       child: Consumer<LocaleController>(
         builder: (context, locale, _) {
           return MaterialApp.router(
-            title: 'Markazosshabab Archive',
+            title: 'Markazosshabab App',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
             routerConfig: _router,

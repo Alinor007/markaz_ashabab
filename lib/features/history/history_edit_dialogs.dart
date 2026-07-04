@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../core/i18n/localized.dart';
 import '../../core/repositories/history_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
@@ -25,18 +24,18 @@ typedef MilestoneResult = ({
   int accent,
 });
 
-/// A bilingual EN/AR text editor dialog. Returns `(en, ar)` or null on cancel.
+/// A text editor dialog. Returns `(text, '')` or null on cancel. (The second
+/// tuple slot is retained for call-site compatibility; the app is English-only.)
 Future<(String, String)?> editBilingualText(
   BuildContext context, {
   required String title,
   required String enLabel,
-  required String arLabel,
+  String arLabel = '',
   String initialEn = '',
   String initialAr = '',
   bool multiline = true,
 }) async {
   final en = TextEditingController(text: initialEn);
-  final ar = TextEditingController(text: initialAr);
   final result = await showDialog<(String, String)>(
     context: context,
     builder: (ctx) => AlertDialog(
@@ -56,15 +55,6 @@ Future<(String, String)?> editBilingualText(
                 decoration: InputDecoration(
                     labelText: enLabel, alignLabelWithHint: true),
               ),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
-                controller: ar,
-                minLines: multiline ? 3 : 1,
-                maxLines: multiline ? 8 : 1,
-                textDirection: TextDirection.rtl,
-                decoration: InputDecoration(
-                    labelText: arLabel, alignLabelWithHint: true),
-              ),
             ],
           ),
         ),
@@ -72,16 +62,14 @@ Future<(String, String)?> editBilingualText(
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(context.tr('Cancel', 'إلغاء'))),
+            child: Text('Cancel')),
         FilledButton(
-            onPressed: () =>
-                Navigator.pop(ctx, (en.text.trim(), ar.text.trim())),
-            child: Text(context.tr('Save', 'حفظ'))),
+            onPressed: () => Navigator.pop(ctx, (en.text.trim(), '')),
+            child: Text('Save')),
       ],
     ),
   );
   en.dispose();
-  ar.dispose();
   return result;
 }
 
@@ -196,25 +184,22 @@ class _FactsRow {
   _FactsRow(HistoryFact f)
       : value = TextEditingController(text: f.value),
         en = TextEditingController(text: f.en),
-        ar = TextEditingController(text: f.ar),
         iconKey = f.iconKey,
         accent = f.accent;
   final TextEditingController value;
   final TextEditingController en;
-  final TextEditingController ar;
   String iconKey;
   int accent;
 
   void dispose() {
     value.dispose();
     en.dispose();
-    ar.dispose();
   }
 
   HistoryFact toFact() => (
         value: value.text.trim(),
         en: en.text.trim(),
-        ar: ar.text.trim(),
+        ar: '',
         iconKey: iconKey,
         accent: accent,
       );
@@ -245,7 +230,7 @@ class _FactsEditorState extends State<_FactsEditor> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: AppColors.surface,
-      title: Text(context.tr('Edit Stat Cards', 'تعديل البطاقات الإحصائية')),
+      title: Text('Edit Stat Cards'),
       content: SizedBox(
         width: 520,
         child: SingleChildScrollView(
@@ -262,11 +247,11 @@ class _FactsEditorState extends State<_FactsEditor> {
                       child: TextField(
                         controller: _rows[i].value,
                         decoration: InputDecoration(
-                            labelText: context.tr('Value', 'القيمة')),
+                            labelText: 'Value'),
                       ),
                     ),
                     IconButton(
-                      tooltip: context.tr('Remove', 'إزالة'),
+                      tooltip: 'Remove',
                       icon: const Icon(Icons.remove_circle_outline,
                           color: AppColors.error),
                       onPressed: () => setState(() {
@@ -277,26 +262,10 @@ class _FactsEditorState extends State<_FactsEditor> {
                   ],
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _rows[i].en,
-                        decoration: InputDecoration(
-                            labelText: context.tr('Label', 'التسمية')),
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: TextField(
-                        controller: _rows[i].ar,
-                        textDirection: TextDirection.rtl,
-                        decoration: InputDecoration(
-                            labelText:
-                                context.tr('Label (Arabic)', 'التسمية بالعربية')),
-                      ),
-                    ),
-                  ],
+                TextField(
+                  controller: _rows[i].en,
+                  decoration: InputDecoration(
+                      labelText: 'Label'),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 _AccentPicker(
@@ -321,7 +290,7 @@ class _FactsEditorState extends State<_FactsEditor> {
                         accent: AppColors.emerald.toARGB32(),
                       )))),
                   icon: const Icon(Icons.add, size: 18),
-                  label: Text(context.tr('Add Card', 'إضافة بطاقة')),
+                  label: Text('Add Card'),
                 ),
               ),
             ],
@@ -331,14 +300,14 @@ class _FactsEditorState extends State<_FactsEditor> {
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(context.tr('Cancel', 'إلغاء'))),
+            child: Text('Cancel')),
         FilledButton(
           onPressed: () => Navigator.pop(context, [
             for (final r in _rows)
               if (r.value.text.trim().isNotEmpty || r.en.text.trim().isNotEmpty)
                 r.toFact()
           ]),
-          child: Text(context.tr('Save', 'حفظ')),
+          child: Text('Save'),
         ),
       ],
     );
@@ -348,15 +317,11 @@ class _FactsEditorState extends State<_FactsEditor> {
 // ════════════════════════════ Narrative editor ════════════════════════════
 
 class _ParaRow {
-  _ParaRow(HistoryParagraph p)
-      : en = TextEditingController(text: p.en),
-        ar = TextEditingController(text: p.ar);
+  _ParaRow(HistoryParagraph p) : en = TextEditingController(text: p.en);
   final TextEditingController en;
-  final TextEditingController ar;
 
   void dispose() {
     en.dispose();
-    ar.dispose();
   }
 }
 
@@ -385,7 +350,7 @@ class _NarrativeEditorState extends State<_NarrativeEditor> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: AppColors.surface,
-      title: Text(context.tr('Edit Our Story', 'تعديل قصتنا')),
+      title: Text('Edit Our Story'),
       content: SizedBox(
         width: 540,
         child: SingleChildScrollView(
@@ -398,11 +363,11 @@ class _NarrativeEditorState extends State<_NarrativeEditor> {
                 if (i > 0) const Divider(height: AppSpacing.xl),
                 Row(
                   children: [
-                    Text('${context.tr('Paragraph', 'فقرة')} ${i + 1}',
+                    Text('${'Paragraph'} ${i + 1}',
                         style: Theme.of(context).textTheme.labelMedium),
                     const Spacer(),
                     IconButton(
-                      tooltip: context.tr('Remove', 'إزالة'),
+                      tooltip: 'Remove',
                       icon: const Icon(Icons.remove_circle_outline,
                           color: AppColors.error),
                       onPressed: () => setState(() {
@@ -417,17 +382,7 @@ class _NarrativeEditorState extends State<_NarrativeEditor> {
                   minLines: 2,
                   maxLines: 6,
                   decoration: InputDecoration(
-                      labelText: context.tr('English', 'الإنجليزية'),
-                      alignLabelWithHint: true),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                TextField(
-                  controller: _rows[i].ar,
-                  minLines: 2,
-                  maxLines: 6,
-                  textDirection: TextDirection.rtl,
-                  decoration: InputDecoration(
-                      labelText: context.tr('Arabic', 'العربية'),
+                      labelText: 'Text',
                       alignLabelWithHint: true),
                 ),
               ],
@@ -438,7 +393,7 @@ class _NarrativeEditorState extends State<_NarrativeEditor> {
                   onPressed: () =>
                       setState(() => _rows.add(_ParaRow((en: '', ar: '')))),
                   icon: const Icon(Icons.add, size: 18),
-                  label: Text(context.tr('Add Paragraph', 'إضافة فقرة')),
+                  label: Text('Add Paragraph'),
                 ),
               ),
             ],
@@ -448,14 +403,14 @@ class _NarrativeEditorState extends State<_NarrativeEditor> {
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(context.tr('Cancel', 'إلغاء'))),
+            child: Text('Cancel')),
         FilledButton(
           onPressed: () => Navigator.pop(context, <HistoryParagraph>[
             for (final r in _rows)
-              if (r.en.text.trim().isNotEmpty || r.ar.text.trim().isNotEmpty)
-                (en: r.en.text.trim(), ar: r.ar.text.trim())
+              if (r.en.text.trim().isNotEmpty)
+                (en: r.en.text.trim(), ar: '')
           ]),
-          child: Text(context.tr('Save', 'حفظ')),
+          child: Text('Save'),
         ),
       ],
     );
@@ -475,18 +430,14 @@ class _MilestoneForm extends StatefulWidget {
 class _MilestoneFormState extends State<_MilestoneForm> {
   late final _year = TextEditingController(text: widget.existing?.year ?? '');
   late final _title = TextEditingController(text: widget.existing?.title ?? '');
-  late final _titleAr =
-      TextEditingController(text: widget.existing?.titleAr ?? '');
   late final _desc =
       TextEditingController(text: widget.existing?.description ?? '');
-  late final _descAr =
-      TextEditingController(text: widget.existing?.descriptionAr ?? '');
   late String _iconKey = widget.existing?.iconKey ?? 'flag';
   late int _accent = widget.existing?.accent ?? AppColors.emerald.toARGB32();
 
   @override
   void dispose() {
-    for (final c in [_year, _title, _titleAr, _desc, _descAr]) {
+    for (final c in [_year, _title, _desc]) {
       c.dispose();
     }
     super.dispose();
@@ -497,8 +448,8 @@ class _MilestoneFormState extends State<_MilestoneForm> {
     return AlertDialog(
       backgroundColor: AppColors.surface,
       title: Text(widget.existing == null
-          ? context.tr('Add Milestone', 'إضافة محطة')
-          : context.tr('Edit Milestone', 'تعديل المحطة')),
+          ? 'Add Milestone'
+          : 'Edit Milestone'),
       content: SizedBox(
         width: 480,
         child: SingleChildScrollView(
@@ -510,20 +461,13 @@ class _MilestoneFormState extends State<_MilestoneForm> {
               TextField(
                 controller: _year,
                 decoration: InputDecoration(
-                    labelText: context.tr('Year / Label', 'السنة / التسمية')),
+                    labelText: 'Year / Label'),
               ),
               const SizedBox(height: AppSpacing.md),
               TextField(
                 controller: _title,
                 decoration:
-                    InputDecoration(labelText: context.tr('Title', 'العنوان')),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
-                controller: _titleAr,
-                textDirection: TextDirection.rtl,
-                decoration: InputDecoration(
-                    labelText: context.tr('Title (Arabic)', 'العنوان بالعربية')),
+                    InputDecoration(labelText: 'Title'),
               ),
               const SizedBox(height: AppSpacing.md),
               TextField(
@@ -531,24 +475,13 @@ class _MilestoneFormState extends State<_MilestoneForm> {
                 minLines: 2,
                 maxLines: 5,
                 decoration: InputDecoration(
-                    labelText: context.tr('Description', 'الوصف'),
-                    alignLabelWithHint: true),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
-                controller: _descAr,
-                minLines: 2,
-                maxLines: 5,
-                textDirection: TextDirection.rtl,
-                decoration: InputDecoration(
-                    labelText:
-                        context.tr('Description (Arabic)', 'الوصف بالعربية'),
+                    labelText: 'Description',
                     alignLabelWithHint: true),
               ),
               const SizedBox(height: AppSpacing.md),
               Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: Text(context.tr('Accent', 'اللون'),
+                child: Text('Accent',
                     style: Theme.of(context).textTheme.labelMedium),
               ),
               const SizedBox(height: AppSpacing.sm),
@@ -557,7 +490,7 @@ class _MilestoneFormState extends State<_MilestoneForm> {
               const SizedBox(height: AppSpacing.md),
               Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: Text(context.tr('Icon', 'الأيقونة'),
+                child: Text('Icon',
                     style: Theme.of(context).textTheme.labelMedium),
               ),
               const SizedBox(height: AppSpacing.sm),
@@ -570,18 +503,18 @@ class _MilestoneFormState extends State<_MilestoneForm> {
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(context.tr('Cancel', 'إلغاء'))),
+            child: Text('Cancel')),
         FilledButton(
           onPressed: () => Navigator.pop(context, (
             year: _year.text.trim(),
             title: _title.text.trim(),
-            titleAr: _titleAr.text.trim(),
+            titleAr: '',
             description: _desc.text.trim(),
-            descriptionAr: _descAr.text.trim(),
+            descriptionAr: '',
             iconKey: _iconKey,
             accent: _accent,
           )),
-          child: Text(context.tr('Save', 'حفظ')),
+          child: Text('Save'),
         ),
       ],
     );

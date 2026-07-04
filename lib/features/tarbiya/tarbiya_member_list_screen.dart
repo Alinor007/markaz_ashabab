@@ -89,7 +89,7 @@ class _TarbiyaMemberListScreenState extends State<TarbiyaMemberListScreen> {
           breadcrumb: HierarchyBreadcrumb(
             crumbs: [
               Crumb(
-                label: context.tr('Tarbiya Al-Kawadeer', 'تربية الكوادر'),
+                label: 'Tarbiya Al-Kawadeer',
                 route: '/tarbiya',
                 icon: Icons.hub_outlined,
               ),
@@ -102,13 +102,13 @@ class _TarbiyaMemberListScreenState extends State<TarbiyaMemberListScreen> {
                     label: isArabic ? shuba.nameAr : shuba.name,
                     route:
                         '/tarbiya/area/${widget.areaId}/shuba/${widget.shubaId}'),
-              Crumb(label: context.tr('Level ${widget.level}', 'المستوى ${widget.level}')),
+              Crumb(label: context.tr('Level ${widget.level}')),
             ],
           ),
           actions: [
             SearchField(
               width: 240,
-              hint: context.tr('Search members…', 'ابحث عن الأعضاء…'),
+              hint: 'Search members…',
               onChanged: (v) => setState(() => _query = v),
             ),
             if (canManage)
@@ -116,7 +116,7 @@ class _TarbiyaMemberListScreenState extends State<TarbiyaMemberListScreen> {
                 onPressed: () => context.go(
                     '/tarbiya/add-member?shuba=${widget.shubaId}&level=${widget.level}'),
                 icon: const Icon(Icons.person_add_alt_1, size: 18),
-                label: Text(context.tr('Add Member', 'إضافة عضو')),
+                label: Text('Add Member'),
               ),
           ],
           child: StreamBuilder<List<Member>>(
@@ -144,9 +144,8 @@ class _TarbiyaMemberListScreenState extends State<TarbiyaMemberListScreen> {
                         ? EmptyState(
                             icon: Icons.person_off_outlined,
                             title: all.isEmpty
-                                ? context.tr(
-                                    'No members in this level', 'لا أعضاء في هذا المستوى')
-                                : context.tr('No matches', 'لا توجد نتائج'),
+                                ? 'No members in this level'
+                                : 'No matches',
                           )
                         : ListView.separated(
                             itemCount: filtered.length,
@@ -195,13 +194,13 @@ class _Toolbar extends StatelessWidget {
     final theme = Theme.of(context);
     return Row(
       children: [
-        _Count(label: context.tr('Total', 'الإجمالي'), value: total,
+        _Count(label: 'Total', value: total,
             color: AppColors.navy),
         const SizedBox(width: AppSpacing.sm),
-        _Count(label: context.tr('Active', 'نشط'), value: active,
+        _Count(label: 'Active', value: active,
             color: AppColors.emerald),
         const SizedBox(width: AppSpacing.sm),
-        _Count(label: context.tr('Inactive', 'غير نشط'), value: total - active,
+        _Count(label: 'Inactive', value: total - active,
             color: AppColors.textFaint),
         const SizedBox(width: AppSpacing.lg),
         Expanded(
@@ -213,18 +212,18 @@ class _Toolbar extends StatelessWidget {
             children: [
               FilterBar(
                 options: [
-                  context.tr('All', 'الكل'),
-                  context.tr('Male', 'ذكر'),
-                  context.tr('Female', 'أنثى'),
+                  'All',
+                  'Male',
+                  'Female',
                 ],
                 selectedIndex: genderFilter,
                 onSelected: onGender,
               ),
               FilterBar(
                 options: [
-                  context.tr('All', 'الكل'),
-                  context.tr('Active', 'نشط'),
-                  context.tr('Inactive', 'غير نشط'),
+                  'All',
+                  'Active',
+                  'Inactive',
                 ],
                 selectedIndex: statusFilter,
                 onSelected: onStatus,
@@ -253,7 +252,7 @@ class _Toolbar extends StatelessWidget {
               children: [
                 const Icon(Icons.sort, size: 16, color: AppColors.textMuted),
                 const SizedBox(width: AppSpacing.xs),
-                Text(context.tr('Sort', 'ترتيب'),
+                Text('Sort',
                     style: theme.textTheme.labelMedium),
               ],
             ),
@@ -261,13 +260,13 @@ class _Toolbar extends StatelessWidget {
           itemBuilder: (context) => [
             PopupMenuItem(
                 value: _Sort.nameAsc,
-                child: Text(context.trRead('Name A–Z', 'الاسم أ–ي'))),
+                child: Text('Name A–Z')),
             PopupMenuItem(
                 value: _Sort.nameDesc,
-                child: Text(context.trRead('Name Z–A', 'الاسم ي–أ'))),
+                child: Text('Name Z–A')),
             PopupMenuItem(
                 value: _Sort.statusFirst,
-                child: Text(context.trRead('Active first', 'النشط أولاً'))),
+                child: Text('Active first')),
           ],
         );
   }
@@ -372,7 +371,7 @@ class _StatusPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Text(
-        active ? context.tr('Active', 'نشط') : context.tr('Inactive', 'غير نشط'),
+        active ? 'Active' : 'Inactive',
         style: Theme.of(context)
             .textTheme
             .labelSmall

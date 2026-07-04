@@ -95,11 +95,11 @@ class DepartmentCard extends StatelessWidget {
                               if (onEdit != null)
                                 PopupMenuItem(
                                     value: 'edit',
-                                    child: Text(context.trRead('Edit', 'تعديل'))),
+                                    child: Text('Edit')),
                               if (onDelete != null)
                                 PopupMenuItem(
                                     value: 'delete',
-                                    child: Text(context.trRead('Delete', 'حذف'))),
+                                    child: Text('Delete')),
                             ],
                           ),
                         ),
@@ -156,8 +156,7 @@ class DepartmentCard extends StatelessWidget {
                               final head = snap.data;
                               return Text(
                                 head == null
-                                    ? context.tr(
-                                        'No head assigned', 'بدون رئيس')
+                                    ? 'No head assigned'
                                     : head.displayName(isArabic),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,

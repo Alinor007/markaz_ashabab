@@ -97,7 +97,7 @@ class HistoryScreen extends StatelessWidget {
                   onEditMission: () => _editStatement(
                     context,
                     repo,
-                    title: context.trRead('Edit Mission', 'تعديل الرسالة'),
+                    title: 'Edit Mission',
                     en: content?.missionEn ?? '',
                     ar: content?.missionAr ?? '',
                     apply: (e, a) => HistoryContentsCompanion(
@@ -106,7 +106,7 @@ class HistoryScreen extends StatelessWidget {
                   onEditVision: () => _editStatement(
                     context,
                     repo,
-                    title: context.trRead('Edit Vision', 'تعديل الرؤية'),
+                    title: 'Edit Vision',
                     en: content?.visionEn ?? '',
                     ar: content?.visionAr ?? '',
                     apply: (e, a) => HistoryContentsCompanion(
@@ -138,9 +138,9 @@ class HistoryScreen extends StatelessWidget {
       HistoryContent? content) async {
     final r = await editBilingualText(
       context,
-      title: context.trRead('Edit Founding Statement', 'تعديل بيان التأسيس'),
-      enLabel: context.trRead('English', 'الإنجليزية'),
-      arLabel: context.trRead('Arabic', 'العربية'),
+      title: 'Edit Founding Statement',
+      enLabel: 'English',
+      arLabel: 'Arabic',
       initialEn: content?.foundingEn ?? '',
       initialAr: content?.foundingAr ?? '',
     );
@@ -174,8 +174,8 @@ class HistoryScreen extends StatelessWidget {
     final r = await editBilingualText(
       context,
       title: title,
-      enLabel: context.trRead('English', 'الإنجليزية'),
-      arLabel: context.trRead('Arabic', 'العربية'),
+      enLabel: 'English',
+      arLabel: 'Arabic',
       initialEn: en,
       initialAr: ar,
     );
@@ -197,7 +197,7 @@ class _EditButton extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!show) return const SizedBox.shrink();
     return IconButton(
-      tooltip: context.tr('Edit', 'تعديل'),
+      tooltip: 'Edit',
       visualDensity: VisualDensity.compact,
       icon: Icon(Icons.edit_outlined,
           size: 18, color: light ? AppColors.onEmerald : AppColors.emerald),
@@ -394,7 +394,7 @@ class _FoundingHero extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        context.tr('OUR STORY', 'قصتنا'),
+                        'OUR STORY',
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium
@@ -405,7 +405,7 @@ class _FoundingHero extends StatelessWidget {
                       Container(width: 32, height: 1.5, color: AppColors.gold),
                       const SizedBox(width: AppSpacing.sm),
                       Text(
-                        context.tr('EST. 1978', '١٩٧٨'),
+                        'EST. 1978',
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium
@@ -464,13 +464,13 @@ class _FactsSection extends StatelessWidget {
       children: [
         _SectionHeader(
           icon: Icons.insights_outlined,
-          title: context.tr('Quick Facts', 'حقائق سريعة'),
+          title: 'Quick Facts',
           action: _EditButton(show: canManage, onTap: onEdit),
         ),
         const SizedBox(height: AppSpacing.lg),
         if (facts.isEmpty)
           _PlaceholderText(
-              text: context.tr('No facts yet.', 'لا توجد حقائق بعد.'))
+              text: 'No facts yet.')
         else
           LayoutBuilder(
             builder: (context, box) {
@@ -602,7 +602,7 @@ class _NarrativeSection extends StatelessWidget {
       children: [
         _SectionHeader(
           icon: Icons.menu_book_outlined,
-          title: context.tr('Our Story', 'قصتنا'),
+          title: 'Our Story',
           action: _EditButton(show: canManage, onTap: onEdit),
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -626,7 +626,7 @@ class _NarrativeSection extends StatelessWidget {
               ),
               child: paragraphs.isEmpty
                   ? _PlaceholderText(
-                      text: context.tr('No content yet.', 'لا يوجد محتوى بعد.'))
+                      text: 'No content yet.')
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -693,7 +693,7 @@ class _MissionVisionSection extends StatelessWidget {
     final mission = _FeatureCard(
       icon: Icons.track_changes_outlined,
       accent: AppColors.emerald,
-      title: context.tr('Mission', 'الرسالة'),
+      title: 'Mission',
       text: isArabic ? missionAr : missionEn,
       isArabic: isArabic,
       canManage: canManage,
@@ -702,7 +702,7 @@ class _MissionVisionSection extends StatelessWidget {
     final vision = _FeatureCard(
       icon: Icons.visibility_outlined,
       accent: AppColors.goldDeep,
-      title: context.tr('Vision', 'الرؤية'),
+      title: 'Vision',
       text: isArabic ? visionAr : visionEn,
       isArabic: isArabic,
       canManage: canManage,
@@ -713,7 +713,7 @@ class _MissionVisionSection extends StatelessWidget {
       children: [
         _SectionHeader(
           icon: Icons.explore_outlined,
-          title: context.tr('Mission & Vision', 'الرسالة والرؤية'),
+          title: 'Mission & Vision',
         ),
         const SizedBox(height: AppSpacing.lg),
         LayoutBuilder(
@@ -877,7 +877,7 @@ class _MilestonesTimeline extends StatelessWidget {
   Future<void> _delete(
       BuildContext context, HistoryRepository repo, HistoryMilestone m) async {
     final ok = await confirmDialog(context,
-        title: context.trRead('Delete milestone?', 'حذف المحطة؟'),
+        title: 'Delete milestone?',
         message: isArabic ? m.titleAr : m.title);
     if (ok) await repo.deleteMilestone(m.id);
   }
@@ -890,14 +890,13 @@ class _MilestonesTimeline extends StatelessWidget {
       children: [
         _SectionHeader(
           icon: Icons.history_edu_outlined,
-          title: context.tr('Milestones', 'المحطات'),
-          subtitle: context.tr('Key moments along the journey.',
-              'لحظات فارقة على امتداد المسيرة.'),
+          title: 'Milestones',
+          subtitle: 'Key moments along the journey.',
           action: canManage
               ? FilledButton.icon(
                   onPressed: () => _add(context, repo),
                   icon: const Icon(Icons.add, size: 18),
-                  label: Text(context.tr('Add', 'إضافة')),
+                  label: Text('Add'),
                 )
               : null,
         ),
@@ -908,8 +907,7 @@ class _MilestonesTimeline extends StatelessWidget {
             final items = snap.data ?? const <HistoryMilestone>[];
             if (items.isEmpty) {
               return _PlaceholderText(
-                  text: context.tr(
-                      'No milestones yet.', 'لا توجد محطات بعد.'));
+                  text: 'No milestones yet.');
             }
             return LayoutBuilder(
               builder: (context, box) {
@@ -1128,10 +1126,10 @@ class _MilestoneCard extends StatelessWidget {
                       itemBuilder: (_) => [
                         PopupMenuItem(
                             value: 'edit',
-                            child: Text(context.trRead('Edit', 'تعديل'))),
+                            child: Text('Edit')),
                         PopupMenuItem(
                             value: 'delete',
-                            child: Text(context.trRead('Delete', 'حذف'))),
+                            child: Text('Delete')),
                       ],
                     ),
                   ),
@@ -1182,28 +1180,33 @@ class _PreviousLeadershipSection extends StatelessWidget {
         // Keep only Presidents, one per term (terms arrive newest-first).
         final seen = <String>{};
         final presidents = <PreviousLeaderView>[];
+        
         for (final v in all) {
+           final positionLower = v.entry.position.toLowerCase();
           final isPresident =
               v.entry.position.toLowerCase().contains('president') ||
                   v.entry.positionAr.contains('رئيس');
-          if (!isPresident) continue;
-          if (seen.add(v.entry.termYears.trim())) presidents.add(v);
+        final isFounder = positionLower.contains('founder') ||
+         v.entry.positionAr.contains('مؤسس');
+        if (!isPresident && !isFounder) continue;
+          final dedupeKey =
+            '${isFounder ? 'founder' : 'president'}_${v.entry.termYears.trim()}';
+        if (seen.add(dedupeKey)) presidents.add(v);
+   
         }
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _SectionHeader(
               icon: Icons.workspace_premium_outlined,
-              title: context.tr('Leadership Legacy', 'إرث القيادة'),
-              subtitle: context.tr(
-                  'Honoring the leaders who guided the organization throughout its history.',
-                  'تكريمًا للقادة الذين قادوا المنظمة عبر تاريخها.'),
+              title: 'Leadership Legacy',
+              subtitle: 'Honoring the leaders who guided the organization throughout its history.',
             ),
             const SizedBox(height: AppSpacing.lg),
             if (presidents.isEmpty)
               _PlaceholderText(
-                  text: context.tr('No previous leaders recorded yet.',
-                      'لم يُسجَّل قادة سابقون بعد.'))
+                  text: 'No previous leaders recorded yet.')
             else
               LayoutBuilder(
                 builder: (context, box) {
@@ -1256,8 +1259,7 @@ class _PreviousLeadershipSection extends StatelessWidget {
                   ),
                 ),
                 icon: const Icon(Icons.arrow_forward, size: 18),
-                label: Text(context.tr('View Complete Leadership History',
-                    'عرض سجل القيادة الكامل')),
+                label: Text('View Complete Leadership History'),
               ),
             ),
           ],
@@ -1444,7 +1446,7 @@ class _LegacyCard extends StatelessWidget {
               side: const BorderSide(color: AppColors.goldDeep),
               foregroundColor: AppColors.emeraldDark,
             ),
-            child: Text(context.tr('View profile', 'عرض الملف')),
+            child: Text('View profile'),
           ),
         ],
       ),

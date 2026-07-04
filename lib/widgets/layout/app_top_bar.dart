@@ -98,10 +98,6 @@ class AppTopBar extends StatelessWidget {
             const Spacer(),
           const SizedBox(width: AppSpacing.lg),
 
-          // Language toggle
-          _LanguageToggle(locale: locale),
-          const SizedBox(width: AppSpacing.lg),
-
           // Avatar
           if (session.user != null)
             CircleAvatar(
@@ -114,53 +110,6 @@ class AppTopBar extends StatelessWidget {
               ),
             ),
         ],
-      ),
-    );
-  }
-}
-
-class _LanguageToggle extends StatelessWidget {
-  const _LanguageToggle({required this.locale});
-  final LocaleController locale;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget seg(String text, bool active) => Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.xs,
-          ),
-          decoration: BoxDecoration(
-            color: active ? AppColors.emerald : Colors.transparent,
-            borderRadius: BorderRadius.circular(AppRadius.sm),
-          ),
-          child: Text(
-            text,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 13,
-              color: active ? AppColors.onEmerald : AppColors.textMuted,
-            ),
-          ),
-        );
-
-    return Material(
-      color: AppColors.ivory,
-      borderRadius: BorderRadius.circular(AppRadius.sm),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-        onTap: locale.toggle,
-        child: Padding(
-          padding: const EdgeInsets.all(3),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              seg('EN', !locale.isArabic),
-              const SizedBox(width: 2),
-              seg('ع', locale.isArabic),
-            ],
-          ),
-        ),
       ),
     );
   }

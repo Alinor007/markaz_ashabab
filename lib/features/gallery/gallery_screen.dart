@@ -66,7 +66,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
           FilledButton.icon(
             onPressed: () => _addPhoto(context, repo),
             icon: const Icon(Icons.add_photo_alternate_outlined, size: 18),
-            label: Text(context.tr('Add Photo', 'إضافة صورة')),
+            label: Text('Add Photo'),
           ),
       ],
       child: StreamBuilder<List<GalleryPhoto>>(
@@ -77,9 +77,9 @@ class _GalleryScreenState extends State<GalleryScreen> {
           if (all.isEmpty) {
             return EmptyState(
               icon: Icons.photo_library_outlined,
-              title: context.tr('No photos yet', 'لا توجد صور بعد'),
+              title: 'No photos yet',
               message: canUpload
-                  ? context.tr('Add the first photo.', 'أضف أول صورة.')
+                  ? 'Add the first photo.'
                   : null,
             );
           }
@@ -261,11 +261,10 @@ class _Lightbox extends StatelessWidget {
                                 icon: const Icon(Icons.delete_outline,
                                     color: Colors.white),
                                 tooltip:
-                                    context.tr('Delete photo', 'حذف الصورة'),
+                                    'Delete photo',
                                 onPressed: () async {
                                   final ok = await confirmDialog(context,
-                                      title: context.trRead(
-                                          'Delete photo?', 'حذف الصورة؟'),
+                                      title: 'Delete photo?',
                                       message: photo.title);
                                   if (ok) onDelete();
                                 },
@@ -277,7 +276,7 @@ class _Lightbox extends StatelessWidget {
                             shape: const CircleBorder(),
                             child: IconButton(
                               icon: const Icon(Icons.close, color: Colors.white),
-                              tooltip: context.tr('Close', 'إغلاق'),
+                              tooltip: 'Close',
                               onPressed: () => Navigator.of(context).pop(),
                             ),
                           ),
@@ -368,7 +367,7 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: AppColors.surface,
-      title: Text(context.tr('Add Photo', 'إضافة صورة')),
+      title: Text('Add Photo'),
       content: SizedBox(
         width: 440,
         child: Form(
@@ -380,7 +379,7 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
                 Row(
                   children: [
                     Expanded(
-                      child: Text(context.tr('Images', 'الصور'),
+                      child: Text('Images',
                           style: Theme.of(context).textTheme.labelMedium),
                     ),
                     TextButton.icon(
@@ -393,7 +392,7 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
                       },
                       icon: const Icon(Icons.add_photo_alternate_outlined,
                           size: 18),
-                      label: Text(context.tr('Add Images', 'إضافة صور')),
+                      label: Text('Add Images'),
                     ),
                   ],
                 ),
@@ -408,7 +407,7 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
                       border: Border.all(color: AppColors.border),
                     ),
                     child: Text(
-                        context.tr('No images yet', 'لا توجد صور بعد'),
+                        'No images yet',
                         style: Theme.of(context).textTheme.bodySmall),
                   )
                 else
@@ -456,9 +455,9 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
                 TextFormField(
                   controller: _title,
                   decoration:
-                      InputDecoration(labelText: context.tr('Title', 'العنوان')),
+                      InputDecoration(labelText: 'Title'),
                   validator: (v) => (v == null || v.trim().isEmpty)
-                      ? context.trRead('Required', 'مطلوب')
+                      ? 'Required'
                       : null,
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -468,7 +467,7 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
                       child: TextFormField(
                         controller: _event,
                         decoration: InputDecoration(
-                            labelText: context.tr('Event', 'المناسبة')),
+                            labelText: 'Event'),
                       ),
                     ),
                     const SizedBox(width: AppSpacing.md),
@@ -478,7 +477,7 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
                         controller: _year,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
-                            labelText: context.tr('Year', 'السنة')),
+                            labelText: 'Year'),
                       ),
                     ),
                   ],
@@ -520,7 +519,7 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(context.tr('Cancel', 'إلغاء'))),
+            child: Text('Cancel')),
         FilledButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
@@ -537,7 +536,7 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
               ),
             );
           },
-          child: Text(context.tr('Save', 'حفظ')),
+          child: Text('Save'),
         ),
       ],
     );

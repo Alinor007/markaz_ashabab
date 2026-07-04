@@ -261,9 +261,7 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
     if (!_formKey.currentState!.validate()) {
       // Show a visible in-dialog error (a SnackBar would render behind the
       // modal) and scroll the required Program Title (Section A) into view.
-      setState(() => _formError = context.trRead(
-          'Please enter the Program Title to save.',
-          'يرجى إدخال عنوان البرنامج للحفظ.'));
+      setState(() => _formError = 'Please enter the Program Title to save.');
       if (_scroll.hasClients) {
         _scroll.animateTo(0,
             duration: const Duration(milliseconds: 300),
@@ -306,8 +304,7 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
                 children: [
                   Expanded(
                     child: Text(
-                      context.tr('Program Proposal Form (Form P-1)',
-                          'نموذج مقترح برنامج (نموذج P-1)'),
+                      'Program Proposal Form (Form P-1)',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
@@ -342,12 +339,12 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
                 children: [
                   TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text(context.tr('Cancel', 'إلغاء'))),
+                      child: Text('Cancel')),
                   const SizedBox(width: AppSpacing.sm),
                   FilledButton.icon(
                     onPressed: _save,
                     icon: const Icon(Icons.save_outlined, size: 18),
-                    label: Text(context.tr('Save Proposal', 'حفظ المقترح')),
+                    label: Text('Save Proposal'),
                   ),
                 ],
               ),
@@ -362,39 +359,38 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
     return [
       // Department — auto-filled, read-only.
       InputDecorator(
-        decoration: _dec(context.tr('Department', 'القسم')),
+        decoration: _dec('Department'),
         child: Text(widget.department.displayName(context.isArabic),
             style: Theme.of(context).textTheme.bodyLarge),
       ),
 
-      _section('A', context.tr('Basic Information', 'المعلومات الأساسية')),
-      _field(_programTitle, '${context.tr('Program Title', 'عنوان البرنامج')} *',
+      _section('A', 'Basic Information'),
+      _field(_programTitle, '${'Program Title'} *',
           required: true, focusNode: _titleFocus),
       _row2(
         _dateField(context),
-        _field(_venue, context.tr('Venue / Location', 'المكان / الموقع')),
+        _field(_venue, 'Venue / Location'),
       ),
       _row2(
         _field(_target,
-            context.tr('Target Participants', 'المشاركون المستهدفون')),
+            'Target Participants'),
         _field(_expected,
-            context.tr('Expected Number of Participants', 'العدد المتوقع للمشاركين'),
+            'Expected Number of Participants',
             keyboard: TextInputType.number),
       ),
 
-      _section('B', context.tr('Objectives', 'الأهداف')),
+      _section('B', 'Objectives'),
       _list(context,
-          context.tr('What do you want to achieve?', 'ما الذي تريد تحقيقه؟'),
+          'What do you want to achieve?',
           _objectives),
 
-      _section('H', context.tr('Expected', 'المتوقع')),
+      _section('H', 'Expected'),
       _field(_output,
-          context.tr('Output (Short-term results)', 'المخرجات (نتائج قصيرة المدى)'),
+          'Output (Short-term results)',
           lines: 2),
       _field(
           _outcome,
-          context.tr('Outcome (Long-term impact / Changes)',
-              'النتائج (أثر طويل المدى / تغييرات)'),
+          'Outcome (Long-term impact / Changes)',
           lines: 2),
     ];
   }
@@ -448,7 +444,7 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
         decoration: _dec(label),
         validator: required
             ? (v) => (v == null || v.trim().isEmpty)
-                ? context.trRead('Required', 'مطلوب')
+                ? 'Required'
                 : null
             : null,
       ),
@@ -464,7 +460,7 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
           if (picked != null) setState(() => _proposedDate = picked);
         },
         child: InputDecorator(
-          decoration: _dec(context.tr('Proposed Date', 'التاريخ المقترح'))
+          decoration: _dec('Proposed Date')
               .copyWith(
                   suffixIcon:
                       const Icon(Icons.calendar_today_outlined, size: 18)),
@@ -504,7 +500,7 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
                         controller: list[i], decoration: _dec('$label ${i + 1}')),
                   ),
                   IconButton(
-                    tooltip: context.tr('Remove', 'إزالة'),
+                    tooltip: 'Remove',
                     icon: const Icon(Icons.remove_circle_outline,
                         size: 20, color: AppColors.error),
                     onPressed: () => setState(() {
@@ -520,7 +516,7 @@ class _ActivityFormDialogState extends State<_ActivityFormDialog> {
             child: TextButton.icon(
               onPressed: () => setState(() => list.add(_c())),
               icon: const Icon(Icons.add, size: 18),
-              label: Text(context.tr('Add', 'إضافة')),
+              label: Text('Add'),
             ),
           ),
         ],

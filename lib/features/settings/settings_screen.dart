@@ -5,11 +5,9 @@ import '../../core/auth/password_hasher.dart';
 import '../../core/auth/session_controller.dart';
 import '../../core/data/app_database.dart';
 import '../../core/data/models.dart';
-import '../../core/i18n/locale_controller.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/repositories/audit_repository.dart';
 import '../../core/repositories/user_repository.dart';
-import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../widgets/common/info_panel.dart';
 import '../../widgets/common/portrait_avatar.dart';
@@ -46,18 +44,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await audit.log(
       username: user.username,
       action: 'Changed own password',
-      actionAr: 'غيّر كلمة مروره الخاصة',
       module: 'Account',
-      moduleAr: 'الحساب',
     );
     if (!mounted) return;
-    _toast(context.trRead('Password updated.', 'تم تحديث كلمة المرور.'));
+    _toast('Password updated.');
   }
 
   @override
   Widget build(BuildContext context) {
     final isArabic = context.isArabic;
-    final locale = context.watch<LocaleController>();
     final user = context.watch<SessionController>().user;
 
     return ModulePage(
@@ -67,99 +62,60 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: InfoPanel(
-                    icon: Icons.account_circle_outlined,
-                    title: context.tr('Account', 'الحساب'),
-                    child: user == null
-                        ? const SizedBox.shrink()
-                        : Row(
-                            children: [
-                              PortraitAvatar(
-                                initials: user.avatarInitials,
-                                size: 64,
-                              ),
-                              const SizedBox(width: AppSpacing.lg),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      user.displayName(isArabic),
-                                      textDirection: isArabic
-                                          ? TextDirection.rtl
-                                          : TextDirection.ltr,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium,
-                                    ),
-                                    const SizedBox(height: AppSpacing.xs),
-                                    RoleBadge(role: user.role, compact: true),
-                                  ],
-                                ),
-                              ),
-                              OutlinedButton.icon(
-                                onPressed: () => _changePassword(user),
-                                icon: const Icon(Icons.lock_reset_outlined,
-                                    size: 18),
-                                label: Text(context.tr(
-                                    'Change Password', 'تغيير كلمة المرور')),
-                              ),
-                            ],
-                          ),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.lg),
-                Expanded(
-                  flex: 2,
-                  child: InfoPanel(
-                    icon: Icons.translate_outlined,
-                    title: context.tr('Language', 'اللغة'),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          context.tr(
-                              'Choose the interface language.',
-                              'اختر لغة الواجهة.'),
-                          style: Theme.of(context).textTheme.bodySmall,
+          InfoPanel(
+            icon: Icons.account_circle_outlined,
+            title: 'Account',
+            child: user == null
+                ? const SizedBox.shrink()
+                : Row(
+                    children: [
+                      PortraitAvatar(
+                        initials: user.avatarInitials,
+                        size: 64,
+                      ),
+                      const SizedBox(width: AppSpacing.lg),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user.displayName(isArabic),
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            RoleBadge(role: user.role, compact: true),
+                          ],
                         ),
-                        const SizedBox(height: AppSpacing.md),
-                        _LanguageChoice(locale: locale),
-                      ],
-                    ),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: () => _changePassword(user),
+                        icon: const Icon(Icons.lock_reset_outlined, size: 18),
+                        label: Text('Change Password'),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
           ),
           const SizedBox(height: AppSpacing.lg),
           InfoPanel(
             icon: Icons.info_outline,
-            title: context.tr('About', 'حول التطبيق'),
+            title: 'About',
             child: Column(
               children: [
                 _InfoRow(
-                  label: context.tr('Application', 'التطبيق'),
-                  value: context.tr(
-                      'Markazosshabab App', 'تطبيق مركز الشباب'),
+                  label: 'Application',
+                  value: 'Markazosshabab App',
                 ),
                 _InfoRow(
-                  label: context.tr('Version', 'الإصدار'),
+                  label: 'Version',
                   value: '1.0.0',
                 ),
                 _InfoRow(
-                  label: context.tr('Mode', 'الوضع'),
-                  value: context.tr('Offline · Internal', 'دون اتصال · داخلي'),
+                  label: 'Mode',
+                  value: 'Offline · Internal',
                 ),
                 _InfoRow(
-                  label: context.tr('Storage', 'التخزين'),
-                  value: context.tr('Local device', 'الجهاز المحلي'),
+                  label: 'Storage',
+                  value: 'Local device',
                   isLast: true,
                 ),
               ],
@@ -230,7 +186,7 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(context.tr('Change Password', 'تغيير كلمة المرور')),
+      title: Text('Change Password'),
       content: SizedBox(
         width: 380,
         child: Form(
@@ -240,17 +196,16 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
             children: [
               _passwordField(
                 controller: _current,
-                label: context.tr('Current Password', 'كلمة المرور الحالية'),
+                label: 'Current Password',
                 obscure: _obscureCurrent,
                 toggle: () =>
                     setState(() => _obscureCurrent = !_obscureCurrent),
                 validator: (v) {
                   if (v == null || v.isEmpty) {
-                    return context.trRead('Required', 'مطلوب');
+                    return 'Required';
                   }
                   if (!PasswordHasher.verify(v, widget.currentHash)) {
-                    return context.trRead('Current password is incorrect.',
-                        'كلمة المرور الحالية غير صحيحة.');
+                    return 'Current password is incorrect.';
                   }
                   return null;
                 },
@@ -258,25 +213,22 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
               const SizedBox(height: AppSpacing.md),
               _passwordField(
                 controller: _next,
-                label: context.tr('New Password', 'كلمة المرور الجديدة'),
+                label: 'New Password',
                 obscure: _obscureNext,
                 toggle: () => setState(() => _obscureNext = !_obscureNext),
                 validator: (v) => (v == null || v.length < 4)
-                    ? context.trRead(
-                        'At least 4 characters', '4 أحرف على الأقل')
+                    ? 'At least 4 characters'
                     : null,
               ),
               const SizedBox(height: AppSpacing.md),
               _passwordField(
                 controller: _confirm,
-                label: context.tr(
-                    'Confirm New Password', 'تأكيد كلمة المرور الجديدة'),
+                label: 'Confirm New Password',
                 obscure: _obscureConfirm,
                 toggle: () =>
                     setState(() => _obscureConfirm = !_obscureConfirm),
                 validator: (v) => v != _next.text
-                    ? context.trRead(
-                        'Passwords do not match', 'كلمتا المرور غير متطابقتين')
+                    ? 'Passwords do not match'
                     : null,
               ),
             ],
@@ -286,59 +238,12 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(context.tr('Cancel', 'إلغاء')),
+          child: Text('Cancel'),
         ),
         FilledButton(
           onPressed: _submit,
-          child: Text(context.tr('Save', 'حفظ')),
+          child: Text('Save'),
         ),
-      ],
-    );
-  }
-}
-
-class _LanguageChoice extends StatelessWidget {
-  const _LanguageChoice({required this.locale});
-  final LocaleController locale;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget option(String label, bool active, VoidCallback onTap) {
-      return Expanded(
-        child: Material(
-          color: active ? AppColors.emerald : AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.sm),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(AppRadius.sm),
-            onTap: onTap,
-            child: Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-                border: Border.all(
-                    color: active ? AppColors.emerald : AppColors.border),
-              ),
-              child: Text(
-                label,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color:
-                          active ? AppColors.onEmerald : AppColors.textMuted,
-                    ),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return Row(
-      children: [
-        option('English', !locale.isArabic,
-            () => locale.setLocale(LocaleController.english)),
-        const SizedBox(width: AppSpacing.md),
-        option('العربية', locale.isArabic,
-            () => locale.setLocale(LocaleController.arabic)),
       ],
     );
   }

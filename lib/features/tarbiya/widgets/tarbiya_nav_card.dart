@@ -70,7 +70,7 @@ class TarbiyaNavCard extends StatelessWidget {
                     PopupMenuButton<String>(
                       icon: const Icon(Icons.more_vert,
                           color: AppColors.textMuted, size: 20),
-                      tooltip: context.tr('Actions', 'إجراءات'),
+                      tooltip: 'Actions',
                       onSelected: (v) {
                         if (v == 'edit') onEdit?.call();
                         if (v == 'delete') onDelete?.call();
@@ -79,12 +79,12 @@ class TarbiyaNavCard extends StatelessWidget {
                         if (onEdit != null)
                           PopupMenuItem(
                             value: 'edit',
-                            child: Text(context.trRead('Edit', 'تعديل')),
+                            child: Text('Edit'),
                           ),
                         if (onDelete != null)
                           PopupMenuItem(
                             value: 'delete',
-                            child: Text(context.trRead('Delete', 'حذف')),
+                            child: Text('Delete'),
                           ),
                       ],
                     )
