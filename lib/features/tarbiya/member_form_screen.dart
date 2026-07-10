@@ -259,7 +259,6 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
       middleName: Value(_middle.text.trim()),
       lastName: Value(_last.text.trim()),
       suffix: Value(_suffix.text.trim()),
-      nameAr: const Value(''),
       gender: Value(_gender),
       dob: Value(_dob),
       placeOfBirth: Value(_placeOfBirth.text.trim()),
@@ -351,13 +350,11 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     if (_loading) {
       return ModulePage(
         english: 'Member',
-        arabic: 'عضو',
         child: const LoadingState(),
       );
     }
     return ModulePage(
       english: widget.isEditing ? 'Edit Member' : 'Add Member',
-      arabic: widget.isEditing ? 'تعديل عضو' : 'إضافة عضو',
       scrollable: true,
       actions: [
         OutlinedButton(
@@ -657,12 +654,12 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   Widget _usraSection() {
     return InfoPanel(
       icon: Icons.groups_2_outlined,
-      title: 'Naqib-Usra Information',
+      title: 'Tutorial Class Information',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _row([
-            _field(_usraName, 'Name of Usra'),
+            _field(_usraName, 'Section'),
             _field(_usraYear, 'Established Year'),
             _field(_usraSchedule, 'Meeting Schedule'),
           ]),
@@ -673,7 +670,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
               Expanded(
                 child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: 'Naqib',
+                    labelText: 'Teacher',
                     isDense: true,
                   ),
                   child: Text(
@@ -705,7 +702,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
           Row(
             children: [
               Expanded(
-                child: Text('Usra Members',
+                child: Text('Students',
                     style: Theme.of(context).textTheme.titleSmall),
               ),
               TextButton.icon(
@@ -717,7 +714,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
           ),
           const SizedBox(height: AppSpacing.xs),
           if (_usraMembers.isEmpty)
-            Text('No usra members added',
+            Text('No students added',
                 style: Theme.of(context).textTheme.bodySmall)
           else
             Wrap(

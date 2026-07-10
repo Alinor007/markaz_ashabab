@@ -380,8 +380,7 @@ class MemberRepository {
                 ? const Constant(true)
                 : (m.firstName.like(like) |
                     m.middleName.like(like) |
-                    m.lastName.like(like) |
-                    m.nameAr.like(like));
+                    m.lastName.like(like) );
             final notSelf = excludeId == null
                 ? const Constant(true)
                 : m.id.equals(excludeId).not();

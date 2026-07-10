@@ -158,9 +158,7 @@ class _DepartmentFormDialogState extends State<_DepartmentFormDialog> {
 DepartmentsCompanion departmentUpdateCompanion(DepartmentFormResult r) {
   return DepartmentsCompanion(
     name: Value(r.name),
-    nameAr: const Value(''),
     description: Value(r.description),
-    descriptionAr: const Value(''),
     iconKey: Value(r.iconKey),
   );
 }

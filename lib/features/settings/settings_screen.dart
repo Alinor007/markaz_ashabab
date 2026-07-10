@@ -57,7 +57,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return ModulePage(
       english: 'Settings',
-      arabic: 'الإعدادات',
       scrollable: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/data/app_database.dart';
-import '../../core/i18n/localized.dart';
 import '../../core/repositories/tarbiya_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
@@ -34,24 +33,22 @@ class TarbiyaLevelsScreen extends StatelessWidget {
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
           return const ModulePage(
-              english: 'Levels', arabic: 'المستويات', child: LoadingState());
+              english: 'Levels',  child: LoadingState());
         }
         final area = snap.data?.$1;
         final shuba = snap.data?.$2;
         if (area == null || shuba == null) {
           return ModulePage(
             english: 'Levels',
-            arabic: 'المستويات',
             child: EmptyState(
               icon: Icons.layers_outlined,
               title: 'Shu\'ba not found',
             ),
           );
         }
-        final isArabic = context.isArabic;
+  
         return ModulePage(
           english: shuba.name,
-          arabic: shuba.nameAr,
           breadcrumb: HierarchyBreadcrumb(
             crumbs: [
               Crumb(
@@ -60,9 +57,9 @@ class TarbiyaLevelsScreen extends StatelessWidget {
                 icon: Icons.hub_outlined,
               ),
               Crumb(
-                  label: isArabic ? area.nameAr : area.name,
+                  label: area.name,
                   route: '/tarbiya/area/$areaId'),
-              Crumb(label: isArabic ? shuba.nameAr : shuba.name),
+              Crumb(label: shuba.name)
             ],
           ),
           child: StreamBuilder<Map<int, LevelCounts>>(

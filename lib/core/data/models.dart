@@ -205,9 +205,7 @@ extension LeaderX on Leader {
       .toList();
 
   List<String> get achievementsList => _lines(achievements);
-  List<String> get achievementsArList => _lines(achievementsAr);
   List<String> get responsibilitiesList => _lines(responsibilities);
-  List<String> get responsibilitiesArList => _lines(responsibilitiesAr);
 
   String get initials {
     final parts = name.replaceAll('.', '').trim().split(RegExp(r'\s+'));

@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import '../../core/auth/session_controller.dart';
 import '../../core/data/app_database.dart';
 import '../../core/data/models.dart';
-import '../../core/i18n/localized.dart';
 import '../../core/patterns/geometric_pattern.dart';
 import '../../core/repositories/history_repository.dart';
 import '../../core/repositories/leader_repository.dart';
@@ -31,14 +30,12 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     final repo = context.read<HistoryRepository>();
     final canManage =
         context.watch<SessionController>().can?.manageContent ?? false;
 
     return ModulePage(
       english: 'History',
-      arabic: 'التاريخ',
       scrollable: true,
       child: StreamBuilder<HistoryContent?>(
         stream: repo.watchContent(),
@@ -58,7 +55,6 @@ class HistoryScreen extends StatelessWidget {
             children: [
               DocReveal(
                 child: _FoundingHero(
-                  isArabic: isArabic,
                   content: content,
                   canManage: canManage,
                   onEdit: () => _editFounding(context, repo, content),
@@ -69,7 +65,6 @@ class HistoryScreen extends StatelessWidget {
                 delayMs: 80,
                 child: _FactsSection(
                   facts: facts,
-                  isArabic: isArabic,
                   canManage: canManage,
                   onEdit: () => _editFacts(context, repo, facts),
                 ),
@@ -79,7 +74,6 @@ class HistoryScreen extends StatelessWidget {
                 delayMs: 160,
                 child: _NarrativeSection(
                   paragraphs: paragraphs,
-                  isArabic: isArabic,
                   canManage: canManage,
                   onEdit: () => _editNarrative(context, repo, paragraphs),
                 ),
@@ -88,29 +82,24 @@ class HistoryScreen extends StatelessWidget {
               DocReveal(
                 delayMs: 240,
                 child: _MissionVisionSection(
-                  isArabic: isArabic,
                   canManage: canManage,
                   missionEn: content?.missionEn ?? '',
-                  missionAr: content?.missionAr ?? '',
                   visionEn: content?.visionEn ?? '',
-                  visionAr: content?.visionAr ?? '',
                   onEditMission: () => _editStatement(
                     context,
                     repo,
                     title: 'Edit Mission',
                     en: content?.missionEn ?? '',
-                    ar: content?.missionAr ?? '',
                     apply: (e, a) => HistoryContentsCompanion(
-                        missionEn: Value(e), missionAr: Value(a)),
+                        missionEn: Value(e)),
                   ),
                   onEditVision: () => _editStatement(
                     context,
                     repo,
                     title: 'Edit Vision',
                     en: content?.visionEn ?? '',
-                    ar: content?.visionAr ?? '',
                     apply: (e, a) => HistoryContentsCompanion(
-                        visionEn: Value(e), visionAr: Value(a)),
+                        visionEn: Value(e)),
                   ),
                 ),
               ),
@@ -118,7 +107,7 @@ class HistoryScreen extends StatelessWidget {
               DocReveal(
                 delayMs: 320,
                 child: _MilestonesTimeline(
-                    isArabic: isArabic, canManage: canManage),
+                   canManage: canManage),
               ),
               const SizedBox(height: AppSpacing.xxl),
               const DocReveal(
@@ -142,11 +131,10 @@ class HistoryScreen extends StatelessWidget {
       enLabel: 'English',
       arLabel: 'Arabic',
       initialEn: content?.foundingEn ?? '',
-      initialAr: content?.foundingAr ?? '',
     );
     if (r == null) return;
     await repo.updateContent(HistoryContentsCompanion(
-        foundingEn: Value(r.$1), foundingAr: Value(r.$2)));
+        foundingEn: Value(r.$1)));
   }
 
   Future<void> _editFacts(BuildContext context, HistoryRepository repo,
@@ -168,16 +156,13 @@ class HistoryScreen extends StatelessWidget {
     HistoryRepository repo, {
     required String title,
     required String en,
-    required String ar,
     required HistoryContentsCompanion Function(String, String) apply,
   }) async {
     final r = await editBilingualText(
       context,
       title: title,
       enLabel: 'English',
-      arLabel: 'Arabic',
       initialEn: en,
-      initialAr: ar,
     );
     if (r == null) return;
     await repo.updateContent(apply(r.$1, r.$2));
@@ -332,12 +317,10 @@ class _HoverLiftState extends State<_HoverLift> {
 
 class _FoundingHero extends StatelessWidget {
   const _FoundingHero({
-    required this.isArabic,
     required this.content,
     required this.canManage,
     required this.onEdit,
   });
-  final bool isArabic;
   final HistoryContent? content;
   final bool canManage;
   final VoidCallback onEdit;
@@ -345,7 +328,7 @@ class _FoundingHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text =
-        isArabic ? (content?.foundingAr ?? '') : (content?.foundingEn ?? '');
+        (content?.foundingEn ?? '');
     return ClipRRect(
       borderRadius: AppRadius.panel,
       child: Container(
@@ -420,13 +403,8 @@ class _FoundingHero extends StatelessWidget {
                     child: Text(
                       text,
                       textDirection:
-                          isArabic ? TextDirection.rtl : TextDirection.ltr,
-                      style: isArabic
-                          ? AppTypography.arabic(
-                              fontSize: 24,
-                              color: AppColors.onEmerald,
-                              height: 1.9)
-                          : Theme.of(context)
+                          TextDirection.ltr,
+                      style: Theme.of(context)
                               .textTheme
                               .headlineMedium
                               ?.copyWith(
@@ -448,12 +426,10 @@ class _FoundingHero extends StatelessWidget {
 class _FactsSection extends StatelessWidget {
   const _FactsSection({
     required this.facts,
-    required this.isArabic,
     required this.canManage,
     required this.onEdit,
   });
   final List<HistoryFact> facts;
-  final bool isArabic;
   final bool canManage;
   final VoidCallback onEdit;
 
@@ -492,7 +468,7 @@ class _FactsSection extends StatelessWidget {
                       height: 132,
                       child: _HoverLift(
                         radius: AppRadius.card,
-                        child: _FactCard(fact: f, isArabic: isArabic),
+                        child: _FactCard(fact: f),
                       ),
                     ),
                 ],
@@ -505,9 +481,8 @@ class _FactsSection extends StatelessWidget {
 }
 
 class _FactCard extends StatelessWidget {
-  const _FactCard({required this.fact, required this.isArabic});
+  const _FactCard({required this.fact});
   final HistoryFact fact;
-  final bool isArabic;
 
   @override
   Widget build(BuildContext context) {
@@ -559,7 +534,7 @@ class _FactCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            (isArabic ? fact.ar : fact.en).toUpperCase(),
+                            (fact.en).toUpperCase(),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context)
@@ -586,12 +561,10 @@ class _FactCard extends StatelessWidget {
 class _NarrativeSection extends StatelessWidget {
   const _NarrativeSection({
     required this.paragraphs,
-    required this.isArabic,
     required this.canManage,
     required this.onEdit,
   });
   final List<HistoryParagraph> paragraphs;
-  final bool isArabic;
   final bool canManage;
   final VoidCallback onEdit;
 
@@ -637,20 +610,12 @@ class _NarrativeSection extends StatelessWidget {
                                     ? 0
                                     : AppSpacing.xl),
                             child: Text(
-                              isArabic
-                                  ? paragraphs[i].ar
-                                  : paragraphs[i].en,
-                              textDirection: isArabic
-                                  ? TextDirection.rtl
-                                  : TextDirection.ltr,
+                                   paragraphs[i].en,
+                              textDirection: 
+                                 TextDirection.ltr,
                               textAlign:
-                                  isArabic ? TextAlign.right : TextAlign.left,
-                              style: isArabic
-                                  ? AppTypography.arabic(
-                                      fontSize: 18,
-                                      color: AppColors.charcoal,
-                                      height: 2.0)
-                                  : Theme.of(context)
+                                 TextAlign.left,
+                              style:Theme.of(context)
                                       .textTheme
                                       .bodyLarge
                                       ?.copyWith(height: 1.9, fontSize: 16.5),
@@ -670,21 +635,15 @@ class _NarrativeSection extends StatelessWidget {
 
 class _MissionVisionSection extends StatelessWidget {
   const _MissionVisionSection({
-    required this.isArabic,
     required this.canManage,
     required this.missionEn,
-    required this.missionAr,
     required this.visionEn,
-    required this.visionAr,
     required this.onEditMission,
     required this.onEditVision,
   });
-  final bool isArabic;
   final bool canManage;
   final String missionEn;
-  final String missionAr;
   final String visionEn;
-  final String visionAr;
   final VoidCallback onEditMission;
   final VoidCallback onEditVision;
 
@@ -694,8 +653,7 @@ class _MissionVisionSection extends StatelessWidget {
       icon: Icons.track_changes_outlined,
       accent: AppColors.emerald,
       title: 'Mission',
-      text: isArabic ? missionAr : missionEn,
-      isArabic: isArabic,
+      text: missionEn,
       canManage: canManage,
       onEdit: onEditMission,
     );
@@ -703,8 +661,7 @@ class _MissionVisionSection extends StatelessWidget {
       icon: Icons.visibility_outlined,
       accent: AppColors.goldDeep,
       title: 'Vision',
-      text: isArabic ? visionAr : visionEn,
-      isArabic: isArabic,
+      text: visionEn,
       canManage: canManage,
       onEdit: onEditVision,
     );
@@ -750,7 +707,6 @@ class _FeatureCard extends StatelessWidget {
     required this.accent,
     required this.title,
     required this.text,
-    required this.isArabic,
     required this.canManage,
     required this.onEdit,
   });
@@ -758,7 +714,6 @@ class _FeatureCard extends StatelessWidget {
   final Color accent;
   final String title;
   final String text;
-  final bool isArabic;
   final bool canManage;
   final VoidCallback onEdit;
 
@@ -805,13 +760,8 @@ class _FeatureCard extends StatelessWidget {
                       text.trim().isEmpty ? '—' : text,
                       textAlign: TextAlign.center,
                       textDirection:
-                          isArabic ? TextDirection.rtl : TextDirection.ltr,
-                      style: isArabic
-                          ? AppTypography.arabic(
-                              fontSize: 17,
-                              color: AppColors.charcoal,
-                              height: 1.9)
-                          : Theme.of(context).textTheme.titleMedium?.copyWith(
+                          TextDirection.ltr,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w400,
                                 height: 1.6,
                               ),
@@ -832,8 +782,8 @@ class _FeatureCard extends StatelessWidget {
 /// The Milestones section — a visual historical timeline with add/edit/delete
 /// for executives. Alternating cards on wide screens; single column on mobile.
 class _MilestonesTimeline extends StatelessWidget {
-  const _MilestonesTimeline({required this.isArabic, required this.canManage});
-  final bool isArabic;
+  const _MilestonesTimeline({required this.canManage});
+ 
   final bool canManage;
 
   Future<void> _add(BuildContext context, HistoryRepository repo) async {
@@ -842,9 +792,7 @@ class _MilestonesTimeline extends StatelessWidget {
     await repo.addMilestone(
       year: r.year,
       title: r.title,
-      titleAr: r.titleAr,
       description: r.description,
-      descriptionAr: r.descriptionAr,
       iconKey: r.iconKey,
       accent: r.accent,
     );
@@ -855,9 +803,7 @@ class _MilestonesTimeline extends StatelessWidget {
     final r = await editMilestone(context, existing: (
       year: m.year,
       title: m.title,
-      titleAr: m.titleAr,
       description: m.description,
-      descriptionAr: m.descriptionAr,
       iconKey: m.iconKey,
       accent: m.accent,
     ));
@@ -866,9 +812,7 @@ class _MilestonesTimeline extends StatelessWidget {
       m.id,
       year: r.year,
       title: r.title,
-      titleAr: r.titleAr,
       description: r.description,
-      descriptionAr: r.descriptionAr,
       iconKey: r.iconKey,
       accent: r.accent,
     );
@@ -878,7 +822,7 @@ class _MilestonesTimeline extends StatelessWidget {
       BuildContext context, HistoryRepository repo, HistoryMilestone m) async {
     final ok = await confirmDialog(context,
         title: 'Delete milestone?',
-        message: isArabic ? m.titleAr : m.title);
+        message: m.title);
     if (ok) await repo.deleteMilestone(m.id);
   }
 
@@ -919,7 +863,6 @@ class _MilestonesTimeline extends StatelessWidget {
                         delayMs: 60 * i,
                         child: _TimelineEntry(
                           milestone: items[i],
-                          isArabic: isArabic,
                           canManage: canManage,
                           wide: wide,
                           cardOnStart: i.isEven,
@@ -945,7 +888,6 @@ class _MilestonesTimeline extends StatelessWidget {
 class _TimelineEntry extends StatelessWidget {
   const _TimelineEntry({
     required this.milestone,
-    required this.isArabic,
     required this.canManage,
     required this.wide,
     required this.cardOnStart,
@@ -955,7 +897,6 @@ class _TimelineEntry extends StatelessWidget {
     required this.onDelete,
   });
   final HistoryMilestone milestone;
-  final bool isArabic;
   final bool canManage;
   final bool wide;
   final bool cardOnStart;
@@ -969,7 +910,6 @@ class _TimelineEntry extends StatelessWidget {
     final accent = Color(milestone.accent);
     final card = _MilestoneCard(
       milestone: milestone,
-      isArabic: isArabic,
       canManage: canManage,
       accent: accent,
       onEdit: onEdit,
@@ -1065,14 +1005,12 @@ class _TimelineRail extends StatelessWidget {
 class _MilestoneCard extends StatelessWidget {
   const _MilestoneCard({
     required this.milestone,
-    required this.isArabic,
     required this.canManage,
     required this.accent,
     required this.onEdit,
     required this.onDelete,
   });
   final HistoryMilestone milestone;
-  final bool isArabic;
   final bool canManage;
   final Color accent;
   final VoidCallback onEdit;
@@ -1080,8 +1018,8 @@ class _MilestoneCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = isArabic ? milestone.titleAr : milestone.title;
-    final desc = isArabic ? milestone.descriptionAr : milestone.description;
+    final title = milestone.title;
+    final desc =  milestone.description;
     return _HoverLift(
       radius: AppRadius.card,
       child: Container(
@@ -1138,21 +1076,15 @@ class _MilestoneCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             Text(
               title,
-              textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-              style: isArabic
-                  ? AppTypography.arabic(
-                      fontSize: 18, fontWeight: FontWeight.w700)
-                  : Theme.of(context).textTheme.titleMedium,
+              textDirection: TextDirection.ltr,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             if (desc.trim().isNotEmpty) ...[
               const SizedBox(height: AppSpacing.xs),
               Text(
                 desc,
-                textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-                style: isArabic
-                    ? AppTypography.arabic(
-                        fontSize: 15, color: AppColors.textMuted, height: 1.7)
-                    : Theme.of(context).textTheme.bodyMedium,
+                textDirection: TextDirection.ltr,
+                style:  Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ],
@@ -1171,7 +1103,6 @@ class _PreviousLeadershipSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     final repo = context.read<LeaderRepository>();
     return StreamBuilder<List<PreviousLeaderView>>(
       stream: repo.watchPreviousLeaders(),
@@ -1184,10 +1115,8 @@ class _PreviousLeadershipSection extends StatelessWidget {
         for (final v in all) {
            final positionLower = v.entry.position.toLowerCase();
           final isPresident =
-              v.entry.position.toLowerCase().contains('president') ||
-                  v.entry.positionAr.contains('رئيس');
-        final isFounder = positionLower.contains('founder') ||
-         v.entry.positionAr.contains('مؤسس');
+              v.entry.position.toLowerCase().contains('president') ;
+        final isFounder = positionLower.contains('founder') ;
         if (!isPresident && !isFounder) continue;
           final dedupeKey =
             '${isFounder ? 'founder' : 'president'}_${v.entry.termYears.trim()}';
@@ -1221,7 +1150,7 @@ class _PreviousLeadershipSection extends StatelessWidget {
                             width: 260,
                             child: _HoverLift(
                               radius: AppRadius.panel,
-                              child: _LegacyCard(view: v, isArabic: isArabic),
+                              child: _LegacyCard(view: v),
                             ),
                           ),
                       ],
@@ -1238,7 +1167,7 @@ class _PreviousLeadershipSection extends StatelessWidget {
                       itemBuilder: (context, i) => SizedBox(
                         width: 240,
                         child: _LegacyCard(
-                            view: presidents[i], isArabic: isArabic),
+                            view: presidents[i]),
                       ),
                     ),
                   );
@@ -1270,9 +1199,8 @@ class _PreviousLeadershipSection extends StatelessWidget {
 }
 
 class _LegacyCard extends StatelessWidget {
-  const _LegacyCard({required this.view, required this.isArabic});
+  const _LegacyCard({required this.view, });
   final PreviousLeaderView view;
-  final bool isArabic;
 
   @override
   Widget build(BuildContext context) {
@@ -1380,38 +1308,7 @@ class _LegacyCard extends StatelessWidget {
                         )),
               ),
             ),
-          PositionedDirectional(
-            start: AppSpacing.lg,
-            end: AppSpacing.lg,
-            bottom: AppSpacing.md,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  m.displayName(isArabic),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontFamily: AppTypography.serif,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.onEmerald,
-                    height: 1.2,
-                  ),
-                ),
-                if (m.nameAr.trim().isNotEmpty)
-                  Text(
-                    m.nameAr,
-                    textDirection: TextDirection.rtl,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.arabic(
-                        fontSize: 15,
-                        color: AppColors.onEmerald.withValues(alpha: 0.9)),
-                  ),
-              ],
-            ),
-          ),
+        
         ],
       ),
     );
@@ -1426,8 +1323,8 @@ class _LegacyCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            (isArabic ? e.positionAr : e.position).toUpperCase(),
-            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+            ( e.position).toUpperCase(),
+            textDirection: TextDirection.ltr,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: AppColors.textMuted,
                   letterSpacing: 0.8,

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../core/i18n/locale_controller.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
-import '../../core/theme/app_typography.dart';
 
 /// A statistic tile: an emerald-tinted icon chip, a large value, and a
 /// bilingual label. Used across the dashboard.
@@ -13,21 +10,18 @@ class StatCard extends StatelessWidget {
     super.key,
     required this.value,
     required this.label,
-    required this.labelArabic,
     required this.icon,
     this.accent = AppColors.emerald,
   });
 
   final String value;
   final String label;
-  final String labelArabic;
   final IconData icon;
   final Color accent;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isArabic = context.watch<LocaleController>().isArabic;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
@@ -64,12 +58,9 @@ class StatCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            isArabic ? labelArabic : label,
-            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-            style: isArabic
-                ? AppTypography.arabic(
-                    fontSize: 14, color: AppColors.textMuted, height: 1.2)
-                : theme.textTheme.labelMedium,
+           label,
+            textDirection: TextDirection.ltr,
+            style: theme.textTheme.labelMedium,
           ),
         ],
       ),

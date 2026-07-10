@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/data/app_database.dart';
-import '../../core/i18n/localized.dart';
 import '../../core/repositories/audit_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
@@ -69,10 +68,8 @@ class AuditScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     return ModulePage(
       english: 'Audit Logs',
-      arabic: 'سجلات التدقيق',
       actions: [
         OutlinedButton.icon(
           onPressed: () => _clear(context),
@@ -119,13 +116,9 @@ class AuditScreen extends StatelessWidget {
                   isLast: i == logs.length - 1,
                   timestamp:
                       '${_formatTime(entry.timestamp)}  ·  @${entry.username}',
-                  title: isArabic && entry.actionAr.isNotEmpty
-                      ? entry.actionAr
-                      : entry.action,
+                  title: entry.action,
                   trailing: _ModuleTag(
-                    label: isArabic && entry.moduleAr.isNotEmpty
-                        ? entry.moduleAr
-                        : entry.module,
+                    label:entry.module,
                     color: color,
                   ),
                 );

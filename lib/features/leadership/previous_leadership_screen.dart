@@ -138,7 +138,6 @@ class PreviousLeadershipScreen extends StatelessWidget {
         context.watch<SessionController>().can?.manageLeadership ?? false;
     return ModulePage(
       english: 'Previous Leadership',
-      arabic: 'القيادة السابقة',
       scrollable: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -313,7 +312,6 @@ class _PreviousLeaderCard extends StatelessWidget {
 /// The portrait cover with an accent wash, and the name +
   /// Arabic name overlaid along the bottom.
   Widget _cover(BuildContext context) {
-    final isArabic = context.isArabic;
     final m = view.member;
     final e = view.entry;
     final color = Color(e.accent);
@@ -381,38 +379,7 @@ class _PreviousLeaderCard extends StatelessWidget {
             ),
           // NOTE: term/year pill removed from here — it now lives in the
           // body, centered below the position.
-          PositionedDirectional(
-            start: AppSpacing.lg,
-            end: AppSpacing.lg,
-            bottom: AppSpacing.md,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  m.displayName(isArabic),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontFamily: AppTypography.serif,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.onEmerald,
-                    height: 1.2,
-                  ),
-                ),
-                if (m.nameAr.trim().isNotEmpty)
-                  Text(
-                    m.nameAr,
-                    textDirection: TextDirection.rtl,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.arabic(
-                        fontSize: 15,
-                        color: AppColors.onEmerald.withValues(alpha: 0.9)),
-                  ),
-              ],
-            ),
-          ),
+       
         ],
       ),
     );
@@ -421,9 +388,8 @@ class _PreviousLeaderCard extends StatelessWidget {
   /// The white body: office (centered), term/year (centered), the note,
   /// and a centered View profile action.
   Widget _body(BuildContext context) {
-    final isArabic = context.isArabic;
     final e = view.entry;
-    final note = isArabic ? e.noteAr : e.note;
+    final note =e.note;
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
@@ -431,9 +397,9 @@ class _PreviousLeaderCard extends StatelessWidget {
         children: [
           // Position — centered.
           Text(
-            (isArabic ? e.positionAr : e.position).toUpperCase(),
+            ( e.position).toUpperCase(),
             textAlign: TextAlign.center,
-            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+            textDirection: TextDirection.ltr,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: AppColors.textMuted,
                   letterSpacing: 0.8,
@@ -455,12 +421,10 @@ class _PreviousLeaderCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             Text(
               note,
-              textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+              textDirection: TextDirection.ltr,
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
-              style: isArabic
-                  ? AppTypography.arabic(fontSize: 15, height: 1.7)
-                  : TextStyle(
+              style: TextStyle(
                       fontFamily: AppTypography.serif,
                       fontSize: 16,
                       color: AppColors.navy,
@@ -487,10 +451,8 @@ class _PreviousLeaderCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              isArabic ? s.titleAr : s.title,
-                              textDirection: isArabic
-                                  ? TextDirection.rtl
-                                  : TextDirection.ltr,
+                              s.title,
+                              textDirection: TextDirection.ltr,
                               style: Theme.of(context)
                                   .textTheme
                                   .labelMedium
@@ -499,16 +461,11 @@ class _PreviousLeaderCard extends StatelessWidget {
                                       letterSpacing: 0.8),
                             ),
                             Text(
-                              isArabic ? s.bodyAr : s.body,
-                              textDirection: isArabic
-                                  ? TextDirection.rtl
-                                  : TextDirection.ltr,
+                              s.body,
+                              textDirection: TextDirection.ltr,
                               maxLines: 3,
                               overflow: TextOverflow.ellipsis,
-                              style: isArabic
-                                  ? AppTypography.arabic(
-                                      fontSize: 15, height: 1.7)
-                                  : TextStyle(
+                              style: TextStyle(
                                       fontFamily: AppTypography.serif,
                                       fontSize: 16,
                                       color: AppColors.navy,
@@ -573,9 +530,7 @@ class _PreviousLeaderCard extends StatelessWidget {
 class _SectionRow {
   _SectionRow({
     String title = '',
-    String titleAr = '',
     String body = '',
-    String bodyAr = '',
   })  : title = TextEditingController(text: title),
         body = TextEditingController(text: body);
   final TextEditingController title;
@@ -621,9 +576,7 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
           setState(() {
             _sections.addAll(rows.map((s) => _SectionRow(
                   title: s.title,
-                  titleAr: s.titleAr,
                   body: s.body,
-                  bodyAr: s.bodyAr,
                 )));
           });
         },

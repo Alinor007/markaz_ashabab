@@ -27,7 +27,6 @@ class DepartmentsScreen extends StatelessWidget {
 
     return ModulePage(
       english: 'Departments',
-      arabic: 'الأقسام',
       actions: [
         if (canManage)
           FilledButton.icon(
@@ -96,9 +95,7 @@ class DepartmentsScreen extends StatelessWidget {
     if (r == null) return;
     await repo.create(
       name: r.name,
-      nameAr: r.nameAr,
       description: r.description,
-      descriptionAr: r.descriptionAr,
       iconKey: r.iconKey,
     );
   }

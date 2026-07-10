@@ -57,17 +57,12 @@ class LeaderRepository {
           LeadersCompanion.insert(
             id: id,
             name: name,
-            nameAr: nameAr.isEmpty ? name : nameAr,
             position: position,
-            positionAr: positionAr.isEmpty ? position : positionAr,
             category: category.code,
             serviceYears: Value(serviceYears),
             bio: Value(bio),
-            bioAr: Value(bioAr),
             achievements: Value(achievements),
-            achievementsAr: Value(achievementsAr),
             responsibilities: Value(responsibilities),
-            responsibilitiesAr: Value(responsibilitiesAr),
             email: Value(email),
             phone: Value(phone),
             photoPath: Value(photoPath),
@@ -98,17 +93,12 @@ class LeaderRepository {
     return (_db.update(_db.leaders)..where((l) => l.id.equals(id))).write(
       LeadersCompanion(
         name: Value(name),
-        nameAr: Value(nameAr.isEmpty ? name : nameAr),
         position: Value(position),
-        positionAr: Value(positionAr.isEmpty ? position : positionAr),
         category: Value(category.code),
         serviceYears: Value(serviceYears),
         bio: Value(bio),
-        bioAr: Value(bioAr),
         achievements: Value(achievements),
-        achievementsAr: Value(achievementsAr),
         responsibilities: Value(responsibilities),
-        responsibilitiesAr: Value(responsibilitiesAr),
         email: Value(email),
         phone: Value(phone),
         // Only overwrite the photo when a new value is supplied.
@@ -135,9 +125,7 @@ class LeaderRepository {
           LeadersCompanion.insert(
             id: newId('position'),
             name: title,
-            nameAr: titleAr.isEmpty ? title : titleAr,
             position: title,
-            positionAr: titleAr.isEmpty ? title : titleAr,
             category: code,
             sortOrder: const Value(100),
           ),
@@ -149,9 +137,7 @@ class LeaderRepository {
     return (_db.update(_db.leaders)..where((l) => l.id.equals(id))).write(
       LeadersCompanion(
         name: Value(title),
-        nameAr: Value(titleAr.isEmpty ? title : titleAr),
         position: Value(title),
-        positionAr: Value(titleAr.isEmpty ? title : titleAr),
       ),
     );
   }
@@ -184,7 +170,6 @@ class LeaderRepository {
           LeadershipGroupInfoCompanion(
             code: Value(code),
             description: Value(description),
-            descriptionAr: Value(descriptionAr),
           ),
         );
   }
@@ -228,10 +213,8 @@ class LeaderRepository {
             id: id,
             memberId: memberId,
             position: Value(position),
-            positionAr: Value(positionAr.isEmpty ? position : positionAr),
             termYears: Value(termYears),
             note: Value(note),
-            noteAr: Value(noteAr),
             accent: Value(accent),
             sortOrder: Value(nextSort),
           ),
@@ -253,10 +236,8 @@ class LeaderRepository {
         PreviousLeadersCompanion(
           memberId: Value(memberId),
           position: Value(position),
-          positionAr: Value(positionAr.isEmpty ? position : positionAr),
           termYears: Value(termYears),
           note: Value(note),
-          noteAr: Value(noteAr),
           accent: Value(accent),
         ),
       );
@@ -298,9 +279,7 @@ class LeaderRepository {
               id: newId('prevsection'),
               previousLeaderId: previousLeaderId,
               title: Value(title),
-              titleAr: Value(titleAr),
               body: Value(body),
-              bodyAr: Value(bodyAr),
               sortOrder: Value(sortOrder),
             ),
           );

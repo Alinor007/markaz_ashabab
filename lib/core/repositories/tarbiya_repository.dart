@@ -37,20 +37,17 @@ class TarbiyaRepository {
           TarbiyaAreasCompanion.insert(
             id: _id('area'),
             name: name,
-            nameAr: Value(nameAr.isEmpty ? name : nameAr),
             region: Value(region),
-            regionAr: Value(regionAr),
             accent: Value(accent),
           ),
         );
   }
 
   Future<void> updateArea(String id,
-      {required String name, required String nameAr}) {
+      {required String name}) {
     return (_db.update(_db.tarbiyaAreas)..where((a) => a.id.equals(id))).write(
       TarbiyaAreasCompanion(
         name: Value(name),
-        nameAr: Value(nameAr.isEmpty ? name : nameAr),
       ),
     );
   }
@@ -112,7 +109,6 @@ class TarbiyaRepository {
             id: _id('shuba'),
             areaId: areaId,
             name: name,
-            nameAr: Value(nameAr.isEmpty ? name : nameAr),
           ),
         );
   }
@@ -122,7 +118,6 @@ class TarbiyaRepository {
     return (_db.update(_db.shubas)..where((s) => s.id.equals(id))).write(
       ShubasCompanion(
         name: Value(name),
-        nameAr: Value(nameAr.isEmpty ? name : nameAr),
       ),
     );
   }

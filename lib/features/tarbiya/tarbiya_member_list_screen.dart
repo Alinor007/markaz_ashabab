@@ -47,8 +47,8 @@ class _TarbiyaMemberListScreenState extends State<TarbiyaMemberListScreen> {
     var list = members.where((m) {
       final q = _query.trim().toLowerCase();
       final matchesQuery = q.isEmpty ||
-          m.fullName.toLowerCase().contains(q) ||
-          m.nameAr.contains(_query);
+          m.fullName.toLowerCase().contains(q) ;
+        
       final matchesStatus = _statusFilter == 0 ||
           (_statusFilter == 1 && m.isActive) ||
           (_statusFilter == 2 && !m.isActive);
@@ -82,10 +82,8 @@ class _TarbiyaMemberListScreenState extends State<TarbiyaMemberListScreen> {
       builder: (context, ctxSnap) {
         final area = ctxSnap.data?.$1;
         final shuba = ctxSnap.data?.$2;
-        final isArabic = context.isArabic;
         return ModulePage(
           english: 'Level ${widget.level} Members',
-          arabic: 'أعضاء المستوى ${widget.level}',
           breadcrumb: HierarchyBreadcrumb(
             crumbs: [
               Crumb(
@@ -95,11 +93,11 @@ class _TarbiyaMemberListScreenState extends State<TarbiyaMemberListScreen> {
               ),
               if (area != null)
                 Crumb(
-                    label: isArabic ? area.nameAr : area.name,
+                    label: area.name,
                     route: '/tarbiya/area/${widget.areaId}'),
               if (shuba != null)
                 Crumb(
-                    label: isArabic ? shuba.nameAr : shuba.name,
+                    label: shuba.name,
                     route:
                         '/tarbiya/area/${widget.areaId}/shuba/${widget.shubaId}'),
               Crumb(label: context.tr('Level ${widget.level}')),

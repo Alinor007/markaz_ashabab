@@ -17,7 +17,6 @@ part 'app_database.g.dart';
 class Users extends Table {
   TextColumn get id => text()();
   TextColumn get fullName => text()();
-  TextColumn get fullNameAr => text()();
   TextColumn get username => text().unique()();
   TextColumn get email => text().withDefault(const Constant(''))();
   TextColumn get passwordHash => text()();
@@ -42,20 +41,14 @@ class Users extends Table {
 class Leaders extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
-  TextColumn get nameAr => text()();
   TextColumn get position => text()();
-  TextColumn get positionAr => text()();
   TextColumn get category => text()();
   TextColumn get serviceYears => text().withDefault(const Constant(''))();
   TextColumn get bio => text().withDefault(const Constant(''))();
-  TextColumn get bioAr => text().withDefault(const Constant(''))();
 
   /// Newline-separated lists.
   TextColumn get achievements => text().withDefault(const Constant(''))();
-  TextColumn get achievementsAr => text().withDefault(const Constant(''))();
   TextColumn get responsibilities => text().withDefault(const Constant(''))();
-  TextColumn get responsibilitiesAr =>
-      text().withDefault(const Constant(''))();
   TextColumn get email => text().withDefault(const Constant(''))();
   TextColumn get phone => text().withDefault(const Constant(''))();
 
@@ -87,9 +80,7 @@ class AuditLogs extends Table {
   TextColumn get userId =>
       text().nullable().references(Users, #id, onDelete: KeyAction.setNull)();
   TextColumn get action => text()();
-  TextColumn get actionAr => text().withDefault(const Constant(''))();
   TextColumn get module => text()();
-  TextColumn get moduleAr => text().withDefault(const Constant(''))();
   DateTimeColumn get timestamp =>
       dateTime().withDefault(currentDateAndTime)();
 
@@ -103,9 +94,7 @@ class AuditLogs extends Table {
 class TarbiyaAreas extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
-  TextColumn get nameAr => text().withDefault(const Constant(''))();
   TextColumn get region => text().withDefault(const Constant(''))();
-  TextColumn get regionAr => text().withDefault(const Constant(''))();
   IntColumn get accent => integer().withDefault(const Constant(0xFF0B5D3B))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
 
@@ -120,7 +109,6 @@ class Shubas extends Table {
   TextColumn get areaId =>
       text().references(TarbiyaAreas, #id, onDelete: KeyAction.restrict)();
   TextColumn get name => text()();
-  TextColumn get nameAr => text().withDefault(const Constant(''))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
 
   /// The Shu'ba's Mas'ul (Person-in-Charge): an existing member, or null when
@@ -146,7 +134,6 @@ class Members extends Table {
   TextColumn get middleName => text().withDefault(const Constant(''))();
   TextColumn get lastName => text()();
   TextColumn get suffix => text().withDefault(const Constant(''))();
-  TextColumn get nameAr => text().withDefault(const Constant(''))();
   TextColumn get gender => text().withDefault(const Constant('M'))();
   TextColumn get dob => text().withDefault(const Constant(''))();
   TextColumn get placeOfBirth => text().withDefault(const Constant(''))();
@@ -192,6 +179,10 @@ class MemberChildren extends Table {
       text().references(Members, #id, onDelete: KeyAction.cascade)();
   TextColumn get name => text()();
   TextColumn get dob => text().withDefault(const Constant(''))();
+  // TextColumn get profession => text()();
+  // TextColumn get occupation => text()();
+
+
 
   @override
   Set<Column> get primaryKey => {id};
@@ -338,13 +329,10 @@ class MemberRoles extends Table {
 class Departments extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
-  TextColumn get nameAr => text().withDefault(const Constant(''))();
   TextColumn get description => text().withDefault(const Constant(''))();
-  TextColumn get descriptionAr => text().withDefault(const Constant(''))();
   TextColumn get iconKey => text().withDefault(const Constant('group'))();
   IntColumn get accent => integer().withDefault(const Constant(0xFF0B5D3B))();
   TextColumn get headName => text().withDefault(const Constant(''))();
-  TextColumn get headNameAr => text().withDefault(const Constant(''))();
   TextColumn get contactEmail => text().withDefault(const Constant(''))();
   TextColumn get contactPhone => text().withDefault(const Constant(''))();
 
@@ -385,7 +373,6 @@ class DeptActivities extends Table {
   TextColumn get departmentId =>
       text().references(Departments, #id, onDelete: KeyAction.cascade)();
   TextColumn get title => text()();
-  TextColumn get titleAr => text().withDefault(const Constant(''))();
   TextColumn get description => text().withDefault(const Constant(''))();
   TextColumn get date => text().withDefault(const Constant(''))();
   TextColumn get status => text().withDefault(const Constant('planned'))();
@@ -408,9 +395,7 @@ class Reports extends Table {
   TextColumn get departmentId =>
       text().references(Departments, #id, onDelete: KeyAction.restrict)();
   TextColumn get title => text()();
-  TextColumn get titleAr => text().withDefault(const Constant(''))();
   TextColumn get summary => text().withDefault(const Constant(''))();
-  TextColumn get summaryAr => text().withDefault(const Constant(''))();
   TextColumn get date => text().withDefault(const Constant(''))();
   IntColumn get year => integer().withDefault(const Constant(0))();
   TextColumn get type => text().withDefault(const Constant('minutes'))();
@@ -430,10 +415,8 @@ class Reports extends Table {
 class GalleryPhotos extends Table {
   TextColumn get id => text()();
   TextColumn get title => text()();
-  TextColumn get titleAr => text().withDefault(const Constant(''))();
   IntColumn get year => integer().withDefault(const Constant(0))();
   TextColumn get event => text().withDefault(const Constant(''))();
-  TextColumn get eventAr => text().withDefault(const Constant(''))();
   TextColumn get iconKey => text().withDefault(const Constant('photo'))();
   IntColumn get accent => integer().withDefault(const Constant(0xFF0B5D3B))();
   /// Cover image (first of the album), kept for the masonry thumbnail.
@@ -460,7 +443,6 @@ class GalleryPhotos extends Table {
 class LeadershipGroupInfo extends Table {
   TextColumn get code => text()();
   TextColumn get description => text().withDefault(const Constant(''))();
-  TextColumn get descriptionAr => text().withDefault(const Constant(''))();
 
   @override
   Set<Column> get primaryKey => {code};
@@ -493,16 +475,13 @@ class MinutesReports extends Table {
 class HistoryContents extends Table {
   TextColumn get id => text().withDefault(const Constant('history'))();
   TextColumn get foundingEn => text().withDefault(const Constant(''))();
-  TextColumn get foundingAr => text().withDefault(const Constant(''))();
   TextColumn get missionEn => text().withDefault(const Constant(''))();
-  TextColumn get missionAr => text().withDefault(const Constant(''))();
   TextColumn get visionEn => text().withDefault(const Constant(''))();
-  TextColumn get visionAr => text().withDefault(const Constant(''))();
 
-  /// JSON array of `{"en":..,"ar":..}` story paragraphs.
+  /// JSON array of `{"en":..}` story paragraphs.
   TextColumn get narrative => text().withDefault(const Constant('[]'))();
 
-  /// JSON array of `{"value":..,"en":..,"ar":..,"iconKey":..,"accent":int}`.
+  /// JSON array of `{"value":..,"en":..,"iconKey":..,"accent":int}`.
   TextColumn get facts => text().withDefault(const Constant('[]'))();
 
   @override
@@ -516,9 +495,7 @@ class HistoryMilestones extends Table {
   TextColumn get id => text()();
   TextColumn get year => text().withDefault(const Constant(''))();
   TextColumn get title => text().withDefault(const Constant(''))();
-  TextColumn get titleAr => text().withDefault(const Constant(''))();
   TextColumn get description => text().withDefault(const Constant(''))();
-  TextColumn get descriptionAr => text().withDefault(const Constant(''))();
   TextColumn get iconKey => text().withDefault(const Constant('flag'))();
   IntColumn get accent => integer().withDefault(const Constant(0xFF0B5D3B))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
@@ -537,10 +514,8 @@ class PreviousLeaders extends Table {
   TextColumn get memberId =>
       text().references(Members, #id, onDelete: KeyAction.cascade)();
   TextColumn get position => text().withDefault(const Constant(''))();
-  TextColumn get positionAr => text().withDefault(const Constant(''))();
   TextColumn get termYears => text().withDefault(const Constant(''))();
   TextColumn get note => text().withDefault(const Constant(''))();
-  TextColumn get noteAr => text().withDefault(const Constant(''))();
   IntColumn get accent => integer().withDefault(const Constant(0xFF16243D))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
   DateTimeColumn get createdAt =>
@@ -559,9 +534,7 @@ class PreviousLeaderSections extends Table {
   TextColumn get previousLeaderId =>
       text().references(PreviousLeaders, #id, onDelete: KeyAction.cascade)();
   TextColumn get title => text().withDefault(const Constant(''))();
-  TextColumn get titleAr => text().withDefault(const Constant(''))();
   TextColumn get body => text().withDefault(const Constant(''))();
-  TextColumn get bodyAr => text().withDefault(const Constant(''))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
 
   @override
@@ -602,8 +575,17 @@ class AppDatabase extends _$AppDatabase {
   /// In-memory database for tests.
   AppDatabase.memory() : super(NativeDatabase.memory());
 
+  /// Schema history (v2–v24: Tarbiya hierarchy, referential integrity,
+  /// department overviews, leader photos, member wives/Usra links,
+  /// assignable leadership positions, department heads/staff, structured
+  /// P-1/P-2 form payloads, Shu'ba Mas'ul, minutes reports, gallery albums,
+  /// leadership group descriptions, the editable History page, Previous
+  /// Leadership + biography sections, and finally the removal of every
+  /// `*_ar` column) is now baked directly into the table definitions above,
+  /// so there is nothing left to migrate incrementally — every install
+  /// starts fresh at v1 with the current shape.
   @override
-  int get schemaVersion => 23;
+  int get schemaVersion => 1;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -622,239 +604,7 @@ class AppDatabase extends _$AppDatabase {
           // connection — without this the declared FKs are not enforced.
           await customStatement('PRAGMA foreign_keys = ON');
         },
-        onUpgrade: (m, from, to) async {
-          if (from < 2) {
-            // Tarbiya tables added in schema v2.
-            await m.createTable(tarbiyaAreas);
-            await m.createTable(shubas);
-            await m.createTable(members);
-            await m.createTable(memberChildren);
-            await m.createTable(memberEducation);
-            await m.createTable(memberActivities);
-            await m.createTable(memberContributions);
-            await m.createTable(memberTased);
-            await m.createTable(memberDonations);
-            await m.createTable(memberRoles);
-          }
-          if (from < 3) {
-            // Departments, activities, reports, gallery added in schema v3.
-            await m.createTable(departments);
-            await m.createTable(deptActivities);
-            await m.createTable(reports);
-            await m.createTable(galleryPhotos);
-            await _seedDepartments();
-          }
-          if (from < 4) {
-            // Default Tarbiya areas seeded in schema v4.
-            await _seedTarbiyaAreas();
-          }
-          if (from < 5) {
-            // Referential integrity added in schema v5: FKs, indexes, the
-            // donation UNIQUE key, member_roles.departmentId and audit.userId.
-            await _migrateToV5(m);
-          }
-          if (from < 6) {
-            // Default role accounts seeded in schema v6.
-            await _seedDefaultAccounts();
-          }
-          if (from < 7) {
-            // Department overviews + the Youth & Students department added in
-            // schema v7. Insert the new department, backfill overviews and the
-            // display order, then add its head account.
-            await _seedDepartments();
-            await _backfillDepartmentContent();
-            await _seedDefaultAccounts();
-          }
-          if (from < 8) {
-            // Arabic department overviews added in schema v8.
-            await _backfillDepartmentContent();
-          }
-          if (from < 9) {
-            // Leader profile photos added in schema v9.
-            await m.addColumn(leaders, leaders.photoPath);
-          }
-          if (from < 10) {
-            // Member wives + explicit Usra-member links added in schema v10.
-            await m.createTable(memberWives);
-            await m.createTable(memberUsraLinks);
-          }
-          if (from < 11) {
-            // Leadership becomes assignable positions in schema v11: leaders
-            // gain an optional assigned member, and the standing positions are
-            // seeded.
-            await m.addColumn(leaders, leaders.memberId);
-            await _seedLeadershipPositions();
-          }
-          if (from < 12) {
-            // Consultative Assembly → General Membership gains a seeded
-            // Chairman position in schema v12.
-            await _seedLeadershipPositions();
-          }
-          if (from < 13) {
-            // Departments gain an assigned Head member and a staff link table
-            // in schema v13.
-            await m.addColumn(departments, departments.headMemberId);
-            await m.createTable(departmentStaff);
-          }
-          if (from < 14) {
-            // Reports gain a structured Program Completion (P-2) payload.
-            await m.addColumn(reports, reports.formData);
-          }
-          if (from < 15) {
-            // Activities gain a structured Program Proposal (P-1) payload.
-            await m.addColumn(deptActivities, deptActivities.formData);
-          }
-          if (from < 16) {
-            // Shu'bas gain an assignable Mas'ul (Person-in-Charge).
-            await m.addColumn(shubas, shubas.masulMemberId);
-          }
-          if (from < 17) {
-            // Executive Minutes/Resolution reports added in schema v17.
-            await m.createTable(minutesReports);
-          }
-          if (from < 18) {
-            // Gallery albums (multiple images per entry) and editable
-            // leadership group descriptions added in schema v18; Office of the
-            // President now seeds only the President.
-            await m.addColumn(galleryPhotos, galleryPhotos.imagePaths);
-            await m.createTable(leadershipGroupInfo);
-            await _seedLeadershipGroupInfo();
-            await customStatement(
-                "DELETE FROM leaders WHERE id IN "
-                "('pos_vice_president','pos_secretary_general','pos_treasurer') "
-                "AND member_id IS NULL");
-          }
-          if (from < 19) {
-            // Gallery albums can now belong to a Program Completion Report
-            // (P-2), and the Human Capital (Tarbiya) department is added.
-            await m.addColumn(galleryPhotos, galleryPhotos.reportId);
-            await _seedDepartments();
-            await _backfillDepartmentContent();
-            await _seedDefaultAccounts();
-          }
-          if (from < 20) {
-            // The History page becomes editable (content + milestones), and a
-            // Previous Leadership registry is added.
-            await m.createTable(historyContents);
-            await m.createTable(historyMilestones);
-            await m.createTable(previousLeaders);
-            await _seedHistory();
-          }
-          if (from < 21) {
-            // Biography sections (repeatable title + body, bilingual) added
-            // to Previous Leadership entries in schema v21.
-            await m.createTable(previousLeaderSections);
-          }
-          if (from < 22) {
-            // A Vice President executive account is added to the default
-            // seed in schema v22 (insertOrIgnore, so existing accounts are
-            // untouched).
-            await _seedDefaultAccounts();
-          }
-          if (from < 23) {
-            // Arabic support was removed in schema v23. The bilingual `*_ar`
-            // columns are retained (to avoid a risky table rebuild) but every
-            // stored Arabic value is blanked so no Arabic data remains.
-            await _wipeArabicData();
-          }
-        },
       );
-
-  /// Blanks every Arabic (`*_ar`) column so no Arabic text remains in the
-  /// database after Arabic support was removed (schema v23). The columns are
-  /// kept in the schema but are never written again.
-  Future<void> _wipeArabicData() async {
-    const wipes = <String, List<String>>{
-      'users': ['full_name_ar'],
-      'leaders': [
-        'name_ar',
-        'position_ar',
-        'bio_ar',
-        'achievements_ar',
-        'responsibilities_ar',
-      ],
-      'members': ['name_ar'],
-      'departments': ['name_ar', 'description_ar', 'head_name_ar'],
-      'dept_activities': ['title_ar'],
-      'reports': ['title_ar', 'summary_ar'],
-      'tarbiya_areas': ['name_ar', 'region_ar'],
-      'shubas': ['name_ar'],
-      'gallery_photos': ['title_ar', 'event_ar'],
-      'leadership_group_info': ['description_ar'],
-      'history_contents': ['founding_ar', 'mission_ar', 'vision_ar'],
-      'history_milestones': ['title_ar', 'description_ar'],
-      'previous_leaders': ['position_ar', 'note_ar'],
-      'previous_leader_sections': ['title_ar', 'body_ar'],
-      'audit_logs': ['action_ar', 'module_ar'],
-    };
-    for (final entry in wipes.entries) {
-      final assignments = entry.value.map((c) => "$c = ''").join(', ');
-      await customStatement('UPDATE ${entry.key} SET $assignments');
-    }
-  }
-
-  /// Rebuilds the tables that gained constraints so existing installs get the
-  /// same integrity as a fresh v5 database, repairing data first so the new
-  /// constraints don't reject it. Runs with foreign keys off (the default
-  /// during migrations); [alterTable] manages the rebuild safely.
-  Future<void> _migrateToV5(Migrator m) async {
-    // 1. Repair existing data BEFORE the constraints are applied.
-    //    a) Drop rows that point at a non-existent parent (orphans).
-    await customStatement(
-        'DELETE FROM shubas WHERE area_id NOT IN (SELECT id FROM tarbiya_areas)');
-    await customStatement(
-        'DELETE FROM members WHERE shuba_id NOT IN (SELECT id FROM shubas)');
-    for (final child in const [
-      'member_children',
-      'member_education',
-      'member_activities',
-      'member_contributions',
-      'member_tased',
-      'member_donations',
-      'member_roles',
-    ]) {
-      await customStatement(
-          'DELETE FROM $child WHERE member_id NOT IN (SELECT id FROM members)');
-    }
-    await customStatement(
-        'DELETE FROM reports WHERE department_id NOT IN (SELECT id FROM departments)');
-    await customStatement(
-        'DELETE FROM dept_activities WHERE department_id NOT IN (SELECT id FROM departments)');
-    //    b) Null out dangling soft references (don't delete the owning row).
-    await customStatement('UPDATE members SET naqib_member_id = NULL '
-        'WHERE naqib_member_id IS NOT NULL '
-        'AND naqib_member_id NOT IN (SELECT id FROM members)');
-    await customStatement('UPDATE users SET department_id = NULL '
-        'WHERE department_id IS NOT NULL '
-        'AND department_id NOT IN (SELECT id FROM departments)');
-    //    c) De-duplicate donations so UNIQUE(member_id, year, month) holds
-    //       (keep the most recently inserted row per month).
-    await customStatement('DELETE FROM member_donations WHERE rowid NOT IN '
-        '(SELECT MAX(rowid) FROM member_donations GROUP BY member_id, year, month)');
-
-    // 2. Rebuild each changed table from its current definition (adds FKs /
-    //    UNIQUE / new columns). New nullable columns need no transformer.
-    await m.alterTable(TableMigration(shubas));
-    await m.alterTable(TableMigration(members));
-    await m.alterTable(TableMigration(memberChildren));
-    await m.alterTable(TableMigration(memberEducation));
-    await m.alterTable(TableMigration(memberActivities));
-    await m.alterTable(TableMigration(memberContributions));
-    await m.alterTable(TableMigration(memberTased));
-    await m.alterTable(TableMigration(memberDonations));
-    await m.alterTable(
-        TableMigration(memberRoles, newColumns: [memberRoles.departmentId]));
-    await m.alterTable(TableMigration(reports));
-    await m.alterTable(TableMigration(deptActivities));
-    await m.alterTable(TableMigration(users));
-    await m.alterTable(
-        TableMigration(auditLogs, newColumns: [auditLogs.userId]));
-
-    // 3. Create every declared index (v4 had none, so all are new).
-    for (final index in allSchemaEntities.whereType<Index>()) {
-      await m.createIndex(index);
-    }
-  }
 
   /// Creates the default Administrator account on first launch so the system
   /// can be accessed before any data exists. Username `admin`, password
@@ -864,7 +614,6 @@ class AppDatabase extends _$AppDatabase {
       UsersCompanion.insert(
         id: 'admin',
         fullName: 'System Administrator',
-        fullNameAr: '',
         username: 'admin',
         email: const Value('admin@markaz.org'),
         passwordHash: PasswordHasher.hash('Admin@markazosshabab'),
@@ -894,22 +643,21 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
-  /// Backfills the department overviews (English and Arabic) and display order
-  /// onto installs that already had the departments before this content existed
-  /// (insertOrIgnore in [_seedDepartments] won't touch existing rows). Each
-  /// overview is only written where the admin hasn't entered one, so manual
-  /// edits are preserved; the sort order is always set since it isn't
-  /// user-editable.
-  Future<void> _backfillDepartmentContent() async {
-    for (var i = 0; i < _departmentSeed.length; i++) {
-      final d = _departmentSeed[i];
-      await (update(departments)..where((t) => t.id.equals(d.id)))
-          .write(DepartmentsCompanion(sortOrder: Value(i)));
-      await (update(departments)
-            ..where((t) => t.id.equals(d.id) & t.description.equals('')))
-          .write(DepartmentsCompanion(description: Value(d.description)));
-    }
-  }
+  /// Backfills the department overviews and display order onto installs that
+  /// already had the departments before this content existed (insertOrIgnore
+  /// in [_seedDepartments] won't touch existing rows). Each overview is only
+  /// written where the admin hasn't entered one, so manual edits are
+  /// preserved; the sort order is always set since it isn't user-editable.
+  // Future<void> _backfillDepartmentContent() async {
+  //   for (var i = 0; i < _departmentSeed.length; i++) {
+  //     final d = _departmentSeed[i];
+  //     await (update(departments)..where((t) => t.id.equals(d.id)))
+  //         .write(DepartmentsCompanion(sortOrder: Value(i)));
+  //     await (update(departments)
+  //           ..where((t) => t.id.equals(d.id) & t.description.equals('')))
+  //         .write(DepartmentsCompanion(description: Value(d.description)));
+  //   }
+  // }
 
   /// Seeds one default account for every non-admin role so the system is
   /// immediately usable without manual account creation. All accounts use the
@@ -931,7 +679,6 @@ class AppDatabase extends _$AppDatabase {
         UsersCompanion.insert(
           id: id,
           fullName: name,
-          fullNameAr: '',
           username: username,
           passwordHash: tempHash,
           roleCode: role,
@@ -960,7 +707,6 @@ class AppDatabase extends _$AppDatabase {
         UsersCompanion.insert(
           id: id,
           fullName: name,
-          fullNameAr: '',
           username: username,
           passwordHash: tempHash,
           roleCode: UserRole.departmentHead.code,
@@ -993,9 +739,7 @@ class AppDatabase extends _$AppDatabase {
         LeadersCompanion.insert(
           id: id,
           name: title,
-          nameAr: '',
           position: title,
-          positionAr: '',
           category: category,
           sortOrder: Value(order),
         ),
@@ -1131,11 +875,10 @@ LazyDatabase _openOnDevice() {
   });
 }
 
-/// The organization's standing departments: stable id, bilingual name, icon,
-/// accent colour, and the bilingual overview shown on each department page. The
-/// list order is the display order. Used by both
-/// [AppDatabase._seedDepartments] (insert) and
-/// [AppDatabase._backfillDepartmentContent] (update existing installs).
+/// The organization's standing departments: stable id, name, icon, accent
+/// colour, and the overview shown on each department page. The list order is
+/// the display order. Used by both [AppDatabase._seedDepartments] (insert)
+/// and [AppDatabase._backfillDepartmentContent] (update existing installs).
 const _departmentSeed = <({
   String id,
   String name,

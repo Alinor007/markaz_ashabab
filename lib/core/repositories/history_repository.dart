@@ -109,9 +109,7 @@ class HistoryRepository {
   Future<void> addMilestone({
     required String year,
     required String title,
-    required String titleAr,
     required String description,
-    required String descriptionAr,
     required String iconKey,
     required int accent,
   }) async {
@@ -122,9 +120,7 @@ class HistoryRepository {
             id: _id('milestone'),
             year: Value(year),
             title: Value(title),
-            titleAr: Value(titleAr),
             description: Value(description),
-            descriptionAr: Value(descriptionAr),
             iconKey: Value(iconKey),
             accent: Value(accent),
             sortOrder: Value(nextSort),
@@ -136,9 +132,7 @@ class HistoryRepository {
     String id, {
     required String year,
     required String title,
-    required String titleAr,
     required String description,
-    required String descriptionAr,
     required String iconKey,
     required int accent,
   }) =>
@@ -146,9 +140,7 @@ class HistoryRepository {
         HistoryMilestonesCompanion(
           year: Value(year),
           title: Value(title),
-          titleAr: Value(titleAr),
           description: Value(description),
-          descriptionAr: Value(descriptionAr),
           iconKey: Value(iconKey),
           accent: Value(accent),
         ),

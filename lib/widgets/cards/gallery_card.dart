@@ -77,7 +77,7 @@ class GalleryCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        isArabic ? photo.titleAr : photo.title,
+                        photo.title,
                         textDirection:
                             isArabic ? TextDirection.rtl : TextDirection.ltr,
                         maxLines: 1,
@@ -92,7 +92,7 @@ class GalleryCard extends StatelessWidget {
                                 ),
                       ),
                       Text(
-                        '${isArabic ? photo.eventAr : photo.event} · ${photo.year}',
+                        '${photo.event} · ${photo.year}',
                         textDirection:
                             isArabic ? TextDirection.rtl : TextDirection.ltr,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(

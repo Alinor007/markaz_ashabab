@@ -379,7 +379,7 @@ class NaqibUsraCard extends StatelessWidget {
           ),
           // ──────────────────────────────────────────────────────────
           const SizedBox(height: AppSpacing.md),
-          Text('Usra Members',
+          Text('Students',
               style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: AppSpacing.sm),
           StreamBuilder<List<Member>>(
@@ -388,7 +388,7 @@ class NaqibUsraCard extends StatelessWidget {
               final members = snap.data ?? const [];
               if (members.isEmpty) {
                 return Text(
-                    'No other usra members',
+                    'No other students',
                     style: Theme.of(context).textTheme.bodySmall);
               }
               return Wrap(
@@ -449,7 +449,7 @@ class TasedCard extends StatelessWidget {
     final repo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.grading_outlined,
-      title: "Tas'ed Information",
+      title: "Promotion Information",
       child: StreamBuilder<List<MemberTasedData>>(
         stream: repo.watchTased(member.id),
         builder: (context, snap) {
@@ -1291,7 +1291,7 @@ class ContributionsCard extends StatelessWidget {
     final repo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.handshake_outlined,
-      title: "Contribution to Jama'ah",
+      title: "Contribution to Foundation",
       child: StreamBuilder<List<MemberContribution>>(
         stream: repo.watchContributions(member.id),
         builder: (context, snap) {
@@ -1484,7 +1484,7 @@ class OrgRolesCard extends StatelessWidget {
     final repo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.badge_outlined,
-      title: 'Role in Organization',
+      title: 'Role in Fundation',
       child: StreamBuilder<List<MemberRole>>(
         stream: repo.watchRoles(member.id),
         builder: (context, snap) {

@@ -107,7 +107,7 @@ class _SearchScreenState extends State<SearchScreen> {
         groups.putIfAbsent(key, () => []).add(hit);
 
     for (final l in _leaders) {
-      if (_match(q, [l.name, l.nameAr, l.position, l.positionAr])) {
+      if (_match(q, [l.name,  l.position, ])) {
         add('leaders', _Hit(
           title: l.name,
           subtitle: l.position,
@@ -119,7 +119,7 @@ class _SearchScreenState extends State<SearchScreen> {
       }
     }
     for (final m in _members) {
-      if (_match(q, [m.fullName, m.nameAr, m.occupation])) {
+      if (_match(q, [m.fullName, m.occupation])) {
         add('members', _Hit(
           title: m.displayName(context.isArabic),
           subtitle:
@@ -132,7 +132,7 @@ class _SearchScreenState extends State<SearchScreen> {
       }
     }
     for (final d in _departments) {
-      if (_match(q, [d.name, d.nameAr, d.description, d.descriptionAr])) {
+      if (_match(q, [d.name, d.description, ])) {
         add('departments', _Hit(
           title: d.displayName(context.isArabic),
           subtitle: 'Department',
@@ -144,7 +144,7 @@ class _SearchScreenState extends State<SearchScreen> {
       }
     }
     for (final r in _reports) {
-      if (_match(q, [r.title, r.titleAr])) {
+      if (_match(q, [r.title])) {
         add('reports', _Hit(
           title: r.title,
           subtitle: _deptById[r.departmentId]?.displayName(context.isArabic) ??
@@ -157,11 +157,9 @@ class _SearchScreenState extends State<SearchScreen> {
       }
     }
     for (final p in _photos) {
-      if (_match(q, [p.title, p.titleAr, p.event, p.eventAr])) {
+      if (_match(q, [p.title, p.event,])) {
         add('photos', _Hit(
-          title: p.titleAr.isNotEmpty
-              ? p.title
-              : p.title,
+          title:p.title,
           subtitle: '${p.event} · ${p.year}',
           icon: Icons.photo_outlined,
           categoryEn: 'Photos', categoryAr: 'الصور',
@@ -181,7 +179,6 @@ class _SearchScreenState extends State<SearchScreen> {
 
     return ModulePage(
       english: 'Search',
-      arabic: 'البحث',
       actions: [
         SearchField(
           width: 360,
@@ -220,7 +217,6 @@ class _GroupSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     final first = hits.first;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,7 +224,7 @@ class _GroupSection extends StatelessWidget {
         Row(
           children: [
             Text(
-              isArabic ? first.categoryAr : first.categoryEn,
+            first.categoryEn,
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(width: AppSpacing.sm),

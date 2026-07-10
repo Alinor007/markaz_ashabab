@@ -45,7 +45,6 @@ class LeadershipPositionsScreen extends StatelessWidget {
         context.watch<SessionController>().can?.manageLeadership ?? false;
     return ModulePage(
       english: titleEn,
-      arabic: titleAr,
       scrollable: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -119,7 +118,7 @@ class _GroupDescription extends StatelessWidget {
       stream: repo.watchGroupInfo(code),
       builder: (context, snap) {
         final info = snap.data;
-        final text = isArabic ? (info?.descriptionAr ?? '') : (info?.description ?? '');
+        final text = (info?.description ?? '');
         return Container(
           decoration: BoxDecoration(
             color: AppColors.surfaceAlt,
@@ -235,7 +234,6 @@ class _PositionsGroup extends StatelessWidget {
       context,
       title: 'Edit Position',
       name: p.position,
-      nameAr: p.positionAr,
     );
     if (r == null || !context.mounted) return;
     await _leaders(context).editPosition(p.id, r.name, r.nameAr);
@@ -617,14 +615,9 @@ class _PositionCard extends StatelessWidget {
   /// The white lower section: name (serif), Arabic name (gold), office, and the
   /// optional term line.
   Widget _body(BuildContext context, Member? member) {
-    final isArabic = context.isArabic;
-    final office = isArabic ? position.positionAr : position.position;
-    final name = member?.displayName(isArabic) ??
+    final office = position.position;
+    final name = member?.displayName(false) ??
         'Vacant Position';
-    final secondaryAr =
-        (!isArabic && member != null && member.nameAr.trim().isNotEmpty)
-            ? member.nameAr
-            : '';
     return Padding(
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.lg, AppSpacing.xs, AppSpacing.lg, AppSpacing.lg),
@@ -638,7 +631,7 @@ class _PositionCard extends StatelessWidget {
                 child: Text(
                   name,
                   textDirection:
-                      isArabic ? TextDirection.rtl : TextDirection.ltr,
+                     TextDirection.ltr,
                   style: TextStyle(
                     fontFamily: AppTypography.serif,
                     fontSize: prominent ? 26 : 22,
@@ -648,22 +641,13 @@ class _PositionCard extends StatelessWidget {
                   ),
                 ),
               ),
-              if (secondaryAr.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(left: AppSpacing.sm, top: 4),
-                  child: Text(
-                    secondaryAr,
-                    textDirection: TextDirection.rtl,
-                    style: AppTypography.arabic(
-                        fontSize: 15, color: AppColors.goldDeep),
-                  ),
-                ),
+
             ],
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
             office,
-            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+            textDirection: TextDirection.ltr,
             style: TextStyle(
               fontFamily: AppTypography.serif,
               fontSize: 17,

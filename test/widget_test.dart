@@ -50,7 +50,6 @@ void main() {
       final repo = UserRepository(db);
       await repo.create(
         fullName: 'Aisha Lomondot',
-        fullNameAr: 'عائشة لوموندوت',
         username: 'a.lomondot',
         email: 'a@markaz.org',
         password: 'secret12',

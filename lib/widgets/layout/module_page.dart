@@ -9,7 +9,6 @@ class ModulePage extends StatelessWidget {
   const ModulePage({
     super.key,
     required this.english,
-    required this.arabic,
     required this.child,
     this.actions = const [],
     this.scrollable = false,
@@ -17,7 +16,6 @@ class ModulePage extends StatelessWidget {
   });
 
   final String english;
-  final String arabic;
   final Widget child;
   final List<Widget> actions;
 
@@ -35,7 +33,6 @@ class ModulePage extends StatelessWidget {
         Expanded(
           child: BilingualTitle(
             english: english,
-            arabic: arabic,
             accentRule: true,
           ),
         ),

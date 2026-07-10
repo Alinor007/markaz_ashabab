@@ -60,7 +60,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
     return ModulePage(
       english: 'Gallery',
-      arabic: 'المعرض',
       actions: [
         if (canUpload)
           FilledButton.icon(
@@ -293,9 +292,7 @@ class _Lightbox extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isArabic && photo.titleAr.isNotEmpty
-                        ? photo.titleAr
-                        : photo.title,
+                     photo.title,
                     textDirection:
                         isArabic ? TextDirection.rtl : TextDirection.ltr,
                     style: isArabic
@@ -310,7 +307,7 @@ class _Lightbox extends StatelessWidget {
                           size: 16, color: AppColors.textMuted),
                       const SizedBox(width: AppSpacing.xs),
                       Text(
-                          '${isArabic && photo.eventAr.isNotEmpty ? photo.eventAr : photo.event} · ${photo.year}',
+                          '${photo.event} · ${photo.year}',
                           style: Theme.of(context).textTheme.bodyMedium),
                     ],
                   ),

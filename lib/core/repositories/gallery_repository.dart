@@ -46,10 +46,8 @@ class GalleryRepository {
     return _db.into(_db.galleryPhotos).insert(GalleryPhotosCompanion.insert(
           id: _id(),
           title: title,
-          titleAr: Value(titleAr),
           year: Value(year),
           event: Value(event),
-          eventAr: Value(eventAr),
           iconKey: Value(iconKey),
           accent: Value(accent),
           // Cover = first image (kept for the masonry thumbnail).

@@ -127,9 +127,7 @@ class DepartmentCard extends StatelessWidget {
                     SizedBox(
                       height: 40,
                       child: Text(
-                        isArabic
-                            ? department.descriptionAr
-                            : department.description,
+                        department.description,
                         textDirection:
                             isArabic ? TextDirection.rtl : TextDirection.ltr,
                         maxLines: 2,

@@ -117,7 +117,6 @@ class _Body extends StatelessWidget {
                       children: [
                         ..._stack([
                           _LeaderProfileCard(member: member, entry: primary),
-                          _personalPanel(context),
                           _educationPanel(context),
                           _rolePanel(context),
                         ]),
@@ -146,7 +145,6 @@ class _Body extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            _personalPanel(context),
                             ...biography,
                           ],
                         ),
@@ -170,37 +168,7 @@ class _Body extends StatelessWidget {
         ],
       ];
 
-  Widget _personalPanel(BuildContext context) {
-    final isArabic = context.isArabic;
-    return InfoPanel(
-      icon: Icons.person_outline,
-      title: 'Personal Information',
-      child: Wrap(
-        spacing: AppSpacing.xl,
-        runSpacing: AppSpacing.lg,
-        children: [
-          _Field('Full Name', member.fullName),
-          _Field(
-              'Gender',
-              member.gender == 'F'
-                  ? 'Female'
-                  : 'Male'),
-          _Field('Date of Birth', member.dob),
-          _Field('Place of Birth',
-              member.placeOfBirth),
-          _Field('Contact Number',
-              member.contactNumber),
-          _Field('Address', member.address),
-          _Field('Civil Status',
-              member.civilStatusEnum.label(isArabic)),
-          _Field('Email', member.email),
-          _Field('Ethnicity / Tribe',
-              member.ethnicity),
-          _Field('Occupation', member.occupation),
-        ],
-      ),
-    );
-  }
+
 
   Widget _educationPanel(BuildContext context) {
     final memberRepo = context.read<MemberRepository>();
@@ -237,7 +205,7 @@ class _Body extends StatelessWidget {
     final memberRepo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.badge_outlined,
-      title: 'Role in Organization',
+      title: 'Role in Fundation',
       child: StreamBuilder<List<MemberRole>>(
         stream: memberRepo.watchRoles(member.id),
         builder: (context, snap) {
@@ -293,7 +261,7 @@ class _LeaderProfileCard extends StatelessWidget {
     final office = () {
       final p = entry == null
           ? ''
-          : (isArabic ? entry!.positionAr : entry!.position).trim();
+          : (entry!.position).trim();
       if (p.isNotEmpty) return p;
       return member.occupation.trim().isEmpty
           ? 'Member'
@@ -338,11 +306,11 @@ class _LeaderProfileCard extends StatelessWidget {
                   ),
           ),
           // The name in the other language, when both are recorded.
-          if ((isArabic ? member.fullName : member.nameAr).trim().isNotEmpty)
+          if ((member.fullName).trim().isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 2),
               child: Text(
-                isArabic ? member.fullName : member.nameAr,
+                member.fullName,
                 textAlign: TextAlign.center,
                 textDirection: isArabic ? TextDirection.ltr : TextDirection.rtl,
                 style: isArabic
@@ -423,10 +391,9 @@ class _EntryBiography extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     final leaderRepo = context.read<LeaderRepository>();
-    final note = (isArabic ? entry.noteAr : entry.note).trim();
-    final office = (isArabic ? entry.positionAr : entry.position).trim();
+    final note = (entry.note).trim();
+    final office = (entry.position).trim();
 
     return StreamBuilder<List<PreviousLeaderSection>>(
       stream: leaderRepo.watchSections(entry.id),
@@ -442,10 +409,10 @@ class _EntryBiography extends StatelessWidget {
             ),
           for (final s in sections)
             _BiographyCard(
-              title: (isArabic ? s.titleAr : s.title).trim().isEmpty
+              title: ( s.title).trim().isEmpty
                   ? 'Biography'
-                  : (isArabic ? s.titleAr : s.title),
-              body: isArabic ? s.bodyAr : s.body,
+                  : (s.title),
+              body: s.body,
             ),
         ];
         if (cards.isEmpty) return const SizedBox.shrink();
@@ -476,7 +443,6 @@ class _BiographyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isArabic = context.isArabic;
     return InfoPanel(
-      icon: Icons.menu_book_outlined,
       title: title,
       child: Align(
         alignment: AlignmentDirectional.centerStart,

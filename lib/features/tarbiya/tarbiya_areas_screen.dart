@@ -24,7 +24,6 @@ class TarbiyaAreasScreen extends StatelessWidget {
 
     return ModulePage(
       english: 'Tarbiya Al-Kawadeer',
-      arabic: 'تربية الكوادر',
       child: StreamBuilder<List<TarbiyaArea>>(
         stream: repo.watchAreas(),
         builder: (context, snapshot) {
@@ -43,7 +42,6 @@ class TarbiyaAreasScreen extends StatelessWidget {
                   icon: Icons.map_outlined,
                   accent: Color(area.accent),
                   title: area.name,
-                  titleAr: area.nameAr,
                   subtitle: area.region.isEmpty ? null : area.region,
                   onTap: () => context.go('/tarbiya/area/${area.id}'),
                   onEdit: canManage ? () => _editArea(context, repo, area) : null,
@@ -61,10 +59,9 @@ class TarbiyaAreasScreen extends StatelessWidget {
       BuildContext context, TarbiyaRepository repo, TarbiyaArea area) async {
     final result = await NameFormDialog.show(context,
         title: 'Edit Area',
-        name: area.name,
-        nameAr: area.nameAr);
+        name: area.name);
     if (result == null) return;
-    await repo.updateArea(area.id, name: result.name, nameAr: result.nameAr);
+    await repo.updateArea(area.id, name: result.name);
   }
 
   Future<void> _deleteArea(

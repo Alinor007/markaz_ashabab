@@ -108,12 +108,9 @@ class ReportCard extends StatelessWidget {
                           const SizedBox(width: AppSpacing.md),
                           Expanded(
                             child: Text(
-                              isArabic && report.titleAr.isNotEmpty
-                                  ? report.titleAr
-                                  : report.title,
-                              textDirection: isArabic
-                                  ? TextDirection.rtl
-                                  : TextDirection.ltr,
+                              report.title,
+                              textDirection:
+                                TextDirection.ltr,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: isArabic
@@ -192,13 +189,10 @@ class ReportCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      if (report.summary.isNotEmpty ||
-                          report.summaryAr.isNotEmpty) ...[
+                      if (report.summary.isNotEmpty) ...[
                         const SizedBox(height: AppSpacing.sm),
                         Text(
-                          isArabic && report.summaryAr.isNotEmpty
-                              ? report.summaryAr
-                              : report.summary,
+                        report.summary,
                           textDirection: isArabic
                               ? TextDirection.rtl
                               : TextDirection.ltr,

@@ -140,11 +140,11 @@ class MemberProfileScreen extends StatelessWidget {
         ),
         if (area != null)
           Crumb(
-              label: isArabic ? area.nameAr : area.name,
+              label: area.name,
               route: '/tarbiya/area/${area.id}'),
         if (shuba != null && area != null)
           Crumb(
-              label: isArabic ? shuba.nameAr : shuba.name,
+              label:  shuba.name,
               route: '/tarbiya/area/${area.id}/shuba/${shuba.id}'),
         if (shuba != null)
           Crumb(
@@ -249,10 +249,10 @@ class _Header extends StatelessWidget {
                         member.levelLabel(isArabic)),
                     if (area != null)
                       _chip(context, Icons.map_outlined,
-                          isArabic ? area!.nameAr : area!.name),
+                          area!.name),
                     if (shuba != null)
                       _chip(context, Icons.location_city_outlined,
-                          isArabic ? shuba!.nameAr : shuba!.name),
+                         shuba!.name),
                     _chip(
                         context,
                         member.isActive

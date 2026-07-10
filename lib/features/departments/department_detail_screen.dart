@@ -65,7 +65,6 @@ class _DetailBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     return DefaultTabController(
       length: 4,
       child: Padding(
@@ -80,7 +79,7 @@ class _DetailBody extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(isArabic ? Icons.arrow_forward : Icons.arrow_back,
+                    Icon(Icons.arrow_back,
                         size: 18, color: AppColors.emerald),
                     const SizedBox(width: AppSpacing.sm),
                     Text('Back to Departments',
@@ -97,9 +96,7 @@ class _DetailBody extends StatelessWidget {
               initials: '',
               leadingIcon: department.icon,
               nameEn: department.name,
-              nameAr: department.nameAr,
               subtitleEn: 'Department',
-              subtitleAr: 'قسم',
               accent: department.accentColor,
             ),
             const SizedBox(height: AppSpacing.lg),
@@ -155,7 +152,6 @@ class _OverviewTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     final deptRepo = context.read<DepartmentRepository>();
     final reportRepo = context.read<ReportRepository>();
     // Admin and executives may edit the department's overview and contact
@@ -173,16 +169,11 @@ class _OverviewTab extends StatelessWidget {
             title: 'About',
             action: editAction,
             child: Text(
-              (isArabic ? department.descriptionAr : department.description)
-                      .isEmpty
+              department.description.isEmpty
                   ? 'No description provided.'
-                  : (isArabic
-                      ? department.descriptionAr
-                      : department.description),
-              textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-              style: isArabic
-                  ? AppTypography.arabic(fontSize: 16, height: 1.9)
-                  : Theme.of(context).textTheme.bodyLarge,
+                  :  department.description,
+              textDirection: TextDirection.ltr,
+              style:  Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -194,7 +185,6 @@ class _OverviewTab extends StatelessWidget {
                   builder: (context, snap) => StatCard(
                     value: '${snap.data?.length ?? 0}',
                     label: 'Total Activities',
-                    labelArabic: 'إجمالي الأنشطة',
                     icon: Icons.event_available_outlined,
                     accent: AppColors.navy,
                   ),
@@ -207,7 +197,6 @@ class _OverviewTab extends StatelessWidget {
                   builder: (context, snap) => StatCard(
                     value: '${snap.data?.length ?? 0}',
                     label: 'Total Reports',
-                    labelArabic: 'إجمالي التقارير',
                     icon: Icons.description_outlined,
                     accent: AppColors.goldDeep,
                   ),
@@ -498,8 +487,7 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
     final q = _query.trim().toLowerCase();
     return items.where((a) {
       final matchesQuery = q.isEmpty ||
-          a.title.toLowerCase().contains(q) ||
-          a.titleAr.contains(_query.trim());
+          a.title.toLowerCase().contains(q);
       final matchesStatus =
           _statusFilter == 0 || a.status == ActivityStatus.values[_statusFilter - 1].code;
       return matchesQuery && matchesStatus;
@@ -929,8 +917,7 @@ class _ReportsTabState extends State<_ReportsTab> {
     final q = _query.trim().toLowerCase();
     return reports.where((r) {
       final matchesQuery = q.isEmpty ||
-          r.title.toLowerCase().contains(q) ||
-          r.titleAr.contains(_query.trim()) ||
+          r.title.toLowerCase().contains(q)  ||
           r.summary.toLowerCase().contains(q);
       final matchesYear = _yearFilter == null || r.year == _yearFilter;
       return matchesQuery && matchesYear;

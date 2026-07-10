@@ -114,7 +114,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
     return ModulePage(
       english: 'Reports',
-      arabic: 'التقارير',
       actions: [
         if (canManage)
           FilledButton.icon(

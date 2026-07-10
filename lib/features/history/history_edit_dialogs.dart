@@ -17,9 +17,7 @@ const List<int> kHistoryAccents = [
 typedef MilestoneResult = ({
   String year,
   String title,
-  String titleAr,
   String description,
-  String descriptionAr,
   String iconKey,
   int accent,
 });

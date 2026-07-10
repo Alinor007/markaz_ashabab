@@ -37,22 +37,19 @@ class TarbiyaShubasScreen extends StatelessWidget {
         final area = areaSnap.data;
         if (areaSnap.connectionState == ConnectionState.waiting) {
           return const ModulePage(
-              english: 'Shu\'ba', arabic: 'الشُّعبة', child: LoadingState());
+              english: 'Shu\'ba', child: LoadingState());
         }
         if (area == null) {
           return ModulePage(
             english: 'Shu\'ba',
-            arabic: 'الشُّعبة',
             child: EmptyState(
               icon: Icons.map_outlined,
               title: 'Area not found',
             ),
           );
         }
-        final isArabic = context.isArabic;
         return ModulePage(
           english: area.name,
-          arabic: area.nameAr,
           breadcrumb: HierarchyBreadcrumb(
             crumbs: [
               Crumb(
@@ -60,7 +57,7 @@ class TarbiyaShubasScreen extends StatelessWidget {
                 route: '/tarbiya',
                 icon: Icons.hub_outlined,
               ),
-              Crumb(label: isArabic ? area.nameAr : area.name),
+              Crumb(label: area.name),
             ],
           ),
           actions: [
@@ -91,7 +88,6 @@ class TarbiyaShubasScreen extends StatelessWidget {
                     TarbiyaNavCard(
                       icon: Icons.location_city_outlined,
                       title: shuba.name,
-                      titleAr: shuba.nameAr,
                       onTap: () => context.go(
                           '/tarbiya/area/$areaId/shuba/${shuba.id}'),
                       onEdit: canManage
@@ -125,8 +121,7 @@ class TarbiyaShubasScreen extends StatelessWidget {
       BuildContext context, TarbiyaRepository repo, Shuba shuba) async {
     final result = await NameFormDialog.show(context,
         title: "Edit Shu'ba",
-        name: shuba.name,
-        nameAr: shuba.nameAr);
+        name: shuba.name);
     if (result == null) return;
     await repo.updateShuba(shuba.id, name: result.name, nameAr: result.nameAr);
   }

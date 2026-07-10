@@ -196,7 +196,6 @@ class _UsersScreenState extends State<UsersScreen> {
     if (existing == null) {
       await repo.create(
         fullName: result.fullName,
-        fullNameAr: result.fullNameAr,
         username: result.username,
         email: result.email,
         password: result.password,
@@ -213,7 +212,6 @@ class _UsersScreenState extends State<UsersScreen> {
       await repo.updateProfile(
         id: existing.id,
         fullName: result.fullName,
-        fullNameAr: result.fullNameAr,
         username: result.username,
         email: result.email,
         role: result.role,
@@ -237,7 +235,6 @@ class _UsersScreenState extends State<UsersScreen> {
 
     return ModulePage(
       english: 'User Management',
-      arabic: 'إدارة المستخدمين',
       actions: [
         SearchField(
           width: 240,
@@ -298,7 +295,6 @@ class _UsersScreenState extends State<UsersScreen> {
 class _UserFormResult {
   _UserFormResult({
     required this.fullName,
-    required this.fullNameAr,
     required this.username,
     required this.email,
     required this.password,
@@ -306,7 +302,6 @@ class _UserFormResult {
     this.departmentId,
   });
   final String fullName;
-  final String fullNameAr;
   final String username;
   final String email;
   final String password;
@@ -329,8 +324,6 @@ class _UserFormDialogState extends State<_UserFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final _fullName =
       TextEditingController(text: widget.existing?.fullName ?? '');
-  late final _fullNameAr =
-      TextEditingController(text: widget.existing?.fullNameAr ?? '');
   late final _username =
       TextEditingController(text: widget.existing?.username ?? '');
   late final _email = TextEditingController(text: widget.existing?.email ?? '');
@@ -344,7 +337,6 @@ class _UserFormDialogState extends State<_UserFormDialog> {
   @override
   void dispose() {
     _fullName.dispose();
-    _fullNameAr.dispose();
     _username.dispose();
     _email.dispose();
     _password.dispose();
@@ -374,7 +366,6 @@ class _UserFormDialogState extends State<_UserFormDialog> {
       context,
       _UserFormResult(
         fullName: _fullName.text.trim(),
-        fullNameAr: _fullNameAr.text.trim(),
         username: _username.text.trim(),
         email: _email.text.trim(),
         password: _password.text.isEmpty ? 'changeme123' : _password.text,
@@ -411,13 +402,7 @@ class _UserFormDialogState extends State<_UserFormDialog> {
                 decoration: InputDecoration(
                     labelText: 'Full Name'),
               ),
-              const SizedBox(height: AppSpacing.md),
-              TextFormField(
-                controller: _fullNameAr,
-                textDirection: TextDirection.rtl,
-                decoration: InputDecoration(
-                    labelText: 'Full Name (Arabic)'),
-              ),
+    
               const SizedBox(height: AppSpacing.md),
               TextFormField(
                 controller: _username,
@@ -484,9 +469,7 @@ class _UserFormDialogState extends State<_UserFormDialog> {
                         for (final d in depts)
                           DropdownMenuItem(
                             value: d.id,
-                            child: Text(context.isArabic && d.nameAr.isNotEmpty
-                                ? d.nameAr
-                                : d.name),
+                            child: Text( d.name),
                           ),
                       ],
                       onChanged: (v) => setState(() => _departmentId = v),
