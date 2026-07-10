@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../core/auth/session_controller.dart';
 import '../core/data/app_database.dart';
-import '../core/i18n/locale_controller.dart';
 import '../core/repositories/audit_repository.dart';
 import '../core/repositories/department_repository.dart';
 import '../core/repositories/gallery_repository.dart';
@@ -17,26 +16,17 @@ import '../core/repositories/user_repository.dart';
 import '../core/theme/app_theme.dart';
 import 'router.dart';
 
-/// Root application widget. Owns the database, repositories, and the long-lived
-/// controllers (session + locale), applies the theme, and switches text
-/// direction (LTR/RTL) with the active language.
+/// Root application widget. Owns the database, repositories, and the session
+/// controller, and applies the theme. The app is English-only (LTR).
 class MarkazApp extends StatefulWidget {
   const MarkazApp({
     super.key,
     this.database,
-    this.initialLocale,
-    this.onLocaleChanged,
   });
 
   /// Injectable database (tests pass an in-memory instance). When null, the
   /// on-device SQLite database is opened.
   final AppDatabase? database;
-
-  /// Locale restored from persisted preferences (null → default English).
-  final Locale? initialLocale;
-
-  /// Invoked when the user changes language, so the choice can be persisted.
-  final void Function(Locale)? onLocaleChanged;
 
   @override
   State<MarkazApp> createState() => _MarkazAppState();
@@ -56,16 +46,11 @@ class _MarkazAppState extends State<MarkazApp> {
   late final HistoryRepository _history = HistoryRepository(_db);
   late final AuditRepository _audit = AuditRepository(_db);
   late final SessionController _session = SessionController(_users, _audit);
-  late final LocaleController _locale = LocaleController(
-    initial: widget.initialLocale ?? const Locale('en'),
-    onChanged: widget.onLocaleChanged,
-  );
   late final _router = createRouter(_session);
 
   @override
   void dispose() {
     _session.dispose();
-    _locale.dispose();
     // Only close a database we created ourselves.
     if (widget.database == null) {
       _db.close();
@@ -89,24 +74,12 @@ class _MarkazAppState extends State<MarkazApp> {
         Provider<HistoryRepository>.value(value: _history),
         Provider<AuditRepository>.value(value: _audit),
         ChangeNotifierProvider.value(value: _session),
-        ChangeNotifierProvider.value(value: _locale),
       ],
-      child: Consumer<LocaleController>(
-        builder: (context, locale, _) {
-          return MaterialApp.router(
-            title: 'Markazosshabab Archive',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light,
-            routerConfig: _router,
-            locale: locale.locale,
-            builder: (context, child) {
-              return Directionality(
-                textDirection: locale.textDirection,
-                child: child ?? const SizedBox.shrink(),
-              );
-            },
-          );
-        },
+      child: MaterialApp.router(
+        title: 'Markazosshabab Archive',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        routerConfig: _router,
       ),
     );
   }

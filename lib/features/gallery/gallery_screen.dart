@@ -11,7 +11,6 @@ import '../../core/patterns/geometric_pattern.dart';
 import '../../core/repositories/gallery_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
-import '../../core/theme/app_typography.dart';
 import '../../core/util/icon_catalog.dart';
 import '../../core/util/photo_service.dart';
 import '../../widgets/cards/gallery_card.dart';
@@ -130,10 +129,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
     if (r == null) return;
     await repo.add(
       title: r.title,
-      titleAr: r.titleAr,
       year: r.year,
       event: r.event,
-      eventAr: r.eventAr,
       iconKey: r.iconKey,
       imagePaths: r.imagePaths,
       heightHint: 200 + (r.title.length % 5) * 24,
@@ -194,7 +191,6 @@ class _Lightbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     final images = GalleryRepository.imagesOf(photo);
     return Dialog(
       backgroundColor: AppColors.surface,
@@ -294,15 +290,8 @@ class _Lightbox extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isArabic && photo.titleAr.isNotEmpty
-                        ? photo.titleAr
-                        : photo.title,
-                    textDirection:
-                        isArabic ? TextDirection.rtl : TextDirection.ltr,
-                    style: isArabic
-                        ? AppTypography.arabic(
-                            fontSize: 22, fontWeight: FontWeight.w700)
-                        : Theme.of(context).textTheme.titleLarge,
+                    photo.title,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   Row(
@@ -310,8 +299,7 @@ class _Lightbox extends StatelessWidget {
                       const Icon(Icons.event_outlined,
                           size: 16, color: AppColors.textMuted),
                       const SizedBox(width: AppSpacing.xs),
-                      Text(
-                          '${isArabic && photo.eventAr.isNotEmpty ? photo.eventAr : photo.event} · ${photo.year}',
+                      Text('${photo.event} · ${photo.year}',
                           style: Theme.of(context).textTheme.bodyMedium),
                     ],
                   ),
@@ -326,13 +314,11 @@ class _Lightbox extends StatelessWidget {
 }
 
 class _PhotoFormResult {
-  _PhotoFormResult(this.title, this.titleAr, this.year, this.event,
-      this.eventAr, this.iconKey, this.imagePaths);
+  _PhotoFormResult(
+      this.title, this.year, this.event, this.iconKey, this.imagePaths);
   final String title;
-  final String titleAr;
   final int year;
   final String event;
-  final String eventAr;
   final String iconKey;
   final List<String> imagePaths;
 }
@@ -347,9 +333,7 @@ class _PhotoFormDialog extends StatefulWidget {
 class _PhotoFormDialogState extends State<_PhotoFormDialog> {
   final _formKey = GlobalKey<FormState>();
   final _title = TextEditingController();
-  final _titleAr = TextEditingController();
   final _event = TextEditingController();
-  final _eventAr = TextEditingController();
   final _year = TextEditingController(text: '${DateTime.now().year}');
   String _iconKey = 'photo';
   final List<String> _imagePaths = [];
@@ -357,9 +341,7 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
   @override
   void dispose() {
     _title.dispose();
-    _titleAr.dispose();
     _event.dispose();
-    _eventAr.dispose();
     _year.dispose();
     super.dispose();
   }
@@ -528,10 +510,8 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
               context,
               _PhotoFormResult(
                 _title.text.trim(),
-                _titleAr.text.trim(),
                 int.tryParse(_year.text.trim()) ?? DateTime.now().year,
                 _event.text.trim(),
-                _eventAr.text.trim(),
                 _iconKey,
                 List.of(_imagePaths),
               ),

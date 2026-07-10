@@ -1,31 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../theme/app_typography.dart';
-import 'locale_controller.dart';
-
-/// Localization conveniences for feature modules.
+/// English-only text helpers.
 ///
-/// Rather than threading every label through the central [AppStrings] table,
-/// module-local strings can be supplied inline as (english, arabic) pairs.
+/// The app was previously bilingual (English / Arabic); it is now English-only.
+/// These helpers are retained so call sites keep a stable API, but they always
+/// resolve to English.
 extension LocalizedContext on BuildContext {
-  bool get isArabic => watch<LocaleController>().isArabic;
+  /// Retained for source compatibility — the app is English-only.
+  bool get isArabic => false;
 
-  /// Pick the english or arabic variant for the active language.
-  ///
-  /// Uses [watch], so it rebuilds on language change — only call from `build`.
-  String tr(String en, String ar) => isArabic ? ar : en;
+  /// Returns the English string. The optional second argument is ignored and
+  /// kept only so existing call sites continue to compile.
+  String tr(String en, [String? ar]) => en;
 
-  /// Non-listening language check, safe to call from callbacks, validators,
-  /// and async gaps (does not register a build dependency).
-  bool get isArabicNow => read<LocaleController>().isArabic;
+  /// Retained for source compatibility — the app is English-only.
+  bool get isArabicNow => false;
 
-  /// Like [tr] but safe outside `build` (event handlers, validators).
-  String trRead(String en, String ar) => isArabicNow ? ar : en;
+  /// Returns the English string (see [tr]).
+  String trRead(String en, [String? ar]) => en;
 }
 
-/// Renders a bilingual string: the Arabic variant (in Amiri, RTL) when the
-/// language is Arabic, otherwise the English variant in the provided style.
+/// Renders an English string. Kept as a thin wrapper over [Text] so existing
+/// call sites (which used to pass an Arabic variant plus styling) continue to
+/// work unchanged; the [ar] argument is ignored.
 class LocalizedText extends StatelessWidget {
   const LocalizedText(
     this.en,
@@ -45,32 +42,15 @@ class LocalizedText extends StatelessWidget {
   final TextOverflow? overflow;
   final TextAlign? textAlign;
 
-  /// Optional override color for the Arabic rendering (defaults to [style] color).
+  /// Ignored (English-only); retained so call sites still compile.
   final Color? arabicColor;
 
   @override
-  Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
-    final base = style ?? DefaultTextStyle.of(context).style;
-    if (!isArabic) {
-      return Text(en,
-          style: base,
-          maxLines: maxLines,
-          overflow: overflow,
-          textAlign: textAlign);
-    }
-    return Text(
-      ar,
-      textDirection: TextDirection.rtl,
-      maxLines: maxLines,
-      overflow: overflow,
-      textAlign: textAlign,
-      style: AppTypography.arabic(
-        fontSize: base.fontSize ?? 16,
-        fontWeight: base.fontWeight ?? FontWeight.w400,
-        color: arabicColor ?? base.color ?? const Color(0xFF22251F),
-        height: base.height ?? 1.5,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Text(
+        en,
+        style: style,
+        maxLines: maxLines,
+        overflow: overflow,
+        textAlign: textAlign,
+      );
 }

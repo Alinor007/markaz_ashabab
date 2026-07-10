@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/data/app_database.dart';
 import '../../core/data/models.dart';
-import '../../core/i18n/localized.dart';
 import '../../core/patterns/geometric_pattern.dart';
 import '../../core/theme/app_dimens.dart';
-import '../../core/theme/app_typography.dart';
 
 /// A masonry gallery tile (placeholder = patterned accent panel, or the photo
 /// when [GalleryPhoto.imagePath] is set) with a caption overlay.
@@ -19,7 +17,6 @@ class GalleryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     final hasImage =
         photo.imagePath.isNotEmpty && File(photo.imagePath).existsSync();
     return Material(
@@ -77,24 +74,15 @@ class GalleryCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        isArabic ? photo.titleAr : photo.title,
-                        textDirection:
-                            isArabic ? TextDirection.rtl : TextDirection.ltr,
+                        photo.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: isArabic
-                            ? AppTypography.arabic(
-                                fontSize: 15,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700)
-                            : Theme.of(context).textTheme.titleSmall?.copyWith(
-                                  color: Colors.white,
-                                ),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              color: Colors.white,
+                            ),
                       ),
                       Text(
-                        '${isArabic ? photo.eventAr : photo.event} · ${photo.year}',
-                        textDirection:
-                            isArabic ? TextDirection.rtl : TextDirection.ltr,
+                        '${photo.event} · ${photo.year}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: Colors.white70,
                             ),

@@ -60,17 +60,26 @@ class MemberRepository {
             ..where((c) => c.memberId.equals(memberId)))
           .watch();
 
-  Future<void> addChild(String memberId, String name, String dob) =>
+  Future<void> addChild(String memberId, String name, String dob,
+          {String occupation = '', String profession = ''}) =>
       _db.into(_db.memberChildren).insert(MemberChildrenCompanion.insert(
             id: _id('child'),
             memberId: memberId,
             name: name,
             dob: Value(dob),
+            occupation: Value(occupation),
+            profession: Value(profession),
           ));
 
-  Future<void> updateChild(String id, String name, String dob) =>
+  Future<void> updateChild(String id, String name, String dob,
+          {String occupation = '', String profession = ''}) =>
       (_db.update(_db.memberChildren)..where((c) => c.id.equals(id)))
-          .write(MemberChildrenCompanion(name: Value(name), dob: Value(dob)));
+          .write(MemberChildrenCompanion(
+        name: Value(name),
+        dob: Value(dob),
+        occupation: Value(occupation),
+        profession: Value(profession),
+      ));
 
   Future<void> deleteChild(String id) =>
       (_db.delete(_db.memberChildren)..where((c) => c.id.equals(id))).go();
@@ -368,7 +377,7 @@ class MemberRepository {
       (_db.delete(_db.memberUsraLinks)..where((l) => l.id.equals(id))).go();
 
   // ── Member search (for the Naqib / Usra-member pickers) ───────────────────
-  /// Members whose name matches [query] (first/middle/last/Arabic), excluding
+  /// Members whose name matches [query] (first/middle/last), excluding
   /// [excludeId]. Returns up to [limit] results ordered by first name.
   Future<List<Member>> searchMembers(String query,
       {String? excludeId, int limit = 25}) {
@@ -380,8 +389,7 @@ class MemberRepository {
                 ? const Constant(true)
                 : (m.firstName.like(like) |
                     m.middleName.like(like) |
-                    m.lastName.like(like) |
-                    m.nameAr.like(like));
+                    m.lastName.like(like));
             final notSelf = excludeId == null
                 ? const Constant(true)
                 : m.id.equals(excludeId).not();

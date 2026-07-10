@@ -11,15 +11,11 @@ import '../../core/util/icon_catalog.dart';
 class DepartmentFormResult {
   DepartmentFormResult({
     required this.name,
-    required this.nameAr,
     required this.description,
-    required this.descriptionAr,
     required this.iconKey,
   });
   final String name;
-  final String nameAr;
   final String description;
-  final String descriptionAr;
   final String iconKey;
 }
 
@@ -44,17 +40,13 @@ class _DepartmentFormDialog extends StatefulWidget {
 class _DepartmentFormDialogState extends State<_DepartmentFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final _name = TextEditingController(text: widget.existing?.name ?? '');
-  late final _nameAr =
-      TextEditingController(text: widget.existing?.nameAr ?? '');
   late final _desc =
       TextEditingController(text: widget.existing?.description ?? '');
-  late final _descAr =
-      TextEditingController(text: widget.existing?.descriptionAr ?? '');
   late String _iconKey = widget.existing?.iconKey ?? 'group';
 
   @override
   void dispose() {
-    for (final c in [_name, _nameAr, _desc, _descAr]) {
+    for (final c in [_name, _desc]) {
       c.dispose();
     }
     super.dispose();
@@ -86,26 +78,10 @@ class _DepartmentFormDialogState extends State<_DepartmentFormDialog> {
                 ),
                 const SizedBox(height: AppSpacing.md),
                 TextFormField(
-                  controller: _nameAr,
-                  textDirection: TextDirection.rtl,
-                  decoration: InputDecoration(
-                      labelText: context.tr('Name (Arabic)', 'الاسم بالعربية')),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextFormField(
                   controller: _desc,
                   maxLines: 2,
                   decoration: InputDecoration(
                       labelText: context.tr('Description', 'الوصف')),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextFormField(
-                  controller: _descAr,
-                  maxLines: 2,
-                  textDirection: TextDirection.rtl,
-                  decoration: InputDecoration(
-                      labelText:
-                          context.tr('Description (Arabic)', 'الوصف بالعربية')),
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Align(
@@ -161,9 +137,7 @@ class _DepartmentFormDialogState extends State<_DepartmentFormDialog> {
               context,
               DepartmentFormResult(
                 name: _name.text.trim(),
-                nameAr: _nameAr.text.trim(),
                 description: _desc.text.trim(),
-                descriptionAr: _descAr.text.trim(),
                 iconKey: _iconKey,
               ),
             );
@@ -179,9 +153,7 @@ class _DepartmentFormDialogState extends State<_DepartmentFormDialog> {
 DepartmentsCompanion departmentUpdateCompanion(DepartmentFormResult r) {
   return DepartmentsCompanion(
     name: Value(r.name),
-    nameAr: Value(r.nameAr.isEmpty ? r.name : r.nameAr),
     description: Value(r.description),
-    descriptionAr: Value(r.descriptionAr),
     iconKey: Value(r.iconKey),
   );
 }

@@ -20,11 +20,19 @@ import '../../widgets/layout/module_page.dart';
 
 /// Mutable child row in the form.
 class _ChildRow {
-  _ChildRow({String name = '', String age = ''})
+  _ChildRow(
+      {String name = '',
+      String age = '',
+      String occupation = '',
+      String profession = ''})
       : name = TextEditingController(text: name),
-        age = TextEditingController(text: age);
+        age = TextEditingController(text: age),
+        occupation = TextEditingController(text: occupation),
+        profession = TextEditingController(text: profession);
   final TextEditingController name;
   final TextEditingController age;
+  final TextEditingController occupation;
+  final TextEditingController profession;
 }
 
 /// Mutable spouse row in the form. A non-single female keeps 1; a non-single
@@ -80,7 +88,6 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   final _middle = TextEditingController();
   final _last = TextEditingController();
   final _suffix = TextEditingController();
-  final _nameAr = TextEditingController();
   final _placeOfBirth = TextEditingController();
   final _contact = TextEditingController();
   final _email = TextEditingController();
@@ -155,7 +162,6 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     _middle.text = m.middleName;
     _last.text = m.lastName;
     _suffix.text = m.suffix;
-    _nameAr.text = m.nameAr;
     _placeOfBirth.text = m.placeOfBirth;
     _contact.text = m.contactNumber;
     _email.text = m.email;
@@ -175,7 +181,12 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     _photoPath = m.photoPath;
     _children
       ..clear()
-      ..addAll(children.map((c) => _ChildRow(name: c.name, age: c.dob)));
+      ..addAll(children.map((c) => _ChildRow(
+            name: c.name,
+            age: c.dob,
+            occupation: c.occupation,
+            profession: c.profession,
+          )));
     _education
       ..clear()
       ..addAll(education.map((e) => _EduRow(
@@ -204,7 +215,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   @override
   void dispose() {
     for (final c in [
-      _first, _middle, _last, _suffix, _nameAr, _placeOfBirth, _contact,
+      _first, _middle, _last, _suffix, _placeOfBirth, _contact,
       _email, _address, _ethnicity, _occupation, _usraName,
       _usraYear, _usraSchedule,
     ]) {
@@ -213,6 +224,8 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     for (final r in _children) {
       r.name.dispose();
       r.age.dispose();
+      r.occupation.dispose();
+      r.profession.dispose();
     }
     for (final r in _spouses) {
       r.name.dispose();
@@ -261,7 +274,6 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
       middleName: Value(_middle.text.trim()),
       lastName: Value(_last.text.trim()),
       suffix: Value(_suffix.text.trim()),
-      nameAr: Value(_nameAr.text.trim()),
       gender: Value(_gender),
       dob: Value(_dob),
       placeOfBirth: Value(_placeOfBirth.text.trim()),
@@ -306,7 +318,13 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     }
     for (final c in _children) {
       if (c.name.text.trim().isEmpty) continue;
-      await repo.addChild(memberId, c.name.text.trim(), c.age.text.trim());
+      await repo.addChild(
+        memberId,
+        c.name.text.trim(),
+        c.age.text.trim(),
+        occupation: c.occupation.text.trim(),
+        profession: c.profession.text.trim(),
+      );
     }
     for (final e in _education) {
       if (e.school.text.trim().isEmpty) continue;
@@ -442,8 +460,6 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                       _field(_suffix, context.tr('Suffix', 'اللاحقة')),
                     ]),
                     _row([
-                      _field(_nameAr, context.tr('Arabic Name', 'الاسم بالعربية'),
-                          textDirection: TextDirection.rtl),
                       _dropdown<String>(
                         label: context.tr('Gender', 'الجنس'),
                         value: _gender,
@@ -572,16 +588,27 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
         children: [
           for (var i = 0; i < _children.length; i++)
             Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: _row([
-                _field(_children[i].name, context.tr('Child Name', 'اسم الابن')),
-                _field(_children[i].age, context.tr('Age', 'العمر')),
-                IconButton(
-                  icon: const Icon(Icons.remove_circle_outline,
-                      color: AppColors.error),
-                  onPressed: () => setState(() => _children.removeAt(i)),
-                ),
-              ]),
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: Column(
+                children: [
+                  _row([
+                    _field(_children[i].name,
+                        context.tr('Child Name', 'اسم الابن')),
+                    _field(_children[i].age, context.tr('Age', 'العمر')),
+                    IconButton(
+                      icon: const Icon(Icons.remove_circle_outline,
+                          color: AppColors.error),
+                      onPressed: () => setState(() => _children.removeAt(i)),
+                    ),
+                  ]),
+                  _row([
+                    _field(_children[i].occupation,
+                        context.tr('Occupation', 'الوظيفة')),
+                    _field(_children[i].profession,
+                        context.tr('Profession', 'المهنة')),
+                  ]),
+                ],
+              ),
             ),
           Align(
             alignment: AlignmentDirectional.centerStart,

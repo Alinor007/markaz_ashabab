@@ -5,11 +5,9 @@ import 'package:provider/provider.dart';
 import '../../app/nav_items.dart';
 import '../../core/auth/session_controller.dart';
 import '../../core/data/models.dart';
-import '../../core/i18n/locale_controller.dart';
 import '../../core/i18n/strings.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
-import '../../core/theme/app_typography.dart';
 import '../common/brand_emblem.dart';
 import '../common/role_badge.dart';
 
@@ -112,19 +110,6 @@ class _BrandHeader extends StatelessWidget {
                         color: AppColors.onNavy,
                         height: 1.2,
                       ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  strings.orgNameArabic,
-                  textDirection: TextDirection.rtl,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.arabic(
-                    fontSize: 13,
-                    color: AppColors.gold,
-                    fontWeight: FontWeight.w700,
-                    height: 1.2,
-                  ),
                 ),
               ],
             ),
@@ -239,7 +224,6 @@ class _LeadershipNavGroupState extends State<_LeadershipNavGroup> {
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
-    final isArabic = context.watch<LocaleController>().isArabic;
     final theme = Theme.of(context);
 
     return Column(
@@ -295,49 +279,43 @@ class _LeadershipNavGroupState extends State<_LeadershipNavGroup> {
         ),
         if (_expanded) ...[
           _LeadershipSubTile(
-            label: isArabic
-                ? LeadershipCategory.officePresident.ar
-                : LeadershipCategory.officePresident.en,
+            label: LeadershipCategory.officePresident.en,
             route: '/leadership/office-president',
             selected: widget.currentRoute == '/leadership/office-president',
           ),
           _LeadershipSubTile(
-            label: isArabic
-                ? LeadershipCategory.board.ar
-                : LeadershipCategory.board.en,
+            label: LeadershipCategory.board.en,
             route: '/leadership/board',
             selected: widget.currentRoute == '/leadership/board',
           ),
           // Consultative Assembly → nested General Membership + Committees.
           _ExpandableSubGroup(
-            label: isArabic
-                ? LeadershipCategory.assembly.ar
-                : LeadershipCategory.assembly.en,
+            label: LeadershipCategory.assembly.en,
             indent: 1,
             autoExpand: widget.currentRoute.startsWith('/leadership/assembly'),
             children: [
               _LeadershipSubTile(
-                label: isArabic ? 'العضوية العامة' : 'General Membership',
+                label: 'General Membership',
                 route: '/leadership/assembly/general',
                 selected:
                     widget.currentRoute == '/leadership/assembly/general',
                 indent: 2,
               ),
               _ExpandableSubGroup(
-                label: isArabic ? 'اللجان' : 'Committees',
+                label: 'Committees',
                 indent: 2,
                 autoExpand: widget.currentRoute
                     .startsWith('/leadership/assembly/committee'),
                 children: [
                   _LeadershipSubTile(
-                    label: isArabic ? 'الهيئة الشرعية' : "Hay-ah Shar'iyyah",
+                    label: "Hay-ah Shar'iyyah",
                     route: '/leadership/assembly/committee/hayah',
                     selected: widget.currentRoute ==
                         '/leadership/assembly/committee/hayah',
                     indent: 3,
                   ),
                   _LeadershipSubTile(
-                    label: isArabic ? 'التدقيق' : 'Audit',
+                    label: 'Audit',
                     route: '/leadership/assembly/committee/audit',
                     selected: widget.currentRoute ==
                         '/leadership/assembly/committee/audit',
@@ -348,7 +326,7 @@ class _LeadershipNavGroupState extends State<_LeadershipNavGroup> {
             ],
           ),
           _LeadershipSubTile(
-            label: isArabic ? 'القيادة السابقة' : 'Previous Leadership',
+            label: 'Previous Leadership',
             route: '/leadership/previous',
             selected: widget.currentRoute == '/leadership/previous',
           ),
@@ -499,7 +477,6 @@ class _ProfileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final session = context.watch<SessionController>();
-    final isArabic = context.watch<LocaleController>().isArabic;
     final user = session.user;
     if (user == null) return const SizedBox.shrink();
 
@@ -530,17 +507,12 @@ class _ProfileCard extends StatelessWidget {
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Text(
-                    user.displayName(isArabic),
+                    user.displayName(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    textDirection:
-                        isArabic ? TextDirection.rtl : TextDirection.ltr,
-                    style: isArabic
-                        ? AppTypography.arabic(
-                            fontSize: 15, color: AppColors.onNavy)
-                        : Theme.of(context).textTheme.titleSmall?.copyWith(
-                              color: AppColors.onNavy,
-                            ),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: AppColors.onNavy,
+                        ),
                   ),
                 ),
               ],

@@ -71,7 +71,6 @@ class AuditScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     return ModulePage(
       english: 'Audit Logs',
       arabic: 'سجلات التدقيق',
@@ -122,13 +121,9 @@ class AuditScreen extends StatelessWidget {
                   isLast: i == logs.length - 1,
                   timestamp:
                       '${_formatTime(entry.timestamp)}  ·  @${entry.username}',
-                  title: isArabic && entry.actionAr.isNotEmpty
-                      ? entry.actionAr
-                      : entry.action,
+                  title: entry.action,
                   trailing: _ModuleTag(
-                    label: isArabic && entry.moduleAr.isNotEmpty
-                        ? entry.moduleAr
-                        : entry.module,
+                    label: entry.module,
                     color: color,
                   ),
                 );

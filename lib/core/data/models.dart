@@ -10,14 +10,13 @@ String newId(String prefix) =>
 
 /// Leadership groupings (the three Leadership sub-pages).
 enum LeadershipCategory {
-  officePresident('office_president', 'Office of the President', 'مكتب الرئيس'),
-  board('board', 'Board of Trustees', 'مجلس الأمناء'),
-  assembly('assembly', 'Consultative Assembly', 'مجلس الشورى');
+  officePresident('office_president', 'Office of the President'),
+  board('board', 'Board of Trustees'),
+  assembly('assembly', 'Consultative Assembly');
 
-  const LeadershipCategory(this.code, this.en, this.ar);
+  const LeadershipCategory(this.code, this.en);
   final String code;
   final String en;
-  final String ar;
 
   static LeadershipCategory fromCode(String code) =>
       LeadershipCategory.values.firstWhere((c) => c.code == code,
@@ -28,7 +27,9 @@ enum LeadershipCategory {
 extension UserX on User {
   UserRole get role => UserRole.fromCode(roleCode);
 
-  String displayName(bool isArabic) => isArabic ? fullNameAr : fullName;
+  // The optional bool is ignored (the app is English-only); it is kept so the
+  // former bilingual call sites (displayName(isArabic)) still compile.
+  String displayName([bool _ = false]) => fullName;
 
   String get avatarInitials {
     final parts = fullName.trim().split(RegExp(r'\s+'));
@@ -46,17 +47,16 @@ extension UserX on User {
 
 /// Civil status options for a member.
 enum CivilStatus {
-  single('single', 'Single', 'أعزب'),
-  married('married', 'Married', 'متزوج'),
-  widowed('widowed', 'Widowed', 'أرمل'),
-  divorced('divorced', 'Divorced', 'مطلّق');
+  single('single', 'Single'),
+  married('married', 'Married'),
+  widowed('widowed', 'Widowed'),
+  divorced('divorced', 'Divorced');
 
-  const CivilStatus(this.code, this.en, this.ar);
+  const CivilStatus(this.code, this.en);
   final String code;
   final String en;
-  final String ar;
 
-  String label(bool isArabic) => isArabic ? ar : en;
+  String label([bool _ = false]) => en;
 
   static CivilStatus fromCode(String code) => CivilStatus.values
       .firstWhere((c) => c.code == code, orElse: () => CivilStatus.single);
@@ -66,18 +66,17 @@ enum CivilStatus {
 /// Program-like field's meaning) varies by stage — see [hasDegree],
 /// [hasProgram], and [programLabel].
 enum EducationStage {
-  elementary('elementary', 'Elementary', 'الابتدائية'),
-  juniorHigh('junior_high', 'Junior High School', 'المرحلة الإعدادية'),
-  seniorHigh('senior_high', 'Senior High School', 'المرحلة الثانوية العليا'),
-  vocational('vocational', 'Vocational / TESDA', 'مهني / TESDA'),
-  college('college', 'College / Graduate School', 'الجامعة / الدراسات العليا');
+  elementary('elementary', 'Elementary'),
+  juniorHigh('junior_high', 'Junior High School'),
+  seniorHigh('senior_high', 'Senior High School'),
+  vocational('vocational', 'Vocational / TESDA'),
+  college('college', 'College / Graduate School');
 
-  const EducationStage(this.code, this.en, this.ar);
+  const EducationStage(this.code, this.en);
   final String code;
   final String en;
-  final String ar;
 
-  String label(bool isArabic) => isArabic ? ar : en;
+  String label([bool _ = false]) => en;
 
   /// Only College / Graduate School records a Degree (e.g. Bachelor of
   /// Science).
@@ -90,19 +89,19 @@ enum EducationStage {
       this == EducationStage.vocational ||
       this == EducationStage.college;
 
-  /// The bilingual label for the Program field, which changes meaning by
-  /// stage (Strand/Track, Course/Certificate, or Program/Major).
-  String programLabel(bool isArabic) {
+  /// The label for the Program field, which changes meaning by stage
+  /// (Strand/Track, Course/Certificate, or Program/Major).
+  String programLabel([bool _ = false]) {
     switch (this) {
       case EducationStage.seniorHigh:
-        return isArabic ? 'المسار / التخصص' : 'Strand / Track';
+        return 'Strand / Track';
       case EducationStage.vocational:
-        return isArabic ? 'الدورة / الشهادة' : 'Course / Certificate';
+        return 'Course / Certificate';
       case EducationStage.college:
-        return isArabic ? 'البرنامج / التخصص' : 'Program / Major';
+        return 'Program / Major';
       case EducationStage.elementary:
       case EducationStage.juniorHigh:
-        return isArabic ? 'البرنامج' : 'Program';
+        return 'Program';
     }
   }
 
@@ -115,36 +114,34 @@ const List<int> kTarbiyaLevels = [1, 2, 3, 4, 5];
 
 /// Report document types.
 enum ReportType {
-  minutes('minutes', 'Minutes of Meeting', 'محضر اجتماع'),
-  resolution('resolution', 'Resolution', 'قرار'),
-  other('other', 'Other Report', 'تقرير آخر'),
-  programCompletion(
-      'program_completion', 'Program Completion (P-2)', 'تقرير إنجاز برنامج');
+  minutes('minutes', 'Minutes of Meeting'),
+  resolution('resolution', 'Resolution'),
+  other('other', 'Other Report'),
+  programCompletion('program_completion', 'Program Completion (P-2)');
 
-  const ReportType(this.code, this.en, this.ar);
+  const ReportType(this.code, this.en);
   final String code;
   final String en;
-  final String ar;
 
-  String label(bool isArabic) => isArabic ? ar : en;
+  String label([bool _ = false]) => en;
 
   static ReportType fromCode(String code) => ReportType.values
       .firstWhere((t) => t.code == code, orElse: () => ReportType.minutes);
 }
 
-/// Status of a department activity.
+/// Status of a department activity. The `planned` code is kept as the stored
+/// value (and DB default) for back-compat; it is displayed as "Approved".
 enum ActivityStatus {
-  planned('planned', 'Planned', 'مخطط', Color(0xFFA8862F)),
-  ongoing('ongoing', 'Ongoing', 'جارٍ', Color(0xFF16243D)),
-  completed('completed', 'Completed', 'مكتمل', Color(0xFF0B5D3B));
+  planned('planned', 'Approved', Color(0xFFA8862F)),
+  ongoing('ongoing', 'Ongoing', Color(0xFF16243D)),
+  completed('completed', 'Completed', Color(0xFF0B5D3B));
 
-  const ActivityStatus(this.code, this.en, this.ar, this.color);
+  const ActivityStatus(this.code, this.en, this.color);
   final String code;
   final String en;
-  final String ar;
   final Color color;
 
-  String label(bool isArabic) => isArabic ? ar : en;
+  String label([bool _ = false]) => en;
 
   static ActivityStatus fromCode(String code) => ActivityStatus.values
       .firstWhere((s) => s.code == code, orElse: () => ActivityStatus.planned);
@@ -154,8 +151,7 @@ enum ActivityStatus {
 extension DepartmentX on Department {
   IconData get icon => iconForKey(iconKey);
   Color get accentColor => Color(accent);
-  String displayName(bool isArabic) =>
-      isArabic && nameAr.trim().isNotEmpty ? nameAr : name;
+  String displayName([bool _ = false]) => name;
 }
 
 /// Domain conveniences over the generated [Report] row.
@@ -180,15 +176,13 @@ extension MemberX on Member {
       .where((s) => s.trim().isNotEmpty)
       .join(' ');
 
-  String displayName(bool isArabic) =>
-      isArabic && nameAr.trim().isNotEmpty ? nameAr : fullName;
+  String displayName([bool _ = false]) => fullName;
 
   bool get isActive => status == 'active';
 
   /// The member's tarbiya level for display; "—" when 0 (no Tas'ed record).
   /// Level is driven by the member's Tas'ed records, not set manually.
-  String levelLabel(bool isArabic) =>
-      level <= 0 ? '—' : (isArabic ? 'المستوى $level' : 'Level $level');
+  String levelLabel([bool _ = false]) => level <= 0 ? '—' : 'Level $level';
 
   CivilStatus get civilStatusEnum => CivilStatus.fromCode(civilStatus);
 
@@ -214,9 +208,7 @@ extension LeaderX on Leader {
       .toList();
 
   List<String> get achievementsList => _lines(achievements);
-  List<String> get achievementsArList => _lines(achievementsAr);
   List<String> get responsibilitiesList => _lines(responsibilities);
-  List<String> get responsibilitiesArList => _lines(responsibilitiesAr);
 
   String get initials {
     final parts = name.replaceAll('.', '').trim().split(RegExp(r'\s+'));

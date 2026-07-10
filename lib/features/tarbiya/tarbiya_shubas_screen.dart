@@ -49,10 +49,8 @@ class TarbiyaShubasScreen extends StatelessWidget {
             ),
           );
         }
-        final isArabic = context.isArabic;
         return ModulePage(
           english: area.name,
-          arabic: area.nameAr,
           breadcrumb: HierarchyBreadcrumb(
             crumbs: [
               Crumb(
@@ -60,7 +58,7 @@ class TarbiyaShubasScreen extends StatelessWidget {
                 route: '/tarbiya',
                 icon: Icons.hub_outlined,
               ),
-              Crumb(label: isArabic ? area.nameAr : area.name),
+              Crumb(label: area.name),
             ],
           ),
           actions: [
@@ -92,7 +90,6 @@ class TarbiyaShubasScreen extends StatelessWidget {
                     TarbiyaNavCard(
                       icon: Icons.location_city_outlined,
                       title: shuba.name,
-                      titleAr: shuba.nameAr,
                       onTap: () => context.go(
                           '/tarbiya/area/$areaId/shuba/${shuba.id}'),
                       onEdit: canManage
@@ -118,26 +115,23 @@ class TarbiyaShubasScreen extends StatelessWidget {
     final result = await NameFormDialog.show(context,
         title: context.trRead("Add Shu'ba", 'إضافة شُعبة'));
     if (result == null) return;
-    await repo.createShuba(
-        areaId: areaId, name: result.name, nameAr: result.nameAr);
+    await repo.createShuba(areaId: areaId, name: result.name);
   }
 
   Future<void> _editShuba(
       BuildContext context, TarbiyaRepository repo, Shuba shuba) async {
     final result = await NameFormDialog.show(context,
         title: context.trRead("Edit Shu'ba", 'تعديل الشُّعبة'),
-        name: shuba.name,
-        nameAr: shuba.nameAr);
+        name: shuba.name);
     if (result == null) return;
-    await repo.updateShuba(shuba.id, name: result.name, nameAr: result.nameAr);
+    await repo.updateShuba(shuba.id, name: result.name);
   }
 
   Future<void> _deleteShuba(
       BuildContext context, TarbiyaRepository repo, Shuba shuba) async {
     final ok = await confirmDialog(
       context,
-      title: context.trRead(
-          'Delete “${shuba.name}”?', 'حذف «${shuba.nameAr}»؟'),
+      title: context.trRead('Delete “${shuba.name}”?'),
       message: context.trRead(
           'Members under it will be permanently deleted.',
           'سيُحذف الأعضاء التابعون لها نهائيًا.'),

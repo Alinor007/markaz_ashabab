@@ -9,7 +9,7 @@ class ModulePage extends StatelessWidget {
   const ModulePage({
     super.key,
     required this.english,
-    required this.arabic,
+    this.arabic = '',
     required this.child,
     this.actions = const [],
     this.scrollable = false,
@@ -17,6 +17,8 @@ class ModulePage extends StatelessWidget {
   });
 
   final String english;
+
+  /// Ignored (the app is English-only); kept so call sites still compile.
   final String arabic;
   final Widget child;
   final List<Widget> actions;

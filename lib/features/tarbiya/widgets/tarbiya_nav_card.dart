@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../core/i18n/localized.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
-import '../../../core/theme/app_typography.dart';
 
 /// A tappable hierarchy card (Area / Shu'ba) with optional edit/delete actions
 /// and a stats footer.
@@ -12,7 +11,6 @@ class TarbiyaNavCard extends StatelessWidget {
     super.key,
     required this.icon,
     required this.title,
-    required this.titleAr,
     required this.onTap,
     this.subtitle,
     this.accent = AppColors.emerald,
@@ -24,7 +22,6 @@ class TarbiyaNavCard extends StatelessWidget {
 
   final IconData icon;
   final String title;
-  final String titleAr;
   final String? subtitle;
   final Color accent;
   final VoidCallback onTap;
@@ -38,7 +35,6 @@ class TarbiyaNavCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isArabic = context.isArabic;
     return Material(
       color: AppColors.surface,
       borderRadius: AppRadius.card,
@@ -89,19 +85,16 @@ class TarbiyaNavCard extends StatelessWidget {
                       ],
                     )
                   else
-                    Icon(isArabic ? Icons.arrow_back : Icons.arrow_forward,
+                    Icon(Icons.arrow_forward,
                         size: 18, color: AppColors.textFaint),
                 ],
               ),
               const SizedBox(height: AppSpacing.md),
               Text(
-                isArabic ? titleAr : title,
-                textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+                title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: isArabic
-                    ? AppTypography.arabic(fontSize: 19, fontWeight: FontWeight.w700)
-                    : theme.textTheme.titleLarge,
+                style: theme.textTheme.titleLarge,
               ),
               if (subtitle != null)
                 Text(subtitle!, style: theme.textTheme.bodySmall),

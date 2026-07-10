@@ -5,21 +5,18 @@ import 'package:provider/provider.dart';
 import '../../app/nav_items.dart';
 import '../../core/auth/session_controller.dart';
 import '../../core/data/models.dart';
-import '../../core/i18n/locale_controller.dart';
 import '../../core/i18n/strings.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_typography.dart';
 
-/// The top navigation bar: breadcrumbs, a global search field, language
-/// toggle, and the user avatar.
+/// The top navigation bar: breadcrumbs, a global search field, and the user
+/// avatar.
 class AppTopBar extends StatelessWidget {
   const AppTopBar({super.key});
 
-  String _currentLabel(AppStrings s, String route, bool isArabic) {
-    if (route.startsWith('/tarbiya')) {
-      return isArabic ? 'تربية الكوادر' : 'Tarbiya Kawadeer';
-    }
+  String _currentLabel(AppStrings s, String route) {
+    if (route.startsWith('/tarbiya')) return 'Tarbiya Kawadeer';
     if (route.startsWith('/leadership')) return s.leadership;
     if (route.startsWith('/search')) return s.search;
     // Longest matching nav prefix wins (so detail routes resolve correctly).
@@ -39,11 +36,9 @@ class AppTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
-    final locale = context.watch<LocaleController>();
     final session = context.watch<SessionController>();
-    final isArabic = locale.isArabic;
     final route = GoRouterState.of(context).uri.path;
-    final pageLabel = _currentLabel(s, route, isArabic);
+    final pageLabel = _currentLabel(s, route);
 
     return Container(
       height: AppLayout.topBarHeight,
@@ -58,7 +53,7 @@ class AppTopBar extends StatelessWidget {
           Icon(Icons.home_outlined, size: 18, color: AppColors.textMuted),
           const SizedBox(width: AppSpacing.sm),
           Icon(
-            isArabic ? Icons.chevron_left : Icons.chevron_right,
+            Icons.chevron_right,
             size: 18,
             color: AppColors.textFaint,
           ),
@@ -74,8 +69,6 @@ class AppTopBar extends StatelessWidget {
                 child: SizedBox(
                   height: 42,
                   child: TextField(
-                    textDirection:
-                        isArabic ? TextDirection.rtl : TextDirection.ltr,
                     textInputAction: TextInputAction.search,
                     onSubmitted: (value) {
                       final q = value.trim();
@@ -98,10 +91,6 @@ class AppTopBar extends StatelessWidget {
             const Spacer(),
           const SizedBox(width: AppSpacing.lg),
 
-          // Language toggle
-          _LanguageToggle(locale: locale),
-          const SizedBox(width: AppSpacing.lg),
-
           // Avatar
           if (session.user != null)
             CircleAvatar(
@@ -118,51 +107,3 @@ class AppTopBar extends StatelessWidget {
     );
   }
 }
-
-class _LanguageToggle extends StatelessWidget {
-  const _LanguageToggle({required this.locale});
-  final LocaleController locale;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget seg(String text, bool active) => Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.xs,
-          ),
-          decoration: BoxDecoration(
-            color: active ? AppColors.emerald : Colors.transparent,
-            borderRadius: BorderRadius.circular(AppRadius.sm),
-          ),
-          child: Text(
-            text,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 13,
-              color: active ? AppColors.onEmerald : AppColors.textMuted,
-            ),
-          ),
-        );
-
-    return Material(
-      color: AppColors.ivory,
-      borderRadius: BorderRadius.circular(AppRadius.sm),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-        onTap: locale.toggle,
-        child: Padding(
-          padding: const EdgeInsets.all(3),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              seg('EN', !locale.isArabic),
-              const SizedBox(width: 2),
-              seg('ع', locale.isArabic),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-

@@ -48,7 +48,6 @@ class UserRepository {
 
   Future<User> create({
     required String fullName,
-    required String fullNameAr,
     required String username,
     required String email,
     required String password,
@@ -60,7 +59,6 @@ class UserRepository {
           UsersCompanion.insert(
             id: id,
             fullName: fullName,
-            fullNameAr: fullNameAr.isEmpty ? fullName : fullNameAr,
             username: username.trim(),
             email: Value(email),
             passwordHash: PasswordHasher.hash(password),
@@ -74,7 +72,6 @@ class UserRepository {
   Future<void> updateProfile({
     required String id,
     required String fullName,
-    required String fullNameAr,
     required String username,
     required String email,
     required UserRole role,
@@ -83,7 +80,6 @@ class UserRepository {
     return (_db.update(_db.users)..where((u) => u.id.equals(id))).write(
       UsersCompanion(
         fullName: Value(fullName),
-        fullNameAr: Value(fullNameAr.isEmpty ? fullName : fullNameAr),
         username: Value(username.trim()),
         email: Value(email),
         roleCode: Value(role.code),

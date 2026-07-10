@@ -22,22 +22,18 @@ import '../tarbiya/widgets/confirm_dialog.dart';
 import 'widgets/leader_medallion.dart';
 
 /// One biography section entered in the form (e.g. "Early Life",
-/// "Achievements"), bilingual title + body.
+/// "Achievements"), title + body.
 typedef _SectionResult = ({
   String title,
-  String titleAr,
   String body,
-  String bodyAr,
 });
 
 /// Result of the Previous Leadership form.
 typedef _PrevResult = ({
   Member member,
   String position,
-  String positionAr,
   String termYears,
   String note,
-  String noteAr,
   int accent,
   List<_SectionResult> sections,
 });
@@ -107,10 +103,8 @@ class PreviousLeadershipScreen extends StatelessWidget {
     final id = await repo.addPreviousLeader(
       memberId: r.member.id,
       position: r.position,
-      positionAr: r.positionAr,
       termYears: r.termYears,
       note: r.note,
-      noteAr: r.noteAr,
       accent: r.accent,
     );
     for (var i = 0; i < r.sections.length; i++) {
@@ -118,9 +112,7 @@ class PreviousLeadershipScreen extends StatelessWidget {
       await repo.addSection(
         previousLeaderId: id,
         title: s.title,
-        titleAr: s.titleAr,
         body: s.body,
-        bodyAr: s.bodyAr,
         sortOrder: i,
       );
     }
@@ -134,10 +126,8 @@ class PreviousLeadershipScreen extends StatelessWidget {
       v.entry.id,
       memberId: r.member.id,
       position: r.position,
-      positionAr: r.positionAr,
       termYears: r.termYears,
       note: r.note,
-      noteAr: r.noteAr,
       accent: r.accent,
     );
     // Reconcile sections: delete existing rows, then re-add from the form.
@@ -149,9 +139,7 @@ class PreviousLeadershipScreen extends StatelessWidget {
       await repo.addSection(
         previousLeaderId: v.entry.id,
         title: s.title,
-        titleAr: s.titleAr,
         body: s.body,
-        bodyAr: s.bodyAr,
         sortOrder: i,
       );
     }
@@ -418,16 +406,6 @@ class _PreviousLeaderCard extends StatelessWidget {
                     height: 1.2,
                   ),
                 ),
-                if (m.nameAr.trim().isNotEmpty)
-                  Text(
-                    m.nameAr,
-                    textDirection: TextDirection.rtl,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.arabic(
-                        fontSize: 15,
-                        color: AppColors.onEmerald.withValues(alpha: 0.9)),
-                  ),
               ],
             ),
           ),
@@ -440,14 +418,14 @@ class _PreviousLeaderCard extends StatelessWidget {
   Widget _body(BuildContext context) {
     final isArabic = context.isArabic;
     final e = view.entry;
-    final note = isArabic ? e.noteAr : e.note;
+    final note = e.note;
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            (isArabic ? e.positionAr : e.position).toUpperCase(),
+            e.position.toUpperCase(),
             textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: AppColors.textMuted,
@@ -490,7 +468,7 @@ class _PreviousLeaderCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              isArabic ? s.titleAr : s.title,
+                              s.title,
                               textDirection: isArabic
                                   ? TextDirection.rtl
                                   : TextDirection.ltr,
@@ -502,7 +480,7 @@ class _PreviousLeaderCard extends StatelessWidget {
                                       letterSpacing: 0.8),
                             ),
                             Text(
-                              isArabic ? s.bodyAr : s.body,
+                              s.body,
                               textDirection: isArabic
                                   ? TextDirection.rtl
                                   : TextDirection.ltr,
@@ -570,27 +548,19 @@ class _PreviousLeaderCard extends StatelessWidget {
   }
 }
 
-/// Mutable biography section row in the form (title + body, bilingual).
+/// Mutable biography section row in the form (title + body).
 class _SectionRow {
   _SectionRow({
     String title = '',
-    String titleAr = '',
     String body = '',
-    String bodyAr = '',
   })  : title = TextEditingController(text: title),
-        titleAr = TextEditingController(text: titleAr),
-        body = TextEditingController(text: body),
-        bodyAr = TextEditingController(text: bodyAr);
+        body = TextEditingController(text: body);
   final TextEditingController title;
-  final TextEditingController titleAr;
   final TextEditingController body;
-  final TextEditingController bodyAr;
 
   void dispose() {
     title.dispose();
-    titleAr.dispose();
     body.dispose();
-    bodyAr.dispose();
   }
 }
 
@@ -605,17 +575,13 @@ class _PreviousLeaderForm extends StatefulWidget {
 class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
   late final _position =
       TextEditingController(text: widget.existing?.entry.position ?? '');
-  late final _positionAr =
-      TextEditingController(text: widget.existing?.entry.positionAr ?? '');
   late final _term =
       TextEditingController(text: widget.existing?.entry.termYears ?? '');
-  // Note / Note (Arabic) are no longer edited here (the "Early Life" field was
-  // removed — the Biography Sections cover it), but their existing values are
-  // preserved unedited through save so nothing is lost.
+  // Note is no longer edited here (the "Early Life" field was removed — the
+  // Biography Sections cover it), but its existing value is preserved unedited
+  // through save so nothing is lost.
   late final _note =
       TextEditingController(text: widget.existing?.entry.note ?? '');
-  late final _noteAr =
-      TextEditingController(text: widget.existing?.entry.noteAr ?? '');
   late int _accent = widget.existing?.entry.accent ?? kHistoryAccents[1];
   Member? _member;
   final List<_SectionRow> _sections = [];
@@ -632,9 +598,7 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
           setState(() {
             _sections.addAll(rows.map((s) => _SectionRow(
                   title: s.title,
-                  titleAr: s.titleAr,
                   body: s.body,
-                  bodyAr: s.bodyAr,
                 )));
           });
         },
@@ -644,7 +608,7 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
 
   @override
   void dispose() {
-    for (final c in [_position, _positionAr, _term, _note, _noteAr]) {
+    for (final c in [_position, _term, _note]) {
       c.dispose();
     }
     for (final s in _sections) {
@@ -729,14 +693,6 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
               ),
               const SizedBox(height: AppSpacing.md),
               TextField(
-                controller: _positionAr,
-                textDirection: TextDirection.rtl,
-                decoration: InputDecoration(
-                    labelText:
-                        context.tr('Position (Arabic)', 'المنصب بالعربية')),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
                 controller: _term,
                 decoration: InputDecoration(
                     labelText: context.tr(
@@ -782,30 +738,11 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       TextField(
-                        controller: _sections[i].titleAr,
-                        textDirection: TextDirection.rtl,
-                        decoration: InputDecoration(
-                            labelText: context.tr(
-                                'Section Title (Arabic)', 'عنوان القسم (عربي)')),
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      TextField(
                         controller: _sections[i].body,
                         minLines: 2,
                         maxLines: 5,
                         decoration: InputDecoration(
                             labelText: context.tr('Content', 'المحتوى'),
-                            alignLabelWithHint: true),
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      TextField(
-                        controller: _sections[i].bodyAr,
-                        minLines: 2,
-                        maxLines: 5,
-                        textDirection: TextDirection.rtl,
-                        decoration: InputDecoration(
-                            labelText:
-                                context.tr('Content (Arabic)', 'المحتوى (عربي)'),
                             alignLabelWithHint: true),
                       ),
                     ],
@@ -866,10 +803,8 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
               : () => Navigator.pop(context, (
                     member: member,
                     position: _position.text.trim(),
-                    positionAr: _positionAr.text.trim(),
                     termYears: _term.text.trim(),
                     note: _note.text.trim(),
-                    noteAr: _noteAr.text.trim(),
                     accent: _accent,
                     sections: [
                       for (final s in _sections)
@@ -877,9 +812,7 @@ class _PreviousLeaderFormState extends State<_PreviousLeaderForm> {
                             s.body.text.trim().isNotEmpty)
                           (
                             title: s.title.text.trim(),
-                            titleAr: s.titleAr.text.trim(),
                             body: s.body.text.trim(),
-                            bodyAr: s.bodyAr.text.trim(),
                           ),
                     ],
                   )),

@@ -96,9 +96,7 @@ class DepartmentsScreen extends StatelessWidget {
     if (r == null) return;
     await repo.create(
       name: r.name,
-      nameAr: r.nameAr,
       description: r.description,
-      descriptionAr: r.descriptionAr,
       iconKey: r.iconKey,
     );
   }
@@ -114,7 +112,7 @@ class DepartmentsScreen extends StatelessWidget {
       BuildContext context, DepartmentRepository repo, Department dept) async {
     final ok = await confirmDialog(
       context,
-      title: context.trRead('Delete “${dept.name}”?', 'حذف «${dept.nameAr}»؟'),
+      title: context.trRead('Delete “${dept.name}”?'),
       message: context.trRead('Its activities will also be removed.',
           'ستُحذف أنشطته أيضًا.'),
     );
