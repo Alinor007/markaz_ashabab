@@ -107,10 +107,10 @@ class _SearchScreenState extends State<SearchScreen> {
         groups.putIfAbsent(key, () => []).add(hit);
 
     for (final l in _leaders) {
-      if (_match(q, [l.name, l.nameAr, l.position, l.positionAr])) {
+      if (_match(q, [l.name, l.position])) {
         add('leaders', _Hit(
-          title: context.tr(l.name, l.nameAr),
-          subtitle: context.tr(l.position, l.positionAr),
+          title: l.name,
+          subtitle: l.position,
           icon: Icons.workspace_premium_outlined,
           categoryEn: 'Leaders', categoryAr: 'القادة',
           color: AppColors.navy,
@@ -119,11 +119,10 @@ class _SearchScreenState extends State<SearchScreen> {
       }
     }
     for (final m in _members) {
-      if (_match(q, [m.fullName, m.nameAr, m.occupation])) {
+      if (_match(q, [m.fullName, m.occupation])) {
         add('members', _Hit(
-          title: m.displayName(context.isArabic),
-          subtitle:
-              m.occupation.isEmpty ? m.levelLabel(context.isArabic) : m.occupation,
+          title: m.displayName(),
+          subtitle: m.occupation.isEmpty ? m.levelLabel() : m.occupation,
           icon: Icons.person_outline,
           categoryEn: 'Members', categoryAr: 'الأعضاء',
           color: AppColors.emerald,
@@ -132,9 +131,9 @@ class _SearchScreenState extends State<SearchScreen> {
       }
     }
     for (final d in _departments) {
-      if (_match(q, [d.name, d.nameAr, d.description, d.descriptionAr])) {
+      if (_match(q, [d.name, d.description])) {
         add('departments', _Hit(
-          title: d.displayName(context.isArabic),
+          title: d.displayName(),
           subtitle: context.tr('Department', 'قسم'),
           icon: d.icon,
           categoryEn: 'Departments', categoryAr: 'الأقسام',
@@ -144,10 +143,10 @@ class _SearchScreenState extends State<SearchScreen> {
       }
     }
     for (final r in _reports) {
-      if (_match(q, [r.title, r.titleAr])) {
+      if (_match(q, [r.title])) {
         add('reports', _Hit(
-          title: context.tr(r.title, r.titleAr.isEmpty ? r.title : r.titleAr),
-          subtitle: _deptById[r.departmentId]?.displayName(context.isArabic) ??
+          title: r.title,
+          subtitle: _deptById[r.departmentId]?.displayName() ??
               context.tr('Report', 'تقرير'),
           icon: Icons.description_outlined,
           categoryEn: 'Reports', categoryAr: 'التقارير',
@@ -157,12 +156,10 @@ class _SearchScreenState extends State<SearchScreen> {
       }
     }
     for (final p in _photos) {
-      if (_match(q, [p.title, p.titleAr, p.event, p.eventAr])) {
+      if (_match(q, [p.title, p.event])) {
         add('photos', _Hit(
-          title: p.titleAr.isNotEmpty
-              ? context.tr(p.title, p.titleAr)
-              : p.title,
-          subtitle: '${context.tr(p.event, p.eventAr.isEmpty ? p.event : p.eventAr)} · ${p.year}',
+          title: p.title,
+          subtitle: '${p.event} · ${p.year}',
           icon: Icons.photo_outlined,
           categoryEn: 'Photos', categoryAr: 'الصور',
           color: AppColors.emerald,

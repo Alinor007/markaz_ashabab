@@ -69,7 +69,6 @@ class _GroupDescription extends StatelessWidget {
   Future<void> _edit(
       BuildContext context, LeadershipGroupInfoData? info) async {
     final desc = TextEditingController(text: info?.description ?? '');
-    final descAr = TextEditingController(text: info?.descriptionAr ?? '');
     final repo = context.read<LeaderRepository>();
     final ok = await showDialog<bool>(
       context: context,
@@ -92,17 +91,6 @@ class _GroupDescription extends StatelessWidget {
                       labelText: context.tr('Description', 'الوصف'),
                       alignLabelWithHint: true),
                 ),
-                const SizedBox(height: AppSpacing.md),
-                TextField(
-                  controller: descAr,
-                  minLines: 3,
-                  maxLines: 8,
-                  textDirection: TextDirection.rtl,
-                  decoration: InputDecoration(
-                      labelText:
-                          context.tr('Description (Arabic)', 'الوصف (عربي)'),
-                      alignLabelWithHint: true),
-                ),
               ],
             ),
           ),
@@ -118,22 +106,19 @@ class _GroupDescription extends StatelessWidget {
       ),
     );
     if (ok == true && context.mounted) {
-      await repo.setGroupDescription(
-          code, desc.text.trim(), descAr.text.trim());
+      await repo.setGroupDescription(code, desc.text.trim());
     }
     desc.dispose();
-    descAr.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     final repo = context.read<LeaderRepository>();
     return StreamBuilder<LeadershipGroupInfoData?>(
       stream: repo.watchGroupInfo(code),
       builder: (context, snap) {
         final info = snap.data;
-        final text = isArabic ? (info?.descriptionAr ?? '') : (info?.description ?? '');
+        final text = info?.description ?? '';
         return Container(
           decoration: BoxDecoration(
             color: AppColors.surfaceAlt,
@@ -170,8 +155,6 @@ class _GroupDescription extends StatelessWidget {
                 text.trim().isEmpty
                     ? context.tr('No description provided.', 'لا يوجد وصف.')
                     : text,
-                textDirection:
-                    isArabic ? TextDirection.rtl : TextDirection.ltr,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
@@ -241,8 +224,7 @@ class _PositionsGroup extends StatelessWidget {
     final r = await NameFormDialog.show(context,
         title: context.trRead('Add Position', 'إضافة منصب'));
     if (r == null || !context.mounted) return;
-    await _leaders(context)
-        .addPosition(code: code, title: r.name, titleAr: r.nameAr);
+    await _leaders(context).addPosition(code: code, title: r.name);
   }
 
   Future<void> _edit(BuildContext context, Leader p) async {
@@ -250,10 +232,9 @@ class _PositionsGroup extends StatelessWidget {
       context,
       title: context.trRead('Edit Position', 'تعديل المنصب'),
       name: p.position,
-      nameAr: p.positionAr,
     );
     if (r == null || !context.mounted) return;
-    await _leaders(context).editPosition(p.id, r.name, r.nameAr);
+    await _leaders(context).editPosition(p.id, r.name);
   }
 
   Future<void> _delete(BuildContext context, Leader p) async {
@@ -261,8 +242,7 @@ class _PositionsGroup extends StatelessWidget {
       context,
       title: context.trRead('Remove position?', 'إزالة المنصب؟'),
       message: context.trRead(
-          'Remove the "${p.position}" position? This cannot be undone.',
-          'إزالة منصب «${p.positionAr}»؟ لا يمكن التراجع.'),
+          'Remove the "${p.position}" position? This cannot be undone.'),
     );
     if (!ok || !context.mounted) return;
     await _leaders(context).delete(p.id);
@@ -278,9 +258,7 @@ class _PositionsGroup extends StatelessWidget {
     await _audit(context).log(
       username: _actor(context),
       action: 'Assigned "${picked.fullName}" as ${p.position}',
-      actionAr: 'عيّن «${picked.fullName}» في منصب ${p.positionAr}',
       module: 'Leadership',
-      moduleAr: 'القيادة',
     );
   }
 
@@ -290,9 +268,7 @@ class _PositionsGroup extends StatelessWidget {
     await _audit(context).log(
       username: _actor(context),
       action: 'Vacated the ${p.position} position',
-      actionAr: 'أخلى منصب ${p.positionAr}',
       module: 'Leadership',
-      moduleAr: 'القيادة',
     );
   }
 
@@ -637,14 +613,9 @@ class _PositionCard extends StatelessWidget {
   /// The white lower section: name (serif), Arabic name (gold), office, and the
   /// optional term line.
   Widget _body(BuildContext context, Member? member) {
-    final isArabic = context.isArabic;
-    final office = isArabic ? position.positionAr : position.position;
-    final name = member?.displayName(isArabic) ??
+    final office = position.position;
+    final name = member?.displayName() ??
         context.tr('Vacant Position', 'منصب شاغر');
-    final secondaryAr =
-        (!isArabic && member != null && member.nameAr.trim().isNotEmpty)
-            ? member.nameAr
-            : '';
     return Padding(
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.lg, AppSpacing.xs, AppSpacing.lg, AppSpacing.lg),
@@ -657,8 +628,6 @@ class _PositionCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   name,
-                  textDirection:
-                      isArabic ? TextDirection.rtl : TextDirection.ltr,
                   style: TextStyle(
                     fontFamily: AppTypography.serif,
                     fontSize: prominent ? 26 : 22,
@@ -668,22 +637,11 @@ class _PositionCard extends StatelessWidget {
                   ),
                 ),
               ),
-              if (secondaryAr.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(left: AppSpacing.sm, top: 4),
-                  child: Text(
-                    secondaryAr,
-                    textDirection: TextDirection.rtl,
-                    style: AppTypography.arabic(
-                        fontSize: 15, color: AppColors.goldDeep),
-                  ),
-                ),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
             office,
-            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
             style: TextStyle(
               fontFamily: AppTypography.serif,
               fontSize: 17,

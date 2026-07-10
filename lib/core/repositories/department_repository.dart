@@ -29,9 +29,7 @@ class DepartmentRepository {
 
   Future<void> create({
     required String name,
-    required String nameAr,
     String description = '',
-    String descriptionAr = '',
     String iconKey = 'group',
     int accent = 0xFF0B5D3B,
     String headName = '',
@@ -41,9 +39,7 @@ class DepartmentRepository {
     return _db.into(_db.departments).insert(DepartmentsCompanion.insert(
           id: _id('dept'),
           name: name,
-          nameAr: Value(nameAr.isEmpty ? name : nameAr),
           description: Value(description),
-          descriptionAr: Value(descriptionAr),
           iconKey: Value(iconKey),
           accent: Value(accent),
           headName: Value(headName),
@@ -137,7 +133,6 @@ class DepartmentRepository {
   Future<void> addActivity({
     required String departmentId,
     required String title,
-    String titleAr = '',
     String description = '',
     String date = '',
     String status = 'planned',
@@ -148,7 +143,6 @@ class DepartmentRepository {
             id: _id('act'),
             departmentId: departmentId,
             title: title,
-            titleAr: Value(titleAr),
             description: Value(description),
             date: Value(date),
             status: Value(status),

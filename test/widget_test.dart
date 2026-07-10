@@ -50,7 +50,6 @@ void main() {
       final repo = UserRepository(db);
       await repo.create(
         fullName: 'Aisha Lomondot',
-        fullNameAr: 'عائشة لوموندوت',
         username: 'a.lomondot',
         email: 'a@markaz.org',
         password: 'secret12',
@@ -67,9 +66,7 @@ void main() {
       // Board is not seeded, so it cleanly verifies category filtering.
       await repo.create(
         name: 'Dr. Abdullah Macarambon',
-        nameAr: 'عبد الله',
         position: 'Chairman',
-        positionAr: 'الرئيس',
         category: LeadershipCategory.board,
       );
       final board =
@@ -98,7 +95,7 @@ void main() {
       // Each leadership group has a seeded, editable description.
       expect((await repo.watchGroupInfo('office_president').first)?.description,
           isNotEmpty);
-      await repo.setGroupDescription('board', 'Custom', 'مخصص');
+      await repo.setGroupDescription('board', 'Custom');
       expect(
           (await repo.watchGroupInfo('board').first)?.description, 'Custom');
     });
@@ -107,11 +104,11 @@ void main() {
       final tarbiya = TarbiyaRepository(db);
       final members = MemberRepository(db);
       final leaders = LeaderRepository(db);
-      await tarbiya.createArea(name: 'Lead Area', nameAr: 'أ');
+      await tarbiya.createArea(name: 'Lead Area');
       // Tarbiya seeds default areas, so find ours by name rather than .single.
       final area =
           (await tarbiya.getAreas()).firstWhere((a) => a.name == 'Lead Area');
-      await tarbiya.createShuba(areaId: area.id, name: 'S', nameAr: 'ش');
+      await tarbiya.createShuba(areaId: area.id, name: 'S');
       final shuba = (await tarbiya.watchShubas(area.id).first).single;
       final memberId = await members.insertMember(MembersCompanion(
         shubaId: Value(shuba.id),
@@ -148,9 +145,9 @@ void main() {
         (await tarbiya.getAreas()).firstWhere((a) => a.name == testAreaName);
 
     Future<String> seedMember({int level = 1, String status = 'active'}) async {
-      await tarbiya.createArea(name: testAreaName, nameAr: 'منطقة الاختبار');
+      await tarbiya.createArea(name: testAreaName);
       final area = await testArea();
-      await tarbiya.createShuba(areaId: area.id, name: 'Shu\'ba A', nameAr: 'شعبة');
+      await tarbiya.createShuba(areaId: area.id, name: 'Shu\'ba A');
       final shuba = (await tarbiya.watchShubas(area.id).first).single;
       return members.insertMember(MembersCompanion(
         shubaId: Value(shuba.id),
@@ -296,9 +293,7 @@ void main() {
       // Youth & Students was added in schema v7.
       final youth = depts.firstWhere((d) => d.id == 'youth');
       expect(youth.description, isNotEmpty);
-      // Bilingual overviews are seeded (Arabic added in schema v8).
-      expect(youth.descriptionAr, isNotEmpty);
-      expect(depts.firstWhere((d) => d.id == 'dawah').descriptionAr, isNotEmpty);
+      expect(depts.firstWhere((d) => d.id == 'dawah').description, isNotEmpty);
     });
 
     test('report CRUD + department filtering', () async {
@@ -382,10 +377,10 @@ void main() {
       final tarbiya = TarbiyaRepository(db);
       final members = MemberRepository(db);
       final depts = DepartmentRepository(db);
-      await tarbiya.createArea(name: 'Dept Area', nameAr: 'أ');
+      await tarbiya.createArea(name: 'Dept Area');
       final area =
           (await tarbiya.getAreas()).firstWhere((a) => a.name == 'Dept Area');
-      await tarbiya.createShuba(areaId: area.id, name: 'S', nameAr: 'ش');
+      await tarbiya.createShuba(areaId: area.id, name: 'S');
       final shuba = (await tarbiya.watchShubas(area.id).first).single;
       final m1 = await members.insertMember(MembersCompanion(
           shubaId: Value(shuba.id),
@@ -428,9 +423,9 @@ void main() {
     Future<String> seedRealMember() async {
       final tarbiya = TarbiyaRepository(db);
       final members = MemberRepository(db);
-      await tarbiya.createArea(name: 'FK Area', nameAr: 'منطقة');
+      await tarbiya.createArea(name: 'FK Area');
       final area = (await tarbiya.getAreas()).firstWhere((a) => a.name == 'FK Area');
-      await tarbiya.createShuba(areaId: area.id, name: 'FK Shuba', nameAr: 'شعبة');
+      await tarbiya.createShuba(areaId: area.id, name: 'FK Shuba');
       final shuba = (await tarbiya.watchShubas(area.id).first).single;
       return members.insertMember(MembersCompanion(
         shubaId: Value(shuba.id),
@@ -509,9 +504,9 @@ void main() {
     test('deleting a member removes its photo file', () async {
       final tarbiya = TarbiyaRepository(db);
       final members = MemberRepository(db);
-      await tarbiya.createArea(name: 'Area', nameAr: 'منطقة');
+      await tarbiya.createArea(name: 'Area');
       final area = (await tarbiya.getAreas()).firstWhere((a) => a.name == 'Area');
-      await tarbiya.createShuba(areaId: area.id, name: 'Shuba', nameAr: 'شعبة');
+      await tarbiya.createShuba(areaId: area.id, name: 'Shuba');
       final shuba = (await tarbiya.watchShubas(area.id).first).single;
 
       final tmp = tempImage('mem');
@@ -537,9 +532,7 @@ void main() {
 
       final leader = await leaders.create(
         name: 'Test Leader',
-        nameAr: 'قائد',
         position: 'President',
-        positionAr: 'الرئيس',
         category: LeadershipCategory.officePresident,
         photoPath: tmp.path,
       );
@@ -635,8 +628,7 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('boots to login, signs in, reaches home, toggles AR',
-        (tester) async {
+    testWidgets('boots to login, signs in, reaches home', (tester) async {
       useTabletSurface(tester);
       final db = AppDatabase.memory();
       addTearDown(db.close);
@@ -648,13 +640,10 @@ void main() {
       expect(find.text('Sign In'), findsOneWidget);
       await signIn(tester);
 
-      // Reached the app shell (left the login screen).
+      // Reached the app shell (left the login screen) — the sidebar shows the
+      // English Home navigation label.
       expect(find.text('Sign In'), findsNothing);
-
-      // Language toggle → Arabic home label in the sidebar, RTL.
-      await tester.tap(find.text('ع'));
-      await tester.pumpAndSettle();
-      expect(find.text('الرئيسية'), findsWidgets);
+      expect(find.text('Home'), findsWidgets);
     });
 
     testWidgets('leadership sidebar dropdown reveals the three pages',

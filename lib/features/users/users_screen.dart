@@ -5,7 +5,6 @@ import '../../core/auth/roles.dart';
 import '../../core/auth/session_controller.dart';
 import '../../core/data/app_database.dart';
 import '../../core/data/models.dart';
-import '../../core/i18n/locale_controller.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/repositories/audit_repository.dart';
 import '../../core/repositories/department_repository.dart';
@@ -59,7 +58,6 @@ class _UsersScreenState extends State<UsersScreen> {
   Future<void> _handleAction(User user, UserAction action) async {
     final session = context.read<SessionController>();
     final selfId = session.user?.id;
-    final ar = context.read<LocaleController>().isArabic;
     switch (action) {
       case UserAction.edit:
         await _openUserDialog(existing: user);
@@ -67,9 +65,7 @@ class _UsersScreenState extends State<UsersScreen> {
         await _resetPassword(user);
       case UserAction.toggleActive:
         if (user.id == selfId) {
-          _toast(ar
-              ? 'لا يمكنك تعطيل حسابك.'
-              : 'You cannot disable your own account.');
+          _toast('You cannot disable your own account.');
           return;
         }
         final repo = _repo;
@@ -80,16 +76,11 @@ class _UsersScreenState extends State<UsersScreen> {
           username: actor,
           action:
               '${user.active ? 'Disabled' : 'Enabled'} user "${user.username}"',
-          actionAr:
-              '${user.active ? 'عطّل' : 'فعّل'} المستخدم «${user.username}»',
           module: 'User Management',
-          moduleAr: 'إدارة المستخدمين',
         );
       case UserAction.delete:
         if (user.id == selfId) {
-          _toast(ar
-              ? 'لا يمكنك حذف حسابك.'
-              : 'You cannot delete your own account.');
+          _toast('You cannot delete your own account.');
           return;
         }
         await _confirmDelete(user);
@@ -100,7 +91,6 @@ class _UsersScreenState extends State<UsersScreen> {
     final repo = _repo;
     final audit = _audit;
     final actor = _actor;
-    final ar = context.read<LocaleController>().isArabic;
     final controller = TextEditingController();
     var obscured = true;
     final newPassword = await showDialog<String>(
@@ -139,9 +129,7 @@ class _UsersScreenState extends State<UsersScreen> {
     );
     if (newPassword == null || newPassword.length < 4) {
       if (newPassword != null) {
-        _toast(ar
-            ? 'يجب أن تكون كلمة المرور 4 أحرف على الأقل.'
-            : 'Password must be at least 4 characters.');
+        _toast('Password must be at least 4 characters.');
       }
       return;
     }
@@ -149,18 +137,15 @@ class _UsersScreenState extends State<UsersScreen> {
     await audit.log(
       username: actor,
       action: 'Reset password for "${user.username}"',
-      actionAr: 'أعاد تعيين كلمة مرور «${user.username}»',
       module: 'User Management',
-      moduleAr: 'إدارة المستخدمين',
     );
-    _toast(ar ? 'تم تحديث كلمة المرور.' : 'Password updated.');
+    _toast('Password updated.');
   }
 
   Future<void> _confirmDelete(User user) async {
     final repo = _repo;
     final audit = _audit;
     final actor = _actor;
-    final ar = context.read<LocaleController>().isArabic;
     final ok = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -185,18 +170,15 @@ class _UsersScreenState extends State<UsersScreen> {
     await audit.log(
       username: actor,
       action: 'Deleted user "${user.username}"',
-      actionAr: 'حذف المستخدم «${user.username}»',
       module: 'User Management',
-      moduleAr: 'إدارة المستخدمين',
     );
-    _toast(ar ? 'تم حذف المستخدم.' : 'User deleted.');
+    _toast('User deleted.');
   }
 
   Future<void> _openUserDialog({User? existing}) async {
     final repo = _repo;
     final audit = _audit;
     final actor = _actor;
-    final ar = context.read<LocaleController>().isArabic;
     final result = await showDialog<_UserFormResult>(
       context: context,
       builder: (_) => _UserFormDialog(existing: existing, repo: repo),
@@ -205,7 +187,6 @@ class _UsersScreenState extends State<UsersScreen> {
     if (existing == null) {
       await repo.create(
         fullName: result.fullName,
-        fullNameAr: result.fullNameAr,
         username: result.username,
         email: result.email,
         password: result.password,
@@ -215,16 +196,13 @@ class _UsersScreenState extends State<UsersScreen> {
       await audit.log(
         username: actor,
         action: 'Created user "${result.username}"',
-        actionAr: 'أنشأ المستخدم «${result.username}»',
         module: 'User Management',
-        moduleAr: 'إدارة المستخدمين',
       );
-      _toast(ar ? 'تم إنشاء المستخدم.' : 'User created.');
+      _toast('User created.');
     } else {
       await repo.updateProfile(
         id: existing.id,
         fullName: result.fullName,
-        fullNameAr: result.fullNameAr,
         username: result.username,
         email: result.email,
         role: result.role,
@@ -233,11 +211,9 @@ class _UsersScreenState extends State<UsersScreen> {
       await audit.log(
         username: actor,
         action: 'Updated user "${result.username}"',
-        actionAr: 'حدّث المستخدم «${result.username}»',
         module: 'User Management',
-        moduleAr: 'إدارة المستخدمين',
       );
-      _toast(ar ? 'تم تحديث المستخدم.' : 'User updated.');
+      _toast('User updated.');
     }
   }
 
@@ -312,7 +288,6 @@ class _UsersScreenState extends State<UsersScreen> {
 class _UserFormResult {
   _UserFormResult({
     required this.fullName,
-    required this.fullNameAr,
     required this.username,
     required this.email,
     required this.password,
@@ -320,7 +295,6 @@ class _UserFormResult {
     this.departmentId,
   });
   final String fullName;
-  final String fullNameAr;
   final String username;
   final String email;
   final String password;
@@ -343,8 +317,6 @@ class _UserFormDialogState extends State<_UserFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late final _fullName =
       TextEditingController(text: widget.existing?.fullName ?? '');
-  late final _fullNameAr =
-      TextEditingController(text: widget.existing?.fullNameAr ?? '');
   late final _username =
       TextEditingController(text: widget.existing?.username ?? '');
   late final _email = TextEditingController(text: widget.existing?.email ?? '');
@@ -358,7 +330,6 @@ class _UserFormDialogState extends State<_UserFormDialog> {
   @override
   void dispose() {
     _fullName.dispose();
-    _fullNameAr.dispose();
     _username.dispose();
     _email.dispose();
     _password.dispose();
@@ -371,7 +342,6 @@ class _UserFormDialogState extends State<_UserFormDialog> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    final ar = context.read<LocaleController>().isArabic;
     setState(() => _saving = true);
     final exists = await widget.repo.usernameExists(
       _username.text,
@@ -380,15 +350,13 @@ class _UserFormDialogState extends State<_UserFormDialog> {
     if (!mounted) return;
     if (exists) {
       setState(() => _saving = false);
-      _showFieldError(
-          ar ? 'اسم المستخدم مستخدم بالفعل.' : 'Username already taken.');
+      _showFieldError('Username already taken.');
       return;
     }
     Navigator.pop(
       context,
       _UserFormResult(
         fullName: _fullName.text.trim(),
-        fullNameAr: _fullNameAr.text.trim(),
         username: _username.text.trim(),
         email: _email.text.trim(),
         password: _password.text.isEmpty ? 'changeme123' : _password.text,
@@ -424,14 +392,6 @@ class _UserFormDialogState extends State<_UserFormDialog> {
                 validator: _required,
                 decoration: InputDecoration(
                     labelText: context.tr('Full Name', 'الاسم الكامل')),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              TextFormField(
-                controller: _fullNameAr,
-                textDirection: TextDirection.rtl,
-                decoration: InputDecoration(
-                    labelText: context.tr('Full Name (Arabic)',
-                        'الاسم الكامل (عربي)')),
               ),
               const SizedBox(height: AppSpacing.md),
               TextFormField(
@@ -501,9 +461,7 @@ class _UserFormDialogState extends State<_UserFormDialog> {
                         for (final d in depts)
                           DropdownMenuItem(
                             value: d.id,
-                            child: Text(context.isArabic && d.nameAr.isNotEmpty
-                                ? d.nameAr
-                                : d.name),
+                            child: Text(d.name),
                           ),
                       ],
                       onChanged: (v) => setState(() => _departmentId = v),

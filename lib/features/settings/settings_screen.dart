@@ -5,11 +5,9 @@ import '../../core/auth/password_hasher.dart';
 import '../../core/auth/session_controller.dart';
 import '../../core/data/app_database.dart';
 import '../../core/data/models.dart';
-import '../../core/i18n/locale_controller.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/repositories/audit_repository.dart';
 import '../../core/repositories/user_repository.dart';
-import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../widgets/common/info_panel.dart';
 import '../../widgets/common/portrait_avatar.dart';
@@ -46,9 +44,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await audit.log(
       username: user.username,
       action: 'Changed own password',
-      actionAr: 'غيّر كلمة مروره الخاصة',
       module: 'Account',
-      moduleAr: 'الحساب',
     );
     if (!mounted) return;
     _toast(context.trRead('Password updated.', 'تم تحديث كلمة المرور.'));
@@ -56,8 +52,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
-    final locale = context.watch<LocaleController>();
     final user = context.watch<SessionController>().user;
 
     return ModulePage(
@@ -90,10 +84,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      user.displayName(isArabic),
-                                      textDirection: isArabic
-                                          ? TextDirection.rtl
-                                          : TextDirection.ltr,
+                                      user.displayName(),
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium,
@@ -112,27 +103,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                             ],
                           ),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.lg),
-                Expanded(
-                  flex: 2,
-                  child: InfoPanel(
-                    icon: Icons.translate_outlined,
-                    title: context.tr('Language', 'اللغة'),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          context.tr(
-                              'Choose the interface language.',
-                              'اختر لغة الواجهة.'),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        _LanguageChoice(locale: locale),
-                      ],
-                    ),
                   ),
                 ),
               ],
@@ -292,53 +262,6 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
           onPressed: _submit,
           child: Text(context.tr('Save', 'حفظ')),
         ),
-      ],
-    );
-  }
-}
-
-class _LanguageChoice extends StatelessWidget {
-  const _LanguageChoice({required this.locale});
-  final LocaleController locale;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget option(String label, bool active, VoidCallback onTap) {
-      return Expanded(
-        child: Material(
-          color: active ? AppColors.emerald : AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.sm),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(AppRadius.sm),
-            onTap: onTap,
-            child: Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-                border: Border.all(
-                    color: active ? AppColors.emerald : AppColors.border),
-              ),
-              child: Text(
-                label,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color:
-                          active ? AppColors.onEmerald : AppColors.textMuted,
-                    ),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return Row(
-      children: [
-        option('English', !locale.isArabic,
-            () => locale.setLocale(LocaleController.english)),
-        const SizedBox(width: AppSpacing.md),
-        option('العربية', locale.isArabic,
-            () => locale.setLocale(LocaleController.arabic)),
       ],
     );
   }

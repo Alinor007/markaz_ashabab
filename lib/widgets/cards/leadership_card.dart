@@ -5,7 +5,6 @@ import '../../core/data/models.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
-import '../../core/theme/app_typography.dart';
 import '../common/portrait_avatar.dart';
 
 /// A leadership profile card: portrait, bilingual name, position, service
@@ -29,7 +28,6 @@ class LeadershipCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isArabic = context.isArabic;
     final accent = leader.accentColor;
     return Container(
       decoration: BoxDecoration(
@@ -87,23 +85,16 @@ class LeadershipCard extends StatelessWidget {
                     size: 80),
                 const SizedBox(height: AppSpacing.md),
                 Text(
-                  isArabic ? leader.nameAr : leader.name,
+                  leader.name,
                   textAlign: TextAlign.center,
-                  textDirection:
-                      isArabic ? TextDirection.rtl : TextDirection.ltr,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: isArabic
-                      ? AppTypography.arabic(
-                          fontSize: 18, fontWeight: FontWeight.w700)
-                      : theme.textTheme.titleMedium,
+                  style: theme.textTheme.titleMedium,
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  isArabic ? leader.positionAr : leader.position,
+                  leader.position,
                   textAlign: TextAlign.center,
-                  textDirection:
-                      isArabic ? TextDirection.rtl : TextDirection.ltr,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.labelMedium?.copyWith(

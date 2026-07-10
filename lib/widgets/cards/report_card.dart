@@ -56,7 +56,6 @@ class ReportCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isArabic = context.isArabic;
     final (statusLabel, statusColor) =
         _objectiveStatusChip(context, report.formData);
 
@@ -108,19 +107,10 @@ class ReportCard extends StatelessWidget {
                           const SizedBox(width: AppSpacing.md),
                           Expanded(
                             child: Text(
-                              isArabic && report.titleAr.isNotEmpty
-                                  ? report.titleAr
-                                  : report.title,
-                              textDirection: isArabic
-                                  ? TextDirection.rtl
-                                  : TextDirection.ltr,
+                              report.title,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: isArabic
-                                  ? AppTypography.arabic(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700)
-                                  : theme.textTheme.titleMedium,
+                              style: theme.textTheme.titleMedium,
                             ),
                           ),
                           if (onEdit != null || onDelete != null)
@@ -192,16 +182,10 @@ class ReportCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      if (report.summary.isNotEmpty ||
-                          report.summaryAr.isNotEmpty) ...[
+                      if (report.summary.isNotEmpty) ...[
                         const SizedBox(height: AppSpacing.sm),
                         Text(
-                          isArabic && report.summaryAr.isNotEmpty
-                              ? report.summaryAr
-                              : report.summary,
-                          textDirection: isArabic
-                              ? TextDirection.rtl
-                              : TextDirection.ltr,
+                          report.summary,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodyMedium,

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../core/i18n/strings.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
-import '../../core/theme/app_typography.dart';
 import '../../widgets/common/brand_emblem.dart';
 
 /// The Home landing page: a single brand-forward hero — emblem, bilingual
@@ -62,18 +61,6 @@ class _BrandHero extends StatelessWidget {
           children: [
             const BrandEmblem(size: 493, onLight: true),
             const SizedBox(height: AppSpacing.lg),
-            Text(
-              s.orgNameArabic,
-              textDirection: TextDirection.rtl,
-              textAlign: TextAlign.center,
-              style: AppTypography.arabic(
-                fontSize: 26,
-                color: AppColors.navy,
-                fontWeight: FontWeight.w700,
-                height: 1.4,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
             Text(
               s.orgName,
               textAlign: TextAlign.center,

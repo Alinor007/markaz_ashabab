@@ -4,9 +4,6 @@
 /// executives — these constants are only the starting point.
 library;
 
-/// A bilingual paragraph of narrative text.
-typedef Bilingual = ({String en, String ar});
-
 /// Founding statement shown on the History hero (a concise lead).
 const String kFoundingEn =
     'Founded in 1978 by young Filipino Muslim students abroad and formally '
@@ -14,108 +11,63 @@ const String kFoundingEn =
     'largest Islamic youth organizations in the Philippines, with 64 branches '
     'nationwide.';
 
-const String kFoundingAr =
-    'تأسس مركز الشباب المسلم عام ١٩٧٨م على أيدي طلابٍ مسلمين فلبينيين في المهجر، '
-    'وسُجِّل رسميًا عام ١٩٨٣م، حتى غدا من أكبر المنظمات الشبابية الإسلامية في '
-    'الفلبين، وله أربعة وستون فرعًا في أنحاء البلاد.';
-
 /// The full founding narrative, paragraph by paragraph.
-const List<Bilingual> kHistoryNarrative = [
-  (
-    en: 'The roots of the organization trace back to 1978, when a group of '
-        'young Filipino Muslim (Moro) students studying abroad — particularly '
-        'in the State of Kuwait — were moved by the social conditions facing '
-        'their people back home, especially in Lanao del Sur. Anchored in the '
-        'Qur’anic principle that “Indeed, Allah will not change the '
-        'condition of a people until they change what is in themselves” '
-        '(13:11), they believed authentic reform had to spring from within the '
-        'people before it could transform the wider community.',
-    ar: 'تعود جذور المنظمة إلى عام ١٩٧٨م، حين تأثّرت مجموعةٌ من الطلاب المسلمين '
-        'الفلبينيين (المورو) الدارسين في الخارج — ولا سيما في دولة الكويت — '
-        'بالأوضاع الاجتماعية التي يعيشها أهلهم في الوطن، وبخاصة في لاناو ديل '
-        'سور. وانطلاقًا من قوله تعالى: «إِنَّ اللَّهَ لَا يُغَيِّرُ مَا بِقَوْمٍ '
-        'حَتَّى يُغَيِّرُوا مَا بِأَنفُسِهِمْ» (الرعد: ١١)، آمنوا بأن الإصلاح '
-        'الحق لا بدّ أن ينبع من داخل الناس قبل أن يُصلح المجتمع بأسره.',
-  ),
-  (
-    en: 'Led by the late Muhammad Qasim Tarusan, these young idealists '
-        'organized a group guided by Islamic creed and ideology, first known '
-        'as “Shababul Muslim.” Their clear mission and tireless devotion to '
-        'spreading the Islamic message attracted people from all walks of '
-        'life, especially youth, even while still abroad.',
-    ar: 'وبقيادة المرحوم محمد قاسم تاروسان، نظّم هؤلاء الشباب المثاليون جماعةً '
-        'تستند إلى العقيدة والفكر الإسلامي، عُرفت أولًا باسم «شباب المسلم». وقد '
-        'استقطبت رسالتهم الواضحة وتفانيهم الدؤوب في نشر الدعوة الإسلامية الناس '
-        'من مختلف المشارب، وبخاصة الشباب، وهم لا يزالون في المهجر.',
-  ),
-  (
-    en: 'Five years later, in 1983, after more Filipino students returned home '
-        'from Middle Eastern universities, the group was formally reorganized '
-        'and registered with the Securities and Exchange Commission in Manila '
-        'under its present name: Markazosshabab Al-Muslim Fil-Filibbin Foundation, Inc. '
-        '(Philippine Muslim Youth Center).',
-    ar: 'وبعد خمس سنوات، في عام ١٩٨٣م، وعقب عودة المزيد من الطلاب الفلبينيين من '
-        'جامعات الشرق الأوسط، أُعيد تنظيم الجماعة رسميًا وسُجِّلت لدى هيئة '
-        'الأوراق المالية والبورصة في مانيلا باسمها الحالي: مركز الشباب المسلم '
-        'في الفلبين.',
-  ),
-  (
-    en: 'In the decades since, the brotherhood has survived and strengthened, '
-        'with its founders’ original goals remaining its driving force. '
-        'It grew into one of the largest non-profit, non-government Islamic '
-        'organizations in the Philippines, establishing 64 branches across '
-        'various cities and provinces nationwide.',
-    ar: 'وعلى مدى العقود التالية، صمدت هذه الأخوّة وازدادت قوة، وبقيت أهداف '
-        'مؤسسيها الأولى هي محرّكها الأساس. فنمت لتصبح من أكبر المنظمات الإسلامية '
-        'غير الربحية وغير الحكومية في الفلبين، وأنشأت أربعة وستين فرعًا في مدنٍ '
-        'ومحافظات متعددة على امتداد البلاد.',
-  ),
+const List<String> kHistoryNarrative = [
+  'The roots of the organization trace back to 1978, when a group of '
+      'young Filipino Muslim (Moro) students studying abroad — particularly '
+      'in the State of Kuwait — were moved by the social conditions facing '
+      'their people back home, especially in Lanao del Sur. Anchored in the '
+      'Qur’anic principle that “Indeed, Allah will not change the '
+      'condition of a people until they change what is in themselves” '
+      '(13:11), they believed authentic reform had to spring from within the '
+      'people before it could transform the wider community.',
+  'Led by the late Muhammad Qasim Tarusan, these young idealists '
+      'organized a group guided by Islamic creed and ideology, first known '
+      'as “Shababul Muslim.” Their clear mission and tireless devotion to '
+      'spreading the Islamic message attracted people from all walks of '
+      'life, especially youth, even while still abroad.',
+  'Five years later, in 1983, after more Filipino students returned home '
+      'from Middle Eastern universities, the group was formally reorganized '
+      'and registered with the Securities and Exchange Commission in Manila '
+      'under its present name: Markazosshabab Al-Muslim Fil-Filibbin Foundation, Inc. '
+      '(Philippine Muslim Youth Center).',
+  'In the decades since, the brotherhood has survived and strengthened, '
+      'with its founders’ original goals remaining its driving force. '
+      'It grew into one of the largest non-profit, non-government Islamic '
+      'organizations in the Philippines, establishing 64 branches across '
+      'various cities and provinces nationwide.',
 ];
 
 /// Mission statement.
-const Bilingual kMission = (
-  en: 'To educate the generation and serve the community in a comprehensive '
-      'way for peace and prosperity.',
-  ar: 'تربية الجيل وخدمة المجتمع بصورةٍ شاملة من أجل السلام والازدهار.',
-);
+const String kMission =
+    'To educate the generation and serve the community in a comprehensive '
+    'way for peace and prosperity.';
 
 /// Vision statement.
-const Bilingual kVision = (
-  en: 'A firm Islamic-centered organization leading the ranks to strengthen '
-      'religiosity, serve the people, and develop the community.',
-  ar: 'منظمةٌ راسخةٌ محورها الإسلام، تقود الصفوف لتعزيز التديّن، وخدمة الناس، '
-      'وتنمية المجتمع.',
-);
+const String kVision =
+    'A firm Islamic-centered organization leading the ranks to strengthen '
+    'religiosity, serve the people, and develop the community.';
 
-/// A seed stat card for the History hero (value + bilingual label + icon/accent).
+/// A seed stat card for the History hero (value + label + icon/accent).
 typedef FactSeed = ({
   String value,
   String en,
-  String ar,
   String iconKey,
   int accent,
 });
 
 /// Default stat cards.
 const List<FactSeed> kDefaultFacts = [
-  (value: '1978', en: 'Founded', ar: 'التأسيس', iconKey: 'flag', accent: 0xFF0B5D3B),
-  (value: '64', en: 'Branches', ar: 'الفروع', iconKey: 'group', accent: 0xFF16243D),
-  (
-    value: '40+',
-    en: 'Years of Service',
-    ar: 'عامًا من الخدمة',
-    iconKey: 'star',
-    accent: 0xFFA8862F
-  ),
+  (value: '1978', en: 'Founded', iconKey: 'flag', accent: 0xFF0B5D3B),
+  (value: '64', en: 'Branches', iconKey: 'group', accent: 0xFF16243D),
+  (value: '40+', en: 'Years of Service', iconKey: 'star', accent: 0xFFA8862F),
 ];
 
 /// A seed milestone (timeline entry) in DB-friendly form (icon key + accent int).
 typedef MilestoneSeed = ({
   String year,
   String title,
-  String titleAr,
   String description,
-  String descriptionAr,
   String iconKey,
   int accent,
 });
@@ -124,39 +76,27 @@ const List<MilestoneSeed> kDefaultMilestones = [
   (
     year: '1978',
     title: 'Founding Abroad',
-    titleAr: 'النشأة في المهجر',
     description:
         'Young Filipino Muslim students in Kuwait, led by the late shiekh Muhammad '
         'Qasim Tarusan, form a group known as “Shababul Muslim.”',
-    descriptionAr:
-        'طلابٌ مسلمون فلبينيون في الكويت، بقيادة المرحوم محمد قاسم تاروسان، '
-        'يؤسسون جماعةً عُرفت باسم «شباب المسلم».',
     iconKey: 'mosque',
     accent: 0xFF0B5D3B,
   ),
   (
     year: '1983',
     title: 'Formal Registration',
-    titleAr: 'التسجيل الرسمي',
     description:
         'Reorganized as returning students come home, and registered with the '
         'SEC in Manila as Markazosshabab Al-Muslim Fil-Filibbin Foundation, Inc.',
-    descriptionAr:
-        'إعادة التنظيم مع عودة الطلاب، والتسجيل لدى هيئة الأوراق المالية في '
-        'مانيلا باسم مركز الشباب المسلم في الفلبين.',
     iconKey: 'flag',
     accent: 0xFF16243D,
   ),
   (
     year: 'Today',
     title: 'A Nationwide Brotherhood',
-    titleAr: 'أخوّةٌ على امتداد الوطن',
     description:
         'Grown into one of the largest non-profit Islamic organizations in the '
         'Philippines, with 64 branches across the country.',
-    descriptionAr:
-        'نمت لتصبح من أكبر المنظمات الإسلامية غير الربحية في الفلبين، ولها '
-        'أربعة وستون فرعًا في أنحاء البلاد.',
     iconKey: 'group',
     accent: 0xFFA8862F,
   ),

@@ -48,10 +48,8 @@ class TarbiyaLevelsScreen extends StatelessWidget {
             ),
           );
         }
-        final isArabic = context.isArabic;
         return ModulePage(
           english: shuba.name,
-          arabic: shuba.nameAr,
           breadcrumb: HierarchyBreadcrumb(
             crumbs: [
               Crumb(
@@ -59,10 +57,8 @@ class TarbiyaLevelsScreen extends StatelessWidget {
                 route: '/tarbiya',
                 icon: Icons.hub_outlined,
               ),
-              Crumb(
-                  label: isArabic ? area.nameAr : area.name,
-                  route: '/tarbiya/area/$areaId'),
-              Crumb(label: isArabic ? shuba.nameAr : shuba.name),
+              Crumb(label: area.name, route: '/tarbiya/area/$areaId'),
+              Crumb(label: shuba.name),
             ],
           ),
           child: StreamBuilder<Map<int, LevelCounts>>(

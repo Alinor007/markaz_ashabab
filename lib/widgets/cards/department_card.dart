@@ -8,7 +8,6 @@ import '../../core/patterns/geometric_pattern.dart';
 import '../../core/repositories/department_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
-import '../../core/theme/app_typography.dart';
 
 /// A department card: patterned banner with the department icon, bilingual
 /// name and description, and an optional edit/delete menu.
@@ -113,25 +112,16 @@ class DepartmentCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      department.displayName(isArabic),
-                      textDirection:
-                          isArabic ? TextDirection.rtl : TextDirection.ltr,
+                      department.displayName(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: isArabic
-                          ? AppTypography.arabic(
-                              fontSize: 20, fontWeight: FontWeight.w700)
-                          : theme.textTheme.titleLarge,
+                      style: theme.textTheme.titleLarge,
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     SizedBox(
                       height: 40,
                       child: Text(
-                        isArabic
-                            ? department.descriptionAr
-                            : department.description,
-                        textDirection:
-                            isArabic ? TextDirection.rtl : TextDirection.ltr,
+                        department.description,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodyMedium,

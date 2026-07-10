@@ -36,17 +36,12 @@ class LeaderRepository {
 
   Future<Leader> create({
     required String name,
-    required String nameAr,
     required String position,
-    required String positionAr,
     required LeadershipCategory category,
     String serviceYears = '',
     String bio = '',
-    String bioAr = '',
     String achievements = '',
-    String achievementsAr = '',
     String responsibilities = '',
-    String responsibilitiesAr = '',
     String email = '',
     String phone = '',
     String photoPath = '',
@@ -57,17 +52,12 @@ class LeaderRepository {
           LeadersCompanion.insert(
             id: id,
             name: name,
-            nameAr: nameAr.isEmpty ? name : nameAr,
             position: position,
-            positionAr: positionAr.isEmpty ? position : positionAr,
             category: category.code,
             serviceYears: Value(serviceYears),
             bio: Value(bio),
-            bioAr: Value(bioAr),
             achievements: Value(achievements),
-            achievementsAr: Value(achievementsAr),
             responsibilities: Value(responsibilities),
-            responsibilitiesAr: Value(responsibilitiesAr),
             email: Value(email),
             phone: Value(phone),
             photoPath: Value(photoPath),
@@ -80,17 +70,12 @@ class LeaderRepository {
   Future<void> updateLeader(
     String id, {
     required String name,
-    required String nameAr,
     required String position,
-    required String positionAr,
     required LeadershipCategory category,
     required String serviceYears,
     required String bio,
-    required String bioAr,
     required String achievements,
-    required String achievementsAr,
     required String responsibilities,
-    required String responsibilitiesAr,
     required String email,
     required String phone,
     String? photoPath,
@@ -98,17 +83,12 @@ class LeaderRepository {
     return (_db.update(_db.leaders)..where((l) => l.id.equals(id))).write(
       LeadersCompanion(
         name: Value(name),
-        nameAr: Value(nameAr.isEmpty ? name : nameAr),
         position: Value(position),
-        positionAr: Value(positionAr.isEmpty ? position : positionAr),
         category: Value(category.code),
         serviceYears: Value(serviceYears),
         bio: Value(bio),
-        bioAr: Value(bioAr),
         achievements: Value(achievements),
-        achievementsAr: Value(achievementsAr),
         responsibilities: Value(responsibilities),
-        responsibilitiesAr: Value(responsibilitiesAr),
         email: Value(email),
         phone: Value(phone),
         // Only overwrite the photo when a new value is supplied.
@@ -129,29 +109,24 @@ class LeaderRepository {
   Future<void> addPosition({
     required String code,
     required String title,
-    required String titleAr,
   }) {
     return _db.into(_db.leaders).insert(
           LeadersCompanion.insert(
             id: newId('position'),
             name: title,
-            nameAr: titleAr.isEmpty ? title : titleAr,
             position: title,
-            positionAr: titleAr.isEmpty ? title : titleAr,
             category: code,
             sortOrder: const Value(100),
           ),
         );
   }
 
-  /// Renames a position (title in both languages).
-  Future<void> editPosition(String id, String title, String titleAr) {
+  /// Renames a position.
+  Future<void> editPosition(String id, String title) {
     return (_db.update(_db.leaders)..where((l) => l.id.equals(id))).write(
       LeadersCompanion(
         name: Value(title),
-        nameAr: Value(titleAr.isEmpty ? title : titleAr),
         position: Value(title),
-        positionAr: Value(titleAr.isEmpty ? title : titleAr),
       ),
     );
   }
@@ -178,13 +153,11 @@ class LeaderRepository {
 
   /// Sets a leadership group's editable function description (creates the row
   /// if missing).
-  Future<void> setGroupDescription(
-      String code, String description, String descriptionAr) {
+  Future<void> setGroupDescription(String code, String description) {
     return _db.into(_db.leadershipGroupInfo).insertOnConflictUpdate(
           LeadershipGroupInfoCompanion(
             code: Value(code),
             description: Value(description),
-            descriptionAr: Value(descriptionAr),
           ),
         );
   }
@@ -213,10 +186,8 @@ class LeaderRepository {
   Future<String> addPreviousLeader({
     required String memberId,
     required String position,
-    required String positionAr,
     required String termYears,
     String note = '',
-    String noteAr = '',
     int accent = 0xFF16243D,
   }) async {
     final all = await _db.select(_db.previousLeaders).get();
@@ -228,10 +199,8 @@ class LeaderRepository {
             id: id,
             memberId: memberId,
             position: Value(position),
-            positionAr: Value(positionAr.isEmpty ? position : positionAr),
             termYears: Value(termYears),
             note: Value(note),
-            noteAr: Value(noteAr),
             accent: Value(accent),
             sortOrder: Value(nextSort),
           ),
@@ -243,20 +212,16 @@ class LeaderRepository {
     String id, {
     required String memberId,
     required String position,
-    required String positionAr,
     required String termYears,
     required String note,
-    required String noteAr,
     required int accent,
   }) =>
       (_db.update(_db.previousLeaders)..where((p) => p.id.equals(id))).write(
         PreviousLeadersCompanion(
           memberId: Value(memberId),
           position: Value(position),
-          positionAr: Value(positionAr.isEmpty ? position : positionAr),
           termYears: Value(termYears),
           note: Value(note),
-          noteAr: Value(noteAr),
           accent: Value(accent),
         ),
       );
@@ -288,9 +253,7 @@ class LeaderRepository {
   Future<void> addSection({
     required String previousLeaderId,
     required String title,
-    required String titleAr,
     required String body,
-    required String bodyAr,
     required int sortOrder,
   }) =>
       _db.into(_db.previousLeaderSections).insert(
@@ -298,9 +261,7 @@ class LeaderRepository {
               id: newId('prevsection'),
               previousLeaderId: previousLeaderId,
               title: Value(title),
-              titleAr: Value(titleAr),
               body: Value(body),
-              bodyAr: Value(bodyAr),
               sortOrder: Value(sortOrder),
             ),
           );

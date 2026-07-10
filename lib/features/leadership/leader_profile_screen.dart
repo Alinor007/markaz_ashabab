@@ -291,9 +291,7 @@ class _LeaderProfileCard extends StatelessWidget {
     final isArabic = context.isArabic;
 
     final office = () {
-      final p = entry == null
-          ? ''
-          : (isArabic ? entry!.positionAr : entry!.position).trim();
+      final p = entry == null ? '' : entry!.position.trim();
       if (p.isNotEmpty) return p;
       return member.occupation.trim().isEmpty
           ? context.tr('Member', 'عضو')
@@ -337,28 +335,10 @@ class _LeaderProfileCard extends StatelessWidget {
                     height: 1.2,
                   ),
           ),
-          // The name in the other language, when both are recorded.
-          if ((isArabic ? member.fullName : member.nameAr).trim().isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: Text(
-                isArabic ? member.fullName : member.nameAr,
-                textAlign: TextAlign.center,
-                textDirection: isArabic ? TextDirection.ltr : TextDirection.rtl,
-                style: isArabic
-                    ? Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: AppColors.textMuted)
-                    : AppTypography.arabic(
-                        fontSize: 15, color: AppColors.textMuted),
-              ),
-            ),
           const SizedBox(height: AppSpacing.sm),
           Text(
             office,
             textAlign: TextAlign.center,
-            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   color: AppColors.emerald,
                   fontWeight: FontWeight.w600,
@@ -423,10 +403,9 @@ class _EntryBiography extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     final leaderRepo = context.read<LeaderRepository>();
-    final note = (isArabic ? entry.noteAr : entry.note).trim();
-    final office = (isArabic ? entry.positionAr : entry.position).trim();
+    final note = entry.note.trim();
+    final office = entry.position.trim();
 
     return StreamBuilder<List<PreviousLeaderSection>>(
       stream: leaderRepo.watchSections(entry.id),
@@ -442,10 +421,10 @@ class _EntryBiography extends StatelessWidget {
             ),
           for (final s in sections)
             _BiographyCard(
-              title: (isArabic ? s.titleAr : s.title).trim().isEmpty
+              title: s.title.trim().isEmpty
                   ? context.tr('Biography', 'نبذة')
-                  : (isArabic ? s.titleAr : s.title),
-              body: isArabic ? s.bodyAr : s.body,
+                  : s.title,
+              body: s.body,
             ),
         ];
         if (cards.isEmpty) return const SizedBox.shrink();

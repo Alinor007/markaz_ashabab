@@ -225,13 +225,30 @@ class FamilyChildrenCard extends StatelessWidget {
                 children: [
                   for (final c in children)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.child_care_outlined,
-                              size: 16, color: AppColors.emerald),
+                          const Padding(
+                            padding: EdgeInsets.only(top: 2),
+                            child: Icon(Icons.child_care_outlined,
+                                size: 16, color: AppColors.emerald),
+                          ),
                           const SizedBox(width: AppSpacing.sm),
-                          Expanded(child: Text(c.name)),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(c.name),
+                                if (_childDetails(c).isNotEmpty)
+                                  Text(
+                                    _childDetails(c),
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                  ),
+                              ],
+                            ),
+                          ),
                           Text(c.dob,
                               style: Theme.of(context).textTheme.bodySmall),
                         ],
@@ -244,6 +261,15 @@ class FamilyChildrenCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Occupation and profession joined with a separator (empty ones skipped).
+  String _childDetails(MemberChildrenData c) {
+    final parts = <String>[
+      if (c.occupation.trim().isNotEmpty) c.occupation.trim(),
+      if (c.profession.trim().isNotEmpty) c.profession.trim(),
+    ];
+    return parts.join(' · ');
   }
 }
 

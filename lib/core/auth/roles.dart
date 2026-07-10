@@ -5,26 +5,24 @@ import '../theme/app_colors.dart';
 /// Roles recognized by the archive system.
 ///
 /// [code] is the stable identifier persisted in the database (do not rename).
-/// Labels are bilingual so they render under either language.
 enum UserRole {
-  administrator('administrator', 'Administrator', 'مدير النظام', AppColors.emerald),
-  president('president', 'President', 'الرئيس', AppColors.navy),
-  vicePresident(
-      'vice_president', 'Vice President', 'نائب الرئيس', AppColors.info),
+  administrator('administrator', 'Administrator', AppColors.emerald),
+  president('president', 'President', AppColors.navy),
+  vicePresident('vice_president', 'Vice President', AppColors.info),
   secretaryGeneral(
-      'secretary_general', 'Secretary General', 'الأمين العام', AppColors.goldDeep),
-  treasurer('treasurer', 'Treasurer', 'أمين الصندوق', AppColors.emeraldDark),
-  departmentHead(
-      'department_head', 'Department Head', 'رئيس قسم', AppColors.info);
+      'secretary_general', 'Secretary General', AppColors.goldDeep),
+  treasurer('treasurer', 'Treasurer', AppColors.emeraldDark),
+  departmentHead('department_head', 'Department Head', AppColors.info);
 
-  const UserRole(this.code, this.labelEn, this.labelAr, this.color);
+  const UserRole(this.code, this.labelEn, this.color);
 
   final String code;
   final String labelEn;
-  final String labelAr;
   final Color color;
 
-  String label(bool isArabic) => isArabic ? labelAr : labelEn;
+  // The optional bool is ignored (the app is English-only); it is kept so the
+  // former bilingual call sites (label(isArabic)) still compile.
+  String label([bool _ = false]) => labelEn;
 
   bool get isAdmin => this == UserRole.administrator;
 

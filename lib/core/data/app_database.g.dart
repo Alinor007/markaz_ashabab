@@ -27,32 +27,10 @@ class $TarbiyaAreasTable extends TarbiyaAreas
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
-  @override
-  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
-    'name_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
   static const VerificationMeta _regionMeta = const VerificationMeta('region');
   @override
   late final GeneratedColumn<String> region = GeneratedColumn<String>(
     'region',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _regionArMeta = const VerificationMeta(
-    'regionAr',
-  );
-  @override
-  late final GeneratedColumn<String> regionAr = GeneratedColumn<String>(
-    'region_ar',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -82,15 +60,7 @@ class $TarbiyaAreasTable extends TarbiyaAreas
     defaultValue: const Constant(0),
   );
   @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    name,
-    nameAr,
-    region,
-    regionAr,
-    accent,
-    sortOrder,
-  ];
+  List<GeneratedColumn> get $columns => [id, name, region, accent, sortOrder];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -116,22 +86,10 @@ class $TarbiyaAreasTable extends TarbiyaAreas
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('name_ar')) {
-      context.handle(
-        _nameArMeta,
-        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
-      );
-    }
     if (data.containsKey('region')) {
       context.handle(
         _regionMeta,
         region.isAcceptableOrUnknown(data['region']!, _regionMeta),
-      );
-    }
-    if (data.containsKey('region_ar')) {
-      context.handle(
-        _regionArMeta,
-        regionAr.isAcceptableOrUnknown(data['region_ar']!, _regionArMeta),
       );
     }
     if (data.containsKey('accent')) {
@@ -163,17 +121,9 @@ class $TarbiyaAreasTable extends TarbiyaAreas
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
-      nameAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name_ar'],
-      )!,
       region: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}region'],
-      )!,
-      regionAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}region_ar'],
       )!,
       accent: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -195,17 +145,13 @@ class $TarbiyaAreasTable extends TarbiyaAreas
 class TarbiyaArea extends DataClass implements Insertable<TarbiyaArea> {
   final String id;
   final String name;
-  final String nameAr;
   final String region;
-  final String regionAr;
   final int accent;
   final int sortOrder;
   const TarbiyaArea({
     required this.id,
     required this.name,
-    required this.nameAr,
     required this.region,
-    required this.regionAr,
     required this.accent,
     required this.sortOrder,
   });
@@ -214,9 +160,7 @@ class TarbiyaArea extends DataClass implements Insertable<TarbiyaArea> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
-    map['name_ar'] = Variable<String>(nameAr);
     map['region'] = Variable<String>(region);
-    map['region_ar'] = Variable<String>(regionAr);
     map['accent'] = Variable<int>(accent);
     map['sort_order'] = Variable<int>(sortOrder);
     return map;
@@ -226,9 +170,7 @@ class TarbiyaArea extends DataClass implements Insertable<TarbiyaArea> {
     return TarbiyaAreasCompanion(
       id: Value(id),
       name: Value(name),
-      nameAr: Value(nameAr),
       region: Value(region),
-      regionAr: Value(regionAr),
       accent: Value(accent),
       sortOrder: Value(sortOrder),
     );
@@ -242,9 +184,7 @@ class TarbiyaArea extends DataClass implements Insertable<TarbiyaArea> {
     return TarbiyaArea(
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      nameAr: serializer.fromJson<String>(json['nameAr']),
       region: serializer.fromJson<String>(json['region']),
-      regionAr: serializer.fromJson<String>(json['regionAr']),
       accent: serializer.fromJson<int>(json['accent']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
     );
@@ -255,9 +195,7 @@ class TarbiyaArea extends DataClass implements Insertable<TarbiyaArea> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
-      'nameAr': serializer.toJson<String>(nameAr),
       'region': serializer.toJson<String>(region),
-      'regionAr': serializer.toJson<String>(regionAr),
       'accent': serializer.toJson<int>(accent),
       'sortOrder': serializer.toJson<int>(sortOrder),
     };
@@ -266,17 +204,13 @@ class TarbiyaArea extends DataClass implements Insertable<TarbiyaArea> {
   TarbiyaArea copyWith({
     String? id,
     String? name,
-    String? nameAr,
     String? region,
-    String? regionAr,
     int? accent,
     int? sortOrder,
   }) => TarbiyaArea(
     id: id ?? this.id,
     name: name ?? this.name,
-    nameAr: nameAr ?? this.nameAr,
     region: region ?? this.region,
-    regionAr: regionAr ?? this.regionAr,
     accent: accent ?? this.accent,
     sortOrder: sortOrder ?? this.sortOrder,
   );
@@ -284,9 +218,7 @@ class TarbiyaArea extends DataClass implements Insertable<TarbiyaArea> {
     return TarbiyaArea(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
-      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
       region: data.region.present ? data.region.value : this.region,
-      regionAr: data.regionAr.present ? data.regionAr.value : this.regionAr,
       accent: data.accent.present ? data.accent.value : this.accent,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
     );
@@ -297,9 +229,7 @@ class TarbiyaArea extends DataClass implements Insertable<TarbiyaArea> {
     return (StringBuffer('TarbiyaArea(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('nameAr: $nameAr, ')
           ..write('region: $region, ')
-          ..write('regionAr: $regionAr, ')
           ..write('accent: $accent, ')
           ..write('sortOrder: $sortOrder')
           ..write(')'))
@@ -307,17 +237,14 @@ class TarbiyaArea extends DataClass implements Insertable<TarbiyaArea> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, nameAr, region, regionAr, accent, sortOrder);
+  int get hashCode => Object.hash(id, name, region, accent, sortOrder);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is TarbiyaArea &&
           other.id == this.id &&
           other.name == this.name &&
-          other.nameAr == this.nameAr &&
           other.region == this.region &&
-          other.regionAr == this.regionAr &&
           other.accent == this.accent &&
           other.sortOrder == this.sortOrder);
 }
@@ -325,18 +252,14 @@ class TarbiyaArea extends DataClass implements Insertable<TarbiyaArea> {
 class TarbiyaAreasCompanion extends UpdateCompanion<TarbiyaArea> {
   final Value<String> id;
   final Value<String> name;
-  final Value<String> nameAr;
   final Value<String> region;
-  final Value<String> regionAr;
   final Value<int> accent;
   final Value<int> sortOrder;
   final Value<int> rowid;
   const TarbiyaAreasCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
-    this.nameAr = const Value.absent(),
     this.region = const Value.absent(),
-    this.regionAr = const Value.absent(),
     this.accent = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -344,9 +267,7 @@ class TarbiyaAreasCompanion extends UpdateCompanion<TarbiyaArea> {
   TarbiyaAreasCompanion.insert({
     required String id,
     required String name,
-    this.nameAr = const Value.absent(),
     this.region = const Value.absent(),
-    this.regionAr = const Value.absent(),
     this.accent = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -355,9 +276,7 @@ class TarbiyaAreasCompanion extends UpdateCompanion<TarbiyaArea> {
   static Insertable<TarbiyaArea> custom({
     Expression<String>? id,
     Expression<String>? name,
-    Expression<String>? nameAr,
     Expression<String>? region,
-    Expression<String>? regionAr,
     Expression<int>? accent,
     Expression<int>? sortOrder,
     Expression<int>? rowid,
@@ -365,9 +284,7 @@ class TarbiyaAreasCompanion extends UpdateCompanion<TarbiyaArea> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
-      if (nameAr != null) 'name_ar': nameAr,
       if (region != null) 'region': region,
-      if (regionAr != null) 'region_ar': regionAr,
       if (accent != null) 'accent': accent,
       if (sortOrder != null) 'sort_order': sortOrder,
       if (rowid != null) 'rowid': rowid,
@@ -377,9 +294,7 @@ class TarbiyaAreasCompanion extends UpdateCompanion<TarbiyaArea> {
   TarbiyaAreasCompanion copyWith({
     Value<String>? id,
     Value<String>? name,
-    Value<String>? nameAr,
     Value<String>? region,
-    Value<String>? regionAr,
     Value<int>? accent,
     Value<int>? sortOrder,
     Value<int>? rowid,
@@ -387,9 +302,7 @@ class TarbiyaAreasCompanion extends UpdateCompanion<TarbiyaArea> {
     return TarbiyaAreasCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
-      nameAr: nameAr ?? this.nameAr,
       region: region ?? this.region,
-      regionAr: regionAr ?? this.regionAr,
       accent: accent ?? this.accent,
       sortOrder: sortOrder ?? this.sortOrder,
       rowid: rowid ?? this.rowid,
@@ -405,14 +318,8 @@ class TarbiyaAreasCompanion extends UpdateCompanion<TarbiyaArea> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
-    if (nameAr.present) {
-      map['name_ar'] = Variable<String>(nameAr.value);
-    }
     if (region.present) {
       map['region'] = Variable<String>(region.value);
-    }
-    if (regionAr.present) {
-      map['region_ar'] = Variable<String>(regionAr.value);
     }
     if (accent.present) {
       map['accent'] = Variable<int>(accent.value);
@@ -431,9 +338,7 @@ class TarbiyaAreasCompanion extends UpdateCompanion<TarbiyaArea> {
     return (StringBuffer('TarbiyaAreasCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('nameAr: $nameAr, ')
           ..write('region: $region, ')
-          ..write('regionAr: $regionAr, ')
           ..write('accent: $accent, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('rowid: $rowid')
@@ -477,16 +382,6 @@ class $ShubasTable extends Shubas with TableInfo<$ShubasTable, Shuba> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
-  @override
-  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
-    'name_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
   static const VerificationMeta _sortOrderMeta = const VerificationMeta(
     'sortOrder',
   );
@@ -515,7 +410,6 @@ class $ShubasTable extends Shubas with TableInfo<$ShubasTable, Shuba> {
     id,
     areaId,
     name,
-    nameAr,
     sortOrder,
     masulMemberId,
   ];
@@ -551,12 +445,6 @@ class $ShubasTable extends Shubas with TableInfo<$ShubasTable, Shuba> {
       );
     } else if (isInserting) {
       context.missing(_nameMeta);
-    }
-    if (data.containsKey('name_ar')) {
-      context.handle(
-        _nameArMeta,
-        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
-      );
     }
     if (data.containsKey('sort_order')) {
       context.handle(
@@ -594,10 +482,6 @@ class $ShubasTable extends Shubas with TableInfo<$ShubasTable, Shuba> {
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
-      nameAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name_ar'],
-      )!,
       sortOrder: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}sort_order'],
@@ -619,7 +503,6 @@ class Shuba extends DataClass implements Insertable<Shuba> {
   final String id;
   final String areaId;
   final String name;
-  final String nameAr;
   final int sortOrder;
 
   /// The Shu'ba's Mas'ul (Person-in-Charge): an existing member, or null when
@@ -629,7 +512,6 @@ class Shuba extends DataClass implements Insertable<Shuba> {
     required this.id,
     required this.areaId,
     required this.name,
-    required this.nameAr,
     required this.sortOrder,
     this.masulMemberId,
   });
@@ -639,7 +521,6 @@ class Shuba extends DataClass implements Insertable<Shuba> {
     map['id'] = Variable<String>(id);
     map['area_id'] = Variable<String>(areaId);
     map['name'] = Variable<String>(name);
-    map['name_ar'] = Variable<String>(nameAr);
     map['sort_order'] = Variable<int>(sortOrder);
     if (!nullToAbsent || masulMemberId != null) {
       map['masul_member_id'] = Variable<String>(masulMemberId);
@@ -652,7 +533,6 @@ class Shuba extends DataClass implements Insertable<Shuba> {
       id: Value(id),
       areaId: Value(areaId),
       name: Value(name),
-      nameAr: Value(nameAr),
       sortOrder: Value(sortOrder),
       masulMemberId: masulMemberId == null && nullToAbsent
           ? const Value.absent()
@@ -669,7 +549,6 @@ class Shuba extends DataClass implements Insertable<Shuba> {
       id: serializer.fromJson<String>(json['id']),
       areaId: serializer.fromJson<String>(json['areaId']),
       name: serializer.fromJson<String>(json['name']),
-      nameAr: serializer.fromJson<String>(json['nameAr']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
       masulMemberId: serializer.fromJson<String?>(json['masulMemberId']),
     );
@@ -681,7 +560,6 @@ class Shuba extends DataClass implements Insertable<Shuba> {
       'id': serializer.toJson<String>(id),
       'areaId': serializer.toJson<String>(areaId),
       'name': serializer.toJson<String>(name),
-      'nameAr': serializer.toJson<String>(nameAr),
       'sortOrder': serializer.toJson<int>(sortOrder),
       'masulMemberId': serializer.toJson<String?>(masulMemberId),
     };
@@ -691,14 +569,12 @@ class Shuba extends DataClass implements Insertable<Shuba> {
     String? id,
     String? areaId,
     String? name,
-    String? nameAr,
     int? sortOrder,
     Value<String?> masulMemberId = const Value.absent(),
   }) => Shuba(
     id: id ?? this.id,
     areaId: areaId ?? this.areaId,
     name: name ?? this.name,
-    nameAr: nameAr ?? this.nameAr,
     sortOrder: sortOrder ?? this.sortOrder,
     masulMemberId: masulMemberId.present
         ? masulMemberId.value
@@ -709,7 +585,6 @@ class Shuba extends DataClass implements Insertable<Shuba> {
       id: data.id.present ? data.id.value : this.id,
       areaId: data.areaId.present ? data.areaId.value : this.areaId,
       name: data.name.present ? data.name.value : this.name,
-      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
       masulMemberId: data.masulMemberId.present
           ? data.masulMemberId.value
@@ -723,7 +598,6 @@ class Shuba extends DataClass implements Insertable<Shuba> {
           ..write('id: $id, ')
           ..write('areaId: $areaId, ')
           ..write('name: $name, ')
-          ..write('nameAr: $nameAr, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('masulMemberId: $masulMemberId')
           ..write(')'))
@@ -731,8 +605,7 @@ class Shuba extends DataClass implements Insertable<Shuba> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, areaId, name, nameAr, sortOrder, masulMemberId);
+  int get hashCode => Object.hash(id, areaId, name, sortOrder, masulMemberId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -740,7 +613,6 @@ class Shuba extends DataClass implements Insertable<Shuba> {
           other.id == this.id &&
           other.areaId == this.areaId &&
           other.name == this.name &&
-          other.nameAr == this.nameAr &&
           other.sortOrder == this.sortOrder &&
           other.masulMemberId == this.masulMemberId);
 }
@@ -749,7 +621,6 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
   final Value<String> id;
   final Value<String> areaId;
   final Value<String> name;
-  final Value<String> nameAr;
   final Value<int> sortOrder;
   final Value<String?> masulMemberId;
   final Value<int> rowid;
@@ -757,7 +628,6 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
     this.id = const Value.absent(),
     this.areaId = const Value.absent(),
     this.name = const Value.absent(),
-    this.nameAr = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.masulMemberId = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -766,7 +636,6 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
     required String id,
     required String areaId,
     required String name,
-    this.nameAr = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.masulMemberId = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -777,7 +646,6 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
     Expression<String>? id,
     Expression<String>? areaId,
     Expression<String>? name,
-    Expression<String>? nameAr,
     Expression<int>? sortOrder,
     Expression<String>? masulMemberId,
     Expression<int>? rowid,
@@ -786,7 +654,6 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
       if (id != null) 'id': id,
       if (areaId != null) 'area_id': areaId,
       if (name != null) 'name': name,
-      if (nameAr != null) 'name_ar': nameAr,
       if (sortOrder != null) 'sort_order': sortOrder,
       if (masulMemberId != null) 'masul_member_id': masulMemberId,
       if (rowid != null) 'rowid': rowid,
@@ -797,7 +664,6 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
     Value<String>? id,
     Value<String>? areaId,
     Value<String>? name,
-    Value<String>? nameAr,
     Value<int>? sortOrder,
     Value<String?>? masulMemberId,
     Value<int>? rowid,
@@ -806,7 +672,6 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
       id: id ?? this.id,
       areaId: areaId ?? this.areaId,
       name: name ?? this.name,
-      nameAr: nameAr ?? this.nameAr,
       sortOrder: sortOrder ?? this.sortOrder,
       masulMemberId: masulMemberId ?? this.masulMemberId,
       rowid: rowid ?? this.rowid,
@@ -824,9 +689,6 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
-    }
-    if (nameAr.present) {
-      map['name_ar'] = Variable<String>(nameAr.value);
     }
     if (sortOrder.present) {
       map['sort_order'] = Variable<int>(sortOrder.value);
@@ -846,7 +708,6 @@ class ShubasCompanion extends UpdateCompanion<Shuba> {
           ..write('id: $id, ')
           ..write('areaId: $areaId, ')
           ..write('name: $name, ')
-          ..write('nameAr: $nameAr, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('masulMemberId: $masulMemberId, ')
           ..write('rowid: $rowid')
@@ -931,16 +792,6 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
   @override
   late final GeneratedColumn<String> suffix = GeneratedColumn<String>(
     'suffix',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
-  @override
-  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
-    'name_ar',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -1178,7 +1029,6 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
     middleName,
     lastName,
     suffix,
-    nameAr,
     gender,
     dob,
     placeOfBirth,
@@ -1256,12 +1106,6 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
       context.handle(
         _suffixMeta,
         suffix.isAcceptableOrUnknown(data['suffix']!, _suffixMeta),
-      );
-    }
-    if (data.containsKey('name_ar')) {
-      context.handle(
-        _nameArMeta,
-        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
       );
     }
     if (data.containsKey('gender')) {
@@ -1433,10 +1277,6 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
         DriftSqlType.string,
         data['${effectivePrefix}suffix'],
       )!,
-      nameAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name_ar'],
-      )!,
       gender: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}gender'],
@@ -1530,7 +1370,6 @@ class Member extends DataClass implements Insertable<Member> {
   final String middleName;
   final String lastName;
   final String suffix;
-  final String nameAr;
   final String gender;
   final String dob;
   final String placeOfBirth;
@@ -1561,7 +1400,6 @@ class Member extends DataClass implements Insertable<Member> {
     required this.middleName,
     required this.lastName,
     required this.suffix,
-    required this.nameAr,
     required this.gender,
     required this.dob,
     required this.placeOfBirth,
@@ -1592,7 +1430,6 @@ class Member extends DataClass implements Insertable<Member> {
     map['middle_name'] = Variable<String>(middleName);
     map['last_name'] = Variable<String>(lastName);
     map['suffix'] = Variable<String>(suffix);
-    map['name_ar'] = Variable<String>(nameAr);
     map['gender'] = Variable<String>(gender);
     map['dob'] = Variable<String>(dob);
     map['place_of_birth'] = Variable<String>(placeOfBirth);
@@ -1626,7 +1463,6 @@ class Member extends DataClass implements Insertable<Member> {
       middleName: Value(middleName),
       lastName: Value(lastName),
       suffix: Value(suffix),
-      nameAr: Value(nameAr),
       gender: Value(gender),
       dob: Value(dob),
       placeOfBirth: Value(placeOfBirth),
@@ -1664,7 +1500,6 @@ class Member extends DataClass implements Insertable<Member> {
       middleName: serializer.fromJson<String>(json['middleName']),
       lastName: serializer.fromJson<String>(json['lastName']),
       suffix: serializer.fromJson<String>(json['suffix']),
-      nameAr: serializer.fromJson<String>(json['nameAr']),
       gender: serializer.fromJson<String>(json['gender']),
       dob: serializer.fromJson<String>(json['dob']),
       placeOfBirth: serializer.fromJson<String>(json['placeOfBirth']),
@@ -1701,7 +1536,6 @@ class Member extends DataClass implements Insertable<Member> {
       'middleName': serializer.toJson<String>(middleName),
       'lastName': serializer.toJson<String>(lastName),
       'suffix': serializer.toJson<String>(suffix),
-      'nameAr': serializer.toJson<String>(nameAr),
       'gender': serializer.toJson<String>(gender),
       'dob': serializer.toJson<String>(dob),
       'placeOfBirth': serializer.toJson<String>(placeOfBirth),
@@ -1732,7 +1566,6 @@ class Member extends DataClass implements Insertable<Member> {
     String? middleName,
     String? lastName,
     String? suffix,
-    String? nameAr,
     String? gender,
     String? dob,
     String? placeOfBirth,
@@ -1760,7 +1593,6 @@ class Member extends DataClass implements Insertable<Member> {
     middleName: middleName ?? this.middleName,
     lastName: lastName ?? this.lastName,
     suffix: suffix ?? this.suffix,
-    nameAr: nameAr ?? this.nameAr,
     gender: gender ?? this.gender,
     dob: dob ?? this.dob,
     placeOfBirth: placeOfBirth ?? this.placeOfBirth,
@@ -1794,7 +1626,6 @@ class Member extends DataClass implements Insertable<Member> {
           : this.middleName,
       lastName: data.lastName.present ? data.lastName.value : this.lastName,
       suffix: data.suffix.present ? data.suffix.value : this.suffix,
-      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
       gender: data.gender.present ? data.gender.value : this.gender,
       dob: data.dob.present ? data.dob.value : this.dob,
       placeOfBirth: data.placeOfBirth.present
@@ -1847,7 +1678,6 @@ class Member extends DataClass implements Insertable<Member> {
           ..write('middleName: $middleName, ')
           ..write('lastName: $lastName, ')
           ..write('suffix: $suffix, ')
-          ..write('nameAr: $nameAr, ')
           ..write('gender: $gender, ')
           ..write('dob: $dob, ')
           ..write('placeOfBirth: $placeOfBirth, ')
@@ -1880,7 +1710,6 @@ class Member extends DataClass implements Insertable<Member> {
     middleName,
     lastName,
     suffix,
-    nameAr,
     gender,
     dob,
     placeOfBirth,
@@ -1912,7 +1741,6 @@ class Member extends DataClass implements Insertable<Member> {
           other.middleName == this.middleName &&
           other.lastName == this.lastName &&
           other.suffix == this.suffix &&
-          other.nameAr == this.nameAr &&
           other.gender == this.gender &&
           other.dob == this.dob &&
           other.placeOfBirth == this.placeOfBirth &&
@@ -1942,7 +1770,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
   final Value<String> middleName;
   final Value<String> lastName;
   final Value<String> suffix;
-  final Value<String> nameAr;
   final Value<String> gender;
   final Value<String> dob;
   final Value<String> placeOfBirth;
@@ -1971,7 +1798,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
     this.middleName = const Value.absent(),
     this.lastName = const Value.absent(),
     this.suffix = const Value.absent(),
-    this.nameAr = const Value.absent(),
     this.gender = const Value.absent(),
     this.dob = const Value.absent(),
     this.placeOfBirth = const Value.absent(),
@@ -2001,7 +1827,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
     this.middleName = const Value.absent(),
     required String lastName,
     this.suffix = const Value.absent(),
-    this.nameAr = const Value.absent(),
     this.gender = const Value.absent(),
     this.dob = const Value.absent(),
     this.placeOfBirth = const Value.absent(),
@@ -2034,7 +1859,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
     Expression<String>? middleName,
     Expression<String>? lastName,
     Expression<String>? suffix,
-    Expression<String>? nameAr,
     Expression<String>? gender,
     Expression<String>? dob,
     Expression<String>? placeOfBirth,
@@ -2064,7 +1888,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
       if (middleName != null) 'middle_name': middleName,
       if (lastName != null) 'last_name': lastName,
       if (suffix != null) 'suffix': suffix,
-      if (nameAr != null) 'name_ar': nameAr,
       if (gender != null) 'gender': gender,
       if (dob != null) 'dob': dob,
       if (placeOfBirth != null) 'place_of_birth': placeOfBirth,
@@ -2098,7 +1921,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
     Value<String>? middleName,
     Value<String>? lastName,
     Value<String>? suffix,
-    Value<String>? nameAr,
     Value<String>? gender,
     Value<String>? dob,
     Value<String>? placeOfBirth,
@@ -2128,7 +1950,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
       middleName: middleName ?? this.middleName,
       lastName: lastName ?? this.lastName,
       suffix: suffix ?? this.suffix,
-      nameAr: nameAr ?? this.nameAr,
       gender: gender ?? this.gender,
       dob: dob ?? this.dob,
       placeOfBirth: placeOfBirth ?? this.placeOfBirth,
@@ -2175,9 +1996,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
     }
     if (suffix.present) {
       map['suffix'] = Variable<String>(suffix.value);
-    }
-    if (nameAr.present) {
-      map['name_ar'] = Variable<String>(nameAr.value);
     }
     if (gender.present) {
       map['gender'] = Variable<String>(gender.value);
@@ -2256,7 +2074,6 @@ class MembersCompanion extends UpdateCompanion<Member> {
           ..write('middleName: $middleName, ')
           ..write('lastName: $lastName, ')
           ..write('suffix: $suffix, ')
-          ..write('nameAr: $nameAr, ')
           ..write('gender: $gender, ')
           ..write('dob: $dob, ')
           ..write('placeOfBirth: $placeOfBirth, ')
@@ -2306,34 +2123,12 @@ class $DepartmentsTable extends Departments
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
-  @override
-  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
-    'name_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
   static const VerificationMeta _descriptionMeta = const VerificationMeta(
     'description',
   );
   @override
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
     'description',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _descriptionArMeta = const VerificationMeta(
-    'descriptionAr',
-  );
-  @override
-  late final GeneratedColumn<String> descriptionAr = GeneratedColumn<String>(
-    'description_ar',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -2368,18 +2163,6 @@ class $DepartmentsTable extends Departments
   @override
   late final GeneratedColumn<String> headName = GeneratedColumn<String>(
     'head_name',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _headNameArMeta = const VerificationMeta(
-    'headNameAr',
-  );
-  @override
-  late final GeneratedColumn<String> headNameAr = GeneratedColumn<String>(
-    'head_name_ar',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -2440,13 +2223,10 @@ class $DepartmentsTable extends Departments
   List<GeneratedColumn> get $columns => [
     id,
     name,
-    nameAr,
     description,
-    descriptionAr,
     iconKey,
     accent,
     headName,
-    headNameAr,
     contactEmail,
     contactPhone,
     headMemberId,
@@ -2477,27 +2257,12 @@ class $DepartmentsTable extends Departments
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('name_ar')) {
-      context.handle(
-        _nameArMeta,
-        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
-      );
-    }
     if (data.containsKey('description')) {
       context.handle(
         _descriptionMeta,
         description.isAcceptableOrUnknown(
           data['description']!,
           _descriptionMeta,
-        ),
-      );
-    }
-    if (data.containsKey('description_ar')) {
-      context.handle(
-        _descriptionArMeta,
-        descriptionAr.isAcceptableOrUnknown(
-          data['description_ar']!,
-          _descriptionArMeta,
         ),
       );
     }
@@ -2517,15 +2282,6 @@ class $DepartmentsTable extends Departments
       context.handle(
         _headNameMeta,
         headName.isAcceptableOrUnknown(data['head_name']!, _headNameMeta),
-      );
-    }
-    if (data.containsKey('head_name_ar')) {
-      context.handle(
-        _headNameArMeta,
-        headNameAr.isAcceptableOrUnknown(
-          data['head_name_ar']!,
-          _headNameArMeta,
-        ),
       );
     }
     if (data.containsKey('contact_email')) {
@@ -2578,17 +2334,9 @@ class $DepartmentsTable extends Departments
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
-      nameAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name_ar'],
-      )!,
       description: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}description'],
-      )!,
-      descriptionAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}description_ar'],
       )!,
       iconKey: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -2601,10 +2349,6 @@ class $DepartmentsTable extends Departments
       headName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}head_name'],
-      )!,
-      headNameAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}head_name_ar'],
       )!,
       contactEmail: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -2634,13 +2378,10 @@ class $DepartmentsTable extends Departments
 class Department extends DataClass implements Insertable<Department> {
   final String id;
   final String name;
-  final String nameAr;
   final String description;
-  final String descriptionAr;
   final String iconKey;
   final int accent;
   final String headName;
-  final String headNameAr;
   final String contactEmail;
   final String contactPhone;
 
@@ -2651,13 +2392,10 @@ class Department extends DataClass implements Insertable<Department> {
   const Department({
     required this.id,
     required this.name,
-    required this.nameAr,
     required this.description,
-    required this.descriptionAr,
     required this.iconKey,
     required this.accent,
     required this.headName,
-    required this.headNameAr,
     required this.contactEmail,
     required this.contactPhone,
     this.headMemberId,
@@ -2668,13 +2406,10 @@ class Department extends DataClass implements Insertable<Department> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
-    map['name_ar'] = Variable<String>(nameAr);
     map['description'] = Variable<String>(description);
-    map['description_ar'] = Variable<String>(descriptionAr);
     map['icon_key'] = Variable<String>(iconKey);
     map['accent'] = Variable<int>(accent);
     map['head_name'] = Variable<String>(headName);
-    map['head_name_ar'] = Variable<String>(headNameAr);
     map['contact_email'] = Variable<String>(contactEmail);
     map['contact_phone'] = Variable<String>(contactPhone);
     if (!nullToAbsent || headMemberId != null) {
@@ -2688,13 +2423,10 @@ class Department extends DataClass implements Insertable<Department> {
     return DepartmentsCompanion(
       id: Value(id),
       name: Value(name),
-      nameAr: Value(nameAr),
       description: Value(description),
-      descriptionAr: Value(descriptionAr),
       iconKey: Value(iconKey),
       accent: Value(accent),
       headName: Value(headName),
-      headNameAr: Value(headNameAr),
       contactEmail: Value(contactEmail),
       contactPhone: Value(contactPhone),
       headMemberId: headMemberId == null && nullToAbsent
@@ -2712,13 +2444,10 @@ class Department extends DataClass implements Insertable<Department> {
     return Department(
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      nameAr: serializer.fromJson<String>(json['nameAr']),
       description: serializer.fromJson<String>(json['description']),
-      descriptionAr: serializer.fromJson<String>(json['descriptionAr']),
       iconKey: serializer.fromJson<String>(json['iconKey']),
       accent: serializer.fromJson<int>(json['accent']),
       headName: serializer.fromJson<String>(json['headName']),
-      headNameAr: serializer.fromJson<String>(json['headNameAr']),
       contactEmail: serializer.fromJson<String>(json['contactEmail']),
       contactPhone: serializer.fromJson<String>(json['contactPhone']),
       headMemberId: serializer.fromJson<String?>(json['headMemberId']),
@@ -2731,13 +2460,10 @@ class Department extends DataClass implements Insertable<Department> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
-      'nameAr': serializer.toJson<String>(nameAr),
       'description': serializer.toJson<String>(description),
-      'descriptionAr': serializer.toJson<String>(descriptionAr),
       'iconKey': serializer.toJson<String>(iconKey),
       'accent': serializer.toJson<int>(accent),
       'headName': serializer.toJson<String>(headName),
-      'headNameAr': serializer.toJson<String>(headNameAr),
       'contactEmail': serializer.toJson<String>(contactEmail),
       'contactPhone': serializer.toJson<String>(contactPhone),
       'headMemberId': serializer.toJson<String?>(headMemberId),
@@ -2748,13 +2474,10 @@ class Department extends DataClass implements Insertable<Department> {
   Department copyWith({
     String? id,
     String? name,
-    String? nameAr,
     String? description,
-    String? descriptionAr,
     String? iconKey,
     int? accent,
     String? headName,
-    String? headNameAr,
     String? contactEmail,
     String? contactPhone,
     Value<String?> headMemberId = const Value.absent(),
@@ -2762,13 +2485,10 @@ class Department extends DataClass implements Insertable<Department> {
   }) => Department(
     id: id ?? this.id,
     name: name ?? this.name,
-    nameAr: nameAr ?? this.nameAr,
     description: description ?? this.description,
-    descriptionAr: descriptionAr ?? this.descriptionAr,
     iconKey: iconKey ?? this.iconKey,
     accent: accent ?? this.accent,
     headName: headName ?? this.headName,
-    headNameAr: headNameAr ?? this.headNameAr,
     contactEmail: contactEmail ?? this.contactEmail,
     contactPhone: contactPhone ?? this.contactPhone,
     headMemberId: headMemberId.present ? headMemberId.value : this.headMemberId,
@@ -2778,19 +2498,12 @@ class Department extends DataClass implements Insertable<Department> {
     return Department(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
-      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
       description: data.description.present
           ? data.description.value
           : this.description,
-      descriptionAr: data.descriptionAr.present
-          ? data.descriptionAr.value
-          : this.descriptionAr,
       iconKey: data.iconKey.present ? data.iconKey.value : this.iconKey,
       accent: data.accent.present ? data.accent.value : this.accent,
       headName: data.headName.present ? data.headName.value : this.headName,
-      headNameAr: data.headNameAr.present
-          ? data.headNameAr.value
-          : this.headNameAr,
       contactEmail: data.contactEmail.present
           ? data.contactEmail.value
           : this.contactEmail,
@@ -2809,13 +2522,10 @@ class Department extends DataClass implements Insertable<Department> {
     return (StringBuffer('Department(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('nameAr: $nameAr, ')
           ..write('description: $description, ')
-          ..write('descriptionAr: $descriptionAr, ')
           ..write('iconKey: $iconKey, ')
           ..write('accent: $accent, ')
           ..write('headName: $headName, ')
-          ..write('headNameAr: $headNameAr, ')
           ..write('contactEmail: $contactEmail, ')
           ..write('contactPhone: $contactPhone, ')
           ..write('headMemberId: $headMemberId, ')
@@ -2828,13 +2538,10 @@ class Department extends DataClass implements Insertable<Department> {
   int get hashCode => Object.hash(
     id,
     name,
-    nameAr,
     description,
-    descriptionAr,
     iconKey,
     accent,
     headName,
-    headNameAr,
     contactEmail,
     contactPhone,
     headMemberId,
@@ -2846,13 +2553,10 @@ class Department extends DataClass implements Insertable<Department> {
       (other is Department &&
           other.id == this.id &&
           other.name == this.name &&
-          other.nameAr == this.nameAr &&
           other.description == this.description &&
-          other.descriptionAr == this.descriptionAr &&
           other.iconKey == this.iconKey &&
           other.accent == this.accent &&
           other.headName == this.headName &&
-          other.headNameAr == this.headNameAr &&
           other.contactEmail == this.contactEmail &&
           other.contactPhone == this.contactPhone &&
           other.headMemberId == this.headMemberId &&
@@ -2862,13 +2566,10 @@ class Department extends DataClass implements Insertable<Department> {
 class DepartmentsCompanion extends UpdateCompanion<Department> {
   final Value<String> id;
   final Value<String> name;
-  final Value<String> nameAr;
   final Value<String> description;
-  final Value<String> descriptionAr;
   final Value<String> iconKey;
   final Value<int> accent;
   final Value<String> headName;
-  final Value<String> headNameAr;
   final Value<String> contactEmail;
   final Value<String> contactPhone;
   final Value<String?> headMemberId;
@@ -2877,13 +2578,10 @@ class DepartmentsCompanion extends UpdateCompanion<Department> {
   const DepartmentsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
-    this.nameAr = const Value.absent(),
     this.description = const Value.absent(),
-    this.descriptionAr = const Value.absent(),
     this.iconKey = const Value.absent(),
     this.accent = const Value.absent(),
     this.headName = const Value.absent(),
-    this.headNameAr = const Value.absent(),
     this.contactEmail = const Value.absent(),
     this.contactPhone = const Value.absent(),
     this.headMemberId = const Value.absent(),
@@ -2893,13 +2591,10 @@ class DepartmentsCompanion extends UpdateCompanion<Department> {
   DepartmentsCompanion.insert({
     required String id,
     required String name,
-    this.nameAr = const Value.absent(),
     this.description = const Value.absent(),
-    this.descriptionAr = const Value.absent(),
     this.iconKey = const Value.absent(),
     this.accent = const Value.absent(),
     this.headName = const Value.absent(),
-    this.headNameAr = const Value.absent(),
     this.contactEmail = const Value.absent(),
     this.contactPhone = const Value.absent(),
     this.headMemberId = const Value.absent(),
@@ -2910,13 +2605,10 @@ class DepartmentsCompanion extends UpdateCompanion<Department> {
   static Insertable<Department> custom({
     Expression<String>? id,
     Expression<String>? name,
-    Expression<String>? nameAr,
     Expression<String>? description,
-    Expression<String>? descriptionAr,
     Expression<String>? iconKey,
     Expression<int>? accent,
     Expression<String>? headName,
-    Expression<String>? headNameAr,
     Expression<String>? contactEmail,
     Expression<String>? contactPhone,
     Expression<String>? headMemberId,
@@ -2926,13 +2618,10 @@ class DepartmentsCompanion extends UpdateCompanion<Department> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
-      if (nameAr != null) 'name_ar': nameAr,
       if (description != null) 'description': description,
-      if (descriptionAr != null) 'description_ar': descriptionAr,
       if (iconKey != null) 'icon_key': iconKey,
       if (accent != null) 'accent': accent,
       if (headName != null) 'head_name': headName,
-      if (headNameAr != null) 'head_name_ar': headNameAr,
       if (contactEmail != null) 'contact_email': contactEmail,
       if (contactPhone != null) 'contact_phone': contactPhone,
       if (headMemberId != null) 'head_member_id': headMemberId,
@@ -2944,13 +2633,10 @@ class DepartmentsCompanion extends UpdateCompanion<Department> {
   DepartmentsCompanion copyWith({
     Value<String>? id,
     Value<String>? name,
-    Value<String>? nameAr,
     Value<String>? description,
-    Value<String>? descriptionAr,
     Value<String>? iconKey,
     Value<int>? accent,
     Value<String>? headName,
-    Value<String>? headNameAr,
     Value<String>? contactEmail,
     Value<String>? contactPhone,
     Value<String?>? headMemberId,
@@ -2960,13 +2646,10 @@ class DepartmentsCompanion extends UpdateCompanion<Department> {
     return DepartmentsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
-      nameAr: nameAr ?? this.nameAr,
       description: description ?? this.description,
-      descriptionAr: descriptionAr ?? this.descriptionAr,
       iconKey: iconKey ?? this.iconKey,
       accent: accent ?? this.accent,
       headName: headName ?? this.headName,
-      headNameAr: headNameAr ?? this.headNameAr,
       contactEmail: contactEmail ?? this.contactEmail,
       contactPhone: contactPhone ?? this.contactPhone,
       headMemberId: headMemberId ?? this.headMemberId,
@@ -2984,14 +2667,8 @@ class DepartmentsCompanion extends UpdateCompanion<Department> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
-    if (nameAr.present) {
-      map['name_ar'] = Variable<String>(nameAr.value);
-    }
     if (description.present) {
       map['description'] = Variable<String>(description.value);
-    }
-    if (descriptionAr.present) {
-      map['description_ar'] = Variable<String>(descriptionAr.value);
     }
     if (iconKey.present) {
       map['icon_key'] = Variable<String>(iconKey.value);
@@ -3001,9 +2678,6 @@ class DepartmentsCompanion extends UpdateCompanion<Department> {
     }
     if (headName.present) {
       map['head_name'] = Variable<String>(headName.value);
-    }
-    if (headNameAr.present) {
-      map['head_name_ar'] = Variable<String>(headNameAr.value);
     }
     if (contactEmail.present) {
       map['contact_email'] = Variable<String>(contactEmail.value);
@@ -3028,13 +2702,10 @@ class DepartmentsCompanion extends UpdateCompanion<Department> {
     return (StringBuffer('DepartmentsCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('nameAr: $nameAr, ')
           ..write('description: $description, ')
-          ..write('descriptionAr: $descriptionAr, ')
           ..write('iconKey: $iconKey, ')
           ..write('accent: $accent, ')
           ..write('headName: $headName, ')
-          ..write('headNameAr: $headNameAr, ')
           ..write('contactEmail: $contactEmail, ')
           ..write('contactPhone: $contactPhone, ')
           ..write('headMemberId: $headMemberId, ')
@@ -3065,17 +2736,6 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   @override
   late final GeneratedColumn<String> fullName = GeneratedColumn<String>(
     'full_name',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _fullNameArMeta = const VerificationMeta(
-    'fullNameAr',
-  );
-  @override
-  late final GeneratedColumn<String> fullNameAr = GeneratedColumn<String>(
-    'full_name_ar',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -3179,7 +2839,6 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   List<GeneratedColumn> get $columns => [
     id,
     fullName,
-    fullNameAr,
     username,
     email,
     passwordHash,
@@ -3213,17 +2872,6 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
       );
     } else if (isInserting) {
       context.missing(_fullNameMeta);
-    }
-    if (data.containsKey('full_name_ar')) {
-      context.handle(
-        _fullNameArMeta,
-        fullNameAr.isAcceptableOrUnknown(
-          data['full_name_ar']!,
-          _fullNameArMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_fullNameArMeta);
     }
     if (data.containsKey('username')) {
       context.handle(
@@ -3302,10 +2950,6 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.string,
         data['${effectivePrefix}full_name'],
       )!,
-      fullNameAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}full_name_ar'],
-      )!,
       username: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}username'],
@@ -3350,7 +2994,6 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
 class User extends DataClass implements Insertable<User> {
   final String id;
   final String fullName;
-  final String fullNameAr;
   final String username;
   final String email;
   final String passwordHash;
@@ -3364,7 +3007,6 @@ class User extends DataClass implements Insertable<User> {
   const User({
     required this.id,
     required this.fullName,
-    required this.fullNameAr,
     required this.username,
     required this.email,
     required this.passwordHash,
@@ -3379,7 +3021,6 @@ class User extends DataClass implements Insertable<User> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['full_name'] = Variable<String>(fullName);
-    map['full_name_ar'] = Variable<String>(fullNameAr);
     map['username'] = Variable<String>(username);
     map['email'] = Variable<String>(email);
     map['password_hash'] = Variable<String>(passwordHash);
@@ -3399,7 +3040,6 @@ class User extends DataClass implements Insertable<User> {
     return UsersCompanion(
       id: Value(id),
       fullName: Value(fullName),
-      fullNameAr: Value(fullNameAr),
       username: Value(username),
       email: Value(email),
       passwordHash: Value(passwordHash),
@@ -3423,7 +3063,6 @@ class User extends DataClass implements Insertable<User> {
     return User(
       id: serializer.fromJson<String>(json['id']),
       fullName: serializer.fromJson<String>(json['fullName']),
-      fullNameAr: serializer.fromJson<String>(json['fullNameAr']),
       username: serializer.fromJson<String>(json['username']),
       email: serializer.fromJson<String>(json['email']),
       passwordHash: serializer.fromJson<String>(json['passwordHash']),
@@ -3440,7 +3079,6 @@ class User extends DataClass implements Insertable<User> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'fullName': serializer.toJson<String>(fullName),
-      'fullNameAr': serializer.toJson<String>(fullNameAr),
       'username': serializer.toJson<String>(username),
       'email': serializer.toJson<String>(email),
       'passwordHash': serializer.toJson<String>(passwordHash),
@@ -3455,7 +3093,6 @@ class User extends DataClass implements Insertable<User> {
   User copyWith({
     String? id,
     String? fullName,
-    String? fullNameAr,
     String? username,
     String? email,
     String? passwordHash,
@@ -3467,7 +3104,6 @@ class User extends DataClass implements Insertable<User> {
   }) => User(
     id: id ?? this.id,
     fullName: fullName ?? this.fullName,
-    fullNameAr: fullNameAr ?? this.fullNameAr,
     username: username ?? this.username,
     email: email ?? this.email,
     passwordHash: passwordHash ?? this.passwordHash,
@@ -3481,9 +3117,6 @@ class User extends DataClass implements Insertable<User> {
     return User(
       id: data.id.present ? data.id.value : this.id,
       fullName: data.fullName.present ? data.fullName.value : this.fullName,
-      fullNameAr: data.fullNameAr.present
-          ? data.fullNameAr.value
-          : this.fullNameAr,
       username: data.username.present ? data.username.value : this.username,
       email: data.email.present ? data.email.value : this.email,
       passwordHash: data.passwordHash.present
@@ -3506,7 +3139,6 @@ class User extends DataClass implements Insertable<User> {
     return (StringBuffer('User(')
           ..write('id: $id, ')
           ..write('fullName: $fullName, ')
-          ..write('fullNameAr: $fullNameAr, ')
           ..write('username: $username, ')
           ..write('email: $email, ')
           ..write('passwordHash: $passwordHash, ')
@@ -3523,7 +3155,6 @@ class User extends DataClass implements Insertable<User> {
   int get hashCode => Object.hash(
     id,
     fullName,
-    fullNameAr,
     username,
     email,
     passwordHash,
@@ -3539,7 +3170,6 @@ class User extends DataClass implements Insertable<User> {
       (other is User &&
           other.id == this.id &&
           other.fullName == this.fullName &&
-          other.fullNameAr == this.fullNameAr &&
           other.username == this.username &&
           other.email == this.email &&
           other.passwordHash == this.passwordHash &&
@@ -3553,7 +3183,6 @@ class User extends DataClass implements Insertable<User> {
 class UsersCompanion extends UpdateCompanion<User> {
   final Value<String> id;
   final Value<String> fullName;
-  final Value<String> fullNameAr;
   final Value<String> username;
   final Value<String> email;
   final Value<String> passwordHash;
@@ -3566,7 +3195,6 @@ class UsersCompanion extends UpdateCompanion<User> {
   const UsersCompanion({
     this.id = const Value.absent(),
     this.fullName = const Value.absent(),
-    this.fullNameAr = const Value.absent(),
     this.username = const Value.absent(),
     this.email = const Value.absent(),
     this.passwordHash = const Value.absent(),
@@ -3580,7 +3208,6 @@ class UsersCompanion extends UpdateCompanion<User> {
   UsersCompanion.insert({
     required String id,
     required String fullName,
-    required String fullNameAr,
     required String username,
     this.email = const Value.absent(),
     required String passwordHash,
@@ -3592,14 +3219,12 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        fullName = Value(fullName),
-       fullNameAr = Value(fullNameAr),
        username = Value(username),
        passwordHash = Value(passwordHash),
        roleCode = Value(roleCode);
   static Insertable<User> custom({
     Expression<String>? id,
     Expression<String>? fullName,
-    Expression<String>? fullNameAr,
     Expression<String>? username,
     Expression<String>? email,
     Expression<String>? passwordHash,
@@ -3613,7 +3238,6 @@ class UsersCompanion extends UpdateCompanion<User> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (fullName != null) 'full_name': fullName,
-      if (fullNameAr != null) 'full_name_ar': fullNameAr,
       if (username != null) 'username': username,
       if (email != null) 'email': email,
       if (passwordHash != null) 'password_hash': passwordHash,
@@ -3629,7 +3253,6 @@ class UsersCompanion extends UpdateCompanion<User> {
   UsersCompanion copyWith({
     Value<String>? id,
     Value<String>? fullName,
-    Value<String>? fullNameAr,
     Value<String>? username,
     Value<String>? email,
     Value<String>? passwordHash,
@@ -3643,7 +3266,6 @@ class UsersCompanion extends UpdateCompanion<User> {
     return UsersCompanion(
       id: id ?? this.id,
       fullName: fullName ?? this.fullName,
-      fullNameAr: fullNameAr ?? this.fullNameAr,
       username: username ?? this.username,
       email: email ?? this.email,
       passwordHash: passwordHash ?? this.passwordHash,
@@ -3664,9 +3286,6 @@ class UsersCompanion extends UpdateCompanion<User> {
     }
     if (fullName.present) {
       map['full_name'] = Variable<String>(fullName.value);
-    }
-    if (fullNameAr.present) {
-      map['full_name_ar'] = Variable<String>(fullNameAr.value);
     }
     if (username.present) {
       map['username'] = Variable<String>(username.value);
@@ -3703,7 +3322,6 @@ class UsersCompanion extends UpdateCompanion<User> {
     return (StringBuffer('UsersCompanion(')
           ..write('id: $id, ')
           ..write('fullName: $fullName, ')
-          ..write('fullNameAr: $fullNameAr, ')
           ..write('username: $username, ')
           ..write('email: $email, ')
           ..write('passwordHash: $passwordHash, ')
@@ -3741,32 +3359,12 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
-  @override
-  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
-    'name_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
   static const VerificationMeta _positionMeta = const VerificationMeta(
     'position',
   );
   @override
   late final GeneratedColumn<String> position = GeneratedColumn<String>(
     'position',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _positionArMeta = const VerificationMeta(
-    'positionAr',
-  );
-  @override
-  late final GeneratedColumn<String> positionAr = GeneratedColumn<String>(
-    'position_ar',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -3805,34 +3403,12 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
-  static const VerificationMeta _bioArMeta = const VerificationMeta('bioAr');
-  @override
-  late final GeneratedColumn<String> bioAr = GeneratedColumn<String>(
-    'bio_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
   static const VerificationMeta _achievementsMeta = const VerificationMeta(
     'achievements',
   );
   @override
   late final GeneratedColumn<String> achievements = GeneratedColumn<String>(
     'achievements',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _achievementsArMeta = const VerificationMeta(
-    'achievementsAr',
-  );
-  @override
-  late final GeneratedColumn<String> achievementsAr = GeneratedColumn<String>(
-    'achievements_ar',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -3851,18 +3427,6 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
-  static const VerificationMeta _responsibilitiesArMeta =
-      const VerificationMeta('responsibilitiesAr');
-  @override
-  late final GeneratedColumn<String> responsibilitiesAr =
-      GeneratedColumn<String>(
-        'responsibilities_ar',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-        defaultValue: const Constant(''),
-      );
   static const VerificationMeta _emailMeta = const VerificationMeta('email');
   @override
   late final GeneratedColumn<String> email = GeneratedColumn<String>(
@@ -3947,17 +3511,12 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
   List<GeneratedColumn> get $columns => [
     id,
     name,
-    nameAr,
     position,
-    positionAr,
     category,
     serviceYears,
     bio,
-    bioAr,
     achievements,
-    achievementsAr,
     responsibilities,
-    responsibilitiesAr,
     email,
     phone,
     photoPath,
@@ -3991,14 +3550,6 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('name_ar')) {
-      context.handle(
-        _nameArMeta,
-        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameArMeta);
-    }
     if (data.containsKey('position')) {
       context.handle(
         _positionMeta,
@@ -4006,14 +3557,6 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
       );
     } else if (isInserting) {
       context.missing(_positionMeta);
-    }
-    if (data.containsKey('position_ar')) {
-      context.handle(
-        _positionArMeta,
-        positionAr.isAcceptableOrUnknown(data['position_ar']!, _positionArMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_positionArMeta);
     }
     if (data.containsKey('category')) {
       context.handle(
@@ -4038,12 +3581,6 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
         bio.isAcceptableOrUnknown(data['bio']!, _bioMeta),
       );
     }
-    if (data.containsKey('bio_ar')) {
-      context.handle(
-        _bioArMeta,
-        bioAr.isAcceptableOrUnknown(data['bio_ar']!, _bioArMeta),
-      );
-    }
     if (data.containsKey('achievements')) {
       context.handle(
         _achievementsMeta,
@@ -4053,30 +3590,12 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
         ),
       );
     }
-    if (data.containsKey('achievements_ar')) {
-      context.handle(
-        _achievementsArMeta,
-        achievementsAr.isAcceptableOrUnknown(
-          data['achievements_ar']!,
-          _achievementsArMeta,
-        ),
-      );
-    }
     if (data.containsKey('responsibilities')) {
       context.handle(
         _responsibilitiesMeta,
         responsibilities.isAcceptableOrUnknown(
           data['responsibilities']!,
           _responsibilitiesMeta,
-        ),
-      );
-    }
-    if (data.containsKey('responsibilities_ar')) {
-      context.handle(
-        _responsibilitiesArMeta,
-        responsibilitiesAr.isAcceptableOrUnknown(
-          data['responsibilities_ar']!,
-          _responsibilitiesArMeta,
         ),
       );
     }
@@ -4139,17 +3658,9 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
-      nameAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name_ar'],
-      )!,
       position: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}position'],
-      )!,
-      positionAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}position_ar'],
       )!,
       category: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -4163,25 +3674,13 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
         DriftSqlType.string,
         data['${effectivePrefix}bio'],
       )!,
-      bioAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}bio_ar'],
-      )!,
       achievements: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}achievements'],
       )!,
-      achievementsAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}achievements_ar'],
-      )!,
       responsibilities: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}responsibilities'],
-      )!,
-      responsibilitiesAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}responsibilities_ar'],
       )!,
       email: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -4223,19 +3722,14 @@ class $LeadersTable extends Leaders with TableInfo<$LeadersTable, Leader> {
 class Leader extends DataClass implements Insertable<Leader> {
   final String id;
   final String name;
-  final String nameAr;
   final String position;
-  final String positionAr;
   final String category;
   final String serviceYears;
   final String bio;
-  final String bioAr;
 
   /// Newline-separated lists.
   final String achievements;
-  final String achievementsAr;
   final String responsibilities;
-  final String responsibilitiesAr;
   final String email;
   final String phone;
 
@@ -4252,17 +3746,12 @@ class Leader extends DataClass implements Insertable<Leader> {
   const Leader({
     required this.id,
     required this.name,
-    required this.nameAr,
     required this.position,
-    required this.positionAr,
     required this.category,
     required this.serviceYears,
     required this.bio,
-    required this.bioAr,
     required this.achievements,
-    required this.achievementsAr,
     required this.responsibilities,
-    required this.responsibilitiesAr,
     required this.email,
     required this.phone,
     required this.photoPath,
@@ -4276,17 +3765,12 @@ class Leader extends DataClass implements Insertable<Leader> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
-    map['name_ar'] = Variable<String>(nameAr);
     map['position'] = Variable<String>(position);
-    map['position_ar'] = Variable<String>(positionAr);
     map['category'] = Variable<String>(category);
     map['service_years'] = Variable<String>(serviceYears);
     map['bio'] = Variable<String>(bio);
-    map['bio_ar'] = Variable<String>(bioAr);
     map['achievements'] = Variable<String>(achievements);
-    map['achievements_ar'] = Variable<String>(achievementsAr);
     map['responsibilities'] = Variable<String>(responsibilities);
-    map['responsibilities_ar'] = Variable<String>(responsibilitiesAr);
     map['email'] = Variable<String>(email);
     map['phone'] = Variable<String>(phone);
     map['photo_path'] = Variable<String>(photoPath);
@@ -4303,17 +3787,12 @@ class Leader extends DataClass implements Insertable<Leader> {
     return LeadersCompanion(
       id: Value(id),
       name: Value(name),
-      nameAr: Value(nameAr),
       position: Value(position),
-      positionAr: Value(positionAr),
       category: Value(category),
       serviceYears: Value(serviceYears),
       bio: Value(bio),
-      bioAr: Value(bioAr),
       achievements: Value(achievements),
-      achievementsAr: Value(achievementsAr),
       responsibilities: Value(responsibilities),
-      responsibilitiesAr: Value(responsibilitiesAr),
       email: Value(email),
       phone: Value(phone),
       photoPath: Value(photoPath),
@@ -4334,19 +3813,12 @@ class Leader extends DataClass implements Insertable<Leader> {
     return Leader(
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      nameAr: serializer.fromJson<String>(json['nameAr']),
       position: serializer.fromJson<String>(json['position']),
-      positionAr: serializer.fromJson<String>(json['positionAr']),
       category: serializer.fromJson<String>(json['category']),
       serviceYears: serializer.fromJson<String>(json['serviceYears']),
       bio: serializer.fromJson<String>(json['bio']),
-      bioAr: serializer.fromJson<String>(json['bioAr']),
       achievements: serializer.fromJson<String>(json['achievements']),
-      achievementsAr: serializer.fromJson<String>(json['achievementsAr']),
       responsibilities: serializer.fromJson<String>(json['responsibilities']),
-      responsibilitiesAr: serializer.fromJson<String>(
-        json['responsibilitiesAr'],
-      ),
       email: serializer.fromJson<String>(json['email']),
       phone: serializer.fromJson<String>(json['phone']),
       photoPath: serializer.fromJson<String>(json['photoPath']),
@@ -4362,17 +3834,12 @@ class Leader extends DataClass implements Insertable<Leader> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
-      'nameAr': serializer.toJson<String>(nameAr),
       'position': serializer.toJson<String>(position),
-      'positionAr': serializer.toJson<String>(positionAr),
       'category': serializer.toJson<String>(category),
       'serviceYears': serializer.toJson<String>(serviceYears),
       'bio': serializer.toJson<String>(bio),
-      'bioAr': serializer.toJson<String>(bioAr),
       'achievements': serializer.toJson<String>(achievements),
-      'achievementsAr': serializer.toJson<String>(achievementsAr),
       'responsibilities': serializer.toJson<String>(responsibilities),
-      'responsibilitiesAr': serializer.toJson<String>(responsibilitiesAr),
       'email': serializer.toJson<String>(email),
       'phone': serializer.toJson<String>(phone),
       'photoPath': serializer.toJson<String>(photoPath),
@@ -4386,17 +3853,12 @@ class Leader extends DataClass implements Insertable<Leader> {
   Leader copyWith({
     String? id,
     String? name,
-    String? nameAr,
     String? position,
-    String? positionAr,
     String? category,
     String? serviceYears,
     String? bio,
-    String? bioAr,
     String? achievements,
-    String? achievementsAr,
     String? responsibilities,
-    String? responsibilitiesAr,
     String? email,
     String? phone,
     String? photoPath,
@@ -4407,17 +3869,12 @@ class Leader extends DataClass implements Insertable<Leader> {
   }) => Leader(
     id: id ?? this.id,
     name: name ?? this.name,
-    nameAr: nameAr ?? this.nameAr,
     position: position ?? this.position,
-    positionAr: positionAr ?? this.positionAr,
     category: category ?? this.category,
     serviceYears: serviceYears ?? this.serviceYears,
     bio: bio ?? this.bio,
-    bioAr: bioAr ?? this.bioAr,
     achievements: achievements ?? this.achievements,
-    achievementsAr: achievementsAr ?? this.achievementsAr,
     responsibilities: responsibilities ?? this.responsibilities,
-    responsibilitiesAr: responsibilitiesAr ?? this.responsibilitiesAr,
     email: email ?? this.email,
     phone: phone ?? this.phone,
     photoPath: photoPath ?? this.photoPath,
@@ -4430,29 +3887,18 @@ class Leader extends DataClass implements Insertable<Leader> {
     return Leader(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
-      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
       position: data.position.present ? data.position.value : this.position,
-      positionAr: data.positionAr.present
-          ? data.positionAr.value
-          : this.positionAr,
       category: data.category.present ? data.category.value : this.category,
       serviceYears: data.serviceYears.present
           ? data.serviceYears.value
           : this.serviceYears,
       bio: data.bio.present ? data.bio.value : this.bio,
-      bioAr: data.bioAr.present ? data.bioAr.value : this.bioAr,
       achievements: data.achievements.present
           ? data.achievements.value
           : this.achievements,
-      achievementsAr: data.achievementsAr.present
-          ? data.achievementsAr.value
-          : this.achievementsAr,
       responsibilities: data.responsibilities.present
           ? data.responsibilities.value
           : this.responsibilities,
-      responsibilitiesAr: data.responsibilitiesAr.present
-          ? data.responsibilitiesAr.value
-          : this.responsibilitiesAr,
       email: data.email.present ? data.email.value : this.email,
       phone: data.phone.present ? data.phone.value : this.phone,
       photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
@@ -4468,17 +3914,12 @@ class Leader extends DataClass implements Insertable<Leader> {
     return (StringBuffer('Leader(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('nameAr: $nameAr, ')
           ..write('position: $position, ')
-          ..write('positionAr: $positionAr, ')
           ..write('category: $category, ')
           ..write('serviceYears: $serviceYears, ')
           ..write('bio: $bio, ')
-          ..write('bioAr: $bioAr, ')
           ..write('achievements: $achievements, ')
-          ..write('achievementsAr: $achievementsAr, ')
           ..write('responsibilities: $responsibilities, ')
-          ..write('responsibilitiesAr: $responsibilitiesAr, ')
           ..write('email: $email, ')
           ..write('phone: $phone, ')
           ..write('photoPath: $photoPath, ')
@@ -4494,17 +3935,12 @@ class Leader extends DataClass implements Insertable<Leader> {
   int get hashCode => Object.hash(
     id,
     name,
-    nameAr,
     position,
-    positionAr,
     category,
     serviceYears,
     bio,
-    bioAr,
     achievements,
-    achievementsAr,
     responsibilities,
-    responsibilitiesAr,
     email,
     phone,
     photoPath,
@@ -4519,17 +3955,12 @@ class Leader extends DataClass implements Insertable<Leader> {
       (other is Leader &&
           other.id == this.id &&
           other.name == this.name &&
-          other.nameAr == this.nameAr &&
           other.position == this.position &&
-          other.positionAr == this.positionAr &&
           other.category == this.category &&
           other.serviceYears == this.serviceYears &&
           other.bio == this.bio &&
-          other.bioAr == this.bioAr &&
           other.achievements == this.achievements &&
-          other.achievementsAr == this.achievementsAr &&
           other.responsibilities == this.responsibilities &&
-          other.responsibilitiesAr == this.responsibilitiesAr &&
           other.email == this.email &&
           other.phone == this.phone &&
           other.photoPath == this.photoPath &&
@@ -4542,17 +3973,12 @@ class Leader extends DataClass implements Insertable<Leader> {
 class LeadersCompanion extends UpdateCompanion<Leader> {
   final Value<String> id;
   final Value<String> name;
-  final Value<String> nameAr;
   final Value<String> position;
-  final Value<String> positionAr;
   final Value<String> category;
   final Value<String> serviceYears;
   final Value<String> bio;
-  final Value<String> bioAr;
   final Value<String> achievements;
-  final Value<String> achievementsAr;
   final Value<String> responsibilities;
-  final Value<String> responsibilitiesAr;
   final Value<String> email;
   final Value<String> phone;
   final Value<String> photoPath;
@@ -4564,17 +3990,12 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
   const LeadersCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
-    this.nameAr = const Value.absent(),
     this.position = const Value.absent(),
-    this.positionAr = const Value.absent(),
     this.category = const Value.absent(),
     this.serviceYears = const Value.absent(),
     this.bio = const Value.absent(),
-    this.bioAr = const Value.absent(),
     this.achievements = const Value.absent(),
-    this.achievementsAr = const Value.absent(),
     this.responsibilities = const Value.absent(),
-    this.responsibilitiesAr = const Value.absent(),
     this.email = const Value.absent(),
     this.phone = const Value.absent(),
     this.photoPath = const Value.absent(),
@@ -4587,17 +4008,12 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
   LeadersCompanion.insert({
     required String id,
     required String name,
-    required String nameAr,
     required String position,
-    required String positionAr,
     required String category,
     this.serviceYears = const Value.absent(),
     this.bio = const Value.absent(),
-    this.bioAr = const Value.absent(),
     this.achievements = const Value.absent(),
-    this.achievementsAr = const Value.absent(),
     this.responsibilities = const Value.absent(),
-    this.responsibilitiesAr = const Value.absent(),
     this.email = const Value.absent(),
     this.phone = const Value.absent(),
     this.photoPath = const Value.absent(),
@@ -4608,24 +4024,17 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
-       nameAr = Value(nameAr),
        position = Value(position),
-       positionAr = Value(positionAr),
        category = Value(category);
   static Insertable<Leader> custom({
     Expression<String>? id,
     Expression<String>? name,
-    Expression<String>? nameAr,
     Expression<String>? position,
-    Expression<String>? positionAr,
     Expression<String>? category,
     Expression<String>? serviceYears,
     Expression<String>? bio,
-    Expression<String>? bioAr,
     Expression<String>? achievements,
-    Expression<String>? achievementsAr,
     Expression<String>? responsibilities,
-    Expression<String>? responsibilitiesAr,
     Expression<String>? email,
     Expression<String>? phone,
     Expression<String>? photoPath,
@@ -4638,17 +4047,12 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
-      if (nameAr != null) 'name_ar': nameAr,
       if (position != null) 'position': position,
-      if (positionAr != null) 'position_ar': positionAr,
       if (category != null) 'category': category,
       if (serviceYears != null) 'service_years': serviceYears,
       if (bio != null) 'bio': bio,
-      if (bioAr != null) 'bio_ar': bioAr,
       if (achievements != null) 'achievements': achievements,
-      if (achievementsAr != null) 'achievements_ar': achievementsAr,
       if (responsibilities != null) 'responsibilities': responsibilities,
-      if (responsibilitiesAr != null) 'responsibilities_ar': responsibilitiesAr,
       if (email != null) 'email': email,
       if (phone != null) 'phone': phone,
       if (photoPath != null) 'photo_path': photoPath,
@@ -4663,17 +4067,12 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
   LeadersCompanion copyWith({
     Value<String>? id,
     Value<String>? name,
-    Value<String>? nameAr,
     Value<String>? position,
-    Value<String>? positionAr,
     Value<String>? category,
     Value<String>? serviceYears,
     Value<String>? bio,
-    Value<String>? bioAr,
     Value<String>? achievements,
-    Value<String>? achievementsAr,
     Value<String>? responsibilities,
-    Value<String>? responsibilitiesAr,
     Value<String>? email,
     Value<String>? phone,
     Value<String>? photoPath,
@@ -4686,17 +4085,12 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
     return LeadersCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
-      nameAr: nameAr ?? this.nameAr,
       position: position ?? this.position,
-      positionAr: positionAr ?? this.positionAr,
       category: category ?? this.category,
       serviceYears: serviceYears ?? this.serviceYears,
       bio: bio ?? this.bio,
-      bioAr: bioAr ?? this.bioAr,
       achievements: achievements ?? this.achievements,
-      achievementsAr: achievementsAr ?? this.achievementsAr,
       responsibilities: responsibilities ?? this.responsibilities,
-      responsibilitiesAr: responsibilitiesAr ?? this.responsibilitiesAr,
       email: email ?? this.email,
       phone: phone ?? this.phone,
       photoPath: photoPath ?? this.photoPath,
@@ -4717,14 +4111,8 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
-    if (nameAr.present) {
-      map['name_ar'] = Variable<String>(nameAr.value);
-    }
     if (position.present) {
       map['position'] = Variable<String>(position.value);
-    }
-    if (positionAr.present) {
-      map['position_ar'] = Variable<String>(positionAr.value);
     }
     if (category.present) {
       map['category'] = Variable<String>(category.value);
@@ -4735,20 +4123,11 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
     if (bio.present) {
       map['bio'] = Variable<String>(bio.value);
     }
-    if (bioAr.present) {
-      map['bio_ar'] = Variable<String>(bioAr.value);
-    }
     if (achievements.present) {
       map['achievements'] = Variable<String>(achievements.value);
     }
-    if (achievementsAr.present) {
-      map['achievements_ar'] = Variable<String>(achievementsAr.value);
-    }
     if (responsibilities.present) {
       map['responsibilities'] = Variable<String>(responsibilities.value);
-    }
-    if (responsibilitiesAr.present) {
-      map['responsibilities_ar'] = Variable<String>(responsibilitiesAr.value);
     }
     if (email.present) {
       map['email'] = Variable<String>(email.value);
@@ -4782,17 +4161,12 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
     return (StringBuffer('LeadersCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('nameAr: $nameAr, ')
           ..write('position: $position, ')
-          ..write('positionAr: $positionAr, ')
           ..write('category: $category, ')
           ..write('serviceYears: $serviceYears, ')
           ..write('bio: $bio, ')
-          ..write('bioAr: $bioAr, ')
           ..write('achievements: $achievements, ')
-          ..write('achievementsAr: $achievementsAr, ')
           ..write('responsibilities: $responsibilities, ')
-          ..write('responsibilitiesAr: $responsibilitiesAr, ')
           ..write('email: $email, ')
           ..write('phone: $phone, ')
           ..write('photoPath: $photoPath, ')
@@ -4853,18 +4227,6 @@ class $AuditLogsTable extends AuditLogs
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _actionArMeta = const VerificationMeta(
-    'actionAr',
-  );
-  @override
-  late final GeneratedColumn<String> actionAr = GeneratedColumn<String>(
-    'action_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
   static const VerificationMeta _moduleMeta = const VerificationMeta('module');
   @override
   late final GeneratedColumn<String> module = GeneratedColumn<String>(
@@ -4873,18 +4235,6 @@ class $AuditLogsTable extends AuditLogs
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-  );
-  static const VerificationMeta _moduleArMeta = const VerificationMeta(
-    'moduleAr',
-  );
-  @override
-  late final GeneratedColumn<String> moduleAr = GeneratedColumn<String>(
-    'module_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
   );
   static const VerificationMeta _timestampMeta = const VerificationMeta(
     'timestamp',
@@ -4904,9 +4254,7 @@ class $AuditLogsTable extends AuditLogs
     username,
     userId,
     action,
-    actionAr,
     module,
-    moduleAr,
     timestamp,
   ];
   @override
@@ -4948,12 +4296,6 @@ class $AuditLogsTable extends AuditLogs
     } else if (isInserting) {
       context.missing(_actionMeta);
     }
-    if (data.containsKey('action_ar')) {
-      context.handle(
-        _actionArMeta,
-        actionAr.isAcceptableOrUnknown(data['action_ar']!, _actionArMeta),
-      );
-    }
     if (data.containsKey('module')) {
       context.handle(
         _moduleMeta,
@@ -4961,12 +4303,6 @@ class $AuditLogsTable extends AuditLogs
       );
     } else if (isInserting) {
       context.missing(_moduleMeta);
-    }
-    if (data.containsKey('module_ar')) {
-      context.handle(
-        _moduleArMeta,
-        moduleAr.isAcceptableOrUnknown(data['module_ar']!, _moduleArMeta),
-      );
     }
     if (data.containsKey('timestamp')) {
       context.handle(
@@ -4999,17 +4335,9 @@ class $AuditLogsTable extends AuditLogs
         DriftSqlType.string,
         data['${effectivePrefix}action'],
       )!,
-      actionAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}action_ar'],
-      )!,
       module: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}module'],
-      )!,
-      moduleAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}module_ar'],
       )!,
       timestamp: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -5032,18 +4360,14 @@ class AuditLog extends DataClass implements Insertable<AuditLog> {
   /// so the trail survives a user being renamed or deleted (SET NULL).
   final String? userId;
   final String action;
-  final String actionAr;
   final String module;
-  final String moduleAr;
   final DateTime timestamp;
   const AuditLog({
     required this.id,
     required this.username,
     this.userId,
     required this.action,
-    required this.actionAr,
     required this.module,
-    required this.moduleAr,
     required this.timestamp,
   });
   @override
@@ -5055,9 +4379,7 @@ class AuditLog extends DataClass implements Insertable<AuditLog> {
       map['user_id'] = Variable<String>(userId);
     }
     map['action'] = Variable<String>(action);
-    map['action_ar'] = Variable<String>(actionAr);
     map['module'] = Variable<String>(module);
-    map['module_ar'] = Variable<String>(moduleAr);
     map['timestamp'] = Variable<DateTime>(timestamp);
     return map;
   }
@@ -5070,9 +4392,7 @@ class AuditLog extends DataClass implements Insertable<AuditLog> {
           ? const Value.absent()
           : Value(userId),
       action: Value(action),
-      actionAr: Value(actionAr),
       module: Value(module),
-      moduleAr: Value(moduleAr),
       timestamp: Value(timestamp),
     );
   }
@@ -5087,9 +4407,7 @@ class AuditLog extends DataClass implements Insertable<AuditLog> {
       username: serializer.fromJson<String>(json['username']),
       userId: serializer.fromJson<String?>(json['userId']),
       action: serializer.fromJson<String>(json['action']),
-      actionAr: serializer.fromJson<String>(json['actionAr']),
       module: serializer.fromJson<String>(json['module']),
-      moduleAr: serializer.fromJson<String>(json['moduleAr']),
       timestamp: serializer.fromJson<DateTime>(json['timestamp']),
     );
   }
@@ -5101,9 +4419,7 @@ class AuditLog extends DataClass implements Insertable<AuditLog> {
       'username': serializer.toJson<String>(username),
       'userId': serializer.toJson<String?>(userId),
       'action': serializer.toJson<String>(action),
-      'actionAr': serializer.toJson<String>(actionAr),
       'module': serializer.toJson<String>(module),
-      'moduleAr': serializer.toJson<String>(moduleAr),
       'timestamp': serializer.toJson<DateTime>(timestamp),
     };
   }
@@ -5113,18 +4429,14 @@ class AuditLog extends DataClass implements Insertable<AuditLog> {
     String? username,
     Value<String?> userId = const Value.absent(),
     String? action,
-    String? actionAr,
     String? module,
-    String? moduleAr,
     DateTime? timestamp,
   }) => AuditLog(
     id: id ?? this.id,
     username: username ?? this.username,
     userId: userId.present ? userId.value : this.userId,
     action: action ?? this.action,
-    actionAr: actionAr ?? this.actionAr,
     module: module ?? this.module,
-    moduleAr: moduleAr ?? this.moduleAr,
     timestamp: timestamp ?? this.timestamp,
   );
   AuditLog copyWithCompanion(AuditLogsCompanion data) {
@@ -5133,9 +4445,7 @@ class AuditLog extends DataClass implements Insertable<AuditLog> {
       username: data.username.present ? data.username.value : this.username,
       userId: data.userId.present ? data.userId.value : this.userId,
       action: data.action.present ? data.action.value : this.action,
-      actionAr: data.actionAr.present ? data.actionAr.value : this.actionAr,
       module: data.module.present ? data.module.value : this.module,
-      moduleAr: data.moduleAr.present ? data.moduleAr.value : this.moduleAr,
       timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
     );
   }
@@ -5147,25 +4457,15 @@ class AuditLog extends DataClass implements Insertable<AuditLog> {
           ..write('username: $username, ')
           ..write('userId: $userId, ')
           ..write('action: $action, ')
-          ..write('actionAr: $actionAr, ')
           ..write('module: $module, ')
-          ..write('moduleAr: $moduleAr, ')
           ..write('timestamp: $timestamp')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-    id,
-    username,
-    userId,
-    action,
-    actionAr,
-    module,
-    moduleAr,
-    timestamp,
-  );
+  int get hashCode =>
+      Object.hash(id, username, userId, action, module, timestamp);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -5174,9 +4474,7 @@ class AuditLog extends DataClass implements Insertable<AuditLog> {
           other.username == this.username &&
           other.userId == this.userId &&
           other.action == this.action &&
-          other.actionAr == this.actionAr &&
           other.module == this.module &&
-          other.moduleAr == this.moduleAr &&
           other.timestamp == this.timestamp);
 }
 
@@ -5185,9 +4483,7 @@ class AuditLogsCompanion extends UpdateCompanion<AuditLog> {
   final Value<String> username;
   final Value<String?> userId;
   final Value<String> action;
-  final Value<String> actionAr;
   final Value<String> module;
-  final Value<String> moduleAr;
   final Value<DateTime> timestamp;
   final Value<int> rowid;
   const AuditLogsCompanion({
@@ -5195,9 +4491,7 @@ class AuditLogsCompanion extends UpdateCompanion<AuditLog> {
     this.username = const Value.absent(),
     this.userId = const Value.absent(),
     this.action = const Value.absent(),
-    this.actionAr = const Value.absent(),
     this.module = const Value.absent(),
-    this.moduleAr = const Value.absent(),
     this.timestamp = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -5206,9 +4500,7 @@ class AuditLogsCompanion extends UpdateCompanion<AuditLog> {
     required String username,
     this.userId = const Value.absent(),
     required String action,
-    this.actionAr = const Value.absent(),
     required String module,
-    this.moduleAr = const Value.absent(),
     this.timestamp = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -5220,9 +4512,7 @@ class AuditLogsCompanion extends UpdateCompanion<AuditLog> {
     Expression<String>? username,
     Expression<String>? userId,
     Expression<String>? action,
-    Expression<String>? actionAr,
     Expression<String>? module,
-    Expression<String>? moduleAr,
     Expression<DateTime>? timestamp,
     Expression<int>? rowid,
   }) {
@@ -5231,9 +4521,7 @@ class AuditLogsCompanion extends UpdateCompanion<AuditLog> {
       if (username != null) 'username': username,
       if (userId != null) 'user_id': userId,
       if (action != null) 'action': action,
-      if (actionAr != null) 'action_ar': actionAr,
       if (module != null) 'module': module,
-      if (moduleAr != null) 'module_ar': moduleAr,
       if (timestamp != null) 'timestamp': timestamp,
       if (rowid != null) 'rowid': rowid,
     });
@@ -5244,9 +4532,7 @@ class AuditLogsCompanion extends UpdateCompanion<AuditLog> {
     Value<String>? username,
     Value<String?>? userId,
     Value<String>? action,
-    Value<String>? actionAr,
     Value<String>? module,
-    Value<String>? moduleAr,
     Value<DateTime>? timestamp,
     Value<int>? rowid,
   }) {
@@ -5255,9 +4541,7 @@ class AuditLogsCompanion extends UpdateCompanion<AuditLog> {
       username: username ?? this.username,
       userId: userId ?? this.userId,
       action: action ?? this.action,
-      actionAr: actionAr ?? this.actionAr,
       module: module ?? this.module,
-      moduleAr: moduleAr ?? this.moduleAr,
       timestamp: timestamp ?? this.timestamp,
       rowid: rowid ?? this.rowid,
     );
@@ -5278,14 +4562,8 @@ class AuditLogsCompanion extends UpdateCompanion<AuditLog> {
     if (action.present) {
       map['action'] = Variable<String>(action.value);
     }
-    if (actionAr.present) {
-      map['action_ar'] = Variable<String>(actionAr.value);
-    }
     if (module.present) {
       map['module'] = Variable<String>(module.value);
-    }
-    if (moduleAr.present) {
-      map['module_ar'] = Variable<String>(moduleAr.value);
     }
     if (timestamp.present) {
       map['timestamp'] = Variable<DateTime>(timestamp.value);
@@ -5303,9 +4581,7 @@ class AuditLogsCompanion extends UpdateCompanion<AuditLog> {
           ..write('username: $username, ')
           ..write('userId: $userId, ')
           ..write('action: $action, ')
-          ..write('actionAr: $actionAr, ')
           ..write('module: $module, ')
-          ..write('moduleAr: $moduleAr, ')
           ..write('timestamp: $timestamp, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -5361,8 +4637,39 @@ class $MemberChildrenTable extends MemberChildren
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
+  static const VerificationMeta _occupationMeta = const VerificationMeta(
+    'occupation',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, memberId, name, dob];
+  late final GeneratedColumn<String> occupation = GeneratedColumn<String>(
+    'occupation',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _professionMeta = const VerificationMeta(
+    'profession',
+  );
+  @override
+  late final GeneratedColumn<String> profession = GeneratedColumn<String>(
+    'profession',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    memberId,
+    name,
+    dob,
+    occupation,
+    profession,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -5402,6 +4709,18 @@ class $MemberChildrenTable extends MemberChildren
         dob.isAcceptableOrUnknown(data['dob']!, _dobMeta),
       );
     }
+    if (data.containsKey('occupation')) {
+      context.handle(
+        _occupationMeta,
+        occupation.isAcceptableOrUnknown(data['occupation']!, _occupationMeta),
+      );
+    }
+    if (data.containsKey('profession')) {
+      context.handle(
+        _professionMeta,
+        profession.isAcceptableOrUnknown(data['profession']!, _professionMeta),
+      );
+    }
     return context;
   }
 
@@ -5427,6 +4746,14 @@ class $MemberChildrenTable extends MemberChildren
         DriftSqlType.string,
         data['${effectivePrefix}dob'],
       )!,
+      occupation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}occupation'],
+      )!,
+      profession: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}profession'],
+      )!,
     );
   }
 
@@ -5442,11 +4769,15 @@ class MemberChildrenData extends DataClass
   final String memberId;
   final String name;
   final String dob;
+  final String occupation;
+  final String profession;
   const MemberChildrenData({
     required this.id,
     required this.memberId,
     required this.name,
     required this.dob,
+    required this.occupation,
+    required this.profession,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5455,6 +4786,8 @@ class MemberChildrenData extends DataClass
     map['member_id'] = Variable<String>(memberId);
     map['name'] = Variable<String>(name);
     map['dob'] = Variable<String>(dob);
+    map['occupation'] = Variable<String>(occupation);
+    map['profession'] = Variable<String>(profession);
     return map;
   }
 
@@ -5464,6 +4797,8 @@ class MemberChildrenData extends DataClass
       memberId: Value(memberId),
       name: Value(name),
       dob: Value(dob),
+      occupation: Value(occupation),
+      profession: Value(profession),
     );
   }
 
@@ -5477,6 +4812,8 @@ class MemberChildrenData extends DataClass
       memberId: serializer.fromJson<String>(json['memberId']),
       name: serializer.fromJson<String>(json['name']),
       dob: serializer.fromJson<String>(json['dob']),
+      occupation: serializer.fromJson<String>(json['occupation']),
+      profession: serializer.fromJson<String>(json['profession']),
     );
   }
   @override
@@ -5487,6 +4824,8 @@ class MemberChildrenData extends DataClass
       'memberId': serializer.toJson<String>(memberId),
       'name': serializer.toJson<String>(name),
       'dob': serializer.toJson<String>(dob),
+      'occupation': serializer.toJson<String>(occupation),
+      'profession': serializer.toJson<String>(profession),
     };
   }
 
@@ -5495,11 +4834,15 @@ class MemberChildrenData extends DataClass
     String? memberId,
     String? name,
     String? dob,
+    String? occupation,
+    String? profession,
   }) => MemberChildrenData(
     id: id ?? this.id,
     memberId: memberId ?? this.memberId,
     name: name ?? this.name,
     dob: dob ?? this.dob,
+    occupation: occupation ?? this.occupation,
+    profession: profession ?? this.profession,
   );
   MemberChildrenData copyWithCompanion(MemberChildrenCompanion data) {
     return MemberChildrenData(
@@ -5507,6 +4850,12 @@ class MemberChildrenData extends DataClass
       memberId: data.memberId.present ? data.memberId.value : this.memberId,
       name: data.name.present ? data.name.value : this.name,
       dob: data.dob.present ? data.dob.value : this.dob,
+      occupation: data.occupation.present
+          ? data.occupation.value
+          : this.occupation,
+      profession: data.profession.present
+          ? data.profession.value
+          : this.profession,
     );
   }
 
@@ -5516,13 +4865,16 @@ class MemberChildrenData extends DataClass
           ..write('id: $id, ')
           ..write('memberId: $memberId, ')
           ..write('name: $name, ')
-          ..write('dob: $dob')
+          ..write('dob: $dob, ')
+          ..write('occupation: $occupation, ')
+          ..write('profession: $profession')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, memberId, name, dob);
+  int get hashCode =>
+      Object.hash(id, memberId, name, dob, occupation, profession);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -5530,7 +4882,9 @@ class MemberChildrenData extends DataClass
           other.id == this.id &&
           other.memberId == this.memberId &&
           other.name == this.name &&
-          other.dob == this.dob);
+          other.dob == this.dob &&
+          other.occupation == this.occupation &&
+          other.profession == this.profession);
 }
 
 class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
@@ -5538,12 +4892,16 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
   final Value<String> memberId;
   final Value<String> name;
   final Value<String> dob;
+  final Value<String> occupation;
+  final Value<String> profession;
   final Value<int> rowid;
   const MemberChildrenCompanion({
     this.id = const Value.absent(),
     this.memberId = const Value.absent(),
     this.name = const Value.absent(),
     this.dob = const Value.absent(),
+    this.occupation = const Value.absent(),
+    this.profession = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   MemberChildrenCompanion.insert({
@@ -5551,6 +4909,8 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
     required String memberId,
     required String name,
     this.dob = const Value.absent(),
+    this.occupation = const Value.absent(),
+    this.profession = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        memberId = Value(memberId),
@@ -5560,6 +4920,8 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
     Expression<String>? memberId,
     Expression<String>? name,
     Expression<String>? dob,
+    Expression<String>? occupation,
+    Expression<String>? profession,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -5567,6 +4929,8 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
       if (memberId != null) 'member_id': memberId,
       if (name != null) 'name': name,
       if (dob != null) 'dob': dob,
+      if (occupation != null) 'occupation': occupation,
+      if (profession != null) 'profession': profession,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -5576,6 +4940,8 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
     Value<String>? memberId,
     Value<String>? name,
     Value<String>? dob,
+    Value<String>? occupation,
+    Value<String>? profession,
     Value<int>? rowid,
   }) {
     return MemberChildrenCompanion(
@@ -5583,6 +4949,8 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
       memberId: memberId ?? this.memberId,
       name: name ?? this.name,
       dob: dob ?? this.dob,
+      occupation: occupation ?? this.occupation,
+      profession: profession ?? this.profession,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -5602,6 +4970,12 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
     if (dob.present) {
       map['dob'] = Variable<String>(dob.value);
     }
+    if (occupation.present) {
+      map['occupation'] = Variable<String>(occupation.value);
+    }
+    if (profession.present) {
+      map['profession'] = Variable<String>(profession.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -5615,6 +4989,8 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
           ..write('memberId: $memberId, ')
           ..write('name: $name, ')
           ..write('dob: $dob, ')
+          ..write('occupation: $occupation, ')
+          ..write('profession: $profession, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -9221,18 +8597,6 @@ class $DeptActivitiesTable extends DeptActivities
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _titleArMeta = const VerificationMeta(
-    'titleAr',
-  );
-  @override
-  late final GeneratedColumn<String> titleAr = GeneratedColumn<String>(
-    'title_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
   static const VerificationMeta _descriptionMeta = const VerificationMeta(
     'description',
   );
@@ -9306,7 +8670,6 @@ class $DeptActivitiesTable extends DeptActivities
     id,
     departmentId,
     title,
-    titleAr,
     description,
     date,
     status,
@@ -9349,12 +8712,6 @@ class $DeptActivitiesTable extends DeptActivities
       );
     } else if (isInserting) {
       context.missing(_titleMeta);
-    }
-    if (data.containsKey('title_ar')) {
-      context.handle(
-        _titleArMeta,
-        titleAr.isAcceptableOrUnknown(data['title_ar']!, _titleArMeta),
-      );
     }
     if (data.containsKey('description')) {
       context.handle(
@@ -9416,10 +8773,6 @@ class $DeptActivitiesTable extends DeptActivities
         DriftSqlType.string,
         data['${effectivePrefix}title'],
       )!,
-      titleAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}title_ar'],
-      )!,
       description: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}description'],
@@ -9457,7 +8810,6 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
   final String id;
   final String departmentId;
   final String title;
-  final String titleAr;
   final String description;
   final String date;
   final String status;
@@ -9471,7 +8823,6 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
     required this.id,
     required this.departmentId,
     required this.title,
-    required this.titleAr,
     required this.description,
     required this.date,
     required this.status,
@@ -9485,7 +8836,6 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
     map['id'] = Variable<String>(id);
     map['department_id'] = Variable<String>(departmentId);
     map['title'] = Variable<String>(title);
-    map['title_ar'] = Variable<String>(titleAr);
     map['description'] = Variable<String>(description);
     map['date'] = Variable<String>(date);
     map['status'] = Variable<String>(status);
@@ -9500,7 +8850,6 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
       id: Value(id),
       departmentId: Value(departmentId),
       title: Value(title),
-      titleAr: Value(titleAr),
       description: Value(description),
       date: Value(date),
       status: Value(status),
@@ -9519,7 +8868,6 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
       id: serializer.fromJson<String>(json['id']),
       departmentId: serializer.fromJson<String>(json['departmentId']),
       title: serializer.fromJson<String>(json['title']),
-      titleAr: serializer.fromJson<String>(json['titleAr']),
       description: serializer.fromJson<String>(json['description']),
       date: serializer.fromJson<String>(json['date']),
       status: serializer.fromJson<String>(json['status']),
@@ -9535,7 +8883,6 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
       'id': serializer.toJson<String>(id),
       'departmentId': serializer.toJson<String>(departmentId),
       'title': serializer.toJson<String>(title),
-      'titleAr': serializer.toJson<String>(titleAr),
       'description': serializer.toJson<String>(description),
       'date': serializer.toJson<String>(date),
       'status': serializer.toJson<String>(status),
@@ -9549,7 +8896,6 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
     String? id,
     String? departmentId,
     String? title,
-    String? titleAr,
     String? description,
     String? date,
     String? status,
@@ -9560,7 +8906,6 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
     id: id ?? this.id,
     departmentId: departmentId ?? this.departmentId,
     title: title ?? this.title,
-    titleAr: titleAr ?? this.titleAr,
     description: description ?? this.description,
     date: date ?? this.date,
     status: status ?? this.status,
@@ -9575,7 +8920,6 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
           ? data.departmentId.value
           : this.departmentId,
       title: data.title.present ? data.title.value : this.title,
-      titleAr: data.titleAr.present ? data.titleAr.value : this.titleAr,
       description: data.description.present
           ? data.description.value
           : this.description,
@@ -9595,7 +8939,6 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
           ..write('id: $id, ')
           ..write('departmentId: $departmentId, ')
           ..write('title: $title, ')
-          ..write('titleAr: $titleAr, ')
           ..write('description: $description, ')
           ..write('date: $date, ')
           ..write('status: $status, ')
@@ -9611,7 +8954,6 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
     id,
     departmentId,
     title,
-    titleAr,
     description,
     date,
     status,
@@ -9626,7 +8968,6 @@ class DeptActivity extends DataClass implements Insertable<DeptActivity> {
           other.id == this.id &&
           other.departmentId == this.departmentId &&
           other.title == this.title &&
-          other.titleAr == this.titleAr &&
           other.description == this.description &&
           other.date == this.date &&
           other.status == this.status &&
@@ -9639,7 +8980,6 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
   final Value<String> id;
   final Value<String> departmentId;
   final Value<String> title;
-  final Value<String> titleAr;
   final Value<String> description;
   final Value<String> date;
   final Value<String> status;
@@ -9651,7 +8991,6 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
     this.id = const Value.absent(),
     this.departmentId = const Value.absent(),
     this.title = const Value.absent(),
-    this.titleAr = const Value.absent(),
     this.description = const Value.absent(),
     this.date = const Value.absent(),
     this.status = const Value.absent(),
@@ -9664,7 +9003,6 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
     required String id,
     required String departmentId,
     required String title,
-    this.titleAr = const Value.absent(),
     this.description = const Value.absent(),
     this.date = const Value.absent(),
     this.status = const Value.absent(),
@@ -9679,7 +9017,6 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
     Expression<String>? id,
     Expression<String>? departmentId,
     Expression<String>? title,
-    Expression<String>? titleAr,
     Expression<String>? description,
     Expression<String>? date,
     Expression<String>? status,
@@ -9692,7 +9029,6 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
       if (id != null) 'id': id,
       if (departmentId != null) 'department_id': departmentId,
       if (title != null) 'title': title,
-      if (titleAr != null) 'title_ar': titleAr,
       if (description != null) 'description': description,
       if (date != null) 'date': date,
       if (status != null) 'status': status,
@@ -9707,7 +9043,6 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
     Value<String>? id,
     Value<String>? departmentId,
     Value<String>? title,
-    Value<String>? titleAr,
     Value<String>? description,
     Value<String>? date,
     Value<String>? status,
@@ -9720,7 +9055,6 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
       id: id ?? this.id,
       departmentId: departmentId ?? this.departmentId,
       title: title ?? this.title,
-      titleAr: titleAr ?? this.titleAr,
       description: description ?? this.description,
       date: date ?? this.date,
       status: status ?? this.status,
@@ -9742,9 +9076,6 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
     }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
-    }
-    if (titleAr.present) {
-      map['title_ar'] = Variable<String>(titleAr.value);
     }
     if (description.present) {
       map['description'] = Variable<String>(description.value);
@@ -9776,7 +9107,6 @@ class DeptActivitiesCompanion extends UpdateCompanion<DeptActivity> {
           ..write('id: $id, ')
           ..write('departmentId: $departmentId, ')
           ..write('title: $title, ')
-          ..write('titleAr: $titleAr, ')
           ..write('description: $description, ')
           ..write('date: $date, ')
           ..write('status: $status, ')
@@ -9826,36 +9156,12 @@ class $ReportsTable extends Reports with TableInfo<$ReportsTable, Report> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _titleArMeta = const VerificationMeta(
-    'titleAr',
-  );
-  @override
-  late final GeneratedColumn<String> titleAr = GeneratedColumn<String>(
-    'title_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
   static const VerificationMeta _summaryMeta = const VerificationMeta(
     'summary',
   );
   @override
   late final GeneratedColumn<String> summary = GeneratedColumn<String>(
     'summary',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _summaryArMeta = const VerificationMeta(
-    'summaryAr',
-  );
-  @override
-  late final GeneratedColumn<String> summaryAr = GeneratedColumn<String>(
-    'summary_ar',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -9931,9 +9237,7 @@ class $ReportsTable extends Reports with TableInfo<$ReportsTable, Report> {
     id,
     departmentId,
     title,
-    titleAr,
     summary,
-    summaryAr,
     date,
     year,
     type,
@@ -9977,22 +9281,10 @@ class $ReportsTable extends Reports with TableInfo<$ReportsTable, Report> {
     } else if (isInserting) {
       context.missing(_titleMeta);
     }
-    if (data.containsKey('title_ar')) {
-      context.handle(
-        _titleArMeta,
-        titleAr.isAcceptableOrUnknown(data['title_ar']!, _titleArMeta),
-      );
-    }
     if (data.containsKey('summary')) {
       context.handle(
         _summaryMeta,
         summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta),
-      );
-    }
-    if (data.containsKey('summary_ar')) {
-      context.handle(
-        _summaryArMeta,
-        summaryAr.isAcceptableOrUnknown(data['summary_ar']!, _summaryArMeta),
       );
     }
     if (data.containsKey('date')) {
@@ -10052,17 +9344,9 @@ class $ReportsTable extends Reports with TableInfo<$ReportsTable, Report> {
         DriftSqlType.string,
         data['${effectivePrefix}title'],
       )!,
-      titleAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}title_ar'],
-      )!,
       summary: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}summary'],
-      )!,
-      summaryAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}summary_ar'],
       )!,
       date: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -10101,9 +9385,7 @@ class Report extends DataClass implements Insertable<Report> {
   final String id;
   final String departmentId;
   final String title;
-  final String titleAr;
   final String summary;
-  final String summaryAr;
   final String date;
   final int year;
   final String type;
@@ -10117,9 +9399,7 @@ class Report extends DataClass implements Insertable<Report> {
     required this.id,
     required this.departmentId,
     required this.title,
-    required this.titleAr,
     required this.summary,
-    required this.summaryAr,
     required this.date,
     required this.year,
     required this.type,
@@ -10133,9 +9413,7 @@ class Report extends DataClass implements Insertable<Report> {
     map['id'] = Variable<String>(id);
     map['department_id'] = Variable<String>(departmentId);
     map['title'] = Variable<String>(title);
-    map['title_ar'] = Variable<String>(titleAr);
     map['summary'] = Variable<String>(summary);
-    map['summary_ar'] = Variable<String>(summaryAr);
     map['date'] = Variable<String>(date);
     map['year'] = Variable<int>(year);
     map['type'] = Variable<String>(type);
@@ -10150,9 +9428,7 @@ class Report extends DataClass implements Insertable<Report> {
       id: Value(id),
       departmentId: Value(departmentId),
       title: Value(title),
-      titleAr: Value(titleAr),
       summary: Value(summary),
-      summaryAr: Value(summaryAr),
       date: Value(date),
       year: Value(year),
       type: Value(type),
@@ -10171,9 +9447,7 @@ class Report extends DataClass implements Insertable<Report> {
       id: serializer.fromJson<String>(json['id']),
       departmentId: serializer.fromJson<String>(json['departmentId']),
       title: serializer.fromJson<String>(json['title']),
-      titleAr: serializer.fromJson<String>(json['titleAr']),
       summary: serializer.fromJson<String>(json['summary']),
-      summaryAr: serializer.fromJson<String>(json['summaryAr']),
       date: serializer.fromJson<String>(json['date']),
       year: serializer.fromJson<int>(json['year']),
       type: serializer.fromJson<String>(json['type']),
@@ -10189,9 +9463,7 @@ class Report extends DataClass implements Insertable<Report> {
       'id': serializer.toJson<String>(id),
       'departmentId': serializer.toJson<String>(departmentId),
       'title': serializer.toJson<String>(title),
-      'titleAr': serializer.toJson<String>(titleAr),
       'summary': serializer.toJson<String>(summary),
-      'summaryAr': serializer.toJson<String>(summaryAr),
       'date': serializer.toJson<String>(date),
       'year': serializer.toJson<int>(year),
       'type': serializer.toJson<String>(type),
@@ -10205,9 +9477,7 @@ class Report extends DataClass implements Insertable<Report> {
     String? id,
     String? departmentId,
     String? title,
-    String? titleAr,
     String? summary,
-    String? summaryAr,
     String? date,
     int? year,
     String? type,
@@ -10218,9 +9488,7 @@ class Report extends DataClass implements Insertable<Report> {
     id: id ?? this.id,
     departmentId: departmentId ?? this.departmentId,
     title: title ?? this.title,
-    titleAr: titleAr ?? this.titleAr,
     summary: summary ?? this.summary,
-    summaryAr: summaryAr ?? this.summaryAr,
     date: date ?? this.date,
     year: year ?? this.year,
     type: type ?? this.type,
@@ -10235,9 +9503,7 @@ class Report extends DataClass implements Insertable<Report> {
           ? data.departmentId.value
           : this.departmentId,
       title: data.title.present ? data.title.value : this.title,
-      titleAr: data.titleAr.present ? data.titleAr.value : this.titleAr,
       summary: data.summary.present ? data.summary.value : this.summary,
-      summaryAr: data.summaryAr.present ? data.summaryAr.value : this.summaryAr,
       date: data.date.present ? data.date.value : this.date,
       year: data.year.present ? data.year.value : this.year,
       type: data.type.present ? data.type.value : this.type,
@@ -10253,9 +9519,7 @@ class Report extends DataClass implements Insertable<Report> {
           ..write('id: $id, ')
           ..write('departmentId: $departmentId, ')
           ..write('title: $title, ')
-          ..write('titleAr: $titleAr, ')
           ..write('summary: $summary, ')
-          ..write('summaryAr: $summaryAr, ')
           ..write('date: $date, ')
           ..write('year: $year, ')
           ..write('type: $type, ')
@@ -10271,9 +9535,7 @@ class Report extends DataClass implements Insertable<Report> {
     id,
     departmentId,
     title,
-    titleAr,
     summary,
-    summaryAr,
     date,
     year,
     type,
@@ -10288,9 +9550,7 @@ class Report extends DataClass implements Insertable<Report> {
           other.id == this.id &&
           other.departmentId == this.departmentId &&
           other.title == this.title &&
-          other.titleAr == this.titleAr &&
           other.summary == this.summary &&
-          other.summaryAr == this.summaryAr &&
           other.date == this.date &&
           other.year == this.year &&
           other.type == this.type &&
@@ -10303,9 +9563,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
   final Value<String> id;
   final Value<String> departmentId;
   final Value<String> title;
-  final Value<String> titleAr;
   final Value<String> summary;
-  final Value<String> summaryAr;
   final Value<String> date;
   final Value<int> year;
   final Value<String> type;
@@ -10317,9 +9575,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
     this.id = const Value.absent(),
     this.departmentId = const Value.absent(),
     this.title = const Value.absent(),
-    this.titleAr = const Value.absent(),
     this.summary = const Value.absent(),
-    this.summaryAr = const Value.absent(),
     this.date = const Value.absent(),
     this.year = const Value.absent(),
     this.type = const Value.absent(),
@@ -10332,9 +9588,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
     required String id,
     required String departmentId,
     required String title,
-    this.titleAr = const Value.absent(),
     this.summary = const Value.absent(),
-    this.summaryAr = const Value.absent(),
     this.date = const Value.absent(),
     this.year = const Value.absent(),
     this.type = const Value.absent(),
@@ -10349,9 +9603,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
     Expression<String>? id,
     Expression<String>? departmentId,
     Expression<String>? title,
-    Expression<String>? titleAr,
     Expression<String>? summary,
-    Expression<String>? summaryAr,
     Expression<String>? date,
     Expression<int>? year,
     Expression<String>? type,
@@ -10364,9 +9616,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
       if (id != null) 'id': id,
       if (departmentId != null) 'department_id': departmentId,
       if (title != null) 'title': title,
-      if (titleAr != null) 'title_ar': titleAr,
       if (summary != null) 'summary': summary,
-      if (summaryAr != null) 'summary_ar': summaryAr,
       if (date != null) 'date': date,
       if (year != null) 'year': year,
       if (type != null) 'type': type,
@@ -10381,9 +9631,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
     Value<String>? id,
     Value<String>? departmentId,
     Value<String>? title,
-    Value<String>? titleAr,
     Value<String>? summary,
-    Value<String>? summaryAr,
     Value<String>? date,
     Value<int>? year,
     Value<String>? type,
@@ -10396,9 +9644,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
       id: id ?? this.id,
       departmentId: departmentId ?? this.departmentId,
       title: title ?? this.title,
-      titleAr: titleAr ?? this.titleAr,
       summary: summary ?? this.summary,
-      summaryAr: summaryAr ?? this.summaryAr,
       date: date ?? this.date,
       year: year ?? this.year,
       type: type ?? this.type,
@@ -10421,14 +9667,8 @@ class ReportsCompanion extends UpdateCompanion<Report> {
     if (title.present) {
       map['title'] = Variable<String>(title.value);
     }
-    if (titleAr.present) {
-      map['title_ar'] = Variable<String>(titleAr.value);
-    }
     if (summary.present) {
       map['summary'] = Variable<String>(summary.value);
-    }
-    if (summaryAr.present) {
-      map['summary_ar'] = Variable<String>(summaryAr.value);
     }
     if (date.present) {
       map['date'] = Variable<String>(date.value);
@@ -10460,9 +9700,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
           ..write('id: $id, ')
           ..write('departmentId: $departmentId, ')
           ..write('title: $title, ')
-          ..write('titleAr: $titleAr, ')
           ..write('summary: $summary, ')
-          ..write('summaryAr: $summaryAr, ')
           ..write('date: $date, ')
           ..write('year: $year, ')
           ..write('type: $type, ')
@@ -10499,18 +9737,6 @@ class $GalleryPhotosTable extends GalleryPhotos
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _titleArMeta = const VerificationMeta(
-    'titleAr',
-  );
-  @override
-  late final GeneratedColumn<String> titleAr = GeneratedColumn<String>(
-    'title_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
   static const VerificationMeta _yearMeta = const VerificationMeta('year');
   @override
   late final GeneratedColumn<int> year = GeneratedColumn<int>(
@@ -10525,18 +9751,6 @@ class $GalleryPhotosTable extends GalleryPhotos
   @override
   late final GeneratedColumn<String> event = GeneratedColumn<String>(
     'event',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _eventArMeta = const VerificationMeta(
-    'eventAr',
-  );
-  @override
-  late final GeneratedColumn<String> eventAr = GeneratedColumn<String>(
-    'event_ar',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -10631,10 +9845,8 @@ class $GalleryPhotosTable extends GalleryPhotos
   List<GeneratedColumn> get $columns => [
     id,
     title,
-    titleAr,
     year,
     event,
-    eventAr,
     iconKey,
     accent,
     imagePath,
@@ -10668,12 +9880,6 @@ class $GalleryPhotosTable extends GalleryPhotos
     } else if (isInserting) {
       context.missing(_titleMeta);
     }
-    if (data.containsKey('title_ar')) {
-      context.handle(
-        _titleArMeta,
-        titleAr.isAcceptableOrUnknown(data['title_ar']!, _titleArMeta),
-      );
-    }
     if (data.containsKey('year')) {
       context.handle(
         _yearMeta,
@@ -10684,12 +9890,6 @@ class $GalleryPhotosTable extends GalleryPhotos
       context.handle(
         _eventMeta,
         event.isAcceptableOrUnknown(data['event']!, _eventMeta),
-      );
-    }
-    if (data.containsKey('event_ar')) {
-      context.handle(
-        _eventArMeta,
-        eventAr.isAcceptableOrUnknown(data['event_ar']!, _eventArMeta),
       );
     }
     if (data.containsKey('icon_key')) {
@@ -10751,10 +9951,6 @@ class $GalleryPhotosTable extends GalleryPhotos
         DriftSqlType.string,
         data['${effectivePrefix}title'],
       )!,
-      titleAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}title_ar'],
-      )!,
       year: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}year'],
@@ -10762,10 +9958,6 @@ class $GalleryPhotosTable extends GalleryPhotos
       event: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}event'],
-      )!,
-      eventAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}event_ar'],
       )!,
       iconKey: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -10807,10 +9999,8 @@ class $GalleryPhotosTable extends GalleryPhotos
 class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
   final String id;
   final String title;
-  final String titleAr;
   final int year;
   final String event;
-  final String eventAr;
   final String iconKey;
   final int accent;
 
@@ -10828,10 +10018,8 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
   const GalleryPhoto({
     required this.id,
     required this.title,
-    required this.titleAr,
     required this.year,
     required this.event,
-    required this.eventAr,
     required this.iconKey,
     required this.accent,
     required this.imagePath,
@@ -10845,10 +10033,8 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['title'] = Variable<String>(title);
-    map['title_ar'] = Variable<String>(titleAr);
     map['year'] = Variable<int>(year);
     map['event'] = Variable<String>(event);
-    map['event_ar'] = Variable<String>(eventAr);
     map['icon_key'] = Variable<String>(iconKey);
     map['accent'] = Variable<int>(accent);
     map['image_path'] = Variable<String>(imagePath);
@@ -10865,10 +10051,8 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     return GalleryPhotosCompanion(
       id: Value(id),
       title: Value(title),
-      titleAr: Value(titleAr),
       year: Value(year),
       event: Value(event),
-      eventAr: Value(eventAr),
       iconKey: Value(iconKey),
       accent: Value(accent),
       imagePath: Value(imagePath),
@@ -10889,10 +10073,8 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     return GalleryPhoto(
       id: serializer.fromJson<String>(json['id']),
       title: serializer.fromJson<String>(json['title']),
-      titleAr: serializer.fromJson<String>(json['titleAr']),
       year: serializer.fromJson<int>(json['year']),
       event: serializer.fromJson<String>(json['event']),
-      eventAr: serializer.fromJson<String>(json['eventAr']),
       iconKey: serializer.fromJson<String>(json['iconKey']),
       accent: serializer.fromJson<int>(json['accent']),
       imagePath: serializer.fromJson<String>(json['imagePath']),
@@ -10908,10 +10090,8 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'title': serializer.toJson<String>(title),
-      'titleAr': serializer.toJson<String>(titleAr),
       'year': serializer.toJson<int>(year),
       'event': serializer.toJson<String>(event),
-      'eventAr': serializer.toJson<String>(eventAr),
       'iconKey': serializer.toJson<String>(iconKey),
       'accent': serializer.toJson<int>(accent),
       'imagePath': serializer.toJson<String>(imagePath),
@@ -10925,10 +10105,8 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
   GalleryPhoto copyWith({
     String? id,
     String? title,
-    String? titleAr,
     int? year,
     String? event,
-    String? eventAr,
     String? iconKey,
     int? accent,
     String? imagePath,
@@ -10939,10 +10117,8 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
   }) => GalleryPhoto(
     id: id ?? this.id,
     title: title ?? this.title,
-    titleAr: titleAr ?? this.titleAr,
     year: year ?? this.year,
     event: event ?? this.event,
-    eventAr: eventAr ?? this.eventAr,
     iconKey: iconKey ?? this.iconKey,
     accent: accent ?? this.accent,
     imagePath: imagePath ?? this.imagePath,
@@ -10955,10 +10131,8 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     return GalleryPhoto(
       id: data.id.present ? data.id.value : this.id,
       title: data.title.present ? data.title.value : this.title,
-      titleAr: data.titleAr.present ? data.titleAr.value : this.titleAr,
       year: data.year.present ? data.year.value : this.year,
       event: data.event.present ? data.event.value : this.event,
-      eventAr: data.eventAr.present ? data.eventAr.value : this.eventAr,
       iconKey: data.iconKey.present ? data.iconKey.value : this.iconKey,
       accent: data.accent.present ? data.accent.value : this.accent,
       imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
@@ -10978,10 +10152,8 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
     return (StringBuffer('GalleryPhoto(')
           ..write('id: $id, ')
           ..write('title: $title, ')
-          ..write('titleAr: $titleAr, ')
           ..write('year: $year, ')
           ..write('event: $event, ')
-          ..write('eventAr: $eventAr, ')
           ..write('iconKey: $iconKey, ')
           ..write('accent: $accent, ')
           ..write('imagePath: $imagePath, ')
@@ -10997,10 +10169,8 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
   int get hashCode => Object.hash(
     id,
     title,
-    titleAr,
     year,
     event,
-    eventAr,
     iconKey,
     accent,
     imagePath,
@@ -11015,10 +10185,8 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
       (other is GalleryPhoto &&
           other.id == this.id &&
           other.title == this.title &&
-          other.titleAr == this.titleAr &&
           other.year == this.year &&
           other.event == this.event &&
-          other.eventAr == this.eventAr &&
           other.iconKey == this.iconKey &&
           other.accent == this.accent &&
           other.imagePath == this.imagePath &&
@@ -11031,10 +10199,8 @@ class GalleryPhoto extends DataClass implements Insertable<GalleryPhoto> {
 class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
   final Value<String> id;
   final Value<String> title;
-  final Value<String> titleAr;
   final Value<int> year;
   final Value<String> event;
-  final Value<String> eventAr;
   final Value<String> iconKey;
   final Value<int> accent;
   final Value<String> imagePath;
@@ -11046,10 +10212,8 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
   const GalleryPhotosCompanion({
     this.id = const Value.absent(),
     this.title = const Value.absent(),
-    this.titleAr = const Value.absent(),
     this.year = const Value.absent(),
     this.event = const Value.absent(),
-    this.eventAr = const Value.absent(),
     this.iconKey = const Value.absent(),
     this.accent = const Value.absent(),
     this.imagePath = const Value.absent(),
@@ -11062,10 +10226,8 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
   GalleryPhotosCompanion.insert({
     required String id,
     required String title,
-    this.titleAr = const Value.absent(),
     this.year = const Value.absent(),
     this.event = const Value.absent(),
-    this.eventAr = const Value.absent(),
     this.iconKey = const Value.absent(),
     this.accent = const Value.absent(),
     this.imagePath = const Value.absent(),
@@ -11079,10 +10241,8 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
   static Insertable<GalleryPhoto> custom({
     Expression<String>? id,
     Expression<String>? title,
-    Expression<String>? titleAr,
     Expression<int>? year,
     Expression<String>? event,
-    Expression<String>? eventAr,
     Expression<String>? iconKey,
     Expression<int>? accent,
     Expression<String>? imagePath,
@@ -11095,10 +10255,8 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (title != null) 'title': title,
-      if (titleAr != null) 'title_ar': titleAr,
       if (year != null) 'year': year,
       if (event != null) 'event': event,
-      if (eventAr != null) 'event_ar': eventAr,
       if (iconKey != null) 'icon_key': iconKey,
       if (accent != null) 'accent': accent,
       if (imagePath != null) 'image_path': imagePath,
@@ -11113,10 +10271,8 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
   GalleryPhotosCompanion copyWith({
     Value<String>? id,
     Value<String>? title,
-    Value<String>? titleAr,
     Value<int>? year,
     Value<String>? event,
-    Value<String>? eventAr,
     Value<String>? iconKey,
     Value<int>? accent,
     Value<String>? imagePath,
@@ -11129,10 +10285,8 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
     return GalleryPhotosCompanion(
       id: id ?? this.id,
       title: title ?? this.title,
-      titleAr: titleAr ?? this.titleAr,
       year: year ?? this.year,
       event: event ?? this.event,
-      eventAr: eventAr ?? this.eventAr,
       iconKey: iconKey ?? this.iconKey,
       accent: accent ?? this.accent,
       imagePath: imagePath ?? this.imagePath,
@@ -11153,17 +10307,11 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
     if (title.present) {
       map['title'] = Variable<String>(title.value);
     }
-    if (titleAr.present) {
-      map['title_ar'] = Variable<String>(titleAr.value);
-    }
     if (year.present) {
       map['year'] = Variable<int>(year.value);
     }
     if (event.present) {
       map['event'] = Variable<String>(event.value);
-    }
-    if (eventAr.present) {
-      map['event_ar'] = Variable<String>(eventAr.value);
     }
     if (iconKey.present) {
       map['icon_key'] = Variable<String>(iconKey.value);
@@ -11197,10 +10345,8 @@ class GalleryPhotosCompanion extends UpdateCompanion<GalleryPhoto> {
     return (StringBuffer('GalleryPhotosCompanion(')
           ..write('id: $id, ')
           ..write('title: $title, ')
-          ..write('titleAr: $titleAr, ')
           ..write('year: $year, ')
           ..write('event: $event, ')
-          ..write('eventAr: $eventAr, ')
           ..write('iconKey: $iconKey, ')
           ..write('accent: $accent, ')
           ..write('imagePath: $imagePath, ')
@@ -11688,20 +10834,8 @@ class $LeadershipGroupInfoTable extends LeadershipGroupInfo
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
-  static const VerificationMeta _descriptionArMeta = const VerificationMeta(
-    'descriptionAr',
-  );
   @override
-  late final GeneratedColumn<String> descriptionAr = GeneratedColumn<String>(
-    'description_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  @override
-  List<GeneratedColumn> get $columns => [code, description, descriptionAr];
+  List<GeneratedColumn> get $columns => [code, description];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -11731,15 +10865,6 @@ class $LeadershipGroupInfoTable extends LeadershipGroupInfo
         ),
       );
     }
-    if (data.containsKey('description_ar')) {
-      context.handle(
-        _descriptionArMeta,
-        descriptionAr.isAcceptableOrUnknown(
-          data['description_ar']!,
-          _descriptionArMeta,
-        ),
-      );
-    }
     return context;
   }
 
@@ -11760,10 +10885,6 @@ class $LeadershipGroupInfoTable extends LeadershipGroupInfo
         DriftSqlType.string,
         data['${effectivePrefix}description'],
       )!,
-      descriptionAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}description_ar'],
-      )!,
     );
   }
 
@@ -11777,18 +10898,15 @@ class LeadershipGroupInfoData extends DataClass
     implements Insertable<LeadershipGroupInfoData> {
   final String code;
   final String description;
-  final String descriptionAr;
   const LeadershipGroupInfoData({
     required this.code,
     required this.description,
-    required this.descriptionAr,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['code'] = Variable<String>(code);
     map['description'] = Variable<String>(description);
-    map['description_ar'] = Variable<String>(descriptionAr);
     return map;
   }
 
@@ -11796,7 +10914,6 @@ class LeadershipGroupInfoData extends DataClass
     return LeadershipGroupInfoCompanion(
       code: Value(code),
       description: Value(description),
-      descriptionAr: Value(descriptionAr),
     );
   }
 
@@ -11808,7 +10925,6 @@ class LeadershipGroupInfoData extends DataClass
     return LeadershipGroupInfoData(
       code: serializer.fromJson<String>(json['code']),
       description: serializer.fromJson<String>(json['description']),
-      descriptionAr: serializer.fromJson<String>(json['descriptionAr']),
     );
   }
   @override
@@ -11817,28 +10933,20 @@ class LeadershipGroupInfoData extends DataClass
     return <String, dynamic>{
       'code': serializer.toJson<String>(code),
       'description': serializer.toJson<String>(description),
-      'descriptionAr': serializer.toJson<String>(descriptionAr),
     };
   }
 
-  LeadershipGroupInfoData copyWith({
-    String? code,
-    String? description,
-    String? descriptionAr,
-  }) => LeadershipGroupInfoData(
-    code: code ?? this.code,
-    description: description ?? this.description,
-    descriptionAr: descriptionAr ?? this.descriptionAr,
-  );
+  LeadershipGroupInfoData copyWith({String? code, String? description}) =>
+      LeadershipGroupInfoData(
+        code: code ?? this.code,
+        description: description ?? this.description,
+      );
   LeadershipGroupInfoData copyWithCompanion(LeadershipGroupInfoCompanion data) {
     return LeadershipGroupInfoData(
       code: data.code.present ? data.code.value : this.code,
       description: data.description.present
           ? data.description.value
           : this.description,
-      descriptionAr: data.descriptionAr.present
-          ? data.descriptionAr.value
-          : this.descriptionAr,
     );
   }
 
@@ -11846,51 +10954,44 @@ class LeadershipGroupInfoData extends DataClass
   String toString() {
     return (StringBuffer('LeadershipGroupInfoData(')
           ..write('code: $code, ')
-          ..write('description: $description, ')
-          ..write('descriptionAr: $descriptionAr')
+          ..write('description: $description')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(code, description, descriptionAr);
+  int get hashCode => Object.hash(code, description);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is LeadershipGroupInfoData &&
           other.code == this.code &&
-          other.description == this.description &&
-          other.descriptionAr == this.descriptionAr);
+          other.description == this.description);
 }
 
 class LeadershipGroupInfoCompanion
     extends UpdateCompanion<LeadershipGroupInfoData> {
   final Value<String> code;
   final Value<String> description;
-  final Value<String> descriptionAr;
   final Value<int> rowid;
   const LeadershipGroupInfoCompanion({
     this.code = const Value.absent(),
     this.description = const Value.absent(),
-    this.descriptionAr = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   LeadershipGroupInfoCompanion.insert({
     required String code,
     this.description = const Value.absent(),
-    this.descriptionAr = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : code = Value(code);
   static Insertable<LeadershipGroupInfoData> custom({
     Expression<String>? code,
     Expression<String>? description,
-    Expression<String>? descriptionAr,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (code != null) 'code': code,
       if (description != null) 'description': description,
-      if (descriptionAr != null) 'description_ar': descriptionAr,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -11898,13 +10999,11 @@ class LeadershipGroupInfoCompanion
   LeadershipGroupInfoCompanion copyWith({
     Value<String>? code,
     Value<String>? description,
-    Value<String>? descriptionAr,
     Value<int>? rowid,
   }) {
     return LeadershipGroupInfoCompanion(
       code: code ?? this.code,
       description: description ?? this.description,
-      descriptionAr: descriptionAr ?? this.descriptionAr,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -11918,9 +11017,6 @@ class LeadershipGroupInfoCompanion
     if (description.present) {
       map['description'] = Variable<String>(description.value);
     }
-    if (descriptionAr.present) {
-      map['description_ar'] = Variable<String>(descriptionAr.value);
-    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -11932,7 +11028,6 @@ class LeadershipGroupInfoCompanion
     return (StringBuffer('LeadershipGroupInfoCompanion(')
           ..write('code: $code, ')
           ..write('description: $description, ')
-          ..write('descriptionAr: $descriptionAr, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -11967,18 +11062,6 @@ class $HistoryContentsTable extends HistoryContents
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
-  static const VerificationMeta _foundingArMeta = const VerificationMeta(
-    'foundingAr',
-  );
-  @override
-  late final GeneratedColumn<String> foundingAr = GeneratedColumn<String>(
-    'founding_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
   static const VerificationMeta _missionEnMeta = const VerificationMeta(
     'missionEn',
   );
@@ -11991,36 +11074,12 @@ class $HistoryContentsTable extends HistoryContents
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
-  static const VerificationMeta _missionArMeta = const VerificationMeta(
-    'missionAr',
-  );
-  @override
-  late final GeneratedColumn<String> missionAr = GeneratedColumn<String>(
-    'mission_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
   static const VerificationMeta _visionEnMeta = const VerificationMeta(
     'visionEn',
   );
   @override
   late final GeneratedColumn<String> visionEn = GeneratedColumn<String>(
     'vision_en',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _visionArMeta = const VerificationMeta(
-    'visionAr',
-  );
-  @override
-  late final GeneratedColumn<String> visionAr = GeneratedColumn<String>(
-    'vision_ar',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -12053,11 +11112,8 @@ class $HistoryContentsTable extends HistoryContents
   List<GeneratedColumn> get $columns => [
     id,
     foundingEn,
-    foundingAr,
     missionEn,
-    missionAr,
     visionEn,
-    visionAr,
     narrative,
     facts,
   ];
@@ -12082,34 +11138,16 @@ class $HistoryContentsTable extends HistoryContents
         foundingEn.isAcceptableOrUnknown(data['founding_en']!, _foundingEnMeta),
       );
     }
-    if (data.containsKey('founding_ar')) {
-      context.handle(
-        _foundingArMeta,
-        foundingAr.isAcceptableOrUnknown(data['founding_ar']!, _foundingArMeta),
-      );
-    }
     if (data.containsKey('mission_en')) {
       context.handle(
         _missionEnMeta,
         missionEn.isAcceptableOrUnknown(data['mission_en']!, _missionEnMeta),
       );
     }
-    if (data.containsKey('mission_ar')) {
-      context.handle(
-        _missionArMeta,
-        missionAr.isAcceptableOrUnknown(data['mission_ar']!, _missionArMeta),
-      );
-    }
     if (data.containsKey('vision_en')) {
       context.handle(
         _visionEnMeta,
         visionEn.isAcceptableOrUnknown(data['vision_en']!, _visionEnMeta),
-      );
-    }
-    if (data.containsKey('vision_ar')) {
-      context.handle(
-        _visionArMeta,
-        visionAr.isAcceptableOrUnknown(data['vision_ar']!, _visionArMeta),
       );
     }
     if (data.containsKey('narrative')) {
@@ -12141,25 +11179,13 @@ class $HistoryContentsTable extends HistoryContents
         DriftSqlType.string,
         data['${effectivePrefix}founding_en'],
       )!,
-      foundingAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}founding_ar'],
-      )!,
       missionEn: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}mission_en'],
       )!,
-      missionAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}mission_ar'],
-      )!,
       visionEn: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}vision_en'],
-      )!,
-      visionAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}vision_ar'],
       )!,
       narrative: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -12181,25 +11207,19 @@ class $HistoryContentsTable extends HistoryContents
 class HistoryContent extends DataClass implements Insertable<HistoryContent> {
   final String id;
   final String foundingEn;
-  final String foundingAr;
   final String missionEn;
-  final String missionAr;
   final String visionEn;
-  final String visionAr;
 
-  /// JSON array of `{"en":..,"ar":..}` story paragraphs.
+  /// JSON array of `{"en":..}` story paragraphs.
   final String narrative;
 
-  /// JSON array of `{"value":..,"en":..,"ar":..,"iconKey":..,"accent":int}`.
+  /// JSON array of `{"value":..,"en":..,"iconKey":..,"accent":int}`.
   final String facts;
   const HistoryContent({
     required this.id,
     required this.foundingEn,
-    required this.foundingAr,
     required this.missionEn,
-    required this.missionAr,
     required this.visionEn,
-    required this.visionAr,
     required this.narrative,
     required this.facts,
   });
@@ -12208,11 +11228,8 @@ class HistoryContent extends DataClass implements Insertable<HistoryContent> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['founding_en'] = Variable<String>(foundingEn);
-    map['founding_ar'] = Variable<String>(foundingAr);
     map['mission_en'] = Variable<String>(missionEn);
-    map['mission_ar'] = Variable<String>(missionAr);
     map['vision_en'] = Variable<String>(visionEn);
-    map['vision_ar'] = Variable<String>(visionAr);
     map['narrative'] = Variable<String>(narrative);
     map['facts'] = Variable<String>(facts);
     return map;
@@ -12222,11 +11239,8 @@ class HistoryContent extends DataClass implements Insertable<HistoryContent> {
     return HistoryContentsCompanion(
       id: Value(id),
       foundingEn: Value(foundingEn),
-      foundingAr: Value(foundingAr),
       missionEn: Value(missionEn),
-      missionAr: Value(missionAr),
       visionEn: Value(visionEn),
-      visionAr: Value(visionAr),
       narrative: Value(narrative),
       facts: Value(facts),
     );
@@ -12240,11 +11254,8 @@ class HistoryContent extends DataClass implements Insertable<HistoryContent> {
     return HistoryContent(
       id: serializer.fromJson<String>(json['id']),
       foundingEn: serializer.fromJson<String>(json['foundingEn']),
-      foundingAr: serializer.fromJson<String>(json['foundingAr']),
       missionEn: serializer.fromJson<String>(json['missionEn']),
-      missionAr: serializer.fromJson<String>(json['missionAr']),
       visionEn: serializer.fromJson<String>(json['visionEn']),
-      visionAr: serializer.fromJson<String>(json['visionAr']),
       narrative: serializer.fromJson<String>(json['narrative']),
       facts: serializer.fromJson<String>(json['facts']),
     );
@@ -12255,11 +11266,8 @@ class HistoryContent extends DataClass implements Insertable<HistoryContent> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'foundingEn': serializer.toJson<String>(foundingEn),
-      'foundingAr': serializer.toJson<String>(foundingAr),
       'missionEn': serializer.toJson<String>(missionEn),
-      'missionAr': serializer.toJson<String>(missionAr),
       'visionEn': serializer.toJson<String>(visionEn),
-      'visionAr': serializer.toJson<String>(visionAr),
       'narrative': serializer.toJson<String>(narrative),
       'facts': serializer.toJson<String>(facts),
     };
@@ -12268,21 +11276,15 @@ class HistoryContent extends DataClass implements Insertable<HistoryContent> {
   HistoryContent copyWith({
     String? id,
     String? foundingEn,
-    String? foundingAr,
     String? missionEn,
-    String? missionAr,
     String? visionEn,
-    String? visionAr,
     String? narrative,
     String? facts,
   }) => HistoryContent(
     id: id ?? this.id,
     foundingEn: foundingEn ?? this.foundingEn,
-    foundingAr: foundingAr ?? this.foundingAr,
     missionEn: missionEn ?? this.missionEn,
-    missionAr: missionAr ?? this.missionAr,
     visionEn: visionEn ?? this.visionEn,
-    visionAr: visionAr ?? this.visionAr,
     narrative: narrative ?? this.narrative,
     facts: facts ?? this.facts,
   );
@@ -12292,13 +11294,8 @@ class HistoryContent extends DataClass implements Insertable<HistoryContent> {
       foundingEn: data.foundingEn.present
           ? data.foundingEn.value
           : this.foundingEn,
-      foundingAr: data.foundingAr.present
-          ? data.foundingAr.value
-          : this.foundingAr,
       missionEn: data.missionEn.present ? data.missionEn.value : this.missionEn,
-      missionAr: data.missionAr.present ? data.missionAr.value : this.missionAr,
       visionEn: data.visionEn.present ? data.visionEn.value : this.visionEn,
-      visionAr: data.visionAr.present ? data.visionAr.value : this.visionAr,
       narrative: data.narrative.present ? data.narrative.value : this.narrative,
       facts: data.facts.present ? data.facts.value : this.facts,
     );
@@ -12309,11 +11306,8 @@ class HistoryContent extends DataClass implements Insertable<HistoryContent> {
     return (StringBuffer('HistoryContent(')
           ..write('id: $id, ')
           ..write('foundingEn: $foundingEn, ')
-          ..write('foundingAr: $foundingAr, ')
           ..write('missionEn: $missionEn, ')
-          ..write('missionAr: $missionAr, ')
           ..write('visionEn: $visionEn, ')
-          ..write('visionAr: $visionAr, ')
           ..write('narrative: $narrative, ')
           ..write('facts: $facts')
           ..write(')'))
@@ -12321,28 +11315,16 @@ class HistoryContent extends DataClass implements Insertable<HistoryContent> {
   }
 
   @override
-  int get hashCode => Object.hash(
-    id,
-    foundingEn,
-    foundingAr,
-    missionEn,
-    missionAr,
-    visionEn,
-    visionAr,
-    narrative,
-    facts,
-  );
+  int get hashCode =>
+      Object.hash(id, foundingEn, missionEn, visionEn, narrative, facts);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is HistoryContent &&
           other.id == this.id &&
           other.foundingEn == this.foundingEn &&
-          other.foundingAr == this.foundingAr &&
           other.missionEn == this.missionEn &&
-          other.missionAr == this.missionAr &&
           other.visionEn == this.visionEn &&
-          other.visionAr == this.visionAr &&
           other.narrative == this.narrative &&
           other.facts == this.facts);
 }
@@ -12350,22 +11332,16 @@ class HistoryContent extends DataClass implements Insertable<HistoryContent> {
 class HistoryContentsCompanion extends UpdateCompanion<HistoryContent> {
   final Value<String> id;
   final Value<String> foundingEn;
-  final Value<String> foundingAr;
   final Value<String> missionEn;
-  final Value<String> missionAr;
   final Value<String> visionEn;
-  final Value<String> visionAr;
   final Value<String> narrative;
   final Value<String> facts;
   final Value<int> rowid;
   const HistoryContentsCompanion({
     this.id = const Value.absent(),
     this.foundingEn = const Value.absent(),
-    this.foundingAr = const Value.absent(),
     this.missionEn = const Value.absent(),
-    this.missionAr = const Value.absent(),
     this.visionEn = const Value.absent(),
-    this.visionAr = const Value.absent(),
     this.narrative = const Value.absent(),
     this.facts = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -12373,11 +11349,8 @@ class HistoryContentsCompanion extends UpdateCompanion<HistoryContent> {
   HistoryContentsCompanion.insert({
     this.id = const Value.absent(),
     this.foundingEn = const Value.absent(),
-    this.foundingAr = const Value.absent(),
     this.missionEn = const Value.absent(),
-    this.missionAr = const Value.absent(),
     this.visionEn = const Value.absent(),
-    this.visionAr = const Value.absent(),
     this.narrative = const Value.absent(),
     this.facts = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -12385,11 +11358,8 @@ class HistoryContentsCompanion extends UpdateCompanion<HistoryContent> {
   static Insertable<HistoryContent> custom({
     Expression<String>? id,
     Expression<String>? foundingEn,
-    Expression<String>? foundingAr,
     Expression<String>? missionEn,
-    Expression<String>? missionAr,
     Expression<String>? visionEn,
-    Expression<String>? visionAr,
     Expression<String>? narrative,
     Expression<String>? facts,
     Expression<int>? rowid,
@@ -12397,11 +11367,8 @@ class HistoryContentsCompanion extends UpdateCompanion<HistoryContent> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (foundingEn != null) 'founding_en': foundingEn,
-      if (foundingAr != null) 'founding_ar': foundingAr,
       if (missionEn != null) 'mission_en': missionEn,
-      if (missionAr != null) 'mission_ar': missionAr,
       if (visionEn != null) 'vision_en': visionEn,
-      if (visionAr != null) 'vision_ar': visionAr,
       if (narrative != null) 'narrative': narrative,
       if (facts != null) 'facts': facts,
       if (rowid != null) 'rowid': rowid,
@@ -12411,11 +11378,8 @@ class HistoryContentsCompanion extends UpdateCompanion<HistoryContent> {
   HistoryContentsCompanion copyWith({
     Value<String>? id,
     Value<String>? foundingEn,
-    Value<String>? foundingAr,
     Value<String>? missionEn,
-    Value<String>? missionAr,
     Value<String>? visionEn,
-    Value<String>? visionAr,
     Value<String>? narrative,
     Value<String>? facts,
     Value<int>? rowid,
@@ -12423,11 +11387,8 @@ class HistoryContentsCompanion extends UpdateCompanion<HistoryContent> {
     return HistoryContentsCompanion(
       id: id ?? this.id,
       foundingEn: foundingEn ?? this.foundingEn,
-      foundingAr: foundingAr ?? this.foundingAr,
       missionEn: missionEn ?? this.missionEn,
-      missionAr: missionAr ?? this.missionAr,
       visionEn: visionEn ?? this.visionEn,
-      visionAr: visionAr ?? this.visionAr,
       narrative: narrative ?? this.narrative,
       facts: facts ?? this.facts,
       rowid: rowid ?? this.rowid,
@@ -12443,20 +11404,11 @@ class HistoryContentsCompanion extends UpdateCompanion<HistoryContent> {
     if (foundingEn.present) {
       map['founding_en'] = Variable<String>(foundingEn.value);
     }
-    if (foundingAr.present) {
-      map['founding_ar'] = Variable<String>(foundingAr.value);
-    }
     if (missionEn.present) {
       map['mission_en'] = Variable<String>(missionEn.value);
     }
-    if (missionAr.present) {
-      map['mission_ar'] = Variable<String>(missionAr.value);
-    }
     if (visionEn.present) {
       map['vision_en'] = Variable<String>(visionEn.value);
-    }
-    if (visionAr.present) {
-      map['vision_ar'] = Variable<String>(visionAr.value);
     }
     if (narrative.present) {
       map['narrative'] = Variable<String>(narrative.value);
@@ -12475,11 +11427,8 @@ class HistoryContentsCompanion extends UpdateCompanion<HistoryContent> {
     return (StringBuffer('HistoryContentsCompanion(')
           ..write('id: $id, ')
           ..write('foundingEn: $foundingEn, ')
-          ..write('foundingAr: $foundingAr, ')
           ..write('missionEn: $missionEn, ')
-          ..write('missionAr: $missionAr, ')
           ..write('visionEn: $visionEn, ')
-          ..write('visionAr: $visionAr, ')
           ..write('narrative: $narrative, ')
           ..write('facts: $facts, ')
           ..write('rowid: $rowid')
@@ -12523,36 +11472,12 @@ class $HistoryMilestonesTable extends HistoryMilestones
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
-  static const VerificationMeta _titleArMeta = const VerificationMeta(
-    'titleAr',
-  );
-  @override
-  late final GeneratedColumn<String> titleAr = GeneratedColumn<String>(
-    'title_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
   static const VerificationMeta _descriptionMeta = const VerificationMeta(
     'description',
   );
   @override
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
     'description',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _descriptionArMeta = const VerificationMeta(
-    'descriptionAr',
-  );
-  @override
-  late final GeneratedColumn<String> descriptionAr = GeneratedColumn<String>(
-    'description_ar',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -12610,9 +11535,7 @@ class $HistoryMilestonesTable extends HistoryMilestones
     id,
     year,
     title,
-    titleAr,
     description,
-    descriptionAr,
     iconKey,
     accent,
     sortOrder,
@@ -12647,27 +11570,12 @@ class $HistoryMilestonesTable extends HistoryMilestones
         title.isAcceptableOrUnknown(data['title']!, _titleMeta),
       );
     }
-    if (data.containsKey('title_ar')) {
-      context.handle(
-        _titleArMeta,
-        titleAr.isAcceptableOrUnknown(data['title_ar']!, _titleArMeta),
-      );
-    }
     if (data.containsKey('description')) {
       context.handle(
         _descriptionMeta,
         description.isAcceptableOrUnknown(
           data['description']!,
           _descriptionMeta,
-        ),
-      );
-    }
-    if (data.containsKey('description_ar')) {
-      context.handle(
-        _descriptionArMeta,
-        descriptionAr.isAcceptableOrUnknown(
-          data['description_ar']!,
-          _descriptionArMeta,
         ),
       );
     }
@@ -12716,17 +11624,9 @@ class $HistoryMilestonesTable extends HistoryMilestones
         DriftSqlType.string,
         data['${effectivePrefix}title'],
       )!,
-      titleAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}title_ar'],
-      )!,
       description: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}description'],
-      )!,
-      descriptionAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}description_ar'],
       )!,
       iconKey: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -12758,9 +11658,7 @@ class HistoryMilestone extends DataClass
   final String id;
   final String year;
   final String title;
-  final String titleAr;
   final String description;
-  final String descriptionAr;
   final String iconKey;
   final int accent;
   final int sortOrder;
@@ -12769,9 +11667,7 @@ class HistoryMilestone extends DataClass
     required this.id,
     required this.year,
     required this.title,
-    required this.titleAr,
     required this.description,
-    required this.descriptionAr,
     required this.iconKey,
     required this.accent,
     required this.sortOrder,
@@ -12783,9 +11679,7 @@ class HistoryMilestone extends DataClass
     map['id'] = Variable<String>(id);
     map['year'] = Variable<String>(year);
     map['title'] = Variable<String>(title);
-    map['title_ar'] = Variable<String>(titleAr);
     map['description'] = Variable<String>(description);
-    map['description_ar'] = Variable<String>(descriptionAr);
     map['icon_key'] = Variable<String>(iconKey);
     map['accent'] = Variable<int>(accent);
     map['sort_order'] = Variable<int>(sortOrder);
@@ -12798,9 +11692,7 @@ class HistoryMilestone extends DataClass
       id: Value(id),
       year: Value(year),
       title: Value(title),
-      titleAr: Value(titleAr),
       description: Value(description),
-      descriptionAr: Value(descriptionAr),
       iconKey: Value(iconKey),
       accent: Value(accent),
       sortOrder: Value(sortOrder),
@@ -12817,9 +11709,7 @@ class HistoryMilestone extends DataClass
       id: serializer.fromJson<String>(json['id']),
       year: serializer.fromJson<String>(json['year']),
       title: serializer.fromJson<String>(json['title']),
-      titleAr: serializer.fromJson<String>(json['titleAr']),
       description: serializer.fromJson<String>(json['description']),
-      descriptionAr: serializer.fromJson<String>(json['descriptionAr']),
       iconKey: serializer.fromJson<String>(json['iconKey']),
       accent: serializer.fromJson<int>(json['accent']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
@@ -12833,9 +11723,7 @@ class HistoryMilestone extends DataClass
       'id': serializer.toJson<String>(id),
       'year': serializer.toJson<String>(year),
       'title': serializer.toJson<String>(title),
-      'titleAr': serializer.toJson<String>(titleAr),
       'description': serializer.toJson<String>(description),
-      'descriptionAr': serializer.toJson<String>(descriptionAr),
       'iconKey': serializer.toJson<String>(iconKey),
       'accent': serializer.toJson<int>(accent),
       'sortOrder': serializer.toJson<int>(sortOrder),
@@ -12847,9 +11735,7 @@ class HistoryMilestone extends DataClass
     String? id,
     String? year,
     String? title,
-    String? titleAr,
     String? description,
-    String? descriptionAr,
     String? iconKey,
     int? accent,
     int? sortOrder,
@@ -12858,9 +11744,7 @@ class HistoryMilestone extends DataClass
     id: id ?? this.id,
     year: year ?? this.year,
     title: title ?? this.title,
-    titleAr: titleAr ?? this.titleAr,
     description: description ?? this.description,
-    descriptionAr: descriptionAr ?? this.descriptionAr,
     iconKey: iconKey ?? this.iconKey,
     accent: accent ?? this.accent,
     sortOrder: sortOrder ?? this.sortOrder,
@@ -12871,13 +11755,9 @@ class HistoryMilestone extends DataClass
       id: data.id.present ? data.id.value : this.id,
       year: data.year.present ? data.year.value : this.year,
       title: data.title.present ? data.title.value : this.title,
-      titleAr: data.titleAr.present ? data.titleAr.value : this.titleAr,
       description: data.description.present
           ? data.description.value
           : this.description,
-      descriptionAr: data.descriptionAr.present
-          ? data.descriptionAr.value
-          : this.descriptionAr,
       iconKey: data.iconKey.present ? data.iconKey.value : this.iconKey,
       accent: data.accent.present ? data.accent.value : this.accent,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
@@ -12891,9 +11771,7 @@ class HistoryMilestone extends DataClass
           ..write('id: $id, ')
           ..write('year: $year, ')
           ..write('title: $title, ')
-          ..write('titleAr: $titleAr, ')
           ..write('description: $description, ')
-          ..write('descriptionAr: $descriptionAr, ')
           ..write('iconKey: $iconKey, ')
           ..write('accent: $accent, ')
           ..write('sortOrder: $sortOrder, ')
@@ -12907,9 +11785,7 @@ class HistoryMilestone extends DataClass
     id,
     year,
     title,
-    titleAr,
     description,
-    descriptionAr,
     iconKey,
     accent,
     sortOrder,
@@ -12922,9 +11798,7 @@ class HistoryMilestone extends DataClass
           other.id == this.id &&
           other.year == this.year &&
           other.title == this.title &&
-          other.titleAr == this.titleAr &&
           other.description == this.description &&
-          other.descriptionAr == this.descriptionAr &&
           other.iconKey == this.iconKey &&
           other.accent == this.accent &&
           other.sortOrder == this.sortOrder &&
@@ -12935,9 +11809,7 @@ class HistoryMilestonesCompanion extends UpdateCompanion<HistoryMilestone> {
   final Value<String> id;
   final Value<String> year;
   final Value<String> title;
-  final Value<String> titleAr;
   final Value<String> description;
-  final Value<String> descriptionAr;
   final Value<String> iconKey;
   final Value<int> accent;
   final Value<int> sortOrder;
@@ -12947,9 +11819,7 @@ class HistoryMilestonesCompanion extends UpdateCompanion<HistoryMilestone> {
     this.id = const Value.absent(),
     this.year = const Value.absent(),
     this.title = const Value.absent(),
-    this.titleAr = const Value.absent(),
     this.description = const Value.absent(),
-    this.descriptionAr = const Value.absent(),
     this.iconKey = const Value.absent(),
     this.accent = const Value.absent(),
     this.sortOrder = const Value.absent(),
@@ -12960,9 +11830,7 @@ class HistoryMilestonesCompanion extends UpdateCompanion<HistoryMilestone> {
     required String id,
     this.year = const Value.absent(),
     this.title = const Value.absent(),
-    this.titleAr = const Value.absent(),
     this.description = const Value.absent(),
-    this.descriptionAr = const Value.absent(),
     this.iconKey = const Value.absent(),
     this.accent = const Value.absent(),
     this.sortOrder = const Value.absent(),
@@ -12973,9 +11841,7 @@ class HistoryMilestonesCompanion extends UpdateCompanion<HistoryMilestone> {
     Expression<String>? id,
     Expression<String>? year,
     Expression<String>? title,
-    Expression<String>? titleAr,
     Expression<String>? description,
-    Expression<String>? descriptionAr,
     Expression<String>? iconKey,
     Expression<int>? accent,
     Expression<int>? sortOrder,
@@ -12986,9 +11852,7 @@ class HistoryMilestonesCompanion extends UpdateCompanion<HistoryMilestone> {
       if (id != null) 'id': id,
       if (year != null) 'year': year,
       if (title != null) 'title': title,
-      if (titleAr != null) 'title_ar': titleAr,
       if (description != null) 'description': description,
-      if (descriptionAr != null) 'description_ar': descriptionAr,
       if (iconKey != null) 'icon_key': iconKey,
       if (accent != null) 'accent': accent,
       if (sortOrder != null) 'sort_order': sortOrder,
@@ -13001,9 +11865,7 @@ class HistoryMilestonesCompanion extends UpdateCompanion<HistoryMilestone> {
     Value<String>? id,
     Value<String>? year,
     Value<String>? title,
-    Value<String>? titleAr,
     Value<String>? description,
-    Value<String>? descriptionAr,
     Value<String>? iconKey,
     Value<int>? accent,
     Value<int>? sortOrder,
@@ -13014,9 +11876,7 @@ class HistoryMilestonesCompanion extends UpdateCompanion<HistoryMilestone> {
       id: id ?? this.id,
       year: year ?? this.year,
       title: title ?? this.title,
-      titleAr: titleAr ?? this.titleAr,
       description: description ?? this.description,
-      descriptionAr: descriptionAr ?? this.descriptionAr,
       iconKey: iconKey ?? this.iconKey,
       accent: accent ?? this.accent,
       sortOrder: sortOrder ?? this.sortOrder,
@@ -13037,14 +11897,8 @@ class HistoryMilestonesCompanion extends UpdateCompanion<HistoryMilestone> {
     if (title.present) {
       map['title'] = Variable<String>(title.value);
     }
-    if (titleAr.present) {
-      map['title_ar'] = Variable<String>(titleAr.value);
-    }
     if (description.present) {
       map['description'] = Variable<String>(description.value);
-    }
-    if (descriptionAr.present) {
-      map['description_ar'] = Variable<String>(descriptionAr.value);
     }
     if (iconKey.present) {
       map['icon_key'] = Variable<String>(iconKey.value);
@@ -13070,9 +11924,7 @@ class HistoryMilestonesCompanion extends UpdateCompanion<HistoryMilestone> {
           ..write('id: $id, ')
           ..write('year: $year, ')
           ..write('title: $title, ')
-          ..write('titleAr: $titleAr, ')
           ..write('description: $description, ')
-          ..write('descriptionAr: $descriptionAr, ')
           ..write('iconKey: $iconKey, ')
           ..write('accent: $accent, ')
           ..write('sortOrder: $sortOrder, ')
@@ -13124,18 +11976,6 @@ class $PreviousLeadersTable extends PreviousLeaders
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
-  static const VerificationMeta _positionArMeta = const VerificationMeta(
-    'positionAr',
-  );
-  @override
-  late final GeneratedColumn<String> positionAr = GeneratedColumn<String>(
-    'position_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
   static const VerificationMeta _termYearsMeta = const VerificationMeta(
     'termYears',
   );
@@ -13152,16 +11992,6 @@ class $PreviousLeadersTable extends PreviousLeaders
   @override
   late final GeneratedColumn<String> note = GeneratedColumn<String>(
     'note',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _noteArMeta = const VerificationMeta('noteAr');
-  @override
-  late final GeneratedColumn<String> noteAr = GeneratedColumn<String>(
-    'note_ar',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -13207,10 +12037,8 @@ class $PreviousLeadersTable extends PreviousLeaders
     id,
     memberId,
     position,
-    positionAr,
     termYears,
     note,
-    noteAr,
     accent,
     sortOrder,
     createdAt,
@@ -13246,12 +12074,6 @@ class $PreviousLeadersTable extends PreviousLeaders
         position.isAcceptableOrUnknown(data['position']!, _positionMeta),
       );
     }
-    if (data.containsKey('position_ar')) {
-      context.handle(
-        _positionArMeta,
-        positionAr.isAcceptableOrUnknown(data['position_ar']!, _positionArMeta),
-      );
-    }
     if (data.containsKey('term_years')) {
       context.handle(
         _termYearsMeta,
@@ -13262,12 +12084,6 @@ class $PreviousLeadersTable extends PreviousLeaders
       context.handle(
         _noteMeta,
         note.isAcceptableOrUnknown(data['note']!, _noteMeta),
-      );
-    }
-    if (data.containsKey('note_ar')) {
-      context.handle(
-        _noteArMeta,
-        noteAr.isAcceptableOrUnknown(data['note_ar']!, _noteArMeta),
       );
     }
     if (data.containsKey('accent')) {
@@ -13309,10 +12125,6 @@ class $PreviousLeadersTable extends PreviousLeaders
         DriftSqlType.string,
         data['${effectivePrefix}position'],
       )!,
-      positionAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}position_ar'],
-      )!,
       termYears: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}term_years'],
@@ -13320,10 +12132,6 @@ class $PreviousLeadersTable extends PreviousLeaders
       note: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}note'],
-      )!,
-      noteAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}note_ar'],
       )!,
       accent: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -13350,10 +12158,8 @@ class PreviousLeader extends DataClass implements Insertable<PreviousLeader> {
   final String id;
   final String memberId;
   final String position;
-  final String positionAr;
   final String termYears;
   final String note;
-  final String noteAr;
   final int accent;
   final int sortOrder;
   final DateTime createdAt;
@@ -13361,10 +12167,8 @@ class PreviousLeader extends DataClass implements Insertable<PreviousLeader> {
     required this.id,
     required this.memberId,
     required this.position,
-    required this.positionAr,
     required this.termYears,
     required this.note,
-    required this.noteAr,
     required this.accent,
     required this.sortOrder,
     required this.createdAt,
@@ -13375,10 +12179,8 @@ class PreviousLeader extends DataClass implements Insertable<PreviousLeader> {
     map['id'] = Variable<String>(id);
     map['member_id'] = Variable<String>(memberId);
     map['position'] = Variable<String>(position);
-    map['position_ar'] = Variable<String>(positionAr);
     map['term_years'] = Variable<String>(termYears);
     map['note'] = Variable<String>(note);
-    map['note_ar'] = Variable<String>(noteAr);
     map['accent'] = Variable<int>(accent);
     map['sort_order'] = Variable<int>(sortOrder);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -13390,10 +12192,8 @@ class PreviousLeader extends DataClass implements Insertable<PreviousLeader> {
       id: Value(id),
       memberId: Value(memberId),
       position: Value(position),
-      positionAr: Value(positionAr),
       termYears: Value(termYears),
       note: Value(note),
-      noteAr: Value(noteAr),
       accent: Value(accent),
       sortOrder: Value(sortOrder),
       createdAt: Value(createdAt),
@@ -13409,10 +12209,8 @@ class PreviousLeader extends DataClass implements Insertable<PreviousLeader> {
       id: serializer.fromJson<String>(json['id']),
       memberId: serializer.fromJson<String>(json['memberId']),
       position: serializer.fromJson<String>(json['position']),
-      positionAr: serializer.fromJson<String>(json['positionAr']),
       termYears: serializer.fromJson<String>(json['termYears']),
       note: serializer.fromJson<String>(json['note']),
-      noteAr: serializer.fromJson<String>(json['noteAr']),
       accent: serializer.fromJson<int>(json['accent']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -13425,10 +12223,8 @@ class PreviousLeader extends DataClass implements Insertable<PreviousLeader> {
       'id': serializer.toJson<String>(id),
       'memberId': serializer.toJson<String>(memberId),
       'position': serializer.toJson<String>(position),
-      'positionAr': serializer.toJson<String>(positionAr),
       'termYears': serializer.toJson<String>(termYears),
       'note': serializer.toJson<String>(note),
-      'noteAr': serializer.toJson<String>(noteAr),
       'accent': serializer.toJson<int>(accent),
       'sortOrder': serializer.toJson<int>(sortOrder),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -13439,10 +12235,8 @@ class PreviousLeader extends DataClass implements Insertable<PreviousLeader> {
     String? id,
     String? memberId,
     String? position,
-    String? positionAr,
     String? termYears,
     String? note,
-    String? noteAr,
     int? accent,
     int? sortOrder,
     DateTime? createdAt,
@@ -13450,10 +12244,8 @@ class PreviousLeader extends DataClass implements Insertable<PreviousLeader> {
     id: id ?? this.id,
     memberId: memberId ?? this.memberId,
     position: position ?? this.position,
-    positionAr: positionAr ?? this.positionAr,
     termYears: termYears ?? this.termYears,
     note: note ?? this.note,
-    noteAr: noteAr ?? this.noteAr,
     accent: accent ?? this.accent,
     sortOrder: sortOrder ?? this.sortOrder,
     createdAt: createdAt ?? this.createdAt,
@@ -13463,12 +12255,8 @@ class PreviousLeader extends DataClass implements Insertable<PreviousLeader> {
       id: data.id.present ? data.id.value : this.id,
       memberId: data.memberId.present ? data.memberId.value : this.memberId,
       position: data.position.present ? data.position.value : this.position,
-      positionAr: data.positionAr.present
-          ? data.positionAr.value
-          : this.positionAr,
       termYears: data.termYears.present ? data.termYears.value : this.termYears,
       note: data.note.present ? data.note.value : this.note,
-      noteAr: data.noteAr.present ? data.noteAr.value : this.noteAr,
       accent: data.accent.present ? data.accent.value : this.accent,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
@@ -13481,10 +12269,8 @@ class PreviousLeader extends DataClass implements Insertable<PreviousLeader> {
           ..write('id: $id, ')
           ..write('memberId: $memberId, ')
           ..write('position: $position, ')
-          ..write('positionAr: $positionAr, ')
           ..write('termYears: $termYears, ')
           ..write('note: $note, ')
-          ..write('noteAr: $noteAr, ')
           ..write('accent: $accent, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('createdAt: $createdAt')
@@ -13497,10 +12283,8 @@ class PreviousLeader extends DataClass implements Insertable<PreviousLeader> {
     id,
     memberId,
     position,
-    positionAr,
     termYears,
     note,
-    noteAr,
     accent,
     sortOrder,
     createdAt,
@@ -13512,10 +12296,8 @@ class PreviousLeader extends DataClass implements Insertable<PreviousLeader> {
           other.id == this.id &&
           other.memberId == this.memberId &&
           other.position == this.position &&
-          other.positionAr == this.positionAr &&
           other.termYears == this.termYears &&
           other.note == this.note &&
-          other.noteAr == this.noteAr &&
           other.accent == this.accent &&
           other.sortOrder == this.sortOrder &&
           other.createdAt == this.createdAt);
@@ -13525,10 +12307,8 @@ class PreviousLeadersCompanion extends UpdateCompanion<PreviousLeader> {
   final Value<String> id;
   final Value<String> memberId;
   final Value<String> position;
-  final Value<String> positionAr;
   final Value<String> termYears;
   final Value<String> note;
-  final Value<String> noteAr;
   final Value<int> accent;
   final Value<int> sortOrder;
   final Value<DateTime> createdAt;
@@ -13537,10 +12317,8 @@ class PreviousLeadersCompanion extends UpdateCompanion<PreviousLeader> {
     this.id = const Value.absent(),
     this.memberId = const Value.absent(),
     this.position = const Value.absent(),
-    this.positionAr = const Value.absent(),
     this.termYears = const Value.absent(),
     this.note = const Value.absent(),
-    this.noteAr = const Value.absent(),
     this.accent = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -13550,10 +12328,8 @@ class PreviousLeadersCompanion extends UpdateCompanion<PreviousLeader> {
     required String id,
     required String memberId,
     this.position = const Value.absent(),
-    this.positionAr = const Value.absent(),
     this.termYears = const Value.absent(),
     this.note = const Value.absent(),
-    this.noteAr = const Value.absent(),
     this.accent = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -13564,10 +12340,8 @@ class PreviousLeadersCompanion extends UpdateCompanion<PreviousLeader> {
     Expression<String>? id,
     Expression<String>? memberId,
     Expression<String>? position,
-    Expression<String>? positionAr,
     Expression<String>? termYears,
     Expression<String>? note,
-    Expression<String>? noteAr,
     Expression<int>? accent,
     Expression<int>? sortOrder,
     Expression<DateTime>? createdAt,
@@ -13577,10 +12351,8 @@ class PreviousLeadersCompanion extends UpdateCompanion<PreviousLeader> {
       if (id != null) 'id': id,
       if (memberId != null) 'member_id': memberId,
       if (position != null) 'position': position,
-      if (positionAr != null) 'position_ar': positionAr,
       if (termYears != null) 'term_years': termYears,
       if (note != null) 'note': note,
-      if (noteAr != null) 'note_ar': noteAr,
       if (accent != null) 'accent': accent,
       if (sortOrder != null) 'sort_order': sortOrder,
       if (createdAt != null) 'created_at': createdAt,
@@ -13592,10 +12364,8 @@ class PreviousLeadersCompanion extends UpdateCompanion<PreviousLeader> {
     Value<String>? id,
     Value<String>? memberId,
     Value<String>? position,
-    Value<String>? positionAr,
     Value<String>? termYears,
     Value<String>? note,
-    Value<String>? noteAr,
     Value<int>? accent,
     Value<int>? sortOrder,
     Value<DateTime>? createdAt,
@@ -13605,10 +12375,8 @@ class PreviousLeadersCompanion extends UpdateCompanion<PreviousLeader> {
       id: id ?? this.id,
       memberId: memberId ?? this.memberId,
       position: position ?? this.position,
-      positionAr: positionAr ?? this.positionAr,
       termYears: termYears ?? this.termYears,
       note: note ?? this.note,
-      noteAr: noteAr ?? this.noteAr,
       accent: accent ?? this.accent,
       sortOrder: sortOrder ?? this.sortOrder,
       createdAt: createdAt ?? this.createdAt,
@@ -13628,17 +12396,11 @@ class PreviousLeadersCompanion extends UpdateCompanion<PreviousLeader> {
     if (position.present) {
       map['position'] = Variable<String>(position.value);
     }
-    if (positionAr.present) {
-      map['position_ar'] = Variable<String>(positionAr.value);
-    }
     if (termYears.present) {
       map['term_years'] = Variable<String>(termYears.value);
     }
     if (note.present) {
       map['note'] = Variable<String>(note.value);
-    }
-    if (noteAr.present) {
-      map['note_ar'] = Variable<String>(noteAr.value);
     }
     if (accent.present) {
       map['accent'] = Variable<int>(accent.value);
@@ -13661,10 +12423,8 @@ class PreviousLeadersCompanion extends UpdateCompanion<PreviousLeader> {
           ..write('id: $id, ')
           ..write('memberId: $memberId, ')
           ..write('position: $position, ')
-          ..write('positionAr: $positionAr, ')
           ..write('termYears: $termYears, ')
           ..write('note: $note, ')
-          ..write('noteAr: $noteAr, ')
           ..write('accent: $accent, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('createdAt: $createdAt, ')
@@ -13713,32 +12473,10 @@ class $PreviousLeaderSectionsTable extends PreviousLeaderSections
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
-  static const VerificationMeta _titleArMeta = const VerificationMeta(
-    'titleAr',
-  );
-  @override
-  late final GeneratedColumn<String> titleAr = GeneratedColumn<String>(
-    'title_ar',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
   static const VerificationMeta _bodyMeta = const VerificationMeta('body');
   @override
   late final GeneratedColumn<String> body = GeneratedColumn<String>(
     'body',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
-  static const VerificationMeta _bodyArMeta = const VerificationMeta('bodyAr');
-  @override
-  late final GeneratedColumn<String> bodyAr = GeneratedColumn<String>(
-    'body_ar',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -13762,9 +12500,7 @@ class $PreviousLeaderSectionsTable extends PreviousLeaderSections
     id,
     previousLeaderId,
     title,
-    titleAr,
     body,
-    bodyAr,
     sortOrder,
   ];
   @override
@@ -13801,22 +12537,10 @@ class $PreviousLeaderSectionsTable extends PreviousLeaderSections
         title.isAcceptableOrUnknown(data['title']!, _titleMeta),
       );
     }
-    if (data.containsKey('title_ar')) {
-      context.handle(
-        _titleArMeta,
-        titleAr.isAcceptableOrUnknown(data['title_ar']!, _titleArMeta),
-      );
-    }
     if (data.containsKey('body')) {
       context.handle(
         _bodyMeta,
         body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
-      );
-    }
-    if (data.containsKey('body_ar')) {
-      context.handle(
-        _bodyArMeta,
-        bodyAr.isAcceptableOrUnknown(data['body_ar']!, _bodyArMeta),
       );
     }
     if (data.containsKey('sort_order')) {
@@ -13846,17 +12570,9 @@ class $PreviousLeaderSectionsTable extends PreviousLeaderSections
         DriftSqlType.string,
         data['${effectivePrefix}title'],
       )!,
-      titleAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}title_ar'],
-      )!,
       body: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}body'],
-      )!,
-      bodyAr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}body_ar'],
       )!,
       sortOrder: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -13876,17 +12592,13 @@ class PreviousLeaderSection extends DataClass
   final String id;
   final String previousLeaderId;
   final String title;
-  final String titleAr;
   final String body;
-  final String bodyAr;
   final int sortOrder;
   const PreviousLeaderSection({
     required this.id,
     required this.previousLeaderId,
     required this.title,
-    required this.titleAr,
     required this.body,
-    required this.bodyAr,
     required this.sortOrder,
   });
   @override
@@ -13895,9 +12607,7 @@ class PreviousLeaderSection extends DataClass
     map['id'] = Variable<String>(id);
     map['previous_leader_id'] = Variable<String>(previousLeaderId);
     map['title'] = Variable<String>(title);
-    map['title_ar'] = Variable<String>(titleAr);
     map['body'] = Variable<String>(body);
-    map['body_ar'] = Variable<String>(bodyAr);
     map['sort_order'] = Variable<int>(sortOrder);
     return map;
   }
@@ -13907,9 +12617,7 @@ class PreviousLeaderSection extends DataClass
       id: Value(id),
       previousLeaderId: Value(previousLeaderId),
       title: Value(title),
-      titleAr: Value(titleAr),
       body: Value(body),
-      bodyAr: Value(bodyAr),
       sortOrder: Value(sortOrder),
     );
   }
@@ -13923,9 +12631,7 @@ class PreviousLeaderSection extends DataClass
       id: serializer.fromJson<String>(json['id']),
       previousLeaderId: serializer.fromJson<String>(json['previousLeaderId']),
       title: serializer.fromJson<String>(json['title']),
-      titleAr: serializer.fromJson<String>(json['titleAr']),
       body: serializer.fromJson<String>(json['body']),
-      bodyAr: serializer.fromJson<String>(json['bodyAr']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
     );
   }
@@ -13936,9 +12642,7 @@ class PreviousLeaderSection extends DataClass
       'id': serializer.toJson<String>(id),
       'previousLeaderId': serializer.toJson<String>(previousLeaderId),
       'title': serializer.toJson<String>(title),
-      'titleAr': serializer.toJson<String>(titleAr),
       'body': serializer.toJson<String>(body),
-      'bodyAr': serializer.toJson<String>(bodyAr),
       'sortOrder': serializer.toJson<int>(sortOrder),
     };
   }
@@ -13947,17 +12651,13 @@ class PreviousLeaderSection extends DataClass
     String? id,
     String? previousLeaderId,
     String? title,
-    String? titleAr,
     String? body,
-    String? bodyAr,
     int? sortOrder,
   }) => PreviousLeaderSection(
     id: id ?? this.id,
     previousLeaderId: previousLeaderId ?? this.previousLeaderId,
     title: title ?? this.title,
-    titleAr: titleAr ?? this.titleAr,
     body: body ?? this.body,
-    bodyAr: bodyAr ?? this.bodyAr,
     sortOrder: sortOrder ?? this.sortOrder,
   );
   PreviousLeaderSection copyWithCompanion(
@@ -13969,9 +12669,7 @@ class PreviousLeaderSection extends DataClass
           ? data.previousLeaderId.value
           : this.previousLeaderId,
       title: data.title.present ? data.title.value : this.title,
-      titleAr: data.titleAr.present ? data.titleAr.value : this.titleAr,
       body: data.body.present ? data.body.value : this.body,
-      bodyAr: data.bodyAr.present ? data.bodyAr.value : this.bodyAr,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
     );
   }
@@ -13982,24 +12680,14 @@ class PreviousLeaderSection extends DataClass
           ..write('id: $id, ')
           ..write('previousLeaderId: $previousLeaderId, ')
           ..write('title: $title, ')
-          ..write('titleAr: $titleAr, ')
           ..write('body: $body, ')
-          ..write('bodyAr: $bodyAr, ')
           ..write('sortOrder: $sortOrder')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-    id,
-    previousLeaderId,
-    title,
-    titleAr,
-    body,
-    bodyAr,
-    sortOrder,
-  );
+  int get hashCode => Object.hash(id, previousLeaderId, title, body, sortOrder);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -14007,9 +12695,7 @@ class PreviousLeaderSection extends DataClass
           other.id == this.id &&
           other.previousLeaderId == this.previousLeaderId &&
           other.title == this.title &&
-          other.titleAr == this.titleAr &&
           other.body == this.body &&
-          other.bodyAr == this.bodyAr &&
           other.sortOrder == this.sortOrder);
 }
 
@@ -14018,18 +12704,14 @@ class PreviousLeaderSectionsCompanion
   final Value<String> id;
   final Value<String> previousLeaderId;
   final Value<String> title;
-  final Value<String> titleAr;
   final Value<String> body;
-  final Value<String> bodyAr;
   final Value<int> sortOrder;
   final Value<int> rowid;
   const PreviousLeaderSectionsCompanion({
     this.id = const Value.absent(),
     this.previousLeaderId = const Value.absent(),
     this.title = const Value.absent(),
-    this.titleAr = const Value.absent(),
     this.body = const Value.absent(),
-    this.bodyAr = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -14037,9 +12719,7 @@ class PreviousLeaderSectionsCompanion
     required String id,
     required String previousLeaderId,
     this.title = const Value.absent(),
-    this.titleAr = const Value.absent(),
     this.body = const Value.absent(),
-    this.bodyAr = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -14048,9 +12728,7 @@ class PreviousLeaderSectionsCompanion
     Expression<String>? id,
     Expression<String>? previousLeaderId,
     Expression<String>? title,
-    Expression<String>? titleAr,
     Expression<String>? body,
-    Expression<String>? bodyAr,
     Expression<int>? sortOrder,
     Expression<int>? rowid,
   }) {
@@ -14058,9 +12736,7 @@ class PreviousLeaderSectionsCompanion
       if (id != null) 'id': id,
       if (previousLeaderId != null) 'previous_leader_id': previousLeaderId,
       if (title != null) 'title': title,
-      if (titleAr != null) 'title_ar': titleAr,
       if (body != null) 'body': body,
-      if (bodyAr != null) 'body_ar': bodyAr,
       if (sortOrder != null) 'sort_order': sortOrder,
       if (rowid != null) 'rowid': rowid,
     });
@@ -14070,9 +12746,7 @@ class PreviousLeaderSectionsCompanion
     Value<String>? id,
     Value<String>? previousLeaderId,
     Value<String>? title,
-    Value<String>? titleAr,
     Value<String>? body,
-    Value<String>? bodyAr,
     Value<int>? sortOrder,
     Value<int>? rowid,
   }) {
@@ -14080,9 +12754,7 @@ class PreviousLeaderSectionsCompanion
       id: id ?? this.id,
       previousLeaderId: previousLeaderId ?? this.previousLeaderId,
       title: title ?? this.title,
-      titleAr: titleAr ?? this.titleAr,
       body: body ?? this.body,
-      bodyAr: bodyAr ?? this.bodyAr,
       sortOrder: sortOrder ?? this.sortOrder,
       rowid: rowid ?? this.rowid,
     );
@@ -14100,14 +12772,8 @@ class PreviousLeaderSectionsCompanion
     if (title.present) {
       map['title'] = Variable<String>(title.value);
     }
-    if (titleAr.present) {
-      map['title_ar'] = Variable<String>(titleAr.value);
-    }
     if (body.present) {
       map['body'] = Variable<String>(body.value);
-    }
-    if (bodyAr.present) {
-      map['body_ar'] = Variable<String>(bodyAr.value);
     }
     if (sortOrder.present) {
       map['sort_order'] = Variable<int>(sortOrder.value);
@@ -14124,9 +12790,7 @@ class PreviousLeaderSectionsCompanion
           ..write('id: $id, ')
           ..write('previousLeaderId: $previousLeaderId, ')
           ..write('title: $title, ')
-          ..write('titleAr: $titleAr, ')
           ..write('body: $body, ')
-          ..write('bodyAr: $bodyAr, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -14483,9 +13147,7 @@ typedef $$TarbiyaAreasTableCreateCompanionBuilder =
     TarbiyaAreasCompanion Function({
       required String id,
       required String name,
-      Value<String> nameAr,
       Value<String> region,
-      Value<String> regionAr,
       Value<int> accent,
       Value<int> sortOrder,
       Value<int> rowid,
@@ -14494,9 +13156,7 @@ typedef $$TarbiyaAreasTableUpdateCompanionBuilder =
     TarbiyaAreasCompanion Function({
       Value<String> id,
       Value<String> name,
-      Value<String> nameAr,
       Value<String> region,
-      Value<String> regionAr,
       Value<int> accent,
       Value<int> sortOrder,
       Value<int> rowid,
@@ -14545,18 +13205,8 @@ class $$TarbiyaAreasTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get region => $composableBuilder(
     column: $table.region,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get regionAr => $composableBuilder(
-    column: $table.regionAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -14615,18 +13265,8 @@ class $$TarbiyaAreasTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get region => $composableBuilder(
     column: $table.region,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get regionAr => $composableBuilder(
-    column: $table.regionAr,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -14656,14 +13296,8 @@ class $$TarbiyaAreasTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<String> get nameAr =>
-      $composableBuilder(column: $table.nameAr, builder: (column) => column);
-
   GeneratedColumn<String> get region =>
       $composableBuilder(column: $table.region, builder: (column) => column);
-
-  GeneratedColumn<String> get regionAr =>
-      $composableBuilder(column: $table.regionAr, builder: (column) => column);
 
   GeneratedColumn<int> get accent =>
       $composableBuilder(column: $table.accent, builder: (column) => column);
@@ -14727,18 +13361,14 @@ class $$TarbiyaAreasTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<String> nameAr = const Value.absent(),
                 Value<String> region = const Value.absent(),
-                Value<String> regionAr = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TarbiyaAreasCompanion(
                 id: id,
                 name: name,
-                nameAr: nameAr,
                 region: region,
-                regionAr: regionAr,
                 accent: accent,
                 sortOrder: sortOrder,
                 rowid: rowid,
@@ -14747,18 +13377,14 @@ class $$TarbiyaAreasTableTableManager
               ({
                 required String id,
                 required String name,
-                Value<String> nameAr = const Value.absent(),
                 Value<String> region = const Value.absent(),
-                Value<String> regionAr = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TarbiyaAreasCompanion.insert(
                 id: id,
                 name: name,
-                nameAr: nameAr,
                 region: region,
-                regionAr: regionAr,
                 accent: accent,
                 sortOrder: sortOrder,
                 rowid: rowid,
@@ -14824,7 +13450,6 @@ typedef $$ShubasTableCreateCompanionBuilder =
       required String id,
       required String areaId,
       required String name,
-      Value<String> nameAr,
       Value<int> sortOrder,
       Value<String?> masulMemberId,
       Value<int> rowid,
@@ -14834,7 +13459,6 @@ typedef $$ShubasTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> areaId,
       Value<String> name,
-      Value<String> nameAr,
       Value<int> sortOrder,
       Value<String?> masulMemberId,
       Value<int> rowid,
@@ -14897,11 +13521,6 @@ class $$ShubasTableFilterComposer
 
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -14983,11 +13602,6 @@ class $$ShubasTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<int> get sortOrder => $composableBuilder(
     column: $table.sortOrder,
     builder: (column) => ColumnOrderings(column),
@@ -15036,9 +13650,6 @@ class $$ShubasTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get nameAr =>
-      $composableBuilder(column: $table.nameAr, builder: (column) => column);
 
   GeneratedColumn<int> get sortOrder =>
       $composableBuilder(column: $table.sortOrder, builder: (column) => column);
@@ -15128,7 +13739,6 @@ class $$ShubasTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> areaId = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<String> nameAr = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<String?> masulMemberId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -15136,7 +13746,6 @@ class $$ShubasTableTableManager
                 id: id,
                 areaId: areaId,
                 name: name,
-                nameAr: nameAr,
                 sortOrder: sortOrder,
                 masulMemberId: masulMemberId,
                 rowid: rowid,
@@ -15146,7 +13755,6 @@ class $$ShubasTableTableManager
                 required String id,
                 required String areaId,
                 required String name,
-                Value<String> nameAr = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<String?> masulMemberId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -15154,7 +13762,6 @@ class $$ShubasTableTableManager
                 id: id,
                 areaId: areaId,
                 name: name,
-                nameAr: nameAr,
                 sortOrder: sortOrder,
                 masulMemberId: masulMemberId,
                 rowid: rowid,
@@ -15245,7 +13852,6 @@ typedef $$MembersTableCreateCompanionBuilder =
       Value<String> middleName,
       required String lastName,
       Value<String> suffix,
-      Value<String> nameAr,
       Value<String> gender,
       Value<String> dob,
       Value<String> placeOfBirth,
@@ -15276,7 +13882,6 @@ typedef $$MembersTableUpdateCompanionBuilder =
       Value<String> middleName,
       Value<String> lastName,
       Value<String> suffix,
-      Value<String> nameAr,
       Value<String> gender,
       Value<String> dob,
       Value<String> placeOfBirth,
@@ -15607,11 +14212,6 @@ class $$MembersTableFilterComposer
 
   ColumnFilters<String> get suffix => $composableBuilder(
     column: $table.suffix,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -16091,11 +14691,6 @@ class $$MembersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get gender => $composableBuilder(
     column: $table.gender,
     builder: (column) => ColumnOrderings(column),
@@ -16261,9 +14856,6 @@ class $$MembersTableAnnotationComposer
 
   GeneratedColumn<String> get suffix =>
       $composableBuilder(column: $table.suffix, builder: (column) => column);
-
-  GeneratedColumn<String> get nameAr =>
-      $composableBuilder(column: $table.nameAr, builder: (column) => column);
 
   GeneratedColumn<String> get gender =>
       $composableBuilder(column: $table.gender, builder: (column) => column);
@@ -16735,7 +15327,6 @@ class $$MembersTableTableManager
                 Value<String> middleName = const Value.absent(),
                 Value<String> lastName = const Value.absent(),
                 Value<String> suffix = const Value.absent(),
-                Value<String> nameAr = const Value.absent(),
                 Value<String> gender = const Value.absent(),
                 Value<String> dob = const Value.absent(),
                 Value<String> placeOfBirth = const Value.absent(),
@@ -16764,7 +15355,6 @@ class $$MembersTableTableManager
                 middleName: middleName,
                 lastName: lastName,
                 suffix: suffix,
-                nameAr: nameAr,
                 gender: gender,
                 dob: dob,
                 placeOfBirth: placeOfBirth,
@@ -16795,7 +15385,6 @@ class $$MembersTableTableManager
                 Value<String> middleName = const Value.absent(),
                 required String lastName,
                 Value<String> suffix = const Value.absent(),
-                Value<String> nameAr = const Value.absent(),
                 Value<String> gender = const Value.absent(),
                 Value<String> dob = const Value.absent(),
                 Value<String> placeOfBirth = const Value.absent(),
@@ -16824,7 +15413,6 @@ class $$MembersTableTableManager
                 middleName: middleName,
                 lastName: lastName,
                 suffix: suffix,
-                nameAr: nameAr,
                 gender: gender,
                 dob: dob,
                 placeOfBirth: placeOfBirth,
@@ -17227,13 +15815,10 @@ typedef $$DepartmentsTableCreateCompanionBuilder =
     DepartmentsCompanion Function({
       required String id,
       required String name,
-      Value<String> nameAr,
       Value<String> description,
-      Value<String> descriptionAr,
       Value<String> iconKey,
       Value<int> accent,
       Value<String> headName,
-      Value<String> headNameAr,
       Value<String> contactEmail,
       Value<String> contactPhone,
       Value<String?> headMemberId,
@@ -17244,13 +15829,10 @@ typedef $$DepartmentsTableUpdateCompanionBuilder =
     DepartmentsCompanion Function({
       Value<String> id,
       Value<String> name,
-      Value<String> nameAr,
       Value<String> description,
-      Value<String> descriptionAr,
       Value<String> iconKey,
       Value<int> accent,
       Value<String> headName,
-      Value<String> headNameAr,
       Value<String> contactEmail,
       Value<String> contactPhone,
       Value<String?> headMemberId,
@@ -17393,18 +15975,8 @@ class $$DepartmentsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get description => $composableBuilder(
     column: $table.description,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get descriptionAr => $composableBuilder(
-    column: $table.descriptionAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -17420,11 +15992,6 @@ class $$DepartmentsTableFilterComposer
 
   ColumnFilters<String> get headName => $composableBuilder(
     column: $table.headName,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get headNameAr => $composableBuilder(
-    column: $table.headNameAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -17611,18 +16178,8 @@ class $$DepartmentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get description => $composableBuilder(
     column: $table.description,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get descriptionAr => $composableBuilder(
-    column: $table.descriptionAr,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -17638,11 +16195,6 @@ class $$DepartmentsTableOrderingComposer
 
   ColumnOrderings<String> get headName => $composableBuilder(
     column: $table.headName,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get headNameAr => $composableBuilder(
-    column: $table.headNameAr,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -17700,16 +16252,8 @@ class $$DepartmentsTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<String> get nameAr =>
-      $composableBuilder(column: $table.nameAr, builder: (column) => column);
-
   GeneratedColumn<String> get description => $composableBuilder(
     column: $table.description,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get descriptionAr => $composableBuilder(
-    column: $table.descriptionAr,
     builder: (column) => column,
   );
 
@@ -17721,11 +16265,6 @@ class $$DepartmentsTableAnnotationComposer
 
   GeneratedColumn<String> get headName =>
       $composableBuilder(column: $table.headName, builder: (column) => column);
-
-  GeneratedColumn<String> get headNameAr => $composableBuilder(
-    column: $table.headNameAr,
-    builder: (column) => column,
-  );
 
   GeneratedColumn<String> get contactEmail => $composableBuilder(
     column: $table.contactEmail,
@@ -17926,13 +16465,10 @@ class $$DepartmentsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<String> nameAr = const Value.absent(),
                 Value<String> description = const Value.absent(),
-                Value<String> descriptionAr = const Value.absent(),
                 Value<String> iconKey = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<String> headName = const Value.absent(),
-                Value<String> headNameAr = const Value.absent(),
                 Value<String> contactEmail = const Value.absent(),
                 Value<String> contactPhone = const Value.absent(),
                 Value<String?> headMemberId = const Value.absent(),
@@ -17941,13 +16477,10 @@ class $$DepartmentsTableTableManager
               }) => DepartmentsCompanion(
                 id: id,
                 name: name,
-                nameAr: nameAr,
                 description: description,
-                descriptionAr: descriptionAr,
                 iconKey: iconKey,
                 accent: accent,
                 headName: headName,
-                headNameAr: headNameAr,
                 contactEmail: contactEmail,
                 contactPhone: contactPhone,
                 headMemberId: headMemberId,
@@ -17958,13 +16491,10 @@ class $$DepartmentsTableTableManager
               ({
                 required String id,
                 required String name,
-                Value<String> nameAr = const Value.absent(),
                 Value<String> description = const Value.absent(),
-                Value<String> descriptionAr = const Value.absent(),
                 Value<String> iconKey = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<String> headName = const Value.absent(),
-                Value<String> headNameAr = const Value.absent(),
                 Value<String> contactEmail = const Value.absent(),
                 Value<String> contactPhone = const Value.absent(),
                 Value<String?> headMemberId = const Value.absent(),
@@ -17973,13 +16503,10 @@ class $$DepartmentsTableTableManager
               }) => DepartmentsCompanion.insert(
                 id: id,
                 name: name,
-                nameAr: nameAr,
                 description: description,
-                descriptionAr: descriptionAr,
                 iconKey: iconKey,
                 accent: accent,
                 headName: headName,
-                headNameAr: headNameAr,
                 contactEmail: contactEmail,
                 contactPhone: contactPhone,
                 headMemberId: headMemberId,
@@ -18186,7 +16713,6 @@ typedef $$UsersTableCreateCompanionBuilder =
     UsersCompanion Function({
       required String id,
       required String fullName,
-      required String fullNameAr,
       required String username,
       Value<String> email,
       required String passwordHash,
@@ -18201,7 +16727,6 @@ typedef $$UsersTableUpdateCompanionBuilder =
     UsersCompanion Function({
       Value<String> id,
       Value<String> fullName,
-      Value<String> fullNameAr,
       Value<String> username,
       Value<String> email,
       Value<String> passwordHash,
@@ -18268,11 +16793,6 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<String> get fullName => $composableBuilder(
     column: $table.fullName,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get fullNameAr => $composableBuilder(
-    column: $table.fullNameAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -18379,11 +16899,6 @@ class $$UsersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get fullNameAr => $composableBuilder(
-    column: $table.fullNameAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get username => $composableBuilder(
     column: $table.username,
     builder: (column) => ColumnOrderings(column),
@@ -18457,11 +16972,6 @@ class $$UsersTableAnnotationComposer
 
   GeneratedColumn<String> get fullName =>
       $composableBuilder(column: $table.fullName, builder: (column) => column);
-
-  GeneratedColumn<String> get fullNameAr => $composableBuilder(
-    column: $table.fullNameAr,
-    builder: (column) => column,
-  );
 
   GeneratedColumn<String> get username =>
       $composableBuilder(column: $table.username, builder: (column) => column);
@@ -18567,7 +17077,6 @@ class $$UsersTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> fullName = const Value.absent(),
-                Value<String> fullNameAr = const Value.absent(),
                 Value<String> username = const Value.absent(),
                 Value<String> email = const Value.absent(),
                 Value<String> passwordHash = const Value.absent(),
@@ -18580,7 +17089,6 @@ class $$UsersTableTableManager
               }) => UsersCompanion(
                 id: id,
                 fullName: fullName,
-                fullNameAr: fullNameAr,
                 username: username,
                 email: email,
                 passwordHash: passwordHash,
@@ -18595,7 +17103,6 @@ class $$UsersTableTableManager
               ({
                 required String id,
                 required String fullName,
-                required String fullNameAr,
                 required String username,
                 Value<String> email = const Value.absent(),
                 required String passwordHash,
@@ -18608,7 +17115,6 @@ class $$UsersTableTableManager
               }) => UsersCompanion.insert(
                 id: id,
                 fullName: fullName,
-                fullNameAr: fullNameAr,
                 username: username,
                 email: email,
                 passwordHash: passwordHash,
@@ -18707,17 +17213,12 @@ typedef $$LeadersTableCreateCompanionBuilder =
     LeadersCompanion Function({
       required String id,
       required String name,
-      required String nameAr,
       required String position,
-      required String positionAr,
       required String category,
       Value<String> serviceYears,
       Value<String> bio,
-      Value<String> bioAr,
       Value<String> achievements,
-      Value<String> achievementsAr,
       Value<String> responsibilities,
-      Value<String> responsibilitiesAr,
       Value<String> email,
       Value<String> phone,
       Value<String> photoPath,
@@ -18731,17 +17232,12 @@ typedef $$LeadersTableUpdateCompanionBuilder =
     LeadersCompanion Function({
       Value<String> id,
       Value<String> name,
-      Value<String> nameAr,
       Value<String> position,
-      Value<String> positionAr,
       Value<String> category,
       Value<String> serviceYears,
       Value<String> bio,
-      Value<String> bioAr,
       Value<String> achievements,
-      Value<String> achievementsAr,
       Value<String> responsibilities,
-      Value<String> responsibilitiesAr,
       Value<String> email,
       Value<String> phone,
       Value<String> photoPath,
@@ -18793,18 +17289,8 @@ class $$LeadersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get position => $composableBuilder(
     column: $table.position,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get positionAr => $composableBuilder(
-    column: $table.positionAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -18823,28 +17309,13 @@ class $$LeadersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get bioAr => $composableBuilder(
-    column: $table.bioAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get achievements => $composableBuilder(
     column: $table.achievements,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get achievementsAr => $composableBuilder(
-    column: $table.achievementsAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get responsibilities => $composableBuilder(
     column: $table.responsibilities,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get responsibilitiesAr => $composableBuilder(
-    column: $table.responsibilitiesAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -18921,18 +17392,8 @@ class $$LeadersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get nameAr => $composableBuilder(
-    column: $table.nameAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get position => $composableBuilder(
     column: $table.position,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get positionAr => $composableBuilder(
-    column: $table.positionAr,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -18951,28 +17412,13 @@ class $$LeadersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get bioAr => $composableBuilder(
-    column: $table.bioAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get achievements => $composableBuilder(
     column: $table.achievements,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get achievementsAr => $composableBuilder(
-    column: $table.achievementsAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get responsibilities => $composableBuilder(
     column: $table.responsibilities,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get responsibilitiesAr => $composableBuilder(
-    column: $table.responsibilitiesAr,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -19045,16 +17491,8 @@ class $$LeadersTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<String> get nameAr =>
-      $composableBuilder(column: $table.nameAr, builder: (column) => column);
-
   GeneratedColumn<String> get position =>
       $composableBuilder(column: $table.position, builder: (column) => column);
-
-  GeneratedColumn<String> get positionAr => $composableBuilder(
-    column: $table.positionAr,
-    builder: (column) => column,
-  );
 
   GeneratedColumn<String> get category =>
       $composableBuilder(column: $table.category, builder: (column) => column);
@@ -19067,26 +17505,13 @@ class $$LeadersTableAnnotationComposer
   GeneratedColumn<String> get bio =>
       $composableBuilder(column: $table.bio, builder: (column) => column);
 
-  GeneratedColumn<String> get bioAr =>
-      $composableBuilder(column: $table.bioAr, builder: (column) => column);
-
   GeneratedColumn<String> get achievements => $composableBuilder(
     column: $table.achievements,
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get achievementsAr => $composableBuilder(
-    column: $table.achievementsAr,
-    builder: (column) => column,
-  );
-
   GeneratedColumn<String> get responsibilities => $composableBuilder(
     column: $table.responsibilities,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get responsibilitiesAr => $composableBuilder(
-    column: $table.responsibilitiesAr,
     builder: (column) => column,
   );
 
@@ -19162,17 +17587,12 @@ class $$LeadersTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<String> nameAr = const Value.absent(),
                 Value<String> position = const Value.absent(),
-                Value<String> positionAr = const Value.absent(),
                 Value<String> category = const Value.absent(),
                 Value<String> serviceYears = const Value.absent(),
                 Value<String> bio = const Value.absent(),
-                Value<String> bioAr = const Value.absent(),
                 Value<String> achievements = const Value.absent(),
-                Value<String> achievementsAr = const Value.absent(),
                 Value<String> responsibilities = const Value.absent(),
-                Value<String> responsibilitiesAr = const Value.absent(),
                 Value<String> email = const Value.absent(),
                 Value<String> phone = const Value.absent(),
                 Value<String> photoPath = const Value.absent(),
@@ -19184,17 +17604,12 @@ class $$LeadersTableTableManager
               }) => LeadersCompanion(
                 id: id,
                 name: name,
-                nameAr: nameAr,
                 position: position,
-                positionAr: positionAr,
                 category: category,
                 serviceYears: serviceYears,
                 bio: bio,
-                bioAr: bioAr,
                 achievements: achievements,
-                achievementsAr: achievementsAr,
                 responsibilities: responsibilities,
-                responsibilitiesAr: responsibilitiesAr,
                 email: email,
                 phone: phone,
                 photoPath: photoPath,
@@ -19208,17 +17623,12 @@ class $$LeadersTableTableManager
               ({
                 required String id,
                 required String name,
-                required String nameAr,
                 required String position,
-                required String positionAr,
                 required String category,
                 Value<String> serviceYears = const Value.absent(),
                 Value<String> bio = const Value.absent(),
-                Value<String> bioAr = const Value.absent(),
                 Value<String> achievements = const Value.absent(),
-                Value<String> achievementsAr = const Value.absent(),
                 Value<String> responsibilities = const Value.absent(),
-                Value<String> responsibilitiesAr = const Value.absent(),
                 Value<String> email = const Value.absent(),
                 Value<String> phone = const Value.absent(),
                 Value<String> photoPath = const Value.absent(),
@@ -19230,17 +17640,12 @@ class $$LeadersTableTableManager
               }) => LeadersCompanion.insert(
                 id: id,
                 name: name,
-                nameAr: nameAr,
                 position: position,
-                positionAr: positionAr,
                 category: category,
                 serviceYears: serviceYears,
                 bio: bio,
-                bioAr: bioAr,
                 achievements: achievements,
-                achievementsAr: achievementsAr,
                 responsibilities: responsibilities,
-                responsibilitiesAr: responsibilitiesAr,
                 email: email,
                 phone: phone,
                 photoPath: photoPath,
@@ -19323,9 +17728,7 @@ typedef $$AuditLogsTableCreateCompanionBuilder =
       required String username,
       Value<String?> userId,
       required String action,
-      Value<String> actionAr,
       required String module,
-      Value<String> moduleAr,
       Value<DateTime> timestamp,
       Value<int> rowid,
     });
@@ -19335,9 +17738,7 @@ typedef $$AuditLogsTableUpdateCompanionBuilder =
       Value<String> username,
       Value<String?> userId,
       Value<String> action,
-      Value<String> actionAr,
       Value<String> module,
-      Value<String> moduleAr,
       Value<DateTime> timestamp,
       Value<int> rowid,
     });
@@ -19388,18 +17789,8 @@ class $$AuditLogsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get actionAr => $composableBuilder(
-    column: $table.actionAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get module => $composableBuilder(
     column: $table.module,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get moduleAr => $composableBuilder(
-    column: $table.moduleAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -19456,18 +17847,8 @@ class $$AuditLogsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get actionAr => $composableBuilder(
-    column: $table.actionAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get module => $composableBuilder(
     column: $table.module,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get moduleAr => $composableBuilder(
-    column: $table.moduleAr,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -19518,14 +17899,8 @@ class $$AuditLogsTableAnnotationComposer
   GeneratedColumn<String> get action =>
       $composableBuilder(column: $table.action, builder: (column) => column);
 
-  GeneratedColumn<String> get actionAr =>
-      $composableBuilder(column: $table.actionAr, builder: (column) => column);
-
   GeneratedColumn<String> get module =>
       $composableBuilder(column: $table.module, builder: (column) => column);
-
-  GeneratedColumn<String> get moduleAr =>
-      $composableBuilder(column: $table.moduleAr, builder: (column) => column);
 
   GeneratedColumn<DateTime> get timestamp =>
       $composableBuilder(column: $table.timestamp, builder: (column) => column);
@@ -19586,9 +17961,7 @@ class $$AuditLogsTableTableManager
                 Value<String> username = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String> action = const Value.absent(),
-                Value<String> actionAr = const Value.absent(),
                 Value<String> module = const Value.absent(),
-                Value<String> moduleAr = const Value.absent(),
                 Value<DateTime> timestamp = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AuditLogsCompanion(
@@ -19596,9 +17969,7 @@ class $$AuditLogsTableTableManager
                 username: username,
                 userId: userId,
                 action: action,
-                actionAr: actionAr,
                 module: module,
-                moduleAr: moduleAr,
                 timestamp: timestamp,
                 rowid: rowid,
               ),
@@ -19608,9 +17979,7 @@ class $$AuditLogsTableTableManager
                 required String username,
                 Value<String?> userId = const Value.absent(),
                 required String action,
-                Value<String> actionAr = const Value.absent(),
                 required String module,
-                Value<String> moduleAr = const Value.absent(),
                 Value<DateTime> timestamp = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AuditLogsCompanion.insert(
@@ -19618,9 +17987,7 @@ class $$AuditLogsTableTableManager
                 username: username,
                 userId: userId,
                 action: action,
-                actionAr: actionAr,
                 module: module,
-                moduleAr: moduleAr,
                 timestamp: timestamp,
                 rowid: rowid,
               ),
@@ -19697,6 +18064,8 @@ typedef $$MemberChildrenTableCreateCompanionBuilder =
       required String memberId,
       required String name,
       Value<String> dob,
+      Value<String> occupation,
+      Value<String> profession,
       Value<int> rowid,
     });
 typedef $$MemberChildrenTableUpdateCompanionBuilder =
@@ -19705,6 +18074,8 @@ typedef $$MemberChildrenTableUpdateCompanionBuilder =
       Value<String> memberId,
       Value<String> name,
       Value<String> dob,
+      Value<String> occupation,
+      Value<String> profession,
       Value<int> rowid,
     });
 
@@ -19763,6 +18134,16 @@ class $$MemberChildrenTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get profession => $composableBuilder(
+    column: $table.profession,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$MembersTableFilterComposer get memberId {
     final $$MembersTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -19811,6 +18192,16 @@ class $$MemberChildrenTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get profession => $composableBuilder(
+    column: $table.profession,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$MembersTableOrderingComposer get memberId {
     final $$MembersTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -19852,6 +18243,16 @@ class $$MemberChildrenTableAnnotationComposer
 
   GeneratedColumn<String> get dob =>
       $composableBuilder(column: $table.dob, builder: (column) => column);
+
+  GeneratedColumn<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get profession => $composableBuilder(
+    column: $table.profession,
+    builder: (column) => column,
+  );
 
   $$MembersTableAnnotationComposer get memberId {
     final $$MembersTableAnnotationComposer composer = $composerBuilder(
@@ -19911,12 +18312,16 @@ class $$MemberChildrenTableTableManager
                 Value<String> memberId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> dob = const Value.absent(),
+                Value<String> occupation = const Value.absent(),
+                Value<String> profession = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => MemberChildrenCompanion(
                 id: id,
                 memberId: memberId,
                 name: name,
                 dob: dob,
+                occupation: occupation,
+                profession: profession,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -19925,12 +18330,16 @@ class $$MemberChildrenTableTableManager
                 required String memberId,
                 required String name,
                 Value<String> dob = const Value.absent(),
+                Value<String> occupation = const Value.absent(),
+                Value<String> profession = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => MemberChildrenCompanion.insert(
                 id: id,
                 memberId: memberId,
                 name: name,
                 dob: dob,
+                occupation: occupation,
+                profession: profession,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -23323,7 +21732,6 @@ typedef $$DeptActivitiesTableCreateCompanionBuilder =
       required String id,
       required String departmentId,
       required String title,
-      Value<String> titleAr,
       Value<String> description,
       Value<String> date,
       Value<String> status,
@@ -23337,7 +21745,6 @@ typedef $$DeptActivitiesTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> departmentId,
       Value<String> title,
-      Value<String> titleAr,
       Value<String> description,
       Value<String> date,
       Value<String> status,
@@ -23390,11 +21797,6 @@ class $$DeptActivitiesTableFilterComposer
 
   ColumnFilters<String> get title => $composableBuilder(
     column: $table.title,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get titleAr => $composableBuilder(
-    column: $table.titleAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -23471,11 +21873,6 @@ class $$DeptActivitiesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get titleAr => $composableBuilder(
-    column: $table.titleAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get description => $composableBuilder(
     column: $table.description,
     builder: (column) => ColumnOrderings(column),
@@ -23544,9 +21941,6 @@ class $$DeptActivitiesTableAnnotationComposer
 
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
-
-  GeneratedColumn<String> get titleAr =>
-      $composableBuilder(column: $table.titleAr, builder: (column) => column);
 
   GeneratedColumn<String> get description => $composableBuilder(
     column: $table.description,
@@ -23627,7 +22021,6 @@ class $$DeptActivitiesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> departmentId = const Value.absent(),
                 Value<String> title = const Value.absent(),
-                Value<String> titleAr = const Value.absent(),
                 Value<String> description = const Value.absent(),
                 Value<String> date = const Value.absent(),
                 Value<String> status = const Value.absent(),
@@ -23639,7 +22032,6 @@ class $$DeptActivitiesTableTableManager
                 id: id,
                 departmentId: departmentId,
                 title: title,
-                titleAr: titleAr,
                 description: description,
                 date: date,
                 status: status,
@@ -23653,7 +22045,6 @@ class $$DeptActivitiesTableTableManager
                 required String id,
                 required String departmentId,
                 required String title,
-                Value<String> titleAr = const Value.absent(),
                 Value<String> description = const Value.absent(),
                 Value<String> date = const Value.absent(),
                 Value<String> status = const Value.absent(),
@@ -23665,7 +22056,6 @@ class $$DeptActivitiesTableTableManager
                 id: id,
                 departmentId: departmentId,
                 title: title,
-                titleAr: titleAr,
                 description: description,
                 date: date,
                 status: status,
@@ -23747,9 +22137,7 @@ typedef $$ReportsTableCreateCompanionBuilder =
       required String id,
       required String departmentId,
       required String title,
-      Value<String> titleAr,
       Value<String> summary,
-      Value<String> summaryAr,
       Value<String> date,
       Value<int> year,
       Value<String> type,
@@ -23763,9 +22151,7 @@ typedef $$ReportsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> departmentId,
       Value<String> title,
-      Value<String> titleAr,
       Value<String> summary,
-      Value<String> summaryAr,
       Value<String> date,
       Value<int> year,
       Value<String> type,
@@ -23834,18 +22220,8 @@ class $$ReportsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get titleAr => $composableBuilder(
-    column: $table.titleAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get summary => $composableBuilder(
     column: $table.summary,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get summaryAr => $composableBuilder(
-    column: $table.summaryAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -23947,18 +22323,8 @@ class $$ReportsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get titleAr => $composableBuilder(
-    column: $table.titleAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get summary => $composableBuilder(
     column: $table.summary,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get summaryAr => $composableBuilder(
-    column: $table.summaryAr,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -24031,14 +22397,8 @@ class $$ReportsTableAnnotationComposer
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
-  GeneratedColumn<String> get titleAr =>
-      $composableBuilder(column: $table.titleAr, builder: (column) => column);
-
   GeneratedColumn<String> get summary =>
       $composableBuilder(column: $table.summary, builder: (column) => column);
-
-  GeneratedColumn<String> get summaryAr =>
-      $composableBuilder(column: $table.summaryAr, builder: (column) => column);
 
   GeneratedColumn<String> get date =>
       $composableBuilder(column: $table.date, builder: (column) => column);
@@ -24138,9 +22498,7 @@ class $$ReportsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> departmentId = const Value.absent(),
                 Value<String> title = const Value.absent(),
-                Value<String> titleAr = const Value.absent(),
                 Value<String> summary = const Value.absent(),
-                Value<String> summaryAr = const Value.absent(),
                 Value<String> date = const Value.absent(),
                 Value<int> year = const Value.absent(),
                 Value<String> type = const Value.absent(),
@@ -24152,9 +22510,7 @@ class $$ReportsTableTableManager
                 id: id,
                 departmentId: departmentId,
                 title: title,
-                titleAr: titleAr,
                 summary: summary,
-                summaryAr: summaryAr,
                 date: date,
                 year: year,
                 type: type,
@@ -24168,9 +22524,7 @@ class $$ReportsTableTableManager
                 required String id,
                 required String departmentId,
                 required String title,
-                Value<String> titleAr = const Value.absent(),
                 Value<String> summary = const Value.absent(),
-                Value<String> summaryAr = const Value.absent(),
                 Value<String> date = const Value.absent(),
                 Value<int> year = const Value.absent(),
                 Value<String> type = const Value.absent(),
@@ -24182,9 +22536,7 @@ class $$ReportsTableTableManager
                 id: id,
                 departmentId: departmentId,
                 title: title,
-                titleAr: titleAr,
                 summary: summary,
-                summaryAr: summaryAr,
                 date: date,
                 year: year,
                 type: type,
@@ -24289,10 +22641,8 @@ typedef $$GalleryPhotosTableCreateCompanionBuilder =
     GalleryPhotosCompanion Function({
       required String id,
       required String title,
-      Value<String> titleAr,
       Value<int> year,
       Value<String> event,
-      Value<String> eventAr,
       Value<String> iconKey,
       Value<int> accent,
       Value<String> imagePath,
@@ -24306,10 +22656,8 @@ typedef $$GalleryPhotosTableUpdateCompanionBuilder =
     GalleryPhotosCompanion Function({
       Value<String> id,
       Value<String> title,
-      Value<String> titleAr,
       Value<int> year,
       Value<String> event,
-      Value<String> eventAr,
       Value<String> iconKey,
       Value<int> accent,
       Value<String> imagePath,
@@ -24365,11 +22713,6 @@ class $$GalleryPhotosTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get titleAr => $composableBuilder(
-    column: $table.titleAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<int> get year => $composableBuilder(
     column: $table.year,
     builder: (column) => ColumnFilters(column),
@@ -24377,11 +22720,6 @@ class $$GalleryPhotosTableFilterComposer
 
   ColumnFilters<String> get event => $composableBuilder(
     column: $table.event,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get eventAr => $composableBuilder(
-    column: $table.eventAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -24458,11 +22796,6 @@ class $$GalleryPhotosTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get titleAr => $composableBuilder(
-    column: $table.titleAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<int> get year => $composableBuilder(
     column: $table.year,
     builder: (column) => ColumnOrderings(column),
@@ -24470,11 +22803,6 @@ class $$GalleryPhotosTableOrderingComposer
 
   ColumnOrderings<String> get event => $composableBuilder(
     column: $table.event,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get eventAr => $composableBuilder(
-    column: $table.eventAr,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -24547,17 +22875,11 @@ class $$GalleryPhotosTableAnnotationComposer
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
-  GeneratedColumn<String> get titleAr =>
-      $composableBuilder(column: $table.titleAr, builder: (column) => column);
-
   GeneratedColumn<int> get year =>
       $composableBuilder(column: $table.year, builder: (column) => column);
 
   GeneratedColumn<String> get event =>
       $composableBuilder(column: $table.event, builder: (column) => column);
-
-  GeneratedColumn<String> get eventAr =>
-      $composableBuilder(column: $table.eventAr, builder: (column) => column);
 
   GeneratedColumn<String> get iconKey =>
       $composableBuilder(column: $table.iconKey, builder: (column) => column);
@@ -24635,10 +22957,8 @@ class $$GalleryPhotosTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> title = const Value.absent(),
-                Value<String> titleAr = const Value.absent(),
                 Value<int> year = const Value.absent(),
                 Value<String> event = const Value.absent(),
-                Value<String> eventAr = const Value.absent(),
                 Value<String> iconKey = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<String> imagePath = const Value.absent(),
@@ -24650,10 +22970,8 @@ class $$GalleryPhotosTableTableManager
               }) => GalleryPhotosCompanion(
                 id: id,
                 title: title,
-                titleAr: titleAr,
                 year: year,
                 event: event,
-                eventAr: eventAr,
                 iconKey: iconKey,
                 accent: accent,
                 imagePath: imagePath,
@@ -24667,10 +22985,8 @@ class $$GalleryPhotosTableTableManager
               ({
                 required String id,
                 required String title,
-                Value<String> titleAr = const Value.absent(),
                 Value<int> year = const Value.absent(),
                 Value<String> event = const Value.absent(),
-                Value<String> eventAr = const Value.absent(),
                 Value<String> iconKey = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<String> imagePath = const Value.absent(),
@@ -24682,10 +22998,8 @@ class $$GalleryPhotosTableTableManager
               }) => GalleryPhotosCompanion.insert(
                 id: id,
                 title: title,
-                titleAr: titleAr,
                 year: year,
                 event: event,
-                eventAr: eventAr,
                 iconKey: iconKey,
                 accent: accent,
                 imagePath: imagePath,
@@ -25008,14 +23322,12 @@ typedef $$LeadershipGroupInfoTableCreateCompanionBuilder =
     LeadershipGroupInfoCompanion Function({
       required String code,
       Value<String> description,
-      Value<String> descriptionAr,
       Value<int> rowid,
     });
 typedef $$LeadershipGroupInfoTableUpdateCompanionBuilder =
     LeadershipGroupInfoCompanion Function({
       Value<String> code,
       Value<String> description,
-      Value<String> descriptionAr,
       Value<int> rowid,
     });
 
@@ -25035,11 +23347,6 @@ class $$LeadershipGroupInfoTableFilterComposer
 
   ColumnFilters<String> get description => $composableBuilder(
     column: $table.description,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get descriptionAr => $composableBuilder(
-    column: $table.descriptionAr,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -25062,11 +23369,6 @@ class $$LeadershipGroupInfoTableOrderingComposer
     column: $table.description,
     builder: (column) => ColumnOrderings(column),
   );
-
-  ColumnOrderings<String> get descriptionAr => $composableBuilder(
-    column: $table.descriptionAr,
-    builder: (column) => ColumnOrderings(column),
-  );
 }
 
 class $$LeadershipGroupInfoTableAnnotationComposer
@@ -25083,11 +23385,6 @@ class $$LeadershipGroupInfoTableAnnotationComposer
 
   GeneratedColumn<String> get description => $composableBuilder(
     column: $table.description,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get descriptionAr => $composableBuilder(
-    column: $table.descriptionAr,
     builder: (column) => column,
   );
 }
@@ -25137,24 +23434,20 @@ class $$LeadershipGroupInfoTableTableManager
               ({
                 Value<String> code = const Value.absent(),
                 Value<String> description = const Value.absent(),
-                Value<String> descriptionAr = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => LeadershipGroupInfoCompanion(
                 code: code,
                 description: description,
-                descriptionAr: descriptionAr,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String code,
                 Value<String> description = const Value.absent(),
-                Value<String> descriptionAr = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => LeadershipGroupInfoCompanion.insert(
                 code: code,
                 description: description,
-                descriptionAr: descriptionAr,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -25190,11 +23483,8 @@ typedef $$HistoryContentsTableCreateCompanionBuilder =
     HistoryContentsCompanion Function({
       Value<String> id,
       Value<String> foundingEn,
-      Value<String> foundingAr,
       Value<String> missionEn,
-      Value<String> missionAr,
       Value<String> visionEn,
-      Value<String> visionAr,
       Value<String> narrative,
       Value<String> facts,
       Value<int> rowid,
@@ -25203,11 +23493,8 @@ typedef $$HistoryContentsTableUpdateCompanionBuilder =
     HistoryContentsCompanion Function({
       Value<String> id,
       Value<String> foundingEn,
-      Value<String> foundingAr,
       Value<String> missionEn,
-      Value<String> missionAr,
       Value<String> visionEn,
-      Value<String> visionAr,
       Value<String> narrative,
       Value<String> facts,
       Value<int> rowid,
@@ -25232,28 +23519,13 @@ class $$HistoryContentsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get foundingAr => $composableBuilder(
-    column: $table.foundingAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get missionEn => $composableBuilder(
     column: $table.missionEn,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get missionAr => $composableBuilder(
-    column: $table.missionAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get visionEn => $composableBuilder(
     column: $table.visionEn,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get visionAr => $composableBuilder(
-    column: $table.visionAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -25287,28 +23559,13 @@ class $$HistoryContentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get foundingAr => $composableBuilder(
-    column: $table.foundingAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get missionEn => $composableBuilder(
     column: $table.missionEn,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get missionAr => $composableBuilder(
-    column: $table.missionAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get visionEn => $composableBuilder(
     column: $table.visionEn,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get visionAr => $composableBuilder(
-    column: $table.visionAr,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -25340,22 +23597,11 @@ class $$HistoryContentsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get foundingAr => $composableBuilder(
-    column: $table.foundingAr,
-    builder: (column) => column,
-  );
-
   GeneratedColumn<String> get missionEn =>
       $composableBuilder(column: $table.missionEn, builder: (column) => column);
 
-  GeneratedColumn<String> get missionAr =>
-      $composableBuilder(column: $table.missionAr, builder: (column) => column);
-
   GeneratedColumn<String> get visionEn =>
       $composableBuilder(column: $table.visionEn, builder: (column) => column);
-
-  GeneratedColumn<String> get visionAr =>
-      $composableBuilder(column: $table.visionAr, builder: (column) => column);
 
   GeneratedColumn<String> get narrative =>
       $composableBuilder(column: $table.narrative, builder: (column) => column);
@@ -25403,22 +23649,16 @@ class $$HistoryContentsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> foundingEn = const Value.absent(),
-                Value<String> foundingAr = const Value.absent(),
                 Value<String> missionEn = const Value.absent(),
-                Value<String> missionAr = const Value.absent(),
                 Value<String> visionEn = const Value.absent(),
-                Value<String> visionAr = const Value.absent(),
                 Value<String> narrative = const Value.absent(),
                 Value<String> facts = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => HistoryContentsCompanion(
                 id: id,
                 foundingEn: foundingEn,
-                foundingAr: foundingAr,
                 missionEn: missionEn,
-                missionAr: missionAr,
                 visionEn: visionEn,
-                visionAr: visionAr,
                 narrative: narrative,
                 facts: facts,
                 rowid: rowid,
@@ -25427,22 +23667,16 @@ class $$HistoryContentsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> foundingEn = const Value.absent(),
-                Value<String> foundingAr = const Value.absent(),
                 Value<String> missionEn = const Value.absent(),
-                Value<String> missionAr = const Value.absent(),
                 Value<String> visionEn = const Value.absent(),
-                Value<String> visionAr = const Value.absent(),
                 Value<String> narrative = const Value.absent(),
                 Value<String> facts = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => HistoryContentsCompanion.insert(
                 id: id,
                 foundingEn: foundingEn,
-                foundingAr: foundingAr,
                 missionEn: missionEn,
-                missionAr: missionAr,
                 visionEn: visionEn,
-                visionAr: visionAr,
                 narrative: narrative,
                 facts: facts,
                 rowid: rowid,
@@ -25477,9 +23711,7 @@ typedef $$HistoryMilestonesTableCreateCompanionBuilder =
       required String id,
       Value<String> year,
       Value<String> title,
-      Value<String> titleAr,
       Value<String> description,
-      Value<String> descriptionAr,
       Value<String> iconKey,
       Value<int> accent,
       Value<int> sortOrder,
@@ -25491,9 +23723,7 @@ typedef $$HistoryMilestonesTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> year,
       Value<String> title,
-      Value<String> titleAr,
       Value<String> description,
-      Value<String> descriptionAr,
       Value<String> iconKey,
       Value<int> accent,
       Value<int> sortOrder,
@@ -25525,18 +23755,8 @@ class $$HistoryMilestonesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get titleAr => $composableBuilder(
-    column: $table.titleAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get description => $composableBuilder(
     column: $table.description,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get descriptionAr => $composableBuilder(
-    column: $table.descriptionAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -25585,18 +23805,8 @@ class $$HistoryMilestonesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get titleAr => $composableBuilder(
-    column: $table.titleAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get description => $composableBuilder(
     column: $table.description,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get descriptionAr => $composableBuilder(
-    column: $table.descriptionAr,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -25639,16 +23849,8 @@ class $$HistoryMilestonesTableAnnotationComposer
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
-  GeneratedColumn<String> get titleAr =>
-      $composableBuilder(column: $table.titleAr, builder: (column) => column);
-
   GeneratedColumn<String> get description => $composableBuilder(
     column: $table.description,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get descriptionAr => $composableBuilder(
-    column: $table.descriptionAr,
     builder: (column) => column,
   );
 
@@ -25708,9 +23910,7 @@ class $$HistoryMilestonesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> year = const Value.absent(),
                 Value<String> title = const Value.absent(),
-                Value<String> titleAr = const Value.absent(),
                 Value<String> description = const Value.absent(),
-                Value<String> descriptionAr = const Value.absent(),
                 Value<String> iconKey = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
@@ -25720,9 +23920,7 @@ class $$HistoryMilestonesTableTableManager
                 id: id,
                 year: year,
                 title: title,
-                titleAr: titleAr,
                 description: description,
-                descriptionAr: descriptionAr,
                 iconKey: iconKey,
                 accent: accent,
                 sortOrder: sortOrder,
@@ -25734,9 +23932,7 @@ class $$HistoryMilestonesTableTableManager
                 required String id,
                 Value<String> year = const Value.absent(),
                 Value<String> title = const Value.absent(),
-                Value<String> titleAr = const Value.absent(),
                 Value<String> description = const Value.absent(),
-                Value<String> descriptionAr = const Value.absent(),
                 Value<String> iconKey = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
@@ -25746,9 +23942,7 @@ class $$HistoryMilestonesTableTableManager
                 id: id,
                 year: year,
                 title: title,
-                titleAr: titleAr,
                 description: description,
-                descriptionAr: descriptionAr,
                 iconKey: iconKey,
                 accent: accent,
                 sortOrder: sortOrder,
@@ -25789,10 +23983,8 @@ typedef $$PreviousLeadersTableCreateCompanionBuilder =
       required String id,
       required String memberId,
       Value<String> position,
-      Value<String> positionAr,
       Value<String> termYears,
       Value<String> note,
-      Value<String> noteAr,
       Value<int> accent,
       Value<int> sortOrder,
       Value<DateTime> createdAt,
@@ -25803,10 +23995,8 @@ typedef $$PreviousLeadersTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> memberId,
       Value<String> position,
-      Value<String> positionAr,
       Value<String> termYears,
       Value<String> note,
-      Value<String> noteAr,
       Value<int> accent,
       Value<int> sortOrder,
       Value<DateTime> createdAt,
@@ -25889,11 +24079,6 @@ class $$PreviousLeadersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get positionAr => $composableBuilder(
-    column: $table.positionAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get termYears => $composableBuilder(
     column: $table.termYears,
     builder: (column) => ColumnFilters(column),
@@ -25901,11 +24086,6 @@ class $$PreviousLeadersTableFilterComposer
 
   ColumnFilters<String> get note => $composableBuilder(
     column: $table.note,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get noteAr => $composableBuilder(
-    column: $table.noteAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -25993,11 +24173,6 @@ class $$PreviousLeadersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get positionAr => $composableBuilder(
-    column: $table.positionAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get termYears => $composableBuilder(
     column: $table.termYears,
     builder: (column) => ColumnOrderings(column),
@@ -26005,11 +24180,6 @@ class $$PreviousLeadersTableOrderingComposer
 
   ColumnOrderings<String> get note => $composableBuilder(
     column: $table.note,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get noteAr => $composableBuilder(
-    column: $table.noteAr,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -26067,19 +24237,11 @@ class $$PreviousLeadersTableAnnotationComposer
   GeneratedColumn<String> get position =>
       $composableBuilder(column: $table.position, builder: (column) => column);
 
-  GeneratedColumn<String> get positionAr => $composableBuilder(
-    column: $table.positionAr,
-    builder: (column) => column,
-  );
-
   GeneratedColumn<String> get termYears =>
       $composableBuilder(column: $table.termYears, builder: (column) => column);
 
   GeneratedColumn<String> get note =>
       $composableBuilder(column: $table.note, builder: (column) => column);
-
-  GeneratedColumn<String> get noteAr =>
-      $composableBuilder(column: $table.noteAr, builder: (column) => column);
 
   GeneratedColumn<int> get accent =>
       $composableBuilder(column: $table.accent, builder: (column) => column);
@@ -26176,10 +24338,8 @@ class $$PreviousLeadersTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> memberId = const Value.absent(),
                 Value<String> position = const Value.absent(),
-                Value<String> positionAr = const Value.absent(),
                 Value<String> termYears = const Value.absent(),
                 Value<String> note = const Value.absent(),
-                Value<String> noteAr = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -26188,10 +24348,8 @@ class $$PreviousLeadersTableTableManager
                 id: id,
                 memberId: memberId,
                 position: position,
-                positionAr: positionAr,
                 termYears: termYears,
                 note: note,
-                noteAr: noteAr,
                 accent: accent,
                 sortOrder: sortOrder,
                 createdAt: createdAt,
@@ -26202,10 +24360,8 @@ class $$PreviousLeadersTableTableManager
                 required String id,
                 required String memberId,
                 Value<String> position = const Value.absent(),
-                Value<String> positionAr = const Value.absent(),
                 Value<String> termYears = const Value.absent(),
                 Value<String> note = const Value.absent(),
-                Value<String> noteAr = const Value.absent(),
                 Value<int> accent = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -26214,10 +24370,8 @@ class $$PreviousLeadersTableTableManager
                 id: id,
                 memberId: memberId,
                 position: position,
-                positionAr: positionAr,
                 termYears: termYears,
                 note: note,
-                noteAr: noteAr,
                 accent: accent,
                 sortOrder: sortOrder,
                 createdAt: createdAt,
@@ -26322,9 +24476,7 @@ typedef $$PreviousLeaderSectionsTableCreateCompanionBuilder =
       required String id,
       required String previousLeaderId,
       Value<String> title,
-      Value<String> titleAr,
       Value<String> body,
-      Value<String> bodyAr,
       Value<int> sortOrder,
       Value<int> rowid,
     });
@@ -26333,9 +24485,7 @@ typedef $$PreviousLeaderSectionsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> previousLeaderId,
       Value<String> title,
-      Value<String> titleAr,
       Value<String> body,
-      Value<String> bodyAr,
       Value<int> sortOrder,
       Value<int> rowid,
     });
@@ -26392,18 +24542,8 @@ class $$PreviousLeaderSectionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get titleAr => $composableBuilder(
-    column: $table.titleAr,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get body => $composableBuilder(
     column: $table.body,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get bodyAr => $composableBuilder(
-    column: $table.bodyAr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -26455,18 +24595,8 @@ class $$PreviousLeaderSectionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get titleAr => $composableBuilder(
-    column: $table.titleAr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get body => $composableBuilder(
     column: $table.body,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get bodyAr => $composableBuilder(
-    column: $table.bodyAr,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -26514,14 +24644,8 @@ class $$PreviousLeaderSectionsTableAnnotationComposer
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
-  GeneratedColumn<String> get titleAr =>
-      $composableBuilder(column: $table.titleAr, builder: (column) => column);
-
   GeneratedColumn<String> get body =>
       $composableBuilder(column: $table.body, builder: (column) => column);
-
-  GeneratedColumn<String> get bodyAr =>
-      $composableBuilder(column: $table.bodyAr, builder: (column) => column);
 
   GeneratedColumn<int> get sortOrder =>
       $composableBuilder(column: $table.sortOrder, builder: (column) => column);
@@ -26592,18 +24716,14 @@ class $$PreviousLeaderSectionsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> previousLeaderId = const Value.absent(),
                 Value<String> title = const Value.absent(),
-                Value<String> titleAr = const Value.absent(),
                 Value<String> body = const Value.absent(),
-                Value<String> bodyAr = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PreviousLeaderSectionsCompanion(
                 id: id,
                 previousLeaderId: previousLeaderId,
                 title: title,
-                titleAr: titleAr,
                 body: body,
-                bodyAr: bodyAr,
                 sortOrder: sortOrder,
                 rowid: rowid,
               ),
@@ -26612,18 +24732,14 @@ class $$PreviousLeaderSectionsTableTableManager
                 required String id,
                 required String previousLeaderId,
                 Value<String> title = const Value.absent(),
-                Value<String> titleAr = const Value.absent(),
                 Value<String> body = const Value.absent(),
-                Value<String> bodyAr = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PreviousLeaderSectionsCompanion.insert(
                 id: id,
                 previousLeaderId: previousLeaderId,
                 title: title,
-                titleAr: titleAr,
                 body: body,
-                bodyAr: bodyAr,
                 sortOrder: sortOrder,
                 rowid: rowid,
               ),

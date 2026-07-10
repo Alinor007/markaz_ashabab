@@ -1,25 +1,20 @@
 // Unit tests for the shared form validators. A trivial widget is pumped only to
-// obtain a BuildContext under a LocaleController provider (validators resolve
-// their messages via context.trRead); there are no animations to settle.
+// obtain a BuildContext (validators resolve their messages via context.trRead);
+// there are no animations to settle.
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:provider/provider.dart';
 
-import 'package:markazosshabab/core/i18n/locale_controller.dart';
 import 'package:markazosshabab/core/util/validators.dart';
 
 void main() {
   testWidgets('Validators enforce required/numeric/email rules', (tester) async {
     late BuildContext c;
     await tester.pumpWidget(
-      ChangeNotifierProvider(
-        create: (_) => LocaleController(initial: const Locale('en')),
-        child: Builder(builder: (ctx) {
-          c = ctx;
-          return const SizedBox();
-        }),
-      ),
+      Builder(builder: (ctx) {
+        c = ctx;
+        return const SizedBox();
+      }),
     );
 
     // required — rejects empty/whitespace, accepts content.

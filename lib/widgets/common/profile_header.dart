@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../core/i18n/localized.dart';
 import '../../core/patterns/geometric_pattern.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
-import '../../core/theme/app_typography.dart';
 import 'portrait_avatar.dart';
 
 /// A meta item shown under a profile name (icon + label).
@@ -22,9 +20,9 @@ class ProfileHeader extends StatelessWidget {
     super.key,
     required this.initials,
     required this.nameEn,
-    required this.nameAr,
+    this.nameAr = '',
     required this.subtitleEn,
-    required this.subtitleAr,
+    this.subtitleAr = '',
     this.accent = AppColors.emerald,
     this.meta = const [],
     this.trailing,
@@ -49,7 +47,6 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     return ClipRRect(
       borderRadius: AppRadius.panel,
       child: Container(
@@ -96,24 +93,15 @@ class ProfileHeader extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          isArabic ? nameAr : nameEn,
-                          textDirection:
-                              isArabic ? TextDirection.rtl : TextDirection.ltr,
-                          style: isArabic
-                              ? AppTypography.arabic(
-                                  fontSize: 30,
-                                  color: AppColors.onEmerald,
-                                  fontWeight: FontWeight.w700)
-                              : Theme.of(context)
-                                  .textTheme
-                                  .displaySmall
-                                  ?.copyWith(color: AppColors.onEmerald),
+                          nameEn,
+                          style: Theme.of(context)
+                              .textTheme
+                              .displaySmall
+                              ?.copyWith(color: AppColors.onEmerald),
                         ),
                         const SizedBox(height: AppSpacing.xs),
                         Text(
-                          isArabic ? subtitleAr : subtitleEn,
-                          textDirection:
-                              isArabic ? TextDirection.rtl : TextDirection.ltr,
+                          subtitleEn,
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium

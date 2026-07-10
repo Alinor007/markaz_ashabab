@@ -97,9 +97,7 @@ class _DetailBody extends StatelessWidget {
               initials: '',
               leadingIcon: department.icon,
               nameEn: department.name,
-              nameAr: department.nameAr,
               subtitleEn: 'Department',
-              subtitleAr: 'قسم',
               accent: department.accentColor,
             ),
             const SizedBox(height: AppSpacing.lg),
@@ -155,7 +153,6 @@ class _OverviewTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     final deptRepo = context.read<DepartmentRepository>();
     final reportRepo = context.read<ReportRepository>();
     // Admin and executives may edit the department's overview and contact
@@ -173,16 +170,10 @@ class _OverviewTab extends StatelessWidget {
             title: context.tr('About', 'نبذة'),
             action: editAction,
             child: Text(
-              (isArabic ? department.descriptionAr : department.description)
-                      .isEmpty
+              department.description.isEmpty
                   ? context.tr('No description provided.', 'لا يوجد وصف.')
-                  : (isArabic
-                      ? department.descriptionAr
-                      : department.description),
-              textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-              style: isArabic
-                  ? AppTypography.arabic(fontSize: 16, height: 1.9)
-                  : Theme.of(context).textTheme.bodyLarge,
+                  : department.description,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -194,7 +185,6 @@ class _OverviewTab extends StatelessWidget {
                   builder: (context, snap) => StatCard(
                     value: '${snap.data?.length ?? 0}',
                     label: 'Total Activities',
-                    labelArabic: 'إجمالي الأنشطة',
                     icon: Icons.event_available_outlined,
                     accent: AppColors.navy,
                   ),
@@ -207,7 +197,6 @@ class _OverviewTab extends StatelessWidget {
                   builder: (context, snap) => StatCard(
                     value: '${snap.data?.length ?? 0}',
                     label: 'Total Reports',
-                    labelArabic: 'إجمالي التقارير',
                     icon: Icons.description_outlined,
                     accent: AppColors.goldDeep,
                   ),
@@ -490,18 +479,17 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
   static const _pageSize = 8;
   int _visible = _pageSize;
   String _query = '';
-  int _statusFilter = 0; // 0 = all, else ActivityStatus.values[i - 1]
+  int _statusFilter = 0; // index into ActivityStatus.values
 
   Department get department => widget.department;
 
   List<DeptActivity> _apply(List<DeptActivity> items) {
     final q = _query.trim().toLowerCase();
     return items.where((a) {
-      final matchesQuery = q.isEmpty ||
-          a.title.toLowerCase().contains(q) ||
-          a.titleAr.contains(_query.trim());
+      final matchesQuery =
+          q.isEmpty || a.title.toLowerCase().contains(q);
       final matchesStatus =
-          _statusFilter == 0 || a.status == ActivityStatus.values[_statusFilter - 1].code;
+          a.status == ActivityStatus.values[_statusFilter].code;
       return matchesQuery && matchesStatus;
     }).toList();
   }
@@ -672,8 +660,7 @@ class _ActivityFilterBar extends StatelessWidget {
         ),
         FilterBar(
           options: [
-            context.tr('All', 'الكل'),
-            for (final s in ActivityStatus.values) s.label(context.isArabic),
+            for (final s in ActivityStatus.values) s.label(),
           ],
           selectedIndex: statusFilter,
           onSelected: onStatus,
@@ -934,7 +921,6 @@ class _ReportsTabState extends State<_ReportsTab> {
     return reports.where((r) {
       final matchesQuery = q.isEmpty ||
           r.title.toLowerCase().contains(q) ||
-          r.titleAr.contains(_query.trim()) ||
           r.summary.toLowerCase().contains(q);
       final matchesYear = _yearFilter == null || r.year == _yearFilter;
       return matchesQuery && matchesYear;

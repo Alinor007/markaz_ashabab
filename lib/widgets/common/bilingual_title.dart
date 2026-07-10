@@ -2,20 +2,15 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
-import '../../core/theme/app_typography.dart';
 
-/// Pairs an English title (Cormorant serif) with its Arabic counterpart
-/// (Amiri). Used as the standard header on every major page, e.g.:
-///
-/// ```
-/// Leadership
-/// القيادة
-/// ```
+/// A page title (Cormorant serif). Used as the standard header on every major
+/// page. The [arabic] argument is ignored (the app is English-only) and kept
+/// only so existing call sites continue to compile.
 class BilingualTitle extends StatelessWidget {
   const BilingualTitle({
     super.key,
     required this.english,
-    required this.arabic,
+    this.arabic = '',
     this.englishStyle,
     this.arabicFontSize = 22,
     this.crossAxisAlignment = CrossAxisAlignment.start,
@@ -42,16 +37,6 @@ class BilingualTitle extends StatelessWidget {
           header: true,
           child:
               Text(english, style: englishStyle ?? theme.textTheme.headlineMedium),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          arabic,
-          textDirection: TextDirection.rtl,
-          style: AppTypography.arabic(
-            fontSize: arabicFontSize,
-            color: AppColors.emerald,
-            fontWeight: FontWeight.w700,
-          ),
         ),
         if (accentRule) ...[
           const SizedBox(height: AppSpacing.md),

@@ -33,10 +33,8 @@ class GalleryRepository {
 
   Future<void> add({
     required String title,
-    String titleAr = '',
     required int year,
     String event = '',
-    String eventAr = '',
     String iconKey = 'photo',
     int accent = 0xFF0B5D3B,
     List<String> imagePaths = const [],
@@ -46,10 +44,8 @@ class GalleryRepository {
     return _db.into(_db.galleryPhotos).insert(GalleryPhotosCompanion.insert(
           id: _id(),
           title: title,
-          titleAr: Value(titleAr),
           year: Value(year),
           event: Value(event),
-          eventAr: Value(eventAr),
           iconKey: Value(iconKey),
           accent: Value(accent),
           // Cover = first image (kept for the masonry thumbnail).

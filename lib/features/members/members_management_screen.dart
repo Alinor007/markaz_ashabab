@@ -71,10 +71,8 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
   String _locationLabel(Member m, bool isArabic) {
     final shuba = _shubaById[m.shubaId];
     final area = shuba == null ? null : _areaById[shuba.areaId];
-    final shubaName = shuba == null
-        ? '—'
-        : (isArabic ? shuba.nameAr : shuba.name);
-    final areaName = area == null ? '—' : (isArabic ? area.nameAr : area.name);
+    final shubaName = shuba == null ? '—' : shuba.name;
+    final areaName = area == null ? '—' : area.name;
     return '$areaName · $shubaName';
   }
 
@@ -83,7 +81,6 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
     final list = members.where((m) {
       final matchesQuery = q.isEmpty ||
           m.fullName.toLowerCase().contains(q) ||
-          m.nameAr.contains(_query) ||
           m.occupation.toLowerCase().contains(q) ||
           m.contactNumber.contains(_query);
       final matchesStatus = _statusFilter == 0 ||
@@ -274,7 +271,6 @@ class _FilterRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     return Wrap(
       spacing: AppSpacing.md,
       runSpacing: AppSpacing.sm,
@@ -298,7 +294,7 @@ class _FilterRow extends StatelessWidget {
           value: areaFilter,
           items: {
             null: context.tr('All Areas', 'كل المناطق'),
-            for (final a in areas) a.id: isArabic ? a.nameAr : a.name,
+            for (final a in areas) a.id: a.name,
           },
           onChanged: onArea,
         ),
@@ -602,7 +598,6 @@ class _AddLocationDialogState extends State<_AddLocationDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     final shubas = _areaId == null ? <Shuba>[] : widget.shubasFor(_areaId!);
 
     return AlertDialog(
@@ -627,8 +622,7 @@ class _AddLocationDialogState extends State<_AddLocationDialog> {
                   InputDecoration(labelText: context.tr('Area', 'المنطقة')),
               items: [
                 for (final a in widget.areas)
-                  DropdownMenuItem(
-                      value: a.id, child: Text(isArabic ? a.nameAr : a.name)),
+                  DropdownMenuItem(value: a.id, child: Text(a.name)),
               ],
               onChanged: (v) => setState(() {
                 _areaId = v;
@@ -643,8 +637,7 @@ class _AddLocationDialogState extends State<_AddLocationDialog> {
                   InputDecoration(labelText: context.tr("Shu'ba", 'الشُّعبة')),
               items: [
                 for (final s in shubas)
-                  DropdownMenuItem(
-                      value: s.id, child: Text(isArabic ? s.nameAr : s.name)),
+                  DropdownMenuItem(value: s.id, child: Text(s.name)),
               ],
               onChanged: _areaId == null
                   ? null

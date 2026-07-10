@@ -17,7 +17,6 @@ part 'app_database.g.dart';
 class Users extends Table {
   TextColumn get id => text()();
   TextColumn get fullName => text()();
-  TextColumn get fullNameAr => text()();
   TextColumn get username => text().unique()();
   TextColumn get email => text().withDefault(const Constant(''))();
   TextColumn get passwordHash => text()();
@@ -42,20 +41,14 @@ class Users extends Table {
 class Leaders extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
-  TextColumn get nameAr => text()();
   TextColumn get position => text()();
-  TextColumn get positionAr => text()();
   TextColumn get category => text()();
   TextColumn get serviceYears => text().withDefault(const Constant(''))();
   TextColumn get bio => text().withDefault(const Constant(''))();
-  TextColumn get bioAr => text().withDefault(const Constant(''))();
 
   /// Newline-separated lists.
   TextColumn get achievements => text().withDefault(const Constant(''))();
-  TextColumn get achievementsAr => text().withDefault(const Constant(''))();
   TextColumn get responsibilities => text().withDefault(const Constant(''))();
-  TextColumn get responsibilitiesAr =>
-      text().withDefault(const Constant(''))();
   TextColumn get email => text().withDefault(const Constant(''))();
   TextColumn get phone => text().withDefault(const Constant(''))();
 
@@ -87,9 +80,7 @@ class AuditLogs extends Table {
   TextColumn get userId =>
       text().nullable().references(Users, #id, onDelete: KeyAction.setNull)();
   TextColumn get action => text()();
-  TextColumn get actionAr => text().withDefault(const Constant(''))();
   TextColumn get module => text()();
-  TextColumn get moduleAr => text().withDefault(const Constant(''))();
   DateTimeColumn get timestamp =>
       dateTime().withDefault(currentDateAndTime)();
 
@@ -103,9 +94,7 @@ class AuditLogs extends Table {
 class TarbiyaAreas extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
-  TextColumn get nameAr => text().withDefault(const Constant(''))();
   TextColumn get region => text().withDefault(const Constant(''))();
-  TextColumn get regionAr => text().withDefault(const Constant(''))();
   IntColumn get accent => integer().withDefault(const Constant(0xFF0B5D3B))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
 
@@ -120,7 +109,6 @@ class Shubas extends Table {
   TextColumn get areaId =>
       text().references(TarbiyaAreas, #id, onDelete: KeyAction.restrict)();
   TextColumn get name => text()();
-  TextColumn get nameAr => text().withDefault(const Constant(''))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
 
   /// The Shu'ba's Mas'ul (Person-in-Charge): an existing member, or null when
@@ -146,7 +134,6 @@ class Members extends Table {
   TextColumn get middleName => text().withDefault(const Constant(''))();
   TextColumn get lastName => text()();
   TextColumn get suffix => text().withDefault(const Constant(''))();
-  TextColumn get nameAr => text().withDefault(const Constant(''))();
   TextColumn get gender => text().withDefault(const Constant('M'))();
   TextColumn get dob => text().withDefault(const Constant(''))();
   TextColumn get placeOfBirth => text().withDefault(const Constant(''))();
@@ -192,6 +179,8 @@ class MemberChildren extends Table {
       text().references(Members, #id, onDelete: KeyAction.cascade)();
   TextColumn get name => text()();
   TextColumn get dob => text().withDefault(const Constant(''))();
+  TextColumn get occupation => text().withDefault(const Constant(''))();
+  TextColumn get profession => text().withDefault(const Constant(''))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -338,13 +327,10 @@ class MemberRoles extends Table {
 class Departments extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
-  TextColumn get nameAr => text().withDefault(const Constant(''))();
   TextColumn get description => text().withDefault(const Constant(''))();
-  TextColumn get descriptionAr => text().withDefault(const Constant(''))();
   TextColumn get iconKey => text().withDefault(const Constant('group'))();
   IntColumn get accent => integer().withDefault(const Constant(0xFF0B5D3B))();
   TextColumn get headName => text().withDefault(const Constant(''))();
-  TextColumn get headNameAr => text().withDefault(const Constant(''))();
   TextColumn get contactEmail => text().withDefault(const Constant(''))();
   TextColumn get contactPhone => text().withDefault(const Constant(''))();
 
@@ -385,7 +371,6 @@ class DeptActivities extends Table {
   TextColumn get departmentId =>
       text().references(Departments, #id, onDelete: KeyAction.cascade)();
   TextColumn get title => text()();
-  TextColumn get titleAr => text().withDefault(const Constant(''))();
   TextColumn get description => text().withDefault(const Constant(''))();
   TextColumn get date => text().withDefault(const Constant(''))();
   TextColumn get status => text().withDefault(const Constant('planned'))();
@@ -408,9 +393,7 @@ class Reports extends Table {
   TextColumn get departmentId =>
       text().references(Departments, #id, onDelete: KeyAction.restrict)();
   TextColumn get title => text()();
-  TextColumn get titleAr => text().withDefault(const Constant(''))();
   TextColumn get summary => text().withDefault(const Constant(''))();
-  TextColumn get summaryAr => text().withDefault(const Constant(''))();
   TextColumn get date => text().withDefault(const Constant(''))();
   IntColumn get year => integer().withDefault(const Constant(0))();
   TextColumn get type => text().withDefault(const Constant('minutes'))();
@@ -430,10 +413,8 @@ class Reports extends Table {
 class GalleryPhotos extends Table {
   TextColumn get id => text()();
   TextColumn get title => text()();
-  TextColumn get titleAr => text().withDefault(const Constant(''))();
   IntColumn get year => integer().withDefault(const Constant(0))();
   TextColumn get event => text().withDefault(const Constant(''))();
-  TextColumn get eventAr => text().withDefault(const Constant(''))();
   TextColumn get iconKey => text().withDefault(const Constant('photo'))();
   IntColumn get accent => integer().withDefault(const Constant(0xFF0B5D3B))();
   /// Cover image (first of the album), kept for the masonry thumbnail.
@@ -460,7 +441,6 @@ class GalleryPhotos extends Table {
 class LeadershipGroupInfo extends Table {
   TextColumn get code => text()();
   TextColumn get description => text().withDefault(const Constant(''))();
-  TextColumn get descriptionAr => text().withDefault(const Constant(''))();
 
   @override
   Set<Column> get primaryKey => {code};
@@ -493,16 +473,13 @@ class MinutesReports extends Table {
 class HistoryContents extends Table {
   TextColumn get id => text().withDefault(const Constant('history'))();
   TextColumn get foundingEn => text().withDefault(const Constant(''))();
-  TextColumn get foundingAr => text().withDefault(const Constant(''))();
   TextColumn get missionEn => text().withDefault(const Constant(''))();
-  TextColumn get missionAr => text().withDefault(const Constant(''))();
   TextColumn get visionEn => text().withDefault(const Constant(''))();
-  TextColumn get visionAr => text().withDefault(const Constant(''))();
 
-  /// JSON array of `{"en":..,"ar":..}` story paragraphs.
+  /// JSON array of `{"en":..}` story paragraphs.
   TextColumn get narrative => text().withDefault(const Constant('[]'))();
 
-  /// JSON array of `{"value":..,"en":..,"ar":..,"iconKey":..,"accent":int}`.
+  /// JSON array of `{"value":..,"en":..,"iconKey":..,"accent":int}`.
   TextColumn get facts => text().withDefault(const Constant('[]'))();
 
   @override
@@ -516,9 +493,7 @@ class HistoryMilestones extends Table {
   TextColumn get id => text()();
   TextColumn get year => text().withDefault(const Constant(''))();
   TextColumn get title => text().withDefault(const Constant(''))();
-  TextColumn get titleAr => text().withDefault(const Constant(''))();
   TextColumn get description => text().withDefault(const Constant(''))();
-  TextColumn get descriptionAr => text().withDefault(const Constant(''))();
   TextColumn get iconKey => text().withDefault(const Constant('flag'))();
   IntColumn get accent => integer().withDefault(const Constant(0xFF0B5D3B))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
@@ -537,10 +512,8 @@ class PreviousLeaders extends Table {
   TextColumn get memberId =>
       text().references(Members, #id, onDelete: KeyAction.cascade)();
   TextColumn get position => text().withDefault(const Constant(''))();
-  TextColumn get positionAr => text().withDefault(const Constant(''))();
   TextColumn get termYears => text().withDefault(const Constant(''))();
   TextColumn get note => text().withDefault(const Constant(''))();
-  TextColumn get noteAr => text().withDefault(const Constant(''))();
   IntColumn get accent => integer().withDefault(const Constant(0xFF16243D))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
   DateTimeColumn get createdAt =>
@@ -559,9 +532,7 @@ class PreviousLeaderSections extends Table {
   TextColumn get previousLeaderId =>
       text().references(PreviousLeaders, #id, onDelete: KeyAction.cascade)();
   TextColumn get title => text().withDefault(const Constant(''))();
-  TextColumn get titleAr => text().withDefault(const Constant(''))();
   TextColumn get body => text().withDefault(const Constant(''))();
-  TextColumn get bodyAr => text().withDefault(const Constant(''))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
 
   @override
@@ -603,7 +574,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.memory() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 22;
+  int get schemaVersion => 24;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -751,8 +722,62 @@ class AppDatabase extends _$AppDatabase {
             // untouched).
             await _seedDefaultAccounts();
           }
+          if (from < 23) {
+            // The app is now English-only: drop every Arabic (*_ar) column.
+            // SQLite ≥3.35 supports ALTER TABLE ... DROP COLUMN, and none of
+            // these columns are indexed / referenced, so the drop is safe and
+            // leaves the remaining data and indexes intact.
+            await _dropArabicColumns();
+          }
+          if (from < 24) {
+            // Children gain optional occupation / profession fields.
+            await m.addColumn(memberChildren, memberChildren.occupation);
+            await m.addColumn(memberChildren, memberChildren.profession);
+          }
         },
       );
+
+  /// Drops the legacy Arabic (`*_ar`) columns from an existing install so the
+  /// physical schema matches the now English-only table definitions. Without
+  /// this, inserts into the `NOT NULL` Arabic columns (users.full_name_ar,
+  /// leaders.name_ar / position_ar) would fail on upgraded databases.
+  Future<void> _dropArabicColumns() async {
+    const drops = <String>[
+      'ALTER TABLE users DROP COLUMN full_name_ar',
+      'ALTER TABLE leaders DROP COLUMN name_ar',
+      'ALTER TABLE leaders DROP COLUMN position_ar',
+      'ALTER TABLE leaders DROP COLUMN bio_ar',
+      'ALTER TABLE leaders DROP COLUMN achievements_ar',
+      'ALTER TABLE leaders DROP COLUMN responsibilities_ar',
+      'ALTER TABLE audit_logs DROP COLUMN action_ar',
+      'ALTER TABLE audit_logs DROP COLUMN module_ar',
+      'ALTER TABLE tarbiya_areas DROP COLUMN name_ar',
+      'ALTER TABLE tarbiya_areas DROP COLUMN region_ar',
+      'ALTER TABLE shubas DROP COLUMN name_ar',
+      'ALTER TABLE members DROP COLUMN name_ar',
+      'ALTER TABLE departments DROP COLUMN name_ar',
+      'ALTER TABLE departments DROP COLUMN description_ar',
+      'ALTER TABLE departments DROP COLUMN head_name_ar',
+      'ALTER TABLE dept_activities DROP COLUMN title_ar',
+      'ALTER TABLE reports DROP COLUMN title_ar',
+      'ALTER TABLE reports DROP COLUMN summary_ar',
+      'ALTER TABLE gallery_photos DROP COLUMN title_ar',
+      'ALTER TABLE gallery_photos DROP COLUMN event_ar',
+      'ALTER TABLE leadership_group_info DROP COLUMN description_ar',
+      'ALTER TABLE history_contents DROP COLUMN founding_ar',
+      'ALTER TABLE history_contents DROP COLUMN mission_ar',
+      'ALTER TABLE history_contents DROP COLUMN vision_ar',
+      'ALTER TABLE history_milestones DROP COLUMN title_ar',
+      'ALTER TABLE history_milestones DROP COLUMN description_ar',
+      'ALTER TABLE previous_leaders DROP COLUMN position_ar',
+      'ALTER TABLE previous_leaders DROP COLUMN note_ar',
+      'ALTER TABLE previous_leader_sections DROP COLUMN title_ar',
+      'ALTER TABLE previous_leader_sections DROP COLUMN body_ar',
+    ];
+    for (final stmt in drops) {
+      await customStatement(stmt);
+    }
+  }
 
   /// Rebuilds the tables that gained constraints so existing installs get the
   /// same integrity as a fresh v5 database, repairing data first so the new
@@ -825,7 +850,6 @@ class AppDatabase extends _$AppDatabase {
       UsersCompanion.insert(
         id: 'admin',
         fullName: 'System Administrator',
-        fullNameAr: 'مدير النظام',
         username: 'admin',
         email: const Value('admin@markaz.org'),
         passwordHash: PasswordHasher.hash('Admin@markazosshabab'),
@@ -845,9 +869,7 @@ class AppDatabase extends _$AppDatabase {
         DepartmentsCompanion.insert(
           id: d.id,
           name: d.name,
-          nameAr: Value(d.nameAr),
           description: Value(d.description),
-          descriptionAr: Value(d.descriptionAr),
           iconKey: Value(d.icon),
           accent: Value(d.accent),
           sortOrder: Value(i),
@@ -857,7 +879,7 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
-  /// Backfills the department overviews (English and Arabic) and display order
+  /// Backfills the department overviews and display order
   /// onto installs that already had the departments before this content existed
   /// (insertOrIgnore in [_seedDepartments] won't touch existing rows). Each
   /// overview is only written where the admin hasn't entered one, so manual
@@ -871,9 +893,6 @@ class AppDatabase extends _$AppDatabase {
       await (update(departments)
             ..where((t) => t.id.equals(d.id) & t.description.equals('')))
           .write(DepartmentsCompanion(description: Value(d.description)));
-      await (update(departments)
-            ..where((t) => t.id.equals(d.id) & t.descriptionAr.equals('')))
-          .write(DepartmentsCompanion(descriptionAr: Value(d.descriptionAr)));
     }
   }
 
@@ -886,19 +905,17 @@ class AppDatabase extends _$AppDatabase {
 
     // Executive accounts (no department link).
     const executives = [
-      ('president', 'president', 'President', 'الرئيس', 'president'),
-      ('vice_president', 'vicepresident', 'Vice President', 'نائب الرئيس',
-          'vice_president'),
-      ('secretary_general', 'secretary', 'Secretary General', 'الأمين العام',
+      ('president', 'president', 'President', 'president'),
+      ('vice_president', 'vicepresident', 'Vice President', 'vice_president'),
+      ('secretary_general', 'secretary', 'Secretary General',
           'secretary_general'),
-      ('treasurer', 'treasurer', 'Treasurer', 'أمين الصندوق', 'treasurer'),
+      ('treasurer', 'treasurer', 'Treasurer', 'treasurer'),
     ];
-    for (final (id, username, name, nameAr, role) in executives) {
+    for (final (id, username, name, role) in executives) {
       await into(users).insert(
         UsersCompanion.insert(
           id: id,
           fullName: name,
-          fullNameAr: nameAr,
           username: username,
           passwordHash: tempHash,
           roleCode: role,
@@ -909,34 +926,24 @@ class AppDatabase extends _$AppDatabase {
 
     // One department-head account per department (must run after _seedDepartments).
     const heads = [
-      ('head_dawah', 'head.dawah', "Head of Da'wah", 'رئيس قسم الدعوة',
-          'dawah'),
-      ('head_tarbiyah', 'head.tarbiyah', 'Head of Tarbiyah',
-          'رئيس قسم التربية', 'tarbiyah'),
-      ('head_education', 'head.education', 'Head of Education',
-          'رئيس قسم التعليم', 'education'),
-      ('head_youth', 'head.youth', 'Head of Youth and Students',
-          'رئيس قسم الطلبة والشباب', 'youth'),
-      ('head_economy', 'head.economy', 'Head of Economy',
-          'رئيس قسم الاقتصاد', 'economy'),
+      ('head_dawah', 'head.dawah', "Head of Da'wah", 'dawah'),
+      ('head_tarbiyah', 'head.tarbiyah', 'Head of Tarbiyah', 'tarbiyah'),
+      ('head_education', 'head.education', 'Head of Education', 'education'),
+      ('head_youth', 'head.youth', 'Head of Youth and Students', 'youth'),
+      ('head_economy', 'head.economy', 'Head of Economy', 'economy'),
       ('head_charity', 'head.charity', 'Head of Charitable Programs',
-          'رئيس قسم البرامج الخيرية', 'charity'),
-      ('head_media', 'head.media', 'Head of Public Relations',
-          'رئيس قسم العلاقات العامة', 'media'),
-      ('head_politics', 'head.politics', 'Head of Politics',
-          'رئيس قسم السياسة', 'politics'),
-      ('head_women', 'head.women', 'Head of Women Affairs',
-          'رئيس قسم شؤون المرأة', 'women'),
+          'charity'),
+      ('head_media', 'head.media', 'Head of Public Relations', 'media'),
+      ('head_politics', 'head.politics', 'Head of Politics', 'politics'),
+      ('head_women', 'head.women', 'Head of Women Affairs', 'women'),
       ('head_human_capital', 'head.human_capital',
-          'Head of Human Capital (Tarbiya)',
-          'رئيس قسم رأس المال البشري (التربية)', 'human_capital'),
+          'Head of Human Capital (Tarbiya)', 'human_capital'),
     ];
-    for (final (id, username, name, nameAr, deptId) in heads) {
+    for (final (id, username, name, deptId) in heads) {
       await into(users).insert(
         UsersCompanion.insert(
           id: id,
           fullName: name,
-          fullNameAr: nameAr,
           username: username,
           passwordHash: tempHash,
           roleCode: UserRole.departmentHead.code,
@@ -960,18 +967,16 @@ class AppDatabase extends _$AppDatabase {
     // Only the President (Office) and Chairman (Assembly General Membership)
     // are pre-seeded; admins add any other positions via "Add Position".
     const seed = [
-      // (id, title, titleAr, categoryCode, sortOrder)
-      ('pos_president', 'President', 'الرئيس', 'office_president', 0),
-      ('pos_chairman', 'Chairman', 'رئيس المجلس', 'assembly_general', 0),
+      // (id, title, categoryCode, sortOrder)
+      ('pos_president', 'President', 'office_president', 0),
+      ('pos_chairman', 'Chairman', 'assembly_general', 0),
     ];
-    for (final (id, title, titleAr, category, order) in seed) {
+    for (final (id, title, category, order) in seed) {
       await into(leaders).insert(
         LeadersCompanion.insert(
           id: id,
           name: title,
-          nameAr: titleAr,
           position: title,
-          positionAr: titleAr,
           category: category,
           sortOrder: Value(order),
         ),
@@ -990,46 +995,35 @@ class AppDatabase extends _$AppDatabase {
             'organization’s direction, oversees all departments and '
             'committees, represents the organization externally, and ensures '
             'its programs serve the mission.',
-        'القيادة التنفيذية لمركز الشباب: تحدّد توجّه المنظمة، وتشرف على جميع '
-            'الأقسام واللجان، وتمثّل المنظمة، وتضمن خدمة برامجها للرسالة.'
       ),
       (
         'board',
         'Provides governance and strategic oversight — safeguarding the '
             'organization’s mission, assets, and long-term direction, and '
             'holding the leadership accountable.',
-        'يوفّر الحوكمة والإشراف الاستراتيجي، ويصون رسالة المنظمة وأصولها '
-            'وتوجّهها بعيد المدى، ويُسائل القيادة.'
       ),
       (
         'assembly_general',
         'The consultative body of the Assembly. It deliberates on policies, '
             'advises the leadership, and represents the general membership.',
-        'الهيئة الاستشارية للمجلس: تتداول في السياسات، وتنصح القيادة، وتمثّل '
-            'العضوية العامة.'
       ),
       (
         'committee_hayah',
         'The Shari’ah committee. It ensures the organization’s '
             'activities conform to Islamic principles and provides religious '
             'guidance.',
-        'اللجنة الشرعية: تضمن توافق أنشطة المنظمة مع المبادئ الإسلامية وتقدّم '
-            'التوجيه الشرعي.'
       ),
       (
         'committee_audit',
         'The audit committee. It reviews finances and operations to ensure '
             'accountability, transparency, and the proper use of resources.',
-        'لجنة التدقيق: تراجع المالية والعمليات لضمان المساءلة والشفافية وحسن '
-            'استخدام الموارد.'
       ),
     ];
-    for (final (code, description, descriptionAr) in seed) {
+    for (final (code, description) in seed) {
       await into(leadershipGroupInfo).insert(
         LeadershipGroupInfoCompanion.insert(
           code: code,
           description: Value(description),
-          descriptionAr: Value(descriptionAr),
         ),
         mode: InsertMode.insertOrIgnore,
       );
@@ -1044,20 +1038,16 @@ class AppDatabase extends _$AppDatabase {
       HistoryContentsCompanion.insert(
         id: const Value('history'),
         foundingEn: const Value(kFoundingEn),
-        foundingAr: const Value(kFoundingAr),
-        missionEn: Value(kMission.en),
-        missionAr: Value(kMission.ar),
-        visionEn: Value(kVision.en),
-        visionAr: Value(kVision.ar),
+        missionEn: Value(kMission),
+        visionEn: Value(kVision),
         narrative: Value(jsonEncode([
-          for (final p in kHistoryNarrative) {'en': p.en, 'ar': p.ar}
+          for (final p in kHistoryNarrative) {'en': p}
         ])),
         facts: Value(jsonEncode([
           for (final f in kDefaultFacts)
             {
               'value': f.value,
               'en': f.en,
-              'ar': f.ar,
               'iconKey': f.iconKey,
               'accent': f.accent,
             }
@@ -1075,9 +1065,7 @@ class AppDatabase extends _$AppDatabase {
             id: 'milestone_$i',
             year: Value(m.year),
             title: Value(m.title),
-            titleAr: Value(m.titleAr),
             description: Value(m.description),
-            descriptionAr: Value(m.descriptionAr),
             iconKey: Value(m.iconKey),
             accent: Value(m.accent),
             sortOrder: Value(i),
@@ -1092,21 +1080,20 @@ class AppDatabase extends _$AppDatabase {
   Future<void> _seedTarbiyaAreas() async {
     const accents = [0xFF0B5D3B, 0xFF16243D, 0xFFA8862F];
     const seed = [
-      ('area-1', 'Area 1', 'المنطقة ١'),
-      ('area-2', 'Area 2', 'المنطقة ٢'),
-      ('area-3', 'Area 3', 'المنطقة ٣'),
-      ('area-4', 'Area 4', 'المنطقة ٤'),
-      ('area-5', 'Area 5', 'المنطقة ٥'),
-      ('area-6', 'Area 6', 'المنطقة ٦'),
-      ('area-special', 'Special Area', 'المنطقة الخاصة'),
+      ('area-1', 'Area 1'),
+      ('area-2', 'Area 2'),
+      ('area-3', 'Area 3'),
+      ('area-4', 'Area 4'),
+      ('area-5', 'Area 5'),
+      ('area-6', 'Area 6'),
+      ('area-special', 'Special Area'),
     ];
     var order = 0;
-    for (final (id, name, nameAr) in seed) {
+    for (final (id, name) in seed) {
       await into(tarbiyaAreas).insert(
         TarbiyaAreasCompanion.insert(
           id: id,
           name: name,
-          nameAr: Value(nameAr),
           accent: Value(accents[order % accents.length]),
           sortOrder: Value(order),
         ),
@@ -1125,24 +1112,21 @@ LazyDatabase _openOnDevice() {
   });
 }
 
-/// The organization's standing departments: stable id, bilingual name, icon,
-/// accent colour, and the bilingual overview shown on each department page. The
+/// The organization's standing departments: stable id, name, icon,
+/// accent colour, and the overview shown on each department page. The
 /// list order is the display order. Used by both
 /// [AppDatabase._seedDepartments] (insert) and
 /// [AppDatabase._backfillDepartmentContent] (update existing installs).
 const _departmentSeed = <({
   String id,
   String name,
-  String nameAr,
   String icon,
   int accent,
   String description,
-  String descriptionAr,
 })>[
   (
     id: 'dawah',
     name: 'Da‘wah',
-    nameAr: 'الدعوة',
     icon: 'dawah',
     accent: 0xFF0B5D3B,
     description:
@@ -1152,13 +1136,10 @@ const _departmentSeed = <({
         "mobilized across the country, utilizing mosque pulpits, conferences, "
         "and public gatherings to call people to complete devotion and the "
         "adoption of Islam as a comprehensive way of life.",
-    descriptionAr:
-        'يُمثّل قسم الدعوة جوهر رسالة المنظمة وأساسها المطلق، إذ يستحوذ على القدر الأكبر من وقتها وجهدها ومواردها. وعلى مدى أكثر من أربعة عقود، انتشر دعاته في أنحاء البلاد مستفيدين من منابر المساجد والمؤتمرات والتجمّعات العامة لدعوة الناس إلى إخلاص العبادة لله واتخاذ الإسلام منهج حياة شاملًا.',
   ),
   (
     id: 'tarbiyah',
     name: 'Tarbiyah',
-    nameAr: 'التربية',
     icon: 'tarbiyah',
     accent: 0xFF16243D,
     description:
@@ -1168,13 +1149,10 @@ const _departmentSeed = <({
         "dedication to their religion and community. Its methodologies are "
         "firmly rooted in following the path of early righteous predecessors "
         "and reformist thinkers to ensure robust character formation.",
-    descriptionAr:
-        'يُعدّ قسم التربية العمود الفقري للتطوير الداخلي للمنظمة وإصلاح المجتمع، فهو يُعنى عناية بالغة بتنشئة أفرادٍ ذوي عقيدة صحيحة وعبادة سليمة وتعلّقٍ راسخ بدينهم ومجتمعهم. وتقوم مناهجه على اتباع نهج السلف الصالح والمفكّرين الإصلاحيين لضمان بناءٍ متينٍ للشخصية.',
   ),
   (
     id: 'education',
     name: 'Education',
-    nameAr: 'التعليم',
     icon: 'education',
     accent: 0xFFA8862F,
     description:
@@ -1185,13 +1163,10 @@ const _departmentSeed = <({
         "1995 and has been recognized as a model school by both the national "
         "government and the ARMM Ministry of Education for its integrated "
         "academic curriculum and outstanding competition record.",
-    descriptionAr:
-        'انطلاقًا من الإيمان بأن التعليم هو أساس بناء الأجيال وتماسك المجتمع، يُشرف هذا القسم على شبكة واسعة من المدارس في أنحاء الفلبين. وقد افتُتحت مؤسسته الرائدة، مدرسة ابن سينا التكاملية في مدينة مراوي، عام 1995م، ونالت اعتراف الحكومة الوطنية ووزارة التعليم في إقليم مينداناو المسلم ذاتيّ الحكم (ARMM) بوصفها مدرسةً نموذجية لما تتميّز به من منهجٍ أكاديميٍّ متكامل وسجلٍّ متميّزٍ في المسابقات.',
   ),
   (
     id: 'youth',
     name: 'Jihazu Thalaba (Youth and Students)',
-    nameAr: 'جهاز الطلبة والشباب',
     icon: 'group',
     accent: 0xFF16243D,
     description:
@@ -1201,13 +1176,10 @@ const _departmentSeed = <({
         "Philippines shortly after the center's founding and continues to "
         "oversee various youth associations designed to prepare young people to "
         "eventually take up the reins of leadership.",
-    descriptionAr:
-        'إيمانًا بأن الشباب والطلاب هم أمل المستقبل والطاقة البشرية الأساسية للأمة، يُكرّس هذا القسم جهوده لتنميتهم تنميةً شاملة. وقد أسّس اتحاد الطلبة المسلمين في الفلبين بُعَيد تأسيس المركز، ولا يزال يُشرف على جمعيات شبابية متنوّعة تهدف إلى إعداد الشباب لتولّي مقاليد القيادة مستقبلًا.',
   ),
   (
     id: 'economy',
     name: 'Economy and Investments',
-    nameAr: 'الاقتصاد والاستثمار',
     icon: 'economy',
     accent: 0xFF0B5D3B,
     description:
@@ -1218,13 +1190,10 @@ const _departmentSeed = <({
         "initiatives include regional market integration through the World "
         "Halal Chamber of Commerce and Industry in the Philippines and the "
         "recently launched Tabatuj Cooperative Association.",
-    descriptionAr:
-        'يهدف قسم الاقتصاد إلى تحقيق الاكتفاء الذاتي للمنظمة، مع مساعدة الناس عبر توفير السلع الأساسية بأسعارٍ في المتناول. وإلى جانب اشتهاره تاريخيًّا بمشروعات خدمية كصيدلية راناو ومطحنة الصحابة للأرز، تشمل مبادراته الحديثة تكامل الأسواق الإقليمية من خلال الغرفة العالمية للتجارة والصناعة الحلال في الفلبين، وجمعية تباتوج التعاونية التي أُطلقت حديثًا.',
   ),
   (
     id: 'charity',
     name: 'Charitable Programs',
-    nameAr: 'البرامج الخيرية',
     icon: 'charity',
     accent: 0xFF16243D,
     description:
@@ -1235,13 +1204,10 @@ const _departmentSeed = <({
         "students, digging drinking-water wells, and constructing mosques, "
         "schools, and hospitals in cooperation with various local and "
         "international relief organizations.",
-    descriptionAr:
-        'يعمل هذا القسم بوصفه جسرًا إنسانيًّا حيويًّا بين المُحسنين والمحتاجين، ملتزمًا التزامًا صارمًا بمبادئ المساواة والعدل والإنصاف دون تحيّزٍ قبليٍّ أو جغرافي. وتشمل جهوده الإغاثية الشاملة كفالة الأيتام والطلاب، وحفر آبار مياه الشرب، وبناء المساجد والمدارس والمستشفيات بالتعاون مع مختلف المنظمات الإغاثية المحلية والدولية.',
   ),
   (
     id: 'media',
     name: 'Public Relations and Information',
-    nameAr: 'العلاقات العامة والإعلام',
     icon: 'media',
     accent: 0xFFA8862F,
     description:
@@ -1252,13 +1218,10 @@ const _departmentSeed = <({
         "cohesion and government policies, raising its voice against "
         "corruption, drugs, and extremism while advocating for human rights and "
         "virtuous societal values.",
-    descriptionAr:
-        'رفضًا منه للانغلاق والتعصّب الفكري، يحرص هذا القسم على تعزيز الحوار والتعاون البنّاء مع جميع فئات المجتمع، بصرف النظر عن الانتماءات السياسية أو الطائفية أو العرقية. وهو يحشد طاقات المنظمة لدعم التماسك الوطني والسياسات الحكومية، رافعًا صوته ضد الفساد والمخدرات والتطرّف، ومنافحًا عن حقوق الإنسان والقيم الفاضلة في المجتمع.',
   ),
   (
     id: 'politics',
     name: 'Politics',
-    nameAr: 'السياسة',
     icon: 'politics',
     accent: 0xFF0B5D3B,
     description:
@@ -1269,13 +1232,10 @@ const _departmentSeed = <({
         "honest candidates and forming strategic alliances, even as it "
         "continues to navigate and challenge the systemic deterioration of the "
         "political climate and the spread of corruption.",
-    descriptionAr:
-        'يسعى قسم السياسة إلى إصلاحٍ مجتمعيٍّ شامل عبر الانخراط في الساحة السياسية، مدركًا أنها طريقٌ شاقّ لكنه ضروري. وتحت شعار «لنُصلح المجتمع ونُنقذ الناس»، أسّس حزب الأمة عام 1998م، فدفع بمرشّحين أمناء وأقام تحالفاتٍ استراتيجية، مع استمراره في مواجهة التدهور البنيوي للمناخ السياسي وتفشّي الفساد والتعامل معه.',
   ),
   (
     id: 'women',
     name: 'Women Affairs',
-    nameAr: 'شؤون المرأة',
     icon: 'women',
     accent: 0xFF16243D,
     description:
@@ -1286,13 +1246,10 @@ const _departmentSeed = <({
         "support and empowerment, affiliated women have successfully taken on "
         "vital roles as preachers, educators, volunteers, and frontline "
         "community workers.",
-    descriptionAr:
-        'إيمانًا بأن المرأة المسلمة الفلبينية ركيزةٌ أساسية لا غنى عنها في المجتمع، يسعى هذا القسم إلى تمكين المرأة بوصفها شريكًا أساسيًّا للرجل في جميع ميادين العمل، بما في ذلك صنع القرار والتخطيط والتنفيذ. وبفضل هذا الدعم المؤسّسي والتمكين، تبوّأت المنتسبات إليه أدوارًا حيوية داعياتٍ ومعلّماتٍ ومتطوّعاتٍ وعاملاتٍ في الصفوف الأمامية لخدمة المجتمع.',
   ),
   (
     id: 'human_capital',
     name: 'Human Capital (Tarbiya)',
-    nameAr: 'رأس المال البشري (التربية)',
     icon: 'group',
     accent: 0xFF16243D,
     description:
@@ -1300,7 +1257,5 @@ const _departmentSeed = <({
         "people — its members and volunteers — through structured nurturing, "
         "mentoring, and capacity-building so that every individual grows in "
         "faith, character, and competence to serve the mission.",
-    descriptionAr:
-        'يُعنى قسم رأس المال البشري (التربية) بتنمية كوادر المنظمة من أعضاء ومتطوّعين عبر التنشئة المنظّمة والتوجيه وبناء القدرات، بحيث ينمو كل فردٍ في إيمانه وخُلُقه وكفاءته لخدمة الرسالة.',
   ),
 ];
