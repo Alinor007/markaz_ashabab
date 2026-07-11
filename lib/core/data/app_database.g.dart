@@ -4637,8 +4637,39 @@ class $MemberChildrenTable extends MemberChildren
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
+  static const VerificationMeta _occupationMeta = const VerificationMeta(
+    'occupation',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, memberId, name, dob];
+  late final GeneratedColumn<String> occupation = GeneratedColumn<String>(
+    'occupation',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _professionMeta = const VerificationMeta(
+    'profession',
+  );
+  @override
+  late final GeneratedColumn<String> profession = GeneratedColumn<String>(
+    'profession',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    memberId,
+    name,
+    dob,
+    occupation,
+    profession,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -4678,6 +4709,18 @@ class $MemberChildrenTable extends MemberChildren
         dob.isAcceptableOrUnknown(data['dob']!, _dobMeta),
       );
     }
+    if (data.containsKey('occupation')) {
+      context.handle(
+        _occupationMeta,
+        occupation.isAcceptableOrUnknown(data['occupation']!, _occupationMeta),
+      );
+    }
+    if (data.containsKey('profession')) {
+      context.handle(
+        _professionMeta,
+        profession.isAcceptableOrUnknown(data['profession']!, _professionMeta),
+      );
+    }
     return context;
   }
 
@@ -4703,6 +4746,14 @@ class $MemberChildrenTable extends MemberChildren
         DriftSqlType.string,
         data['${effectivePrefix}dob'],
       )!,
+      occupation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}occupation'],
+      )!,
+      profession: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}profession'],
+      )!,
     );
   }
 
@@ -4718,11 +4769,15 @@ class MemberChildrenData extends DataClass
   final String memberId;
   final String name;
   final String dob;
+  final String occupation;
+  final String profession;
   const MemberChildrenData({
     required this.id,
     required this.memberId,
     required this.name,
     required this.dob,
+    required this.occupation,
+    required this.profession,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4731,6 +4786,8 @@ class MemberChildrenData extends DataClass
     map['member_id'] = Variable<String>(memberId);
     map['name'] = Variable<String>(name);
     map['dob'] = Variable<String>(dob);
+    map['occupation'] = Variable<String>(occupation);
+    map['profession'] = Variable<String>(profession);
     return map;
   }
 
@@ -4740,6 +4797,8 @@ class MemberChildrenData extends DataClass
       memberId: Value(memberId),
       name: Value(name),
       dob: Value(dob),
+      occupation: Value(occupation),
+      profession: Value(profession),
     );
   }
 
@@ -4753,6 +4812,8 @@ class MemberChildrenData extends DataClass
       memberId: serializer.fromJson<String>(json['memberId']),
       name: serializer.fromJson<String>(json['name']),
       dob: serializer.fromJson<String>(json['dob']),
+      occupation: serializer.fromJson<String>(json['occupation']),
+      profession: serializer.fromJson<String>(json['profession']),
     );
   }
   @override
@@ -4763,6 +4824,8 @@ class MemberChildrenData extends DataClass
       'memberId': serializer.toJson<String>(memberId),
       'name': serializer.toJson<String>(name),
       'dob': serializer.toJson<String>(dob),
+      'occupation': serializer.toJson<String>(occupation),
+      'profession': serializer.toJson<String>(profession),
     };
   }
 
@@ -4771,11 +4834,15 @@ class MemberChildrenData extends DataClass
     String? memberId,
     String? name,
     String? dob,
+    String? occupation,
+    String? profession,
   }) => MemberChildrenData(
     id: id ?? this.id,
     memberId: memberId ?? this.memberId,
     name: name ?? this.name,
     dob: dob ?? this.dob,
+    occupation: occupation ?? this.occupation,
+    profession: profession ?? this.profession,
   );
   MemberChildrenData copyWithCompanion(MemberChildrenCompanion data) {
     return MemberChildrenData(
@@ -4783,6 +4850,12 @@ class MemberChildrenData extends DataClass
       memberId: data.memberId.present ? data.memberId.value : this.memberId,
       name: data.name.present ? data.name.value : this.name,
       dob: data.dob.present ? data.dob.value : this.dob,
+      occupation: data.occupation.present
+          ? data.occupation.value
+          : this.occupation,
+      profession: data.profession.present
+          ? data.profession.value
+          : this.profession,
     );
   }
 
@@ -4792,13 +4865,16 @@ class MemberChildrenData extends DataClass
           ..write('id: $id, ')
           ..write('memberId: $memberId, ')
           ..write('name: $name, ')
-          ..write('dob: $dob')
+          ..write('dob: $dob, ')
+          ..write('occupation: $occupation, ')
+          ..write('profession: $profession')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, memberId, name, dob);
+  int get hashCode =>
+      Object.hash(id, memberId, name, dob, occupation, profession);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -4806,7 +4882,9 @@ class MemberChildrenData extends DataClass
           other.id == this.id &&
           other.memberId == this.memberId &&
           other.name == this.name &&
-          other.dob == this.dob);
+          other.dob == this.dob &&
+          other.occupation == this.occupation &&
+          other.profession == this.profession);
 }
 
 class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
@@ -4814,12 +4892,16 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
   final Value<String> memberId;
   final Value<String> name;
   final Value<String> dob;
+  final Value<String> occupation;
+  final Value<String> profession;
   final Value<int> rowid;
   const MemberChildrenCompanion({
     this.id = const Value.absent(),
     this.memberId = const Value.absent(),
     this.name = const Value.absent(),
     this.dob = const Value.absent(),
+    this.occupation = const Value.absent(),
+    this.profession = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   MemberChildrenCompanion.insert({
@@ -4827,6 +4909,8 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
     required String memberId,
     required String name,
     this.dob = const Value.absent(),
+    this.occupation = const Value.absent(),
+    this.profession = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        memberId = Value(memberId),
@@ -4836,6 +4920,8 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
     Expression<String>? memberId,
     Expression<String>? name,
     Expression<String>? dob,
+    Expression<String>? occupation,
+    Expression<String>? profession,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4843,6 +4929,8 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
       if (memberId != null) 'member_id': memberId,
       if (name != null) 'name': name,
       if (dob != null) 'dob': dob,
+      if (occupation != null) 'occupation': occupation,
+      if (profession != null) 'profession': profession,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4852,6 +4940,8 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
     Value<String>? memberId,
     Value<String>? name,
     Value<String>? dob,
+    Value<String>? occupation,
+    Value<String>? profession,
     Value<int>? rowid,
   }) {
     return MemberChildrenCompanion(
@@ -4859,6 +4949,8 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
       memberId: memberId ?? this.memberId,
       name: name ?? this.name,
       dob: dob ?? this.dob,
+      occupation: occupation ?? this.occupation,
+      profession: profession ?? this.profession,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4878,6 +4970,12 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
     if (dob.present) {
       map['dob'] = Variable<String>(dob.value);
     }
+    if (occupation.present) {
+      map['occupation'] = Variable<String>(occupation.value);
+    }
+    if (profession.present) {
+      map['profession'] = Variable<String>(profession.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4891,6 +4989,8 @@ class MemberChildrenCompanion extends UpdateCompanion<MemberChildrenData> {
           ..write('memberId: $memberId, ')
           ..write('name: $name, ')
           ..write('dob: $dob, ')
+          ..write('occupation: $occupation, ')
+          ..write('profession: $profession, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -17964,6 +18064,8 @@ typedef $$MemberChildrenTableCreateCompanionBuilder =
       required String memberId,
       required String name,
       Value<String> dob,
+      Value<String> occupation,
+      Value<String> profession,
       Value<int> rowid,
     });
 typedef $$MemberChildrenTableUpdateCompanionBuilder =
@@ -17972,6 +18074,8 @@ typedef $$MemberChildrenTableUpdateCompanionBuilder =
       Value<String> memberId,
       Value<String> name,
       Value<String> dob,
+      Value<String> occupation,
+      Value<String> profession,
       Value<int> rowid,
     });
 
@@ -18030,6 +18134,16 @@ class $$MemberChildrenTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get profession => $composableBuilder(
+    column: $table.profession,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$MembersTableFilterComposer get memberId {
     final $$MembersTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -18078,6 +18192,16 @@ class $$MemberChildrenTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get profession => $composableBuilder(
+    column: $table.profession,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$MembersTableOrderingComposer get memberId {
     final $$MembersTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -18119,6 +18243,16 @@ class $$MemberChildrenTableAnnotationComposer
 
   GeneratedColumn<String> get dob =>
       $composableBuilder(column: $table.dob, builder: (column) => column);
+
+  GeneratedColumn<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get profession => $composableBuilder(
+    column: $table.profession,
+    builder: (column) => column,
+  );
 
   $$MembersTableAnnotationComposer get memberId {
     final $$MembersTableAnnotationComposer composer = $composerBuilder(
@@ -18178,12 +18312,16 @@ class $$MemberChildrenTableTableManager
                 Value<String> memberId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> dob = const Value.absent(),
+                Value<String> occupation = const Value.absent(),
+                Value<String> profession = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => MemberChildrenCompanion(
                 id: id,
                 memberId: memberId,
                 name: name,
                 dob: dob,
+                occupation: occupation,
+                profession: profession,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -18192,12 +18330,16 @@ class $$MemberChildrenTableTableManager
                 required String memberId,
                 required String name,
                 Value<String> dob = const Value.absent(),
+                Value<String> occupation = const Value.absent(),
+                Value<String> profession = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => MemberChildrenCompanion.insert(
                 id: id,
                 memberId: memberId,
                 name: name,
                 dob: dob,
+                occupation: occupation,
+                profession: profession,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

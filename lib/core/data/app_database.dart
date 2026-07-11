@@ -179,10 +179,8 @@ class MemberChildren extends Table {
       text().references(Members, #id, onDelete: KeyAction.cascade)();
   TextColumn get name => text()();
   TextColumn get dob => text().withDefault(const Constant(''))();
-  // TextColumn get profession => text()();
-  // TextColumn get occupation => text()();
-
-
+  TextColumn get occupation => text().withDefault(const Constant(''))();
+  TextColumn get profession => text().withDefault(const Constant(''))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -585,7 +583,7 @@ class AppDatabase extends _$AppDatabase {
   /// so there is nothing left to migrate incrementally — every install
   /// starts fresh at v1 with the current shape.
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 24;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -604,7 +602,254 @@ class AppDatabase extends _$AppDatabase {
           // connection — without this the declared FKs are not enforced.
           await customStatement('PRAGMA foreign_keys = ON');
         },
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            // Tarbiya tables added in schema v2.
+            await m.createTable(tarbiyaAreas);
+            await m.createTable(shubas);
+            await m.createTable(members);
+            await m.createTable(memberChildren);
+            await m.createTable(memberEducation);
+            await m.createTable(memberActivities);
+            await m.createTable(memberContributions);
+            await m.createTable(memberTased);
+            await m.createTable(memberDonations);
+            await m.createTable(memberRoles);
+          }
+          if (from < 3) {
+            // Departments, activities, reports, gallery added in schema v3.
+            await m.createTable(departments);
+            await m.createTable(deptActivities);
+            await m.createTable(reports);
+            await m.createTable(galleryPhotos);
+            await _seedDepartments();
+          }
+          if (from < 4) {
+            // Default Tarbiya areas seeded in schema v4.
+            await _seedTarbiyaAreas();
+          }
+          if (from < 5) {
+            // Referential integrity added in schema v5: FKs, indexes, the
+            // donation UNIQUE key, member_roles.departmentId and audit.userId.
+            await _migrateToV5(m);
+          }
+          if (from < 6) {
+            // Default role accounts seeded in schema v6.
+            await _seedDefaultAccounts();
+          }
+          if (from < 7) {
+            // Department overviews + the Youth & Students department added in
+            // schema v7. Insert the new department, backfill overviews and the
+            // display order, then add its head account.
+            await _seedDepartments();
+            await _backfillDepartmentContent();
+            await _seedDefaultAccounts();
+          }
+          if (from < 8) {
+            // Arabic department overviews added in schema v8.
+            await _backfillDepartmentContent();
+          }
+          if (from < 9) {
+            // Leader profile photos added in schema v9.
+            await m.addColumn(leaders, leaders.photoPath);
+          }
+          if (from < 10) {
+            // Member wives + explicit Usra-member links added in schema v10.
+            await m.createTable(memberWives);
+            await m.createTable(memberUsraLinks);
+          }
+          if (from < 11) {
+            // Leadership becomes assignable positions in schema v11: leaders
+            // gain an optional assigned member, and the standing positions are
+            // seeded.
+            await m.addColumn(leaders, leaders.memberId);
+            await _seedLeadershipPositions();
+          }
+          if (from < 12) {
+            // Consultative Assembly → General Membership gains a seeded
+            // Chairman position in schema v12.
+            await _seedLeadershipPositions();
+          }
+          if (from < 13) {
+            // Departments gain an assigned Head member and a staff link table
+            // in schema v13.
+            await m.addColumn(departments, departments.headMemberId);
+            await m.createTable(departmentStaff);
+          }
+          if (from < 14) {
+            // Reports gain a structured Program Completion (P-2) payload.
+            await m.addColumn(reports, reports.formData);
+          }
+          if (from < 15) {
+            // Activities gain a structured Program Proposal (P-1) payload.
+            await m.addColumn(deptActivities, deptActivities.formData);
+          }
+          if (from < 16) {
+            // Shu'bas gain an assignable Mas'ul (Person-in-Charge).
+            await m.addColumn(shubas, shubas.masulMemberId);
+          }
+          if (from < 17) {
+            // Executive Minutes/Resolution reports added in schema v17.
+            await m.createTable(minutesReports);
+          }
+          if (from < 18) {
+            // Gallery albums (multiple images per entry) and editable
+            // leadership group descriptions added in schema v18; Office of the
+            // President now seeds only the President.
+            await m.addColumn(galleryPhotos, galleryPhotos.imagePaths);
+            await m.createTable(leadershipGroupInfo);
+            await _seedLeadershipGroupInfo();
+            await customStatement(
+                "DELETE FROM leaders WHERE id IN "
+                "('pos_vice_president','pos_secretary_general','pos_treasurer') "
+                "AND member_id IS NULL");
+          }
+          if (from < 19) {
+            // Gallery albums can now belong to a Program Completion Report
+            // (P-2), and the Human Capital (Tarbiya) department is added.
+            await m.addColumn(galleryPhotos, galleryPhotos.reportId);
+            await _seedDepartments();
+            await _backfillDepartmentContent();
+            await _seedDefaultAccounts();
+          }
+          if (from < 20) {
+            // The History page becomes editable (content + milestones), and a
+            // Previous Leadership registry is added.
+            await m.createTable(historyContents);
+            await m.createTable(historyMilestones);
+            await m.createTable(previousLeaders);
+            await _seedHistory();
+          }
+          if (from < 21) {
+            // Biography sections (repeatable title + body, bilingual) added
+            // to Previous Leadership entries in schema v21.
+            await m.createTable(previousLeaderSections);
+          }
+          if (from < 22) {
+            // A Vice President executive account is added to the default
+            // seed in schema v22 (insertOrIgnore, so existing accounts are
+            // untouched).
+            await _seedDefaultAccounts();
+          }
+          if (from < 23) {
+            // The app is now English-only: drop every Arabic (*_ar) column.
+            // SQLite ≥3.35 supports ALTER TABLE ... DROP COLUMN, and none of
+            // these columns are indexed / referenced, so the drop is safe and
+            // leaves the remaining data and indexes intact.
+            await _dropArabicColumns();
+          }
+          if (from < 24) {
+            // Children gain optional occupation / profession fields.
+            await m.addColumn(memberChildren, memberChildren.occupation);
+            await m.addColumn(memberChildren, memberChildren.profession);
+          }
+        },
       );
+
+  /// Drops the legacy Arabic (`*_ar`) columns from an existing install so the
+  /// physical schema matches the now English-only table definitions. Without
+  /// this, inserts into the `NOT NULL` Arabic columns (users.full_name_ar,
+  /// leaders.name_ar / position_ar) would fail on upgraded databases.
+  Future<void> _dropArabicColumns() async {
+    const drops = <String>[
+      'ALTER TABLE users DROP COLUMN full_name_ar',
+      'ALTER TABLE leaders DROP COLUMN name_ar',
+      'ALTER TABLE leaders DROP COLUMN position_ar',
+      'ALTER TABLE leaders DROP COLUMN bio_ar',
+      'ALTER TABLE leaders DROP COLUMN achievements_ar',
+      'ALTER TABLE leaders DROP COLUMN responsibilities_ar',
+      'ALTER TABLE audit_logs DROP COLUMN action_ar',
+      'ALTER TABLE audit_logs DROP COLUMN module_ar',
+      'ALTER TABLE tarbiya_areas DROP COLUMN name_ar',
+      'ALTER TABLE tarbiya_areas DROP COLUMN region_ar',
+      'ALTER TABLE shubas DROP COLUMN name_ar',
+      'ALTER TABLE members DROP COLUMN name_ar',
+      'ALTER TABLE departments DROP COLUMN name_ar',
+      'ALTER TABLE departments DROP COLUMN description_ar',
+      'ALTER TABLE departments DROP COLUMN head_name_ar',
+      'ALTER TABLE dept_activities DROP COLUMN title_ar',
+      'ALTER TABLE reports DROP COLUMN title_ar',
+      'ALTER TABLE reports DROP COLUMN summary_ar',
+      'ALTER TABLE gallery_photos DROP COLUMN title_ar',
+      'ALTER TABLE gallery_photos DROP COLUMN event_ar',
+      'ALTER TABLE leadership_group_info DROP COLUMN description_ar',
+      'ALTER TABLE history_contents DROP COLUMN founding_ar',
+      'ALTER TABLE history_contents DROP COLUMN mission_ar',
+      'ALTER TABLE history_contents DROP COLUMN vision_ar',
+      'ALTER TABLE history_milestones DROP COLUMN title_ar',
+      'ALTER TABLE history_milestones DROP COLUMN description_ar',
+      'ALTER TABLE previous_leaders DROP COLUMN position_ar',
+      'ALTER TABLE previous_leaders DROP COLUMN note_ar',
+      'ALTER TABLE previous_leader_sections DROP COLUMN title_ar',
+      'ALTER TABLE previous_leader_sections DROP COLUMN body_ar',
+    ];
+    for (final stmt in drops) {
+      await customStatement(stmt);
+    }
+  }
+
+  /// Rebuilds the tables that gained constraints so existing installs get the
+  /// same integrity as a fresh v5 database, repairing data first so the new
+  /// constraints don't reject it. Runs with foreign keys off (the default
+  /// during migrations); [alterTable] manages the rebuild safely.
+  Future<void> _migrateToV5(Migrator m) async {
+    // 1. Repair existing data BEFORE the constraints are applied.
+    //    a) Drop rows that point at a non-existent parent (orphans).
+    await customStatement(
+        'DELETE FROM shubas WHERE area_id NOT IN (SELECT id FROM tarbiya_areas)');
+    await customStatement(
+        'DELETE FROM members WHERE shuba_id NOT IN (SELECT id FROM shubas)');
+    for (final child in const [
+      'member_children',
+      'member_education',
+      'member_activities',
+      'member_contributions',
+      'member_tased',
+      'member_donations',
+      'member_roles',
+    ]) {
+      await customStatement(
+          'DELETE FROM $child WHERE member_id NOT IN (SELECT id FROM members)');
+    }
+    await customStatement(
+        'DELETE FROM reports WHERE department_id NOT IN (SELECT id FROM departments)');
+    await customStatement(
+        'DELETE FROM dept_activities WHERE department_id NOT IN (SELECT id FROM departments)');
+    //    b) Null out dangling soft references (don't delete the owning row).
+    await customStatement('UPDATE members SET naqib_member_id = NULL '
+        'WHERE naqib_member_id IS NOT NULL '
+        'AND naqib_member_id NOT IN (SELECT id FROM members)');
+    await customStatement('UPDATE users SET department_id = NULL '
+        'WHERE department_id IS NOT NULL '
+        'AND department_id NOT IN (SELECT id FROM departments)');
+    //    c) De-duplicate donations so UNIQUE(member_id, year, month) holds
+    //       (keep the most recently inserted row per month).
+    await customStatement('DELETE FROM member_donations WHERE rowid NOT IN '
+        '(SELECT MAX(rowid) FROM member_donations GROUP BY member_id, year, month)');
+
+    // 2. Rebuild each changed table from its current definition (adds FKs /
+    //    UNIQUE / new columns). New nullable columns need no transformer.
+    await m.alterTable(TableMigration(shubas));
+    await m.alterTable(TableMigration(members));
+    await m.alterTable(TableMigration(memberChildren));
+    await m.alterTable(TableMigration(memberEducation));
+    await m.alterTable(TableMigration(memberActivities));
+    await m.alterTable(TableMigration(memberContributions));
+    await m.alterTable(TableMigration(memberTased));
+    await m.alterTable(TableMigration(memberDonations));
+    await m.alterTable(
+        TableMigration(memberRoles, newColumns: [memberRoles.departmentId]));
+    await m.alterTable(TableMigration(reports));
+    await m.alterTable(TableMigration(deptActivities));
+    await m.alterTable(TableMigration(users));
+    await m.alterTable(
+        TableMigration(auditLogs, newColumns: [auditLogs.userId]));
+
+    // 3. Create every declared index (v4 had none, so all are new).
+    for (final index in allSchemaEntities.whereType<Index>()) {
+      await m.createIndex(index);
+    }
+  }
 
   /// Creates the default Administrator account on first launch so the system
   /// can be accessed before any data exists. Username `admin`, password
@@ -643,21 +888,22 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
-  /// Backfills the department overviews and display order onto installs that
-  /// already had the departments before this content existed (insertOrIgnore
-  /// in [_seedDepartments] won't touch existing rows). Each overview is only
-  /// written where the admin hasn't entered one, so manual edits are
-  /// preserved; the sort order is always set since it isn't user-editable.
-  // Future<void> _backfillDepartmentContent() async {
-  //   for (var i = 0; i < _departmentSeed.length; i++) {
-  //     final d = _departmentSeed[i];
-  //     await (update(departments)..where((t) => t.id.equals(d.id)))
-  //         .write(DepartmentsCompanion(sortOrder: Value(i)));
-  //     await (update(departments)
-  //           ..where((t) => t.id.equals(d.id) & t.description.equals('')))
-  //         .write(DepartmentsCompanion(description: Value(d.description)));
-  //   }
-  // }
+  /// Backfills the department overviews and display order
+  /// onto installs that already had the departments before this content existed
+  /// (insertOrIgnore in [_seedDepartments] won't touch existing rows). Each
+  /// overview is only written where the admin hasn't entered one, so manual
+  /// edits are preserved; the sort order is always set since it isn't
+  /// user-editable.
+  Future<void> _backfillDepartmentContent() async {
+    for (var i = 0; i < _departmentSeed.length; i++) {
+      final d = _departmentSeed[i];
+      await (update(departments)..where((t) => t.id.equals(d.id)))
+          .write(DepartmentsCompanion(sortOrder: Value(i)));
+      await (update(departments)
+            ..where((t) => t.id.equals(d.id) & t.description.equals('')))
+          .write(DepartmentsCompanion(description: Value(d.description)));
+    }
+  }
 
   /// Seeds one default account for every non-admin role so the system is
   /// immediately usable without manual account creation. All accounts use the
@@ -801,10 +1047,10 @@ class AppDatabase extends _$AppDatabase {
       HistoryContentsCompanion.insert(
         id: const Value('history'),
         foundingEn: const Value(kFoundingEn),
-        missionEn: Value(kMission.en),
-        visionEn: Value(kVision.en),
+        missionEn: Value(kMission),
+        visionEn: Value(kVision),
         narrative: Value(jsonEncode([
-          for (final p in kHistoryNarrative) {'en': p.en}
+          for (final p in kHistoryNarrative) {'en': p}
         ])),
         facts: Value(jsonEncode([
           for (final f in kDefaultFacts)
@@ -875,10 +1121,11 @@ LazyDatabase _openOnDevice() {
   });
 }
 
-/// The organization's standing departments: stable id, name, icon, accent
-/// colour, and the overview shown on each department page. The list order is
-/// the display order. Used by both [AppDatabase._seedDepartments] (insert)
-/// and [AppDatabase._backfillDepartmentContent] (update existing installs).
+/// The organization's standing departments: stable id, name, icon,
+/// accent colour, and the overview shown on each department page. The
+/// list order is the display order. Used by both
+/// [AppDatabase._seedDepartments] (insert) and
+/// [AppDatabase._backfillDepartmentContent] (update existing installs).
 const _departmentSeed = <({
   String id,
   String name,

@@ -33,10 +33,8 @@ class GalleryRepository {
 
   Future<void> add({
     required String title,
-    String titleAr = '',
     required int year,
     String event = '',
-    String eventAr = '',
     String iconKey = 'photo',
     int accent = 0xFF0B5D3B,
     List<String> imagePaths = const [],

@@ -4,14 +4,13 @@ import 'package:drift/drift.dart';
 
 import '../data/app_database.dart';
 
-/// A story paragraph (bilingual) parsed from the History content's narrative.
-typedef HistoryParagraph = ({String en, String ar});
+/// A story paragraph parsed from the History content's narrative.
+typedef HistoryParagraph = ({String en});
 
 /// A History stat card parsed from the content's facts JSON.
 typedef HistoryFact = ({
   String value,
   String en,
-  String ar,
   String iconKey,
   int accent,
 });
@@ -49,13 +48,12 @@ class HistoryRepository {
         .write(data);
   }
 
-  /// Decodes the narrative JSON into bilingual paragraphs.
+  /// Decodes the narrative JSON into paragraphs.
   static List<HistoryParagraph> paragraphsOf(HistoryContent? c) {
     if (c == null || c.narrative.trim().isEmpty) return const [];
     final list = jsonDecode(c.narrative) as List;
     return [
-      for (final e in list)
-        (en: '${(e as Map)['en'] ?? ''}', ar: '${e['ar'] ?? ''}')
+      for (final e in list) (en: '${(e as Map)['en'] ?? ''}')
     ];
   }
 
@@ -68,7 +66,6 @@ class HistoryRepository {
         (
           value: '${(e as Map)['value'] ?? ''}',
           en: '${e['en'] ?? ''}',
-          ar: '${e['ar'] ?? ''}',
           iconKey: '${e['iconKey'] ?? 'flag'}',
           accent: (e['accent'] as num?)?.toInt() ?? 0xFF0B5D3B,
         )
@@ -77,8 +74,8 @@ class HistoryRepository {
 
   Future<void> setNarrative(List<HistoryParagraph> paragraphs) => updateContent(
         HistoryContentsCompanion(
-          narrative: Value(jsonEncode(
-              [for (final p in paragraphs) {'en': p.en, 'ar': p.ar}])),
+          narrative:
+              Value(jsonEncode([for (final p in paragraphs) {'en': p.en}])),
         ),
       );
 
@@ -89,7 +86,6 @@ class HistoryRepository {
               {
                 'value': f.value,
                 'en': f.en,
-                'ar': f.ar,
                 'iconKey': f.iconKey,
                 'accent': f.accent,
               }

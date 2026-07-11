@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
+import '../../core/theme/app_typography.dart';
 import '../../app/nav_items.dart';
 import '../../core/auth/session_controller.dart';
 import '../../core/data/models.dart';
-import '../../core/i18n/locale_controller.dart';
 import '../../core/i18n/strings.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
-import '../../core/theme/app_typography.dart';
 import '../common/brand_emblem.dart';
 import '../common/role_badge.dart';
 
@@ -113,7 +111,7 @@ class _BrandHeader extends StatelessWidget {
                         height: 1.2,
                       ),
                 ),
-                const SizedBox(height: 2),
+                 const SizedBox(height: 2),
                 Text(
                   strings.orgNameArabic,
                   textDirection: TextDirection.rtl,
@@ -492,7 +490,6 @@ class _ProfileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final session = context.watch<SessionController>();
-    final isArabic = context.watch<LocaleController>().isArabic;
     final user = session.user;
     if (user == null) return const SizedBox.shrink();
 
@@ -523,17 +520,12 @@ class _ProfileCard extends StatelessWidget {
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Text(
-                    user.displayName(isArabic),
+                    user.displayName(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    textDirection:
-                        isArabic ? TextDirection.rtl : TextDirection.ltr,
-                    style: isArabic
-                        ? AppTypography.arabic(
-                            fontSize: 15, color: AppColors.onNavy)
-                        : Theme.of(context).textTheme.titleSmall?.copyWith(
-                              color: AppColors.onNavy,
-                            ),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: AppColors.onNavy,
+                        ),
                   ),
                 ),
               ],

@@ -28,9 +28,7 @@ class TarbiyaRepository {
 
   Future<void> createArea({
     required String name,
-    required String nameAr,
     String region = '',
-    String regionAr = '',
     int accent = 0xFF0B5D3B,
   }) {
     return _db.into(_db.tarbiyaAreas).insert(
@@ -102,7 +100,6 @@ class TarbiyaRepository {
   Future<void> createShuba({
     required String areaId,
     required String name,
-    required String nameAr,
   }) {
     return _db.into(_db.shubas).insert(
           ShubasCompanion.insert(
@@ -113,8 +110,7 @@ class TarbiyaRepository {
         );
   }
 
-  Future<void> updateShuba(String id,
-      {required String name, required String nameAr}) {
+  Future<void> updateShuba(String id, {required String name}) {
     return (_db.update(_db.shubas)..where((s) => s.id.equals(id))).write(
       ShubasCompanion(
         name: Value(name),

@@ -133,7 +133,6 @@ class DepartmentRepository {
   Future<void> addActivity({
     required String departmentId,
     required String title,
-    String titleAr = '',
     String description = '',
     String date = '',
     String status = 'planned',

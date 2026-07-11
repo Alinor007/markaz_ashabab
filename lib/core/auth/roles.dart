@@ -5,7 +5,6 @@ import '../theme/app_colors.dart';
 /// Roles recognized by the archive system.
 ///
 /// [code] is the stable identifier persisted in the database (do not rename).
-/// Labels are bilingual so they render under either language.
 enum UserRole {
   administrator('administrator', 'Administrator', AppColors.emerald),
   president('president', 'President', AppColors.navy),
@@ -21,7 +20,9 @@ enum UserRole {
   final String labelEn;
   final Color color;
 
-  String label(bool isArabic) => labelEn;
+  // The optional bool is ignored (the app is English-only); it is kept so the
+  // former bilingual call sites (label(isArabic)) still compile.
+  String label([bool _ = false]) => labelEn;
 
   bool get isAdmin => this == UserRole.administrator;
 

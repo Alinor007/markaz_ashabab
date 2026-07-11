@@ -43,9 +43,7 @@ class ReportRepository {
   Future<String> create({
     required String departmentId,
     required String title,
-    String titleAr = '',
     String summary = '',
-    String summaryAr = '',
     String date = '',
     required int year,
     required String type,
