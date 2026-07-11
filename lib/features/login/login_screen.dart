@@ -7,6 +7,7 @@ import '../../core/i18n/strings.dart';
 import '../../core/patterns/geometric_pattern.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../core/theme/app_typography.dart';
 import '../../widgets/common/app_checkbox.dart';
 import '../../widgets/common/app_text_field.dart';
 import '../../widgets/common/brand_emblem.dart';
@@ -54,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  String _errorMessage() {
+  String _errorMessage(bool isArabic) {
     switch (_errorKey) {
       case 'empty':
         return 'Please enter your username and password.';
@@ -145,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
-                        _errorMessage(),
+                        _errorMessage(false),
                         style: theme.textTheme.bodySmall
                             ?.copyWith(color: AppColors.error),
                       ),
@@ -214,6 +215,17 @@ class _BrandPanel extends StatelessWidget {
                   const BrandEmblem(size: 160, onLight: false),
                   const SizedBox(height: AppSpacing.xxxl),
                   Text(
+                    s.orgNameArabic,
+                    textDirection: TextDirection.rtl,
+                    style: AppTypography.arabic(
+                      fontSize: 40,
+                      color: AppColors.gold,
+                      fontWeight: FontWeight.w700,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
                     s.orgName,
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
                           color: AppColors.onEmerald,
@@ -242,3 +254,4 @@ class _BrandPanel extends StatelessWidget {
     );
   }
 }
+

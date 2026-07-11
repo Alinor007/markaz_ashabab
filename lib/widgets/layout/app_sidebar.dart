@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
+import '../../core/theme/app_typography.dart';
 import '../../app/nav_items.dart';
 import '../../core/auth/session_controller.dart';
 import '../../core/data/models.dart';
@@ -110,6 +110,19 @@ class _BrandHeader extends StatelessWidget {
                         color: AppColors.onNavy,
                         height: 1.2,
                       ),
+                ),
+                 const SizedBox(height: 2),
+                Text(
+                  strings.orgNameArabic,
+                  textDirection: TextDirection.rtl,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.arabic(
+                    fontSize: 13,
+                    color: AppColors.gold,
+                    fontWeight: FontWeight.w700,
+                    height: 1.2,
+                  ),
                 ),
               ],
             ),

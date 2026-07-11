@@ -350,13 +350,13 @@ class NaqibUsraCard extends StatelessWidget {
     final repo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.groups_2_outlined,
-      title: context.tr('Naqib-Usra Information', 'معلومات النقيب والأسرة'),
+      title: context.tr('Tutorial Class Information', 'معلومات النقيب والأسرة'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _KvRows([
-            (context.tr('Name of Usra', 'اسم الأسرة'), member.usraName),
-            (context.tr('Established Year', 'سنة التأسيس'),
+            (context.tr('Section', 'اسم الأسرة'), member.usraName),
+            (context.tr('School Year', 'سنة التأسيس'),
                 member.usraEstablishedYear),
             (context.tr('Meeting Schedule', 'موعد اللقاء'),
                 member.usraMeetingSchedule),
@@ -405,7 +405,7 @@ class NaqibUsraCard extends StatelessWidget {
           ),
           // ──────────────────────────────────────────────────────────
           const SizedBox(height: AppSpacing.md),
-          Text(context.tr('Usra Members', 'أعضاء الأسرة'),
+          Text(context.tr('Students', 'أعضاء الأسرة'),
               style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: AppSpacing.sm),
           StreamBuilder<List<Member>>(
@@ -414,7 +414,7 @@ class NaqibUsraCard extends StatelessWidget {
               final members = snap.data ?? const [];
               if (members.isEmpty) {
                 return Text(
-                    context.tr('No other usra members', 'لا يوجد أعضاء آخرون'),
+                    context.tr('No other students', 'لا يوجد طلاب آخرون'),
                     style: Theme.of(context).textTheme.bodySmall);
               }
               return Wrap(
@@ -1320,7 +1320,7 @@ class ContributionsCard extends StatelessWidget {
     final repo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.handshake_outlined,
-      title: context.tr("Contribution to Jama'ah", 'الإسهام في الجماعة'),
+      title: context.tr("Contribution to Fundation", 'الإسهام في الجماعة'),
       child: StreamBuilder<List<MemberContribution>>(
         stream: repo.watchContributions(member.id),
         builder: (context, snap) {
@@ -1514,7 +1514,7 @@ class OrgRolesCard extends StatelessWidget {
     final repo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.badge_outlined,
-      title: context.tr('Role in Organization', 'الدور في المنظمة'),
+      title: context.tr('Role in Fundation', 'الدور في المنظمة'),
       child: StreamBuilder<List<MemberRole>>(
         stream: repo.watchRoles(member.id),
         builder: (context, snap) {

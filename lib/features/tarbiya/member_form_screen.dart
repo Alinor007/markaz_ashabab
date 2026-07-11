@@ -688,13 +688,13 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   Widget _usraSection() {
     return InfoPanel(
       icon: Icons.groups_2_outlined,
-      title: context.tr('Naqib-Usra Information', 'معلومات النقيب والأسرة'),
+      title: context.tr('Tutorial Class Information', 'معلومات النقيب والأسرة'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _row([
-            _field(_usraName, context.tr('Name of Usra', 'اسم الأسرة')),
-            _field(_usraYear, context.tr('Established Year', 'سنة التأسيس')),
+            _field(_usraName, context.tr('Section', 'اسم الأسرة')),
+            _field(_usraYear, context.tr('School Year', 'سنة التأسيس')),
             _field(_usraSchedule, context.tr('Meeting Schedule', 'موعد اللقاء')),
           ]),
           const SizedBox(height: AppSpacing.md),
@@ -736,7 +736,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
           Row(
             children: [
               Expanded(
-                child: Text(context.tr('Usra Members', 'أعضاء الأسرة'),
+                child: Text(context.tr('Students', 'أعضاء الأسرة'),
                     style: Theme.of(context).textTheme.titleSmall),
               ),
               TextButton.icon(
@@ -748,7 +748,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
           ),
           const SizedBox(height: AppSpacing.xs),
           if (_usraMembers.isEmpty)
-            Text(context.tr('No usra members added', 'لم تتم إضافة أعضاء'),
+            Text(context.tr('No Students added', 'لم تتم إضافة أعضاء'),
                 style: Theme.of(context).textTheme.bodySmall)
           else
             Wrap(

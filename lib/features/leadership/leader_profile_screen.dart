@@ -117,9 +117,7 @@ class _Body extends StatelessWidget {
                       children: [
                         ..._stack([
                           _LeaderProfileCard(member: member, entry: primary),
-                          _personalPanel(context),
-                          _educationPanel(context),
-                          _rolePanel(context),
+                       
                         ]),
                         ...biography,
                       ],
@@ -135,8 +133,6 @@ class _Body extends StatelessWidget {
                           children: _stack([
                             _LeaderProfileCard(
                                 member: member, entry: primary),
-                            _educationPanel(context),
-                            _rolePanel(context),
                           ]),
                         ),
                       ),
@@ -146,7 +142,6 @@ class _Body extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            _personalPanel(context),
                             ...biography,
                           ],
                         ),
@@ -170,112 +165,8 @@ class _Body extends StatelessWidget {
         ],
       ];
 
-  Widget _personalPanel(BuildContext context) {
-    final isArabic = context.isArabic;
-    return InfoPanel(
-      icon: Icons.person_outline,
-      title: context.tr('Personal Information', 'المعلومات الشخصية'),
-      child: Wrap(
-        spacing: AppSpacing.xl,
-        runSpacing: AppSpacing.lg,
-        children: [
-          _Field(context.tr('Full Name', 'الاسم الكامل'), member.fullName),
-          _Field(
-              context.tr('Gender', 'الجنس'),
-              member.gender == 'F'
-                  ? context.tr('Female', 'أنثى')
-                  : context.tr('Male', 'ذكر')),
-          _Field(context.tr('Date of Birth', 'تاريخ الميلاد'), member.dob),
-          _Field(context.tr('Place of Birth', 'مكان الميلاد'),
-              member.placeOfBirth),
-          _Field(context.tr('Contact Number', 'رقم الهاتف'),
-              member.contactNumber),
-          _Field(context.tr('Address', 'العنوان'), member.address),
-          _Field(context.tr('Civil Status', 'الحالة الاجتماعية'),
-              member.civilStatusEnum.label(isArabic)),
-          _Field(context.tr('Email', 'البريد الإلكتروني'), member.email),
-          _Field(context.tr('Ethnicity / Tribe', 'العرق / القبيلة'),
-              member.ethnicity),
-          _Field(context.tr('Occupation', 'المهنة'), member.occupation),
-        ],
-      ),
-    );
-  }
 
-  Widget _educationPanel(BuildContext context) {
-    final memberRepo = context.read<MemberRepository>();
-    return InfoPanel(
-      icon: Icons.school_outlined,
-      title: context.tr('Educational Background', 'المؤهلات الدراسية'),
-      child: StreamBuilder<List<MemberEducationData>>(
-        stream: memberRepo.watchEducation(member.id),
-        builder: (context, snap) {
-          final rows = snap.data ?? const <MemberEducationData>[];
-          if (rows.isEmpty) return _empty(context);
-          return Column(
-            children: [
-              for (var i = 0; i < rows.length; i++) ...[
-                if (i > 0) const Divider(height: AppSpacing.xl),
-                _Record(fields: [
-                  _Field(context.tr('Degree / Course', 'الدرجة / التخصص'),
-                      rows[i].degree.isEmpty ? rows[i].program : rows[i].degree),
-                  _Field(
-                      context.tr('School / University', 'المدرسة / الجامعة'),
-                      rows[i].schoolName),
-                  _Field(context.tr('Year Graduated', 'سنة التخرج'),
-                      rows[i].yearGraduated),
-                ]),
-              ],
-            ],
-          );
-        },
-      ),
-    );
-  }
 
-  Widget _rolePanel(BuildContext context) {
-    final memberRepo = context.read<MemberRepository>();
-    return InfoPanel(
-      icon: Icons.badge_outlined,
-      title: context.tr('Role in Organization', 'الدور في المنظمة'),
-      child: StreamBuilder<List<MemberRole>>(
-        stream: memberRepo.watchRoles(member.id),
-        builder: (context, snap) {
-          final roles = snap.data ?? const <MemberRole>[];
-          if (roles.isEmpty) return _empty(context);
-          return Column(
-            children: [
-              for (var i = 0; i < roles.length; i++) ...[
-                if (i > 0) const Divider(height: AppSpacing.xl),
-                _Record(fields: [
-                  _Field(context.tr('Current Position', 'المنصب الحالي'),
-                      roles[i].positionTitle),
-                  _Field(
-                      context.tr('Department', 'القسم'), roles[i].department),
-                  _Field(
-                      context.tr('Term / Period', 'الفترة'), _term(roles[i])),
-                ]),
-              ],
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  String _term(MemberRole r) {
-    if (r.startDate.isEmpty && r.endDate.isEmpty) return '';
-    final end = r.endDate.isEmpty ? '—' : r.endDate;
-    return '${r.startDate} – $end';
-  }
-
-  Widget _empty(BuildContext context) => Text(
-        context.tr('No records.', 'لا توجد سجلات.'),
-        style: Theme.of(context)
-            .textTheme
-            .bodySmall
-            ?.copyWith(color: AppColors.textMuted),
-      );
 }
 
 /// The portrait profile card: a large rounded photo with the member's name,
@@ -474,44 +365,3 @@ class _BiographyCard extends StatelessWidget {
   }
 }
 
-/// A labelled value cell (label above the value); empty values show an em dash.
-class _Field extends StatelessWidget {
-  const _Field(this.label, this.value);
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 220,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelSmall
-                  ?.copyWith(color: AppColors.textMuted)),
-          const SizedBox(height: 2),
-          Text(value.trim().isEmpty ? '—' : value,
-              style: Theme.of(context).textTheme.bodyLarge),
-        ],
-      ),
-    );
-  }
-}
-
-/// A single record (e.g. one degree or one role) as a wrap of [_Field]s.
-class _Record extends StatelessWidget {
-  const _Record({required this.fields});
-  final List<Widget> fields;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: AppSpacing.xl,
-      runSpacing: AppSpacing.lg,
-      children: fields,
-    );
-  }
-}
