@@ -66,9 +66,7 @@ void main() {
       // Board is not seeded, so it cleanly verifies category filtering.
       await repo.create(
         name: 'Dr. Abdullah Macarambon',
-        nameAr: 'عبد الله',
         position: 'Chairman',
-        positionAr: 'الرئيس',
         category: LeadershipCategory.board,
       );
       final board =
@@ -97,7 +95,7 @@ void main() {
       // Each leadership group has a seeded, editable description.
       expect((await repo.watchGroupInfo('office_president').first)?.description,
           isNotEmpty);
-      await repo.setGroupDescription('board', 'Custom', 'مخصص');
+      await repo.setGroupDescription('board', 'Custom', );
       expect(
           (await repo.watchGroupInfo('board').first)?.description, 'Custom');
     });
@@ -106,11 +104,11 @@ void main() {
       final tarbiya = TarbiyaRepository(db);
       final members = MemberRepository(db);
       final leaders = LeaderRepository(db);
-      await tarbiya.createArea(name: 'Lead Area', nameAr: 'أ');
+      await tarbiya.createArea(name: 'Lead Area',);
       // Tarbiya seeds default areas, so find ours by name rather than .single.
       final area =
           (await tarbiya.getAreas()).firstWhere((a) => a.name == 'Lead Area');
-      await tarbiya.createShuba(areaId: area.id, name: 'S', nameAr: 'ش');
+      await tarbiya.createShuba(areaId: area.id, name: 'S',);
       final shuba = (await tarbiya.watchShubas(area.id).first).single;
       final memberId = await members.insertMember(MembersCompanion(
         shubaId: Value(shuba.id),
@@ -147,9 +145,9 @@ void main() {
         (await tarbiya.getAreas()).firstWhere((a) => a.name == testAreaName);
 
     Future<String> seedMember({int level = 1, String status = 'active'}) async {
-      await tarbiya.createArea(name: testAreaName, nameAr: 'منطقة الاختبار');
+      await tarbiya.createArea(name: testAreaName,);
       final area = await testArea();
-      await tarbiya.createShuba(areaId: area.id, name: 'Shu\'ba A', nameAr: 'شعبة');
+      await tarbiya.createShuba(areaId: area.id, name: 'Shu\'ba A',);
       final shuba = (await tarbiya.watchShubas(area.id).first).single;
       return members.insertMember(MembersCompanion(
         shubaId: Value(shuba.id),
@@ -380,10 +378,10 @@ void main() {
       final tarbiya = TarbiyaRepository(db);
       final members = MemberRepository(db);
       final depts = DepartmentRepository(db);
-      await tarbiya.createArea(name: 'Dept Area', nameAr: 'أ');
+      await tarbiya.createArea(name: 'Dept Area',);
       final area =
           (await tarbiya.getAreas()).firstWhere((a) => a.name == 'Dept Area');
-      await tarbiya.createShuba(areaId: area.id, name: 'S', nameAr: 'ش');
+      await tarbiya.createShuba(areaId: area.id, name: 'S',);
       final shuba = (await tarbiya.watchShubas(area.id).first).single;
       final m1 = await members.insertMember(MembersCompanion(
           shubaId: Value(shuba.id),
@@ -426,9 +424,9 @@ void main() {
     Future<String> seedRealMember() async {
       final tarbiya = TarbiyaRepository(db);
       final members = MemberRepository(db);
-      await tarbiya.createArea(name: 'FK Area', nameAr: 'منطقة');
+      await tarbiya.createArea(name: 'FK Area',);
       final area = (await tarbiya.getAreas()).firstWhere((a) => a.name == 'FK Area');
-      await tarbiya.createShuba(areaId: area.id, name: 'FK Shuba', nameAr: 'شعبة');
+      await tarbiya.createShuba(areaId: area.id, name: 'FK Shuba',);
       final shuba = (await tarbiya.watchShubas(area.id).first).single;
       return members.insertMember(MembersCompanion(
         shubaId: Value(shuba.id),
@@ -507,9 +505,9 @@ void main() {
     test('deleting a member removes its photo file', () async {
       final tarbiya = TarbiyaRepository(db);
       final members = MemberRepository(db);
-      await tarbiya.createArea(name: 'Area', nameAr: 'منطقة');
+      await tarbiya.createArea(name: 'Area', );
       final area = (await tarbiya.getAreas()).firstWhere((a) => a.name == 'Area');
-      await tarbiya.createShuba(areaId: area.id, name: 'Shuba', nameAr: 'شعبة');
+      await tarbiya.createShuba(areaId: area.id, name: 'Shuba',);
       final shuba = (await tarbiya.watchShubas(area.id).first).single;
 
       final tmp = tempImage('mem');
@@ -535,9 +533,7 @@ void main() {
 
       final leader = await leaders.create(
         name: 'Test Leader',
-        nameAr: 'قائد',
         position: 'President',
-        positionAr: 'الرئيس',
         category: LeadershipCategory.officePresident,
         photoPath: tmp.path,
       );

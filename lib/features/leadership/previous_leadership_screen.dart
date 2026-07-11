@@ -74,10 +74,8 @@ class PreviousLeadershipScreen extends StatelessWidget {
     final id = await repo.addPreviousLeader(
       memberId: r.member.id,
       position: r.position,
-      positionAr: r.positionAr,
       termYears: r.termYears,
       note: r.note,
-      noteAr: r.noteAr,
       accent: r.accent,
     );
     for (var i = 0; i < r.sections.length; i++) {
@@ -85,9 +83,7 @@ class PreviousLeadershipScreen extends StatelessWidget {
       await repo.addSection(
         previousLeaderId: id,
         title: s.title,
-        titleAr: s.titleAr,
         body: s.body,
-        bodyAr: s.bodyAr,
         sortOrder: i,
       );
     }
@@ -101,10 +97,8 @@ class PreviousLeadershipScreen extends StatelessWidget {
       v.entry.id,
       memberId: r.member.id,
       position: r.position,
-      positionAr: r.positionAr,
       termYears: r.termYears,
       note: r.note,
-      noteAr: r.noteAr,
       accent: r.accent,
     );
     // Reconcile sections: delete existing rows, then re-add from the form.
@@ -116,9 +110,7 @@ class PreviousLeadershipScreen extends StatelessWidget {
       await repo.addSection(
         previousLeaderId: v.entry.id,
         title: s.title,
-        titleAr: s.titleAr,
         body: s.body,
-        bodyAr: s.bodyAr,
         sortOrder: i,
       );
     }

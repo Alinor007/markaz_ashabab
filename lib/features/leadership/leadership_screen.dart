@@ -105,7 +105,7 @@ class _GroupDescription extends StatelessWidget {
       ),
     );
     if (ok == true && context.mounted) {
-      await repo.setGroupDescription(code, desc.text.trim(), '');
+      await repo.setGroupDescription(code, desc.text.trim());
     }
     desc.dispose();
   }
@@ -226,7 +226,7 @@ class _PositionsGroup extends StatelessWidget {
         title: 'Add Position');
     if (r == null || !context.mounted) return;
     await _leaders(context)
-        .addPosition(code: code, title: r.name, titleAr: r.nameAr);
+        .addPosition(code: code, title: r.name);
   }
 
   Future<void> _edit(BuildContext context, Leader p) async {
@@ -236,7 +236,7 @@ class _PositionsGroup extends StatelessWidget {
       name: p.position,
     );
     if (r == null || !context.mounted) return;
-    await _leaders(context).editPosition(p.id, r.name, r.nameAr);
+    await _leaders(context).editPosition(p.id, r.name);
   }
 
   Future<void> _delete(BuildContext context, Leader p) async {

@@ -114,7 +114,7 @@ class TarbiyaShubasScreen extends StatelessWidget {
         title: "Add Shu'ba");
     if (result == null) return;
     await repo.createShuba(
-        areaId: areaId, name: result.name, nameAr: result.nameAr);
+        areaId: areaId, name: result.name);
   }
 
   Future<void> _editShuba(
@@ -123,7 +123,7 @@ class TarbiyaShubasScreen extends StatelessWidget {
         title: "Edit Shu'ba",
         name: shuba.name);
     if (result == null) return;
-    await repo.updateShuba(shuba.id, name: result.name, nameAr: result.nameAr);
+    await repo.updateShuba(shuba.id, name: result.name);
   }
 
   Future<void> _deleteShuba(

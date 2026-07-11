@@ -5,7 +5,6 @@ import '../../core/auth/roles.dart';
 import '../../core/auth/session_controller.dart';
 import '../../core/data/app_database.dart';
 import '../../core/data/models.dart';
-import '../../core/i18n/locale_controller.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/repositories/audit_repository.dart';
 import '../../core/repositories/department_repository.dart';
@@ -59,7 +58,6 @@ class _UsersScreenState extends State<UsersScreen> {
   Future<void> _handleAction(User user, UserAction action) async {
     final session = context.read<SessionController>();
     final selfId = session.user?.id;
-    final ar = context.read<LocaleController>().isArabic;
     switch (action) {
       case UserAction.edit:
         await _openUserDialog(existing: user);
@@ -67,9 +65,7 @@ class _UsersScreenState extends State<UsersScreen> {
         await _resetPassword(user);
       case UserAction.toggleActive:
         if (user.id == selfId) {
-          _toast(ar
-              ? 'لا يمكنك تعطيل حسابك.'
-              : 'You cannot disable your own account.');
+          _toast('You cannot disable your own account.');
           return;
         }
         final repo = _repo;
@@ -84,9 +80,8 @@ class _UsersScreenState extends State<UsersScreen> {
         );
       case UserAction.delete:
         if (user.id == selfId) {
-          _toast(ar
-              ? 'لا يمكنك حذف حسابك.'
-              : 'You cannot delete your own account.');
+          _toast(
+               'You cannot delete your own account.');
           return;
         }
         await _confirmDelete(user);
@@ -97,7 +92,7 @@ class _UsersScreenState extends State<UsersScreen> {
     final repo = _repo;
     final audit = _audit;
     final actor = _actor;
-    final ar = context.read<LocaleController>().isArabic;
+    final ar = context.isArabic;
     final controller = TextEditingController();
     var obscured = true;
     final newPassword = await showDialog<String>(
@@ -155,7 +150,7 @@ class _UsersScreenState extends State<UsersScreen> {
     final repo = _repo;
     final audit = _audit;
     final actor = _actor;
-    final ar = context.read<LocaleController>().isArabic;
+    final ar = context.isArabic;
     final ok = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -187,7 +182,7 @@ class _UsersScreenState extends State<UsersScreen> {
     final repo = _repo;
     final audit = _audit;
     final actor = _actor;
-    final ar = context.read<LocaleController>().isArabic;
+    final ar = context.isArabic;
     final result = await showDialog<_UserFormResult>(
       context: context,
       builder: (_) => _UserFormDialog(existing: existing, repo: repo),
@@ -349,7 +344,6 @@ class _UserFormDialogState extends State<_UserFormDialog> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    final ar = context.read<LocaleController>().isArabic;
     setState(() => _saving = true);
     final exists = await widget.repo.usernameExists(
       _username.text,
@@ -359,7 +353,7 @@ class _UserFormDialogState extends State<_UserFormDialog> {
     if (exists) {
       setState(() => _saving = false);
       _showFieldError(
-          ar ? 'اسم المستخدم مستخدم بالفعل.' : 'Username already taken.');
+         'Username already taken.');
       return;
     }
     Navigator.pop(

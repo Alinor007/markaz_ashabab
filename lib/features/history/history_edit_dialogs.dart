@@ -197,7 +197,6 @@ class _FactsRow {
   HistoryFact toFact() => (
         value: value.text.trim(),
         en: en.text.trim(),
-        ar: '',
         iconKey: iconKey,
         accent: accent,
       );
@@ -283,7 +282,6 @@ class _FactsEditorState extends State<_FactsEditor> {
                   onPressed: () => setState(() => _rows.add(_FactsRow((
                         value: '',
                         en: '',
-                        ar: '',
                         iconKey: 'flag',
                         accent: AppColors.emerald.toARGB32(),
                       )))),
@@ -389,7 +387,7 @@ class _NarrativeEditorState extends State<_NarrativeEditor> {
                 alignment: AlignmentDirectional.centerStart,
                 child: TextButton.icon(
                   onPressed: () =>
-                      setState(() => _rows.add(_ParaRow((en: '', ar: '')))),
+                      setState(() => _rows.add(_ParaRow((en: '')))),
                   icon: const Icon(Icons.add, size: 18),
                   label: Text('Add Paragraph'),
                 ),
@@ -406,7 +404,7 @@ class _NarrativeEditorState extends State<_NarrativeEditor> {
           onPressed: () => Navigator.pop(context, <HistoryParagraph>[
             for (final r in _rows)
               if (r.en.text.trim().isNotEmpty)
-                (en: r.en.text.trim(), ar: '')
+                (en: r.en.text.trim())
           ]),
           child: Text('Save'),
         ),

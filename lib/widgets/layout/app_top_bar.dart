@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../app/nav_items.dart';
 import '../../core/auth/session_controller.dart';
 import '../../core/data/models.dart';
-import '../../core/i18n/locale_controller.dart';
+import '../../core/i18n/localized.dart';
 import '../../core/i18n/strings.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
@@ -39,9 +39,8 @@ class AppTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
-    final locale = context.watch<LocaleController>();
     final session = context.watch<SessionController>();
-    final isArabic = locale.isArabic;
+    final isArabic = context.isArabic;
     final route = GoRouterState.of(context).uri.path;
     final pageLabel = _currentLabel(s, route, isArabic);
 

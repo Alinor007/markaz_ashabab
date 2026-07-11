@@ -129,10 +129,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
     if (r == null) return;
     await repo.add(
       title: r.title,
-      titleAr: r.titleAr,
       year: r.year,
       event: r.event,
-      eventAr: r.eventAr,
       iconKey: r.iconKey,
       imagePaths: r.imagePaths,
       heightHint: 200 + (r.title.length % 5) * 24,
