@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/data/app_database.dart';
 import '../../core/i18n/localized.dart';
-import '../../core/repositories/leader_repository.dart';
+import '../../core/repositories/history_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_typography.dart';
@@ -14,49 +14,46 @@ import '../../widgets/common/info_panel.dart';
 import '../../widgets/feedback/empty_state.dart';
 import '../../widgets/feedback/loading_state.dart';
 
-/// View-only profile for the holder of a leadership position. The holder is a
-/// manually entered name + photo stored on the position ([Leaders]) row, with
-/// biography sections in [LeaderSections] — no linked member.
-///
-/// Laid out as a two-column magazine spread on wide screens: a portrait profile
+/// View-only profile for a hand-curated Leadership Legacy leader (a typed name
+/// and photo, not a member). Mirrors [LeaderProfileScreen]: a portrait profile
 /// card with the office and term on the left, and the biography sections on the
 /// wider right column. Columns collapse into a single stack on narrow screens.
-class LeaderProfileScreen extends StatelessWidget {
-  const LeaderProfileScreen({super.key, required this.leaderId});
+class LegacyLeaderProfileScreen extends StatelessWidget {
+  const LegacyLeaderProfileScreen({super.key, required this.legacyLeaderId});
 
-  final String leaderId;
+  final String legacyLeaderId;
 
   @override
   Widget build(BuildContext context) {
-    final repo = context.read<LeaderRepository>();
-    return StreamBuilder<Leader?>(
-      stream: repo.watchById(leaderId),
+    final repo = context.read<HistoryRepository>();
+    return StreamBuilder<HistoryLegacyLeader?>(
+      stream: repo.watchLegacyLeader(legacyLeaderId),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting && !snap.hasData) {
           return const Padding(
               padding: EdgeInsets.all(AppSpacing.xxl), child: LoadingState());
         }
-        final position = snap.data;
-        if (position == null || position.name.trim().isEmpty) {
+        final leader = snap.data;
+        if (leader == null) {
           return EmptyState(
             icon: Icons.person_off_outlined,
-            title: context.tr('Position is vacant', 'المنصب شاغر'),
+            title: context.tr('Leader not found', 'القائد غير موجود'),
           );
         }
-        return _Body(position: position);
+        return _Body(leader: leader);
       },
     );
   }
 }
 
 class _Body extends StatelessWidget {
-  const _Body({required this.position});
-  final Leader position;
+  const _Body({required this.leader});
+  final HistoryLegacyLeader leader;
 
   @override
   Widget build(BuildContext context) {
     final isArabic = context.isArabic;
-    final repo = context.read<LeaderRepository>();
+    final repo = context.read<HistoryRepository>();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.xxl),
@@ -64,9 +61,8 @@ class _Body extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           InkWell(
-            onTap: () => context.canPop()
-                ? context.pop()
-                : context.go('/leadership/office-president'),
+            onTap: () =>
+                context.canPop() ? context.pop() : context.go('/history'),
             borderRadius: BorderRadius.circular(AppRadius.sm),
             child: Padding(
               padding: const EdgeInsets.symmetric(
@@ -87,10 +83,11 @@ class _Body extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
-          StreamBuilder<List<LeaderSection>>(
-            stream: repo.watchLeaderSections(position.id),
+          StreamBuilder<List<HistoryLegacyLeaderSection>>(
+            stream: repo.watchLegacySections(leader.id),
             builder: (context, snap) {
-              final sections = snap.data ?? const <LeaderSection>[];
+              final sections =
+                  snap.data ?? const <HistoryLegacyLeaderSection>[];
               final biography = <Widget>[
                 for (final s in sections)
                   if (s.title.trim().isNotEmpty || s.body.trim().isNotEmpty)
@@ -127,7 +124,7 @@ class _Body extends StatelessWidget {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _LeaderProfileCard(position: position),
+                        _LegacyProfileCard(leader: leader),
                         ...biographyOrEmpty,
                       ],
                     );
@@ -137,7 +134,7 @@ class _Body extends StatelessWidget {
                     children: [
                       Expanded(
                         flex: 4,
-                        child: _LeaderProfileCard(position: position),
+                        child: _LegacyProfileCard(leader: leader),
                       ),
                       const SizedBox(width: AppSpacing.lg),
                       Expanded(
@@ -160,13 +157,13 @@ class _Body extends StatelessWidget {
 }
 
 /// The portrait profile card: a large rounded photo (or accent-tinted initials)
-/// with the holder's name, the office, and the term of service beneath it.
-class _LeaderProfileCard extends StatelessWidget {
-  const _LeaderProfileCard({required this.position});
-  final Leader position;
+/// with the leader's name, office, and term of service beneath it.
+class _LegacyProfileCard extends StatelessWidget {
+  const _LegacyProfileCard({required this.leader});
+  final HistoryLegacyLeader leader;
 
   String get _initials {
-    final parts = position.name.replaceAll('.', '').trim().split(RegExp(r'\s+'));
+    final parts = leader.name.replaceAll('.', '').trim().split(RegExp(r'\s+'));
     if (parts.isEmpty || parts.first.isEmpty) return '?';
     if (parts.length == 1) {
       return parts.first
@@ -178,8 +175,8 @@ class _LeaderProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final office = position.position.trim();
-    final term = position.serviceYears.trim();
+    final office = leader.position.trim();
+    final term = leader.termYears.trim();
 
     return Container(
       decoration: BoxDecoration(
@@ -201,7 +198,7 @@ class _LeaderProfileCard extends StatelessWidget {
           _portrait(context),
           const SizedBox(height: AppSpacing.lg),
           Text(
-            position.name,
+            leader.name,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: AppTypography.serif,
@@ -239,15 +236,15 @@ class _LeaderProfileCard extends StatelessWidget {
   }
 
   Widget _portrait(BuildContext context) {
-    final color = Color(position.accent);
-    final hasPhoto = position.photoPath.trim().isNotEmpty &&
-        File(position.photoPath).existsSync();
+    final color = Color(leader.accent);
+    final hasPhoto = leader.photoPath.trim().isNotEmpty &&
+        File(leader.photoPath).existsSync();
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppRadius.lg),
       child: AspectRatio(
         aspectRatio: 0.86,
         child: hasPhoto
-            ? Image.file(File(position.photoPath), fit: BoxFit.cover)
+            ? Image.file(File(leader.photoPath), fit: BoxFit.cover)
             : DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(

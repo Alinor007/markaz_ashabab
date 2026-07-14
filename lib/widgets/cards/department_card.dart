@@ -5,7 +5,7 @@ import '../../core/data/app_database.dart';
 import '../../core/data/models.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/patterns/geometric_pattern.dart';
-import '../../core/repositories/department_repository.dart';
+import '../../core/repositories/leader_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 
@@ -136,19 +136,21 @@ class DepartmentCard extends StatelessWidget {
                             size: 16, color: AppColors.emerald),
                         const SizedBox(width: AppSpacing.xs),
                         Expanded(
-                          // Read the assigned Head member (same source as the
+                          // Read the assigned Head (same source as the
                           // Department Detail screen) so both stay in sync.
-                          child: StreamBuilder<Member?>(
+                          child: StreamBuilder<List<Leader>>(
                             stream: context
-                                .read<DepartmentRepository>()
-                                .watchHead(department.id),
+                                .read<LeaderRepository>()
+                                .watchByCategoryCode(
+                                    'dept_head_${department.id}'),
                             builder: (context, snap) {
-                              final head = snap.data;
+                              final rows = snap.data ?? const <Leader>[];
+                              final head = rows.isEmpty ? null : rows.first;
                               return Text(
                                 head == null
                                     ? context.tr(
                                         'No head assigned', 'بدون رئيس')
-                                    : head.displayName(isArabic),
+                                    : head.name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: theme.textTheme.bodySmall,

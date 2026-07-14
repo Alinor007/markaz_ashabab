@@ -111,9 +111,10 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
   final List<_EduRow> _education = [];
   final List<_SpouseRow> _spouses = [];
 
-  /// This member's Naqib (an existing member) and explicit Usra members.
+  /// This member's Naqib (an existing member). The class students are not
+  /// stored on this member — they are derived from everyone who shares the
+  /// same Naqib.
   Member? _naqib;
-  final List<Member> _usraMembers = [];
 
   bool get _notSingle => _civil != CivilStatus.single;
 
@@ -155,7 +156,6 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     final children = await repo.watchChildren(m.id).first;
     final education = await repo.watchEducation(m.id).first;
     final wives = await repo.watchWives(m.id).first;
-    final usra = await repo.watchUsraMembers(m.id).first;
     final naqib =
         m.naqibMemberId == null ? null : await repo.getMember(m.naqibMemberId!);
     _first.text = m.firstName;
@@ -206,9 +206,6 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
       _spouses.add(_SpouseRow(name: m.spouseName, marriageDate: m.spouseDate));
     }
     _naqib = naqib;
-    _usraMembers
-      ..clear()
-      ..addAll(usra);
     if (mounted) setState(() => _loading = false);
   }
 
@@ -300,7 +297,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
     if (widget.isEditing) {
       memberId = widget.memberId!;
       await repo.updateMember(memberId, companion);
-      // Reconcile children, education, wives & usra links (delete + re-add).
+      // Reconcile children, education & wives (delete + re-add).
       for (final c in await repo.watchChildren(memberId).first) {
         await repo.deleteChild(c.id);
       }
@@ -309,9 +306,6 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
       }
       for (final w in await repo.watchWives(memberId).first) {
         await repo.deleteWife(w.id);
-      }
-      for (final l in await repo.getUsraLinks(memberId)) {
-        await repo.deleteUsraLink(l.id);
       }
     } else {
       memberId = await repo.insertMember(companion);
@@ -345,10 +339,6 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
         await repo.addWife(memberId, s.name.text.trim(), s.marriageDate);
       }
     }
-    for (final m in _usraMembers) {
-      await repo.addUsraMember(memberId, m.id);
-    }
-
     if (!mounted) return;
     _toast(widget.isEditing
         ? context.trRead('Member updated.', 'تم تحديث العضو.')
@@ -695,7 +685,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
           _row([
             _field(_usraName, context.tr('Section', 'اسم الأسرة')),
             _field(_usraYear, context.tr('School Year', 'سنة التأسيس')),
-            _field(_usraSchedule, context.tr('Meeting Schedule', 'موعد اللقاء')),
+            _field(_usraSchedule, context.tr('Class Schedule', 'موعد اللقاء')),
           ]),
           const SizedBox(height: AppSpacing.md),
           // Naqib — an existing member, chosen via search.
@@ -704,7 +694,7 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
               Expanded(
                 child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: context.tr('Naqib', 'النقيب'),
+                    labelText: context.tr('Teacher', 'النقيب'),
                     isDense: true,
                   ),
                   child: Text(
@@ -732,36 +722,40 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
             ],
           ),
           const SizedBox(height: AppSpacing.md),
-          // Usra members — existing members, chosen via search.
-          Row(
-            children: [
-              Expanded(
-                child: Text(context.tr('Students', 'أعضاء الأسرة'),
-                    style: Theme.of(context).textTheme.titleSmall),
-              ),
-              TextButton.icon(
-                onPressed: _addUsraMember,
-                icon: const Icon(Icons.person_add_alt_1_outlined, size: 18),
-                label: Text(context.tr('Add', 'إضافة')),
-              ),
-            ],
-          ),
+          // Students — derived, read-only: every member who selected the same
+          // Naqib belongs to the same tutorial class.
+          Text(context.tr('Students', 'أعضاء الأسرة'),
+              style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: AppSpacing.xs),
-          if (_usraMembers.isEmpty)
-            Text(context.tr('No Students added', 'لم تتم إضافة أعضاء'),
+          if (_naqib == null)
+            Text(
+                context.tr(
+                    'Select a Teacher to see the students in this class.',
+                    'اختر النقيب لعرض أعضاء الأسرة.'),
                 style: Theme.of(context).textTheme.bodySmall)
           else
-            Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.sm,
-              children: [
-                for (final m in _usraMembers)
-                  InputChip(
-                    label: Text(m.displayName(context.isArabic)),
-                    onDeleted: () => setState(
-                        () => _usraMembers.removeWhere((x) => x.id == m.id)),
-                  ),
-              ],
+            StreamBuilder<List<Member>>(
+              key: ValueKey(_naqib!.id),
+              stream: context.read<MemberRepository>().watchMembersOfNaqib(
+                  _naqib!.id,
+                  excludeId: widget.memberId),
+              builder: (context, snap) {
+                final members = snap.data ?? const <Member>[];
+                if (members.isEmpty) {
+                  return Text(
+                      context.tr(
+                          'No other students', 'لا يوجد طلاب آخرون'),
+                      style: Theme.of(context).textTheme.bodySmall);
+                }
+                return Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    for (final m in members)
+                      Chip(label: Text(m.displayName(context.isArabic))),
+                  ],
+                );
+              },
             ),
         ],
       ),
@@ -770,36 +764,13 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
 
   Future<void> _selectNaqib() async {
     // trRead (read), not tr (watch) — this runs in a tap handler, outside build.
-    final title = context.trRead('Select Naqib', 'اختيار النقيب');
-    final picked = await _pickMember(title: title, excludeId: widget.memberId);
-    if (picked != null && mounted) setState(() => _naqib = picked);
-  }
-
-  Future<void> _addUsraMember() async {
-    final title = context.trRead('Add Usra Member', 'إضافة عضو أسرة');
-    final excludeIds = _usraMembers.map((m) => m.id).toSet();
-    final picked = await _pickMember(
-        title: title, excludeId: widget.memberId, excludeIds: excludeIds);
-    if (picked != null && mounted) {
-      setState(() {
-        if (!_usraMembers.any((m) => m.id == picked.id)) {
-          _usraMembers.add(picked);
-        }
-      });
-    }
-  }
-
-  /// Opens the member search dialog and returns the chosen member (or null).
-  /// The repository is captured here (where the provider is in scope) and
-  /// passed in, since dialogs in this app don't read providers themselves.
-  Future<Member?> _pickMember({
-    required String title,
-    String? excludeId,
-    Set<String> excludeIds = const {},
-  }) {
+    final title = context.trRead('Select Teacher', 'اختيار النقيب');
+    // The repository is captured here (where the provider is in scope) and
+    // passed in, since dialogs in this app don't read providers themselves.
     final repo = context.read<MemberRepository>();
-    return pickMember(context, repo,
-        title: title, excludeId: excludeId, excludeIds: excludeIds);
+    final picked = await pickMember(context, repo,
+        title: title, excludeId: widget.memberId);
+    if (picked != null && mounted) setState(() => _naqib = picked);
   }
 
   // ── Field helpers ──────────────────────────────────────────────────────────

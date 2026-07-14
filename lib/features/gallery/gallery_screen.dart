@@ -450,7 +450,7 @@ class _PhotoFormDialogState extends State<_PhotoFormDialog> {
                       child: TextFormField(
                         controller: _event,
                         decoration: InputDecoration(
-                            labelText: context.tr('Event', 'المناسبة')),
+                            labelText: context.tr('Program Summary', 'المناسبة')),
                       ),
                     ),
                     const SizedBox(width: AppSpacing.md),

@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../data/app_database.dart';
+import '../data/models.dart';
 import '../util/photo_service.dart';
 
 /// Full CRUD for a member and all profile sub-records (children, education,
@@ -10,12 +11,7 @@ class MemberRepository {
   final AppDatabase _db;
   final PhotoService _photos;
 
-  // A monotonic counter guarantees unique ids even when two inserts land in the
-  // same microsecond (the Windows clock resolution is ~1ms, so rapid inserts
-  // would otherwise collide on the timestamp alone).
-  static int _seq = 0;
-  String _id(String prefix) =>
-      '${prefix}_${DateTime.now().microsecondsSinceEpoch}_${_seq++}';
+  String _id(String prefix) => newId(prefix);
 
   // ── Member ───────────────────────────────────────────────────────────────
 
@@ -348,35 +344,24 @@ class MemberRepository {
   Future<void> deleteWife(String id) =>
       (_db.delete(_db.memberWives)..where((w) => w.id.equals(id))).go();
 
-  // ── Usra members (explicit links to other members) ────────────────────────
-  /// The members explicitly linked as this member's Usra members.
-  Stream<List<Member>> watchUsraMembers(String memberId) {
-    final query = _db.select(_db.memberUsraLinks).join([
-      innerJoin(_db.members,
-          _db.members.id.equalsExp(_db.memberUsraLinks.usraMemberId)),
-    ])
-      ..where(_db.memberUsraLinks.memberId.equals(memberId));
-    return query
-        .watch()
-        .map((rows) => rows.map((r) => r.readTable(_db.members)).toList());
+  // ── Usra members (derived from a shared Naqib) ─────────────────────────────
+  /// Members whose Naqib is [naqibId] — i.e. the students of that Naqib's
+  /// tutorial class. Pass [excludeId] to leave out the member being viewed.
+  Stream<List<Member>> watchMembersOfNaqib(String naqibId,
+      {String? excludeId}) {
+    return (_db.select(_db.members)
+          ..where((m) {
+            final sameNaqib = m.naqibMemberId.equals(naqibId);
+            final notSelf = excludeId == null
+                ? const Constant(true)
+                : m.id.equals(excludeId).not();
+            return sameNaqib & notSelf;
+          })
+          ..orderBy([(m) => OrderingTerm(expression: m.firstName)]))
+        .watch();
   }
 
-  Future<List<MemberUsraLink>> getUsraLinks(String memberId) =>
-      (_db.select(_db.memberUsraLinks)
-            ..where((l) => l.memberId.equals(memberId)))
-          .get();
-
-  Future<void> addUsraMember(String memberId, String usraMemberId) =>
-      _db.into(_db.memberUsraLinks).insert(MemberUsraLinksCompanion.insert(
-            id: _id('usra'),
-            memberId: memberId,
-            usraMemberId: usraMemberId,
-          ));
-
-  Future<void> deleteUsraLink(String id) =>
-      (_db.delete(_db.memberUsraLinks)..where((l) => l.id.equals(id))).go();
-
-  // ── Member search (for the Naqib / Usra-member pickers) ───────────────────
+  // ── Member search (for the Naqib picker) ──────────────────────────────────
   /// Members whose name matches [query] (first/middle/last), excluding
   /// [excludeId]. Returns up to [limit] results ordered by first name.
   Future<List<Member>> searchMembers(String query,

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../core/i18n/localized.dart';
@@ -5,6 +7,7 @@ import '../../core/repositories/history_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/util/icon_catalog.dart';
+import '../../core/util/photo_service.dart';
 
 /// The theme accents offered in history pickers.
 const List<int> kHistoryAccents = [
@@ -21,6 +24,21 @@ typedef MilestoneResult = ({
   String description,
   String iconKey,
   int accent,
+});
+
+/// One biography section entered in the Leadership Legacy form (title + body).
+typedef LegacySectionResult = ({String title, String body});
+
+/// Result of the hand-curated Leadership Legacy form: a free-text name and an
+/// attached photo (no linked member), the office and term shown on the card,
+/// and any biography sections.
+typedef LegacyLeaderResult = ({
+  String name,
+  String position,
+  String termYears,
+  String photoPath,
+  int accent,
+  List<LegacySectionResult> sections,
 });
 
 /// A text editor dialog. Returns `(text, '')` or null on cancel. (The second
@@ -99,6 +117,17 @@ Future<MilestoneResult?> editMilestone(
   return showDialog<MilestoneResult>(
     context: context,
     builder: (_) => _MilestoneForm(existing: existing),
+  );
+}
+
+/// Add / edit a hand-curated Leadership Legacy leader (name + photo + office).
+Future<LegacyLeaderResult?> editLegacyLeader(
+  BuildContext context, {
+  LegacyLeaderResult? existing,
+}) {
+  return showDialog<LegacyLeaderResult>(
+    context: context,
+    builder: (_) => _LegacyLeaderForm(existing: existing),
   );
 }
 
@@ -516,6 +545,241 @@ class _MilestoneFormState extends State<_MilestoneForm> {
             accent: _accent,
           )),
           child: Text(context.tr('Save', 'حفظ')),
+        ),
+      ],
+    );
+  }
+}
+
+// ════════════════════════ Leadership Legacy form ════════════════════════
+
+/// A mutable biography section row in the Leadership Legacy form (title + body).
+class _LegacySectionRow {
+  _LegacySectionRow({String title = '', String body = ''})
+      : title = TextEditingController(text: title),
+        body = TextEditingController(text: body);
+  final TextEditingController title;
+  final TextEditingController body;
+
+  void dispose() {
+    title.dispose();
+    body.dispose();
+  }
+}
+
+class _LegacyLeaderForm extends StatefulWidget {
+  const _LegacyLeaderForm({this.existing});
+  final LegacyLeaderResult? existing;
+
+  @override
+  State<_LegacyLeaderForm> createState() => _LegacyLeaderFormState();
+}
+
+class _LegacyLeaderFormState extends State<_LegacyLeaderForm> {
+  late final _name = TextEditingController(text: widget.existing?.name ?? '');
+  late final _position =
+      TextEditingController(text: widget.existing?.position ?? '');
+  late final _term =
+      TextEditingController(text: widget.existing?.termYears ?? '');
+  late int _accent = widget.existing?.accent ?? kHistoryAccents[1];
+  late String _photoPath = widget.existing?.photoPath ?? '';
+  late final List<_LegacySectionRow> _sections = [
+    for (final s in widget.existing?.sections ?? const <LegacySectionResult>[])
+      _LegacySectionRow(title: s.title, body: s.body),
+  ];
+
+  @override
+  void dispose() {
+    for (final c in [_name, _position, _term]) {
+      c.dispose();
+    }
+    for (final s in _sections) {
+      s.dispose();
+    }
+    super.dispose();
+  }
+
+  Future<void> _pickPhoto() async {
+    final path =
+        await const PhotoService().pickAndStore(subfolder: 'legacy_leaders');
+    if (path != null && mounted) setState(() => _photoPath = path);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasPhoto =
+        _photoPath.trim().isNotEmpty && File(_photoPath).existsSync();
+    final color = Color(_accent);
+    return AlertDialog(
+      backgroundColor: AppColors.surface,
+      title: Text(widget.existing == null
+          ? context.tr('Add Former Leader', 'إضافة قائد سابق')
+          : context.tr('Edit Former Leader', 'تعديل قائد سابق')),
+      content: SizedBox(
+        width: 480,
+        child: SingleChildScrollView(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Portrait picker.
+              Center(
+                child: Column(
+                  children: [
+                    InkWell(
+                      onTap: _pickPhoto,
+                      customBorder: const CircleBorder(),
+                      child: Container(
+                        width: 96,
+                        height: 96,
+                        decoration: BoxDecoration(
+                          color: color.withValues(alpha: 0.12),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppColors.border),
+                          image: hasPhoto
+                              ? DecorationImage(
+                                  image: FileImage(File(_photoPath)),
+                                  fit: BoxFit.cover)
+                              : null,
+                        ),
+                        child: hasPhoto
+                            ? null
+                            : const Icon(Icons.add_a_photo_outlined,
+                                color: AppColors.emerald, size: 28),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _pickPhoto,
+                      child: Text(hasPhoto
+                          ? context.tr('Change Photo', 'تغيير الصورة')
+                          : context.tr('Attach Photo', 'إرفاق صورة')),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              TextField(
+                controller: _name,
+                textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(
+                    labelText: context.tr('Full Name', 'الاسم الكامل')),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              TextField(
+                controller: _position,
+                decoration: InputDecoration(
+                    labelText: context.tr('Position', 'المنصب')),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              TextField(
+                controller: _term,
+                decoration: InputDecoration(
+                    labelText: context.tr(
+                        'Term / Years (e.g. 2023–2024)', 'المدة / السنوات')),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(
+                    context.tr('Biography Sections', 'أقسام السيرة الذاتية'),
+                    style: Theme.of(context).textTheme.labelMedium),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              for (var i = 0; i < _sections.length; i++)
+                Container(
+                  margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _sections[i].title,
+                              decoration: InputDecoration(
+                                  labelText: context.tr(
+                                      'Section Title', 'عنوان القسم')),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.remove_circle_outline,
+                                color: AppColors.error),
+                            onPressed: () => setState(() {
+                              _sections[i].dispose();
+                              _sections.removeAt(i);
+                            }),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      TextField(
+                        controller: _sections[i].body,
+                        minLines: 2,
+                        maxLines: 5,
+                        decoration: InputDecoration(
+                            labelText: context.tr('Content', 'المحتوى'),
+                            alignLabelWithHint: true),
+                      ),
+                    ],
+                  ),
+                ),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton.icon(
+                  onPressed: () =>
+                      setState(() => _sections.add(_LegacySectionRow())),
+                  icon: const Icon(Icons.add, size: 18),
+                  label: Text(context.tr('Add Section', 'إضافة قسم')),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(context.tr('Accent', 'اللون'),
+                    style: Theme.of(context).textTheme.labelMedium),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              _AccentPicker(
+                  value: _accent, onChanged: (a) => setState(() => _accent = a)),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(context.tr('Cancel', 'إلغاء'))),
+        // Save is enabled only once a name has been entered.
+        ValueListenableBuilder<TextEditingValue>(
+          valueListenable: _name,
+          builder: (context, value, _) => FilledButton(
+            onPressed: value.text.trim().isEmpty
+                ? null
+                : () => Navigator.pop(context, (
+                      name: _name.text.trim(),
+                      position: _position.text.trim(),
+                      termYears: _term.text.trim(),
+                      photoPath: _photoPath,
+                      accent: _accent,
+                      sections: [
+                        for (final s in _sections)
+                          if (s.title.text.trim().isNotEmpty ||
+                              s.body.text.trim().isNotEmpty)
+                            (
+                              title: s.title.text.trim(),
+                              body: s.body.text.trim(),
+                            ),
+                      ],
+                    )),
+            child: Text(context.tr('Save', 'حفظ')),
+          ),
         ),
       ],
     );

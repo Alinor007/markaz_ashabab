@@ -37,16 +37,19 @@ class _KvRows extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                    width: 150,
-                    child: Text(label, style: theme.textTheme.labelMedium)),
+                  width: 150,
+                  child: Text(label, style: theme.textTheme.labelMedium),
+                ),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Text(
                     value.isEmpty ? '—' : value,
-                    textDirection:
-                        isArabic ? TextDirection.rtl : TextDirection.ltr,
-                    style: theme.textTheme.bodyMedium
-                        ?.copyWith(color: AppColors.charcoal),
+                    textDirection: isArabic
+                        ? TextDirection.rtl
+                        : TextDirection.ltr,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.charcoal,
+                    ),
                   ),
                 ),
               ],
@@ -98,14 +101,18 @@ Future<String?> _pickDate(BuildContext context, String current) async {
 /// month and year are effectively locked because the first and last selectable
 /// dates are both inside that month.
 Future<String?> _pickMonthDate(
-    BuildContext context, int year, int month, String current) async {
+  BuildContext context,
+  int year,
+  int month,
+  String current,
+) async {
   final first = DateTime(year, month, 1);
   final last = DateTime(year, month + 1, 0); // day 0 of next month = last day
   final parsed = DateTime.tryParse(current);
   final initial =
       (parsed != null && !parsed.isBefore(first) && !parsed.isAfter(last))
-          ? parsed
-          : first;
+      ? parsed
+      : first;
   final picked = await showDatePicker(
     context: context,
     initialDate: initial,
@@ -128,17 +135,21 @@ class PersonalInfoCard extends StatelessWidget {
       title: context.tr('Personal Information', 'المعلومات الشخصية'),
       child: _KvRows([
         (context.tr('Full Name', 'الاسم الكامل'), member.fullName),
-        (context.tr('Gender', 'الجنس'),
-            member.gender == 'M'
-                ? context.tr('Male', 'ذكر')
-                : context.tr('Female', 'أنثى')),
+        (
+          context.tr('Gender', 'الجنس'),
+          member.gender == 'M'
+              ? context.tr('Male', 'ذكر')
+              : context.tr('Female', 'أنثى'),
+        ),
         (context.tr('Date of Birth', 'تاريخ الميلاد'), member.dob),
         (context.tr('Place of Birth', 'مكان الميلاد'), member.placeOfBirth),
         (context.tr('Contact Number', 'رقم الهاتف'), member.contactNumber),
         (context.tr('Email', 'البريد الإلكتروني'), member.email),
         (context.tr('Address', 'العنوان'), member.address),
-        (context.tr('Civil Status', 'الحالة الاجتماعية'),
-            member.civilStatusEnum.label(context.isArabic)),
+        (
+          context.tr('Civil Status', 'الحالة الاجتماعية'),
+          member.civilStatusEnum.label(context.isArabic),
+        ),
         (context.tr('Ethnicity / Tribe', 'العرق / القبيلة'), member.ethnicity),
         (context.tr('Occupation', 'المهنة'), member.occupation),
       ]),
@@ -163,8 +174,10 @@ class FamilyChildrenCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (single)
-            Text(context.tr('Single', 'أعزب'),
-                style: Theme.of(context).textTheme.bodyMedium),
+            Text(
+              context.tr('Single', 'أعزب'),
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           // Spouses (1 for a female, up to 4 for a male) — stored in the
           // MemberWives table for all genders.
           if (!single)
@@ -175,27 +188,27 @@ class FamilyChildrenCard extends StatelessWidget {
                 // Back-compat: fall back to the legacy denormalized spouse for
                 // older records that predate the unified store.
                 final entries = spouses.isNotEmpty
-                    ? [
-                        for (final s in spouses)
-                          (s.name, s.marriageDate),
-                      ]
+                    ? [for (final s in spouses) (s.name, s.marriageDate)]
                     : (member.spouseName.trim().isNotEmpty
-                        ? [(member.spouseName, member.spouseDate)]
-                        : const <(String, String)>[]);
+                          ? [(member.spouseName, member.spouseDate)]
+                          : const <(String, String)>[]);
                 final isMale = member.gender == 'M';
                 final heading = isMale
                     ? context.tr('Spouse', 'الزوج/ة')
                     : context.tr('Spouse', 'الزوج/ة');
                 if (entries.isEmpty) {
                   return Text(
-                      context.tr('No spouse recorded', 'لا يوجد زوج/ة'),
-                      style: Theme.of(context).textTheme.bodySmall);
+                    context.tr('No spouse recorded', 'لا يوجد زوج/ة'),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  );
                 }
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(heading,
-                        style: Theme.of(context).textTheme.titleSmall),
+                    Text(
+                      heading,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     for (final (name, date) in entries)
                       Padding(
@@ -210,16 +223,20 @@ class FamilyChildrenCard extends StatelessWidget {
               },
             ),
           const SizedBox(height: AppSpacing.md),
-          Text(context.tr('Children', 'الأبناء'),
-              style: Theme.of(context).textTheme.titleSmall),
+          Text(
+            context.tr('Children', 'الأبناء'),
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
           const SizedBox(height: AppSpacing.sm),
           StreamBuilder<List<MemberChildrenData>>(
             stream: repo.watchChildren(member.id),
             builder: (context, snap) {
               final children = snap.data ?? const [];
               if (children.isEmpty) {
-                return Text(context.tr('No children recorded', 'لا يوجد أبناء'),
-                    style: Theme.of(context).textTheme.bodySmall);
+                return Text(
+                  context.tr('No children recorded', 'لا يوجد أبناء'),
+                  style: Theme.of(context).textTheme.bodySmall,
+                );
               }
               return Column(
                 children: [
@@ -231,8 +248,11 @@ class FamilyChildrenCard extends StatelessWidget {
                         children: [
                           const Padding(
                             padding: EdgeInsets.only(top: 2),
-                            child: Icon(Icons.child_care_outlined,
-                                size: 16, color: AppColors.emerald),
+                            child: Icon(
+                              Icons.child_care_outlined,
+                              size: 16,
+                              color: AppColors.emerald,
+                            ),
                           ),
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
@@ -243,14 +263,17 @@ class FamilyChildrenCard extends StatelessWidget {
                                 if (_childDetails(c).isNotEmpty)
                                   Text(
                                     _childDetails(c),
-                                    style:
-                                        Theme.of(context).textTheme.bodySmall,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall,
                                   ),
                               ],
                             ),
                           ),
-                          Text(c.dob,
-                              style: Theme.of(context).textTheme.bodySmall),
+                          Text(
+                            c.dob,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
                         ],
                       ),
                     ),
@@ -290,8 +313,10 @@ class EducationCard extends StatelessWidget {
         builder: (context, snap) {
           final records = snap.data ?? const [];
           if (records.isEmpty) {
-            return Text(context.tr('No records', 'لا توجد سجلات'),
-                style: Theme.of(context).textTheme.bodySmall);
+            return Text(
+              context.tr('No records', 'لا توجد سجلات'),
+              style: Theme.of(context).textTheme.bodySmall,
+            );
           }
           return Column(
             children: [
@@ -304,8 +329,9 @@ class EducationCard extends StatelessWidget {
                       SizedBox(
                         width: 110,
                         child: Text(
-                          EducationStage.fromCode(e.stage)
-                              .label(context.isArabic),
+                          EducationStage.fromCode(
+                            e.stage,
+                          ).label(context.isArabic),
                           style: Theme.of(context).textTheme.labelMedium,
                         ),
                       ),
@@ -314,15 +340,20 @@ class EducationCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(e.schoolName,
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(color: AppColors.charcoal)),
-                            if (e.degree.isNotEmpty || e.program.isNotEmpty ||
+                            Text(
+                              e.schoolName,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: AppColors.charcoal),
+                            ),
+                            if (e.degree.isNotEmpty ||
+                                e.program.isNotEmpty ||
                                 e.yearGraduated.isNotEmpty)
                               Text(
-                                [e.degree, e.program, e.yearGraduated]
-                                    .where((s) => s.isNotEmpty)
-                                    .join(' · '),
+                                [
+                                  e.degree,
+                                  e.program,
+                                  e.yearGraduated,
+                                ].where((s) => s.isNotEmpty).join(' · '),
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                           ],
@@ -356,14 +387,20 @@ class NaqibUsraCard extends StatelessWidget {
         children: [
           _KvRows([
             (context.tr('Section', 'اسم الأسرة'), member.usraName),
-            (context.tr('School Year', 'سنة التأسيس'),
-                member.usraEstablishedYear),
-            (context.tr('Meeting Schedule', 'موعد اللقاء'),
-                member.usraMeetingSchedule),
+            (
+              context.tr('School Year', 'سنة التأسيس'),
+              member.usraEstablishedYear,
+            ),
+            (
+              context.tr('Class Schedule', 'موعد اللقاء'),
+              member.usraMeetingSchedule,
+            ),
           ]),
           const SizedBox(height: AppSpacing.md),
-          Text(context.tr('Naqib', 'النقيب'),
-              style: Theme.of(context).textTheme.titleSmall),
+          Text(
+            context.tr('Teacher', 'النقيب'),
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
           const SizedBox(height: AppSpacing.sm),
           // ── Navigatable Naqib ──────────────────────────────────────
           FutureBuilder<Member?>(
@@ -387,15 +424,18 @@ class NaqibUsraCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       PortraitAvatar(
-                          initials: naqib.initials, size: 28, ring: false),
+                        initials: naqib.initials,
+                        size: 28,
+                        ring: false,
+                      ),
                       const SizedBox(width: AppSpacing.sm),
                       Text(
                         naqib.displayName(context.isArabic),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.emerald,
-                              decoration: TextDecoration.underline,
-                              decorationColor: AppColors.emerald,
-                            ),
+                          color: AppColors.emerald,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.emerald,
+                        ),
                       ),
                     ],
                   ),
@@ -405,25 +445,32 @@ class NaqibUsraCard extends StatelessWidget {
           ),
           // ──────────────────────────────────────────────────────────
           const SizedBox(height: AppSpacing.md),
-          Text(context.tr('Students', 'أعضاء الأسرة'),
-              style: Theme.of(context).textTheme.titleSmall),
+          Text(
+            context.tr('Students', 'أعضاء الأسرة'),
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
           const SizedBox(height: AppSpacing.sm),
+          // Students are derived: every member who shares this member's Naqib
+          // belongs to the same tutorial class.
           StreamBuilder<List<Member>>(
-            stream: repo.watchUsraMembers(member.id),
+            stream: member.naqibMemberId == null
+                ? Stream.value(const <Member>[])
+                : repo.watchMembersOfNaqib(
+                    member.naqibMemberId!,
+                    excludeId: member.id,
+                  ),
             builder: (context, snap) {
               final members = snap.data ?? const [];
               if (members.isEmpty) {
                 return Text(
-                    context.tr('No other students', 'لا يوجد طلاب آخرون'),
-                    style: Theme.of(context).textTheme.bodySmall);
+                  context.tr('No other students', 'لا يوجد طلاب آخرون'),
+                  style: Theme.of(context).textTheme.bodySmall,
+                );
               }
               return Wrap(
                 spacing: AppSpacing.sm,
                 runSpacing: AppSpacing.sm,
-                children: [
-                  for (final m in members)
-                    _UsraMemberChip(member: m),
-                ],
+                children: [for (final m in members) _UsraMemberChip(member: m)],
               );
             },
           ),
@@ -450,11 +497,12 @@ class _UsraMemberChip extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              PortraitAvatar(
-                  initials: member.initials, size: 28, ring: false),
+              PortraitAvatar(initials: member.initials, size: 28, ring: false),
               const SizedBox(width: AppSpacing.sm),
-              Text(member.displayName(context.isArabic),
-                  style: Theme.of(context).textTheme.labelMedium),
+              Text(
+                member.displayName(context.isArabic),
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
             ],
           ),
         ),
@@ -475,7 +523,7 @@ class TasedCard extends StatelessWidget {
     final repo = context.read<MemberRepository>();
     return InfoPanel(
       icon: Icons.grading_outlined,
-      title: context.tr("Tas'ed Information", 'معلومات التصعيد'),
+      title: context.tr("Promotion Information", 'معلومات التصعيد'),
       child: StreamBuilder<List<MemberTasedData>>(
         stream: repo.watchTased(member.id),
         builder: (context, snap) {
@@ -492,8 +540,10 @@ class TasedCard extends StatelessWidget {
               if (records.isEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                  child: Text(context.tr('No records', 'لا توجد سجلات'),
-                      style: Theme.of(context).textTheme.bodySmall),
+                  child: Text(
+                    context.tr('No records', 'لا توجد سجلات'),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ),
               for (final r in records)
                 _TasedRow(
@@ -501,10 +551,14 @@ class TasedCard extends StatelessWidget {
                   canManage: canManage,
                   onEdit: () => _showTasedDialog(context, repo, member, r),
                   onDelete: () async {
-                    final ok = await confirmDialog(context,
-                        title: context.trRead('Delete record?', 'حذف السجل؟'),
-                        message: context.trRead('Remove this tas\'ed record.',
-                            'إزالة سجل التصعيد هذا.'));
+                    final ok = await confirmDialog(
+                      context,
+                      title: context.trRead('Delete record?', 'حذف السجل؟'),
+                      message: context.trRead(
+                        'Remove this tas\'ed record.',
+                        'إزالة سجل التصعيد هذا.',
+                      ),
+                    );
                     if (ok) await repo.deleteTased(r.id);
                   },
                 ),
@@ -528,8 +582,7 @@ Widget _tableHeader(BuildContext context, List<String> cols) {
       children: [
         for (final c in cols)
           Expanded(
-            child: Text(c,
-                style: Theme.of(context).textTheme.labelSmall),
+            child: Text(c, style: Theme.of(context).textTheme.labelSmall),
           ),
       ],
     ),
@@ -556,11 +609,17 @@ class _TasedRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
       child: Row(
         children: [
-          Expanded(child: Text(context.tr('Level ${record.level}', 'المستوى ${record.level}'))),
+          Expanded(
+            child: Text(
+              context.tr('Level ${record.level}', 'المستوى ${record.level}'),
+            ),
+          ),
           Expanded(child: Text(record.year.isEmpty ? '—' : record.year)),
           Expanded(
             child: Text(
-              active ? context.tr('Active', 'نشط') : context.tr('Inactive', 'غير نشط'),
+              active
+                  ? context.tr('Active', 'نشط')
+                  : context.tr('Inactive', 'غير نشط'),
               style: TextStyle(color: color, fontWeight: FontWeight.w600),
             ),
           ),
@@ -576,8 +635,11 @@ class _TasedRow extends StatelessWidget {
                       ),
                       IconButton(
                         visualDensity: VisualDensity.compact,
-                        icon: const Icon(Icons.delete_outline,
-                            size: 18, color: AppColors.error),
+                        icon: const Icon(
+                          Icons.delete_outline,
+                          size: 18,
+                          color: AppColors.error,
+                        ),
                         onPressed: onDelete,
                       ),
                     ],
@@ -590,96 +652,148 @@ class _TasedRow extends StatelessWidget {
   }
 }
 
-Future<void> _showTasedDialog(BuildContext context, MemberRepository repo,
-    Member member, MemberTasedData? existing) async {
+/// Owns dialog-local [controllers] and disposes them only when the dialog
+/// subtree is actually unmounted (after the close animation), so TextFields
+/// never touch an already-disposed controller during teardown.
+class _ControllerScope extends StatefulWidget {
+  const _ControllerScope({required this.controllers, required this.child});
+  final List<TextEditingController> controllers;
+  final Widget child;
+
+  @override
+  State<_ControllerScope> createState() => _ControllerScopeState();
+}
+
+class _ControllerScopeState extends State<_ControllerScope> {
+  @override
+  void dispose() {
+    for (final c in widget.controllers) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
+Future<void> _showTasedDialog(
+  BuildContext context,
+  MemberRepository repo,
+  Member member,
+  MemberTasedData? existing,
+) async {
   int level = existing?.level ?? 1;
   final yearCtrl = TextEditingController(text: existing?.year ?? '');
   String status = existing?.status ?? 'inactive';
   final formKey = GlobalKey<FormState>();
   final result = await showDialog<bool>(
     context: context,
-    builder: (context) => StatefulBuilder(
-      builder: (context, setState) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Text(existing == null
-            ? context.tr('Add Tas\'ed Record', 'إضافة سجل تصعيد')
-            : context.tr('Edit Tas\'ed Record', 'تعديل سجل التصعيد')),
-        content: SizedBox(
-          width: 360,
-          child: SingleChildScrollView(
-            child: Form(
-              key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DropdownButtonFormField<int>(
-                    initialValue: level,
-                    decoration: InputDecoration(
-                        labelText: context.tr('Level', 'المستوى')),
-                    items: [
-                      for (final l in kTarbiyaLevels)
-                        DropdownMenuItem(value: l, child: Text('Level $l')),
-                    ],
-                    onChanged: (v) => level = v ?? level,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  TextFormField(
-                    controller: yearCtrl,
-                    keyboardType: TextInputType.number,
-                    validator: (v) => Validators.optionalYear(context, v),
-                    decoration:
-                        InputDecoration(labelText: context.tr('Year', 'السنة')),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  DropdownButtonFormField<String>(
-                    initialValue: status,
-                    decoration: InputDecoration(
-                        labelText: context.tr('Status', 'الحالة')),
-                    items: [
-                      DropdownMenuItem(
+    builder: (context) => _ControllerScope(
+      controllers: [yearCtrl],
+      child: StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          backgroundColor: AppColors.surface,
+          title: Text(
+            existing == null
+                ? context.tr('Add Tas\'ed Record', 'إضافة سجل تصعيد')
+                : context.tr('Edit Tas\'ed Record', 'تعديل سجل التصعيد'),
+          ),
+          content: SizedBox(
+            width: 360,
+            child: SingleChildScrollView(
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DropdownButtonFormField<int>(
+                      initialValue: level,
+                      decoration: InputDecoration(
+                        labelText: context.tr('Level', 'المستوى'),
+                      ),
+                      items: [
+                        for (final l in kTarbiyaLevels)
+                          DropdownMenuItem(value: l, child: Text('Level $l')),
+                      ],
+                      onChanged: (v) => level = v ?? level,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    TextFormField(
+                      controller: yearCtrl,
+                      keyboardType: TextInputType.number,
+                      validator: (v) => Validators.optionalYear(context, v),
+                      decoration: InputDecoration(
+                        labelText: context.tr('Year', 'السنة'),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    DropdownButtonFormField<String>(
+                      initialValue: status,
+                      decoration: InputDecoration(
+                        labelText: context.tr('Status', 'الحالة'),
+                      ),
+                      items: [
+                        DropdownMenuItem(
                           value: 'active',
-                          child: Text(context.tr('Active', 'نشط'))),
-                      DropdownMenuItem(
+                          child: Text(context.tr('Active', 'نشط')),
+                        ),
+                        DropdownMenuItem(
                           value: 'inactive',
-                          child: Text(context.tr('Inactive', 'غير نشط'))),
-                    ],
-                    onChanged: (v) => status = v ?? status,
-                  ),
-                ],
+                          child: Text(context.tr('Inactive', 'غير نشط')),
+                        ),
+                      ],
+                      onChanged: (v) => status = v ?? status,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        actions: [
-          TextButton(
+          actions: [
+            TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text(context.tr('Cancel', 'إلغاء'))),
-          FilledButton(
+              child: Text(context.tr('Cancel', 'إلغاء')),
+            ),
+            FilledButton(
               onPressed: () {
                 if (!formKey.currentState!.validate()) return;
                 Navigator.pop(context, true);
               },
-              child: Text(context.tr('Save', 'حفظ'))),
-        ],
+              child: Text(context.tr('Save', 'حفظ')),
+            ),
+          ],
+        ),
       ),
     ),
   );
   if (result == true) {
     if (existing == null) {
       await repo.addTased(
-          memberId: member.id, level: level, year: yearCtrl.text.trim(), status: status);
+        memberId: member.id,
+        level: level,
+        year: yearCtrl.text.trim(),
+        status: status,
+      );
     } else {
-      await repo.updateTased(existing.id,
-          level: level, year: yearCtrl.text.trim(), status: status);
+      await repo.updateTased(
+        existing.id,
+        level: level,
+        year: yearCtrl.text.trim(),
+        status: status,
+      );
     }
   }
-  yearCtrl.dispose();
 }
 
 // ════════════════════════════ Donation Monitoring ════════════════════════════
 
 class DonationCard extends StatefulWidget {
-  const DonationCard({super.key, required this.member, required this.canManage});
+  const DonationCard({
+    super.key,
+    required this.member,
+    required this.canManage,
+  });
   final Member member;
   final bool canManage;
 
@@ -691,12 +805,32 @@ class _DonationCardState extends State<DonationCard> {
   late int _year = DateTime.now().year;
 
   static const _months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
   static const _monthsAr = [
-    'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-    'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+    'يناير',
+    'فبراير',
+    'مارس',
+    'أبريل',
+    'مايو',
+    'يونيو',
+    'يوليو',
+    'أغسطس',
+    'سبتمبر',
+    'أكتوبر',
+    'نوفمبر',
+    'ديسمبر',
   ];
 
   @override
@@ -723,8 +857,10 @@ class _DonationCardState extends State<DonationCard> {
                     icon: const Icon(Icons.chevron_left),
                     onPressed: () => setState(() => _year--),
                   ),
-                  Text('$_year',
-                      style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    '$_year',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   IconButton(
                     icon: const Icon(Icons.chevron_right),
                     onPressed: () => setState(() => _year++),
@@ -753,12 +889,21 @@ class _DonationCardState extends State<DonationCard> {
                 spacing: AppSpacing.lg,
                 runSpacing: AppSpacing.sm,
                 children: [
-                  _summary(context, context.tr('Total Donations', 'إجمالي التبرعات'),
-                      total.toStringAsFixed(0)),
-                  _summary(context, context.tr('Months Contributed', 'أشهر التبرع'),
-                      '$donatedCount'),
-                  _summary(context, context.tr('Missing Months', 'الأشهر الفائتة'),
-                      '${12 - donatedCount}'),
+                  _summary(
+                    context,
+                    context.tr('Total Donations', 'إجمالي التبرعات'),
+                    total.toStringAsFixed(0),
+                  ),
+                  _summary(
+                    context,
+                    context.tr('Months Contributed', 'أشهر التبرع'),
+                    '$donatedCount',
+                  ),
+                  _summary(
+                    context,
+                    context.tr('Missing Months', 'الأشهر الفائتة'),
+                    '${12 - donatedCount}',
+                  ),
                 ],
               ),
             ],
@@ -772,81 +917,105 @@ class _DonationCardState extends State<DonationCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(value,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: AppColors.emerald)),
+        Text(
+          value,
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(color: AppColors.emerald),
+        ),
         Text(label, style: Theme.of(context).textTheme.bodySmall),
       ],
     );
   }
 
-  Future<void> _editMonth(BuildContext context, MemberRepository repo, int month,
-      MemberDonation? existing) async {
+  Future<void> _editMonth(
+    BuildContext context,
+    MemberRepository repo,
+    int month,
+    MemberDonation? existing,
+  ) async {
     bool donated = existing?.donated ?? false;
-    final amountCtrl =
-        TextEditingController(text: existing?.amount.toStringAsFixed(0) ?? '');
+    final amountCtrl = TextEditingController(
+      text: existing?.amount.toStringAsFixed(0) ?? '',
+    );
     final notesCtrl = TextEditingController(text: existing?.notes ?? '');
     String date = existing?.date ?? '';
     final result = await showDialog<bool>(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setLocal) => AlertDialog(
-          scrollable: true,
-          backgroundColor: AppColors.surface,
-          title: Text(
-              '${(context.isArabic ? _monthsAr : _months)[month - 1]} $_year'),
-          content: SizedBox(
-            width: 360,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(context.tr('Donated', 'تبرّع')),
-                  value: donated,
-                  activeTrackColor: AppColors.emerald,
-                  onChanged: (v) => setLocal(() => donated = v),
-                ),
-                TextField(
-                  controller: amountCtrl,
-                  keyboardType: TextInputType.number,
-                  decoration:
-                      InputDecoration(labelText: context.tr('Amount', 'المبلغ')),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                InkWell(
-                  onTap: () async {
-                    final picked =
-                        await _pickMonthDate(context, _year, month, date);
-                    if (picked != null) setLocal(() => date = picked);
-                  },
-                  child: InputDecorator(
-                    decoration: InputDecoration(
-                      labelText: context.tr('Date of Donation', 'تاريخ التبرع'),
-                      suffixIcon: const Icon(Icons.calendar_today_outlined, size: 18),
-                    ),
-                    child: Text(date.isEmpty ? '—' : date),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextField(
-                  controller: notesCtrl,
-                  decoration:
-                      InputDecoration(labelText: context.tr('Notes', 'ملاحظات')),
-                ),
-              ],
+      builder: (context) => _ControllerScope(
+        controllers: [amountCtrl, notesCtrl],
+        child: StatefulBuilder(
+          builder: (context, setLocal) => AlertDialog(
+            scrollable: true,
+            backgroundColor: AppColors.surface,
+            title: Text(
+              '${(context.isArabic ? _monthsAr : _months)[month - 1]} $_year',
             ),
-          ),
-          actions: [
-            TextButton(
+            content: SizedBox(
+              width: 360,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(context.tr('Donated', 'تبرّع')),
+                    value: donated,
+                    activeTrackColor: AppColors.emerald,
+                    onChanged: (v) => setLocal(() => donated = v),
+                  ),
+                  TextField(
+                    controller: amountCtrl,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: context.tr('Amount', 'المبلغ'),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  InkWell(
+                    onTap: () async {
+                      final picked = await _pickMonthDate(
+                        context,
+                        _year,
+                        month,
+                        date,
+                      );
+                      if (picked != null) setLocal(() => date = picked);
+                    },
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: context.tr(
+                          'Date of Donation',
+                          'تاريخ التبرع',
+                        ),
+                        suffixIcon: const Icon(
+                          Icons.calendar_today_outlined,
+                          size: 18,
+                        ),
+                      ),
+                      child: Text(date.isEmpty ? '—' : date),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  TextField(
+                    controller: notesCtrl,
+                    decoration: InputDecoration(
+                      labelText: context.tr('Notes', 'ملاحظات'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: Text(context.tr('Cancel', 'إلغاء'))),
-            FilledButton(
+                child: Text(context.tr('Cancel', 'إلغاء')),
+              ),
+              FilledButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: Text(context.tr('Save', 'حفظ'))),
-          ],
+                child: Text(context.tr('Save', 'حفظ')),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -861,8 +1030,6 @@ class _DonationCardState extends State<DonationCard> {
         notes: notesCtrl.text.trim(),
       );
     }
-    amountCtrl.dispose();
-    notesCtrl.dispose();
   }
 }
 
@@ -892,19 +1059,25 @@ class _MonthTile extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(donated ? Icons.check_circle : Icons.circle_outlined,
-                    size: 14,
-                    color: donated ? AppColors.emerald : AppColors.textFaint),
+                Icon(
+                  donated ? Icons.check_circle : Icons.circle_outlined,
+                  size: 14,
+                  color: donated ? AppColors.emerald : AppColors.textFaint,
+                ),
                 const SizedBox(width: AppSpacing.xs),
                 Expanded(
-                  child: Text(label.substring(0, label.length >= 3 ? 3 : label.length),
-                      style: Theme.of(context).textTheme.labelMedium),
+                  child: Text(
+                    label.substring(0, label.length >= 3 ? 3 : label.length),
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
                 ),
               ],
             ),
             if (donated && (donation?.amount ?? 0) > 0)
-              Text(donation!.amount.toStringAsFixed(0),
-                  style: Theme.of(context).textTheme.bodySmall),
+              Text(
+                donation!.amount.toStringAsFixed(0),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
           ],
         ),
       ),
@@ -915,8 +1088,11 @@ class _MonthTile extends StatelessWidget {
 // ════════════════════════════ Activity History ════════════════════════════
 
 class ActivityHistoryCard extends StatefulWidget {
-  const ActivityHistoryCard(
-      {super.key, required this.member, required this.canManage});
+  const ActivityHistoryCard({
+    super.key,
+    required this.member,
+    required this.canManage,
+  });
   final Member member;
   final bool canManage;
 
@@ -933,8 +1109,9 @@ typedef _HistoryRow = ({String date, String search, Widget widget});
 /// decoded payload; otherwise null.
 ProgramReport? _participationOf(Report report, String memberId) {
   if (report.formData.trim().isEmpty) return null;
-  final data =
-      ProgramReport.fromJson(jsonDecode(report.formData) as Map<String, dynamic>);
+  final data = ProgramReport.fromJson(
+    jsonDecode(report.formData) as Map<String, dynamic>,
+  );
   return data.participantIds.contains(memberId) ? data : null;
 }
 
@@ -969,10 +1146,14 @@ class _ActivityHistoryCardState extends State<ActivityHistoryCard> {
                       activity: a,
                       canManage: widget.canManage,
                       onDelete: () async {
-                        final ok = await confirmDialog(context,
-                            title: context.trRead(
-                                'Delete activity?', 'حذف النشاط؟'),
-                            message: a.name);
+                        final ok = await confirmDialog(
+                          context,
+                          title: context.trRead(
+                            'Delete activity?',
+                            'حذف النشاط؟',
+                          ),
+                          message: a.name,
+                        );
                         if (ok) await repo.deleteActivity(a.id);
                       },
                     ),
@@ -983,7 +1164,9 @@ class _ActivityHistoryCardState extends State<ActivityHistoryCard> {
               for (final r in trackedReports) {
                 final data = _participationOf(r, widget.member.id);
                 if (data == null) continue;
-                final title = data.programTitle.isEmpty ? r.title : data.programTitle;
+                final title = data.programTitle.isEmpty
+                    ? r.title
+                    : data.programTitle;
                 rows.add((
                   date: r.date,
                   search: title.toLowerCase(),
@@ -992,8 +1175,9 @@ class _ActivityHistoryCardState extends State<ActivityHistoryCard> {
                     departmentId: r.departmentId,
                     date: r.date,
                     isArabic: isArabic,
-                    onTap: () => context
-                        .push('/departments/${r.departmentId}/reports/${r.id}'),
+                    onTap: () => context.push(
+                      '/departments/${r.departmentId}/reports/${r.id}',
+                    ),
                   ),
                 ));
               }
@@ -1002,8 +1186,8 @@ class _ActivityHistoryCardState extends State<ActivityHistoryCard> {
               final filtered = _query.isEmpty
                   ? rows
                   : rows
-                      .where((r) => r.search.contains(_query.toLowerCase()))
-                      .toList();
+                        .where((r) => r.search.contains(_query.toLowerCase()))
+                        .toList();
               final pages = (filtered.length / _pageSize).ceil().clamp(1, 9999);
               if (_page >= pages) _page = pages - 1;
               final start = _page * _pageSize;
@@ -1016,7 +1200,9 @@ class _ActivityHistoryCardState extends State<ActivityHistoryCard> {
                       Expanded(
                         child: SearchField(
                           hint: context.tr(
-                              'Search activities…', 'ابحث في الأنشطة…'),
+                            'Search activities…',
+                            'ابحث في الأنشطة…',
+                          ),
                           onChanged: (v) => setState(() {
                             _query = v;
                             _page = 0;
@@ -1027,7 +1213,8 @@ class _ActivityHistoryCardState extends State<ActivityHistoryCard> {
                         const SizedBox(width: AppSpacing.sm),
                         IconButton.filled(
                           style: IconButton.styleFrom(
-                              backgroundColor: AppColors.emerald),
+                            backgroundColor: AppColors.emerald,
+                          ),
                           icon: const Icon(Icons.add, size: 18),
                           onPressed: () =>
                               _showActivityDialog(context, repo, widget.member),
@@ -1037,8 +1224,10 @@ class _ActivityHistoryCardState extends State<ActivityHistoryCard> {
                   ),
                   const SizedBox(height: AppSpacing.md),
                   if (pageItems.isEmpty)
-                    Text(context.tr('No activities', 'لا توجد أنشطة'),
-                        style: Theme.of(context).textTheme.bodySmall)
+                    Text(
+                      context.tr('No activities', 'لا توجد أنشطة'),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    )
                   else
                     for (final row in pageItems) row.widget,
                   if (pages > 1) ...[
@@ -1048,11 +1237,14 @@ class _ActivityHistoryCardState extends State<ActivityHistoryCard> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.chevron_left),
-                          onPressed:
-                              _page > 0 ? () => setState(() => _page--) : null,
+                          onPressed: _page > 0
+                              ? () => setState(() => _page--)
+                              : null,
                         ),
-                        Text('${_page + 1} / $pages',
-                            style: Theme.of(context).textTheme.bodySmall),
+                        Text(
+                          '${_page + 1} / $pages',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                         IconButton(
                           icon: const Icon(Icons.chevron_right),
                           onPressed: _page < pages - 1
@@ -1092,13 +1284,13 @@ class _ParticipatedReportRow extends StatelessWidget {
   /// A short label for the two participant-tracking departments — avoids a
   /// repository round-trip just to show a subtitle.
   (String, String) get _deptLabel => switch (departmentId) {
-        'dawah' => ('Da‘wah', 'الدعوة'),
-        'human_capital' => (
-            'Human Capital (Tarbiya)',
-            'رأس المال البشري (التربية)'
-          ),
-        _ => (departmentId, departmentId),
-      };
+    'dawah' => ('Da‘wah', 'الدعوة'),
+    'human_capital' => (
+      'Human Capital (Tarbiya)',
+      'رأس المال البشري (التربية)',
+    ),
+    _ => (departmentId, departmentId),
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -1120,8 +1312,11 @@ class _ParticipatedReportRow extends StatelessWidget {
                 color: AppColors.emeraldTint,
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
-              child: const Icon(Icons.description_outlined,
-                  size: 16, color: AppColors.emerald),
+              child: const Icon(
+                Icons.description_outlined,
+                size: 16,
+                color: AppColors.emerald,
+              ),
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
@@ -1131,21 +1326,26 @@ class _ParticipatedReportRow extends StatelessWidget {
                   Text(
                     title,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: AppColors.emerald,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.emerald,
-                        ),
+                      color: AppColors.emerald,
+                      decoration: TextDecoration.underline,
+                      decorationColor: AppColors.emerald,
+                    ),
                   ),
                   Text(
-                    [isArabic ? ar : en, date]
-                        .where((s) => s.isNotEmpty)
-                        .join(' · '),
+                    [
+                      isArabic ? ar : en,
+                      date,
+                    ].where((s) => s.isNotEmpty).join(' · '),
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, size: 18, color: AppColors.textFaint),
+            const Icon(
+              Icons.chevron_right,
+              size: 18,
+              color: AppColors.textFaint,
+            ),
           ],
         ),
       ),
@@ -1154,8 +1354,11 @@ class _ParticipatedReportRow extends StatelessWidget {
 }
 
 class _ActivityRow extends StatelessWidget {
-  const _ActivityRow(
-      {required this.activity, required this.canManage, required this.onDelete});
+  const _ActivityRow({
+    required this.activity,
+    required this.canManage,
+    required this.onDelete,
+  });
   final MemberActivity activity;
   final bool canManage;
   final VoidCallback onDelete;
@@ -1172,26 +1375,34 @@ class _ActivityRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(activity.name,
-                    style: Theme.of(context).textTheme.titleSmall),
                 Text(
-                  [activity.type, activity.date]
-                      .where((s) => s.isNotEmpty)
-                      .join(' · '),
+                  activity.name,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                Text(
+                  [
+                    activity.type,
+                    activity.date,
+                  ].where((s) => s.isNotEmpty).join(' · '),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 if (activity.remarks.isNotEmpty)
-                  Text(activity.remarks,
-                      style: Theme.of(context).textTheme.bodySmall),
+                  Text(
+                    activity.remarks,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
               ],
             ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm, vertical: 2),
+              horizontal: AppSpacing.sm,
+              vertical: 2,
+            ),
             decoration: BoxDecoration(
-              color: (present ? AppColors.emerald : AppColors.error)
-                  .withValues(alpha: 0.12),
+              color: (present ? AppColors.emerald : AppColors.error).withValues(
+                alpha: 0.12,
+              ),
               borderRadius: BorderRadius.circular(AppRadius.pill),
             ),
             child: Text(
@@ -1199,14 +1410,18 @@ class _ActivityRow extends StatelessWidget {
                   ? context.tr('Present', 'حاضر')
                   : context.tr('Absent', 'غائب'),
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: present ? AppColors.emerald : AppColors.error),
+                color: present ? AppColors.emerald : AppColors.error,
+              ),
             ),
           ),
           if (canManage)
             IconButton(
               visualDensity: VisualDensity.compact,
-              icon: const Icon(Icons.delete_outline,
-                  size: 18, color: AppColors.error),
+              icon: const Icon(
+                Icons.delete_outline,
+                size: 18,
+                color: AppColors.error,
+              ),
               onPressed: onDelete,
             ),
         ],
@@ -1216,7 +1431,10 @@ class _ActivityRow extends StatelessWidget {
 }
 
 Future<void> _showActivityDialog(
-    BuildContext context, MemberRepository repo, Member member) async {
+  BuildContext context,
+  MemberRepository repo,
+  Member member,
+) async {
   final nameCtrl = TextEditingController();
   final typeCtrl = TextEditingController();
   final remarksCtrl = TextEditingController();
@@ -1224,69 +1442,88 @@ Future<void> _showActivityDialog(
   String attendance = 'present';
   final result = await showDialog<bool>(
     context: context,
-    builder: (context) => StatefulBuilder(
-      builder: (context, setLocal) => AlertDialog(
-        scrollable: true,
-        backgroundColor: AppColors.surface,
-        title: Text(context.tr('Add Activity', 'إضافة نشاط')),
-        content: SizedBox(
-          width: 380,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
+    builder: (context) => _ControllerScope(
+      controllers: [nameCtrl, typeCtrl, remarksCtrl],
+      child: StatefulBuilder(
+        builder: (context, setLocal) => AlertDialog(
+          scrollable: true,
+          backgroundColor: AppColors.surface,
+          title: Text(context.tr('Add Activity', 'إضافة نشاط')),
+          content: SizedBox(
+            width: 380,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
                   controller: nameCtrl,
                   decoration: InputDecoration(
-                      labelText: context.tr('Activity Name', 'اسم النشاط'))),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
+                    labelText: context.tr('Activity Name', 'اسم النشاط'),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                TextField(
                   controller: typeCtrl,
                   decoration: InputDecoration(
-                      labelText: context.tr('Activity Type', 'نوع النشاط'))),
-              const SizedBox(height: AppSpacing.md),
-              InkWell(
-                onTap: () async {
-                  final picked = await _pickDate(context, date);
-                  if (picked != null) setLocal(() => date = picked);
-                },
-                child: InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: context.tr('Date', 'التاريخ'),
-                    suffixIcon:
-                        const Icon(Icons.calendar_today_outlined, size: 18),
+                    labelText: context.tr('Activity Type', 'نوع النشاط'),
                   ),
-                  child: Text(date.isEmpty ? '—' : date),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              DropdownButtonFormField<String>(
-                initialValue: attendance,
-                decoration: InputDecoration(
-                    labelText: context.tr('Attendance', 'الحضور')),
-                items: [
-                  DropdownMenuItem(
-                      value: 'present', child: Text(context.tr('Present', 'حاضر'))),
-                  DropdownMenuItem(
-                      value: 'absent', child: Text(context.tr('Absent', 'غائب'))),
-                ],
-                onChanged: (v) => setLocal(() => attendance = v ?? attendance),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
+                const SizedBox(height: AppSpacing.md),
+                InkWell(
+                  onTap: () async {
+                    final picked = await _pickDate(context, date);
+                    if (picked != null) setLocal(() => date = picked);
+                  },
+                  child: InputDecorator(
+                    decoration: InputDecoration(
+                      labelText: context.tr('Date', 'التاريخ'),
+                      suffixIcon: const Icon(
+                        Icons.calendar_today_outlined,
+                        size: 18,
+                      ),
+                    ),
+                    child: Text(date.isEmpty ? '—' : date),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                DropdownButtonFormField<String>(
+                  initialValue: attendance,
+                  decoration: InputDecoration(
+                    labelText: context.tr('Attendance', 'الحضور'),
+                  ),
+                  items: [
+                    DropdownMenuItem(
+                      value: 'present',
+                      child: Text(context.tr('Present', 'حاضر')),
+                    ),
+                    DropdownMenuItem(
+                      value: 'absent',
+                      child: Text(context.tr('Absent', 'غائب')),
+                    ),
+                  ],
+                  onChanged: (v) =>
+                      setLocal(() => attendance = v ?? attendance),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                TextField(
                   controller: remarksCtrl,
                   decoration: InputDecoration(
-                      labelText: context.tr('Remarks', 'ملاحظات'))),
-            ],
+                    labelText: context.tr('Remarks', 'ملاحظات'),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
+          actions: [
+            TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text(context.tr('Cancel', 'إلغاء'))),
-          FilledButton(
+              child: Text(context.tr('Cancel', 'إلغاء')),
+            ),
+            FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text(context.tr('Save', 'حفظ'))),
-        ],
+              child: Text(context.tr('Save', 'حفظ')),
+            ),
+          ],
+        ),
       ),
     ),
   );
@@ -1300,18 +1537,21 @@ Future<void> _showActivityDialog(
       remarks: remarksCtrl.text.trim(),
     );
   } else if (context.mounted && result == true) {
-    _toast(context, context.trRead('Activity name is required.', 'اسم النشاط مطلوب.'));
+    _toast(
+      context,
+      context.trRead('Activity name is required.', 'اسم النشاط مطلوب.'),
+    );
   }
-  nameCtrl.dispose();
-  typeCtrl.dispose();
-  remarksCtrl.dispose();
 }
 
 // ════════════════════════════ Contributions ════════════════════════════
 
 class ContributionsCard extends StatelessWidget {
-  const ContributionsCard(
-      {super.key, required this.member, required this.canManage});
+  const ContributionsCard({
+    super.key,
+    required this.member,
+    required this.canManage,
+  });
   final Member member;
   final bool canManage;
 
@@ -1329,8 +1569,10 @@ class ContributionsCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (items.isEmpty)
-                Text(context.tr('No contributions', 'لا توجد إسهامات'),
-                    style: Theme.of(context).textTheme.bodySmall),
+                Text(
+                  context.tr('No contributions', 'لا توجد إسهامات'),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               for (final c in items)
                 Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -1341,14 +1583,20 @@ class ContributionsCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(c.title,
-                                style: Theme.of(context).textTheme.titleSmall),
+                            Text(
+                              c.title,
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
                             if (c.description.isNotEmpty)
-                              Text(c.description,
-                                  style: Theme.of(context).textTheme.bodySmall),
+                              Text(
+                                c.description,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
                             if (c.date.isNotEmpty)
-                              Text(c.date,
-                                  style: Theme.of(context).textTheme.bodySmall),
+                              Text(
+                                c.date,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
                           ],
                         ),
                       ),
@@ -1362,13 +1610,20 @@ class ContributionsCard extends StatelessWidget {
                         ),
                         IconButton(
                           visualDensity: VisualDensity.compact,
-                          icon: const Icon(Icons.delete_outline,
-                              size: 18, color: AppColors.error),
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            size: 18,
+                            color: AppColors.error,
+                          ),
                           onPressed: () async {
-                            final ok = await confirmDialog(context,
-                                title: context.trRead(
-                                    'Delete contribution?', 'حذف الإسهام؟'),
-                                message: c.title);
+                            final ok = await confirmDialog(
+                              context,
+                              title: context.trRead(
+                                'Delete contribution?',
+                                'حذف الإسهام؟',
+                              ),
+                              message: c.title,
+                            );
                             if (ok) await repo.deleteContribution(c.id);
                           },
                         ),
@@ -1402,110 +1657,138 @@ Widget _statusPill(BuildContext context, String status) {
     ),
     child: Text(
       active ? context.tr('Active', 'نشط') : context.tr('Completed', 'مكتمل'),
-      style: Theme.of(context)
-          .textTheme
-          .labelSmall
-          ?.copyWith(color: color, fontWeight: FontWeight.w700),
+      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+        color: color,
+        fontWeight: FontWeight.w700,
+      ),
     ),
   );
 }
 
-Future<void> _showContributionDialog(BuildContext context,
-    MemberRepository repo, Member member, MemberContribution? existing) async {
+Future<void> _showContributionDialog(
+  BuildContext context,
+  MemberRepository repo,
+  Member member,
+  MemberContribution? existing,
+) async {
   final titleCtrl = TextEditingController(text: existing?.title ?? '');
   final descCtrl = TextEditingController(text: existing?.description ?? '');
   String date = existing?.date ?? '';
   String status = existing?.status ?? 'active';
   final result = await showDialog<bool>(
     context: context,
-    builder: (context) => StatefulBuilder(
-      builder: (context, setLocal) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Text(existing == null
-            ? context.tr('Add Contribution', 'إضافة إسهام')
-            : context.tr('Edit Contribution', 'تعديل الإسهام')),
-        content: SizedBox(
-          width: 380,
-          child: SingleChildScrollView(child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                  controller: titleCtrl,
-                  decoration:
-                      InputDecoration(labelText: context.tr('Title', 'العنوان'))),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
-                  controller: descCtrl,
-                  maxLines: 2,
-                  decoration: InputDecoration(
-                      labelText: context.tr('Description', 'الوصف'))),
-              const SizedBox(height: AppSpacing.md),
-              InkWell(
-                onTap: () async {
-                  final picked = await _pickDate(context, date);
-                  if (picked != null) setLocal(() => date = picked);
-                },
-                child: InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: context.tr('Date', 'التاريخ'),
-                    suffixIcon:
-                        const Icon(Icons.calendar_today_outlined, size: 18),
+    builder: (context) => _ControllerScope(
+      controllers: [titleCtrl, descCtrl],
+      child: StatefulBuilder(
+        builder: (context, setLocal) => AlertDialog(
+          backgroundColor: AppColors.surface,
+          title: Text(
+            existing == null
+                ? context.tr('Add Contribution', 'إضافة إسهام')
+                : context.tr('Edit Contribution', 'تعديل الإسهام'),
+          ),
+          content: SizedBox(
+            width: 380,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: titleCtrl,
+                    decoration: InputDecoration(
+                      labelText: context.tr('Title', 'العنوان'),
+                    ),
                   ),
-                  child: Text(date.isEmpty ? '—' : date),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              DropdownButtonFormField<String>(
-                initialValue: status,
-                decoration:
-                    InputDecoration(labelText: context.tr('Status', 'الحالة')),
-                items: [
-                  DropdownMenuItem(
-                      value: 'active', child: Text(context.tr('Active', 'نشط'))),
-                  DropdownMenuItem(
-                      value: 'completed',
-                      child: Text(context.tr('Completed', 'مكتمل'))),
+                  const SizedBox(height: AppSpacing.md),
+                  TextField(
+                    controller: descCtrl,
+                    maxLines: 2,
+                    decoration: InputDecoration(
+                      labelText: context.tr('Description', 'الوصف'),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  InkWell(
+                    onTap: () async {
+                      final picked = await _pickDate(context, date);
+                      if (picked != null) setLocal(() => date = picked);
+                    },
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: context.tr('Date', 'التاريخ'),
+                        suffixIcon: const Icon(
+                          Icons.calendar_today_outlined,
+                          size: 18,
+                        ),
+                      ),
+                      child: Text(date.isEmpty ? '—' : date),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  DropdownButtonFormField<String>(
+                    initialValue: status,
+                    decoration: InputDecoration(
+                      labelText: context.tr('Status', 'الحالة'),
+                    ),
+                    items: [
+                      DropdownMenuItem(
+                        value: 'active',
+                        child: Text(context.tr('Active', 'نشط')),
+                      ),
+                      DropdownMenuItem(
+                        value: 'completed',
+                        child: Text(context.tr('Completed', 'مكتمل')),
+                      ),
+                    ],
+                    onChanged: (v) => status = v ?? status,
+                  ),
                 ],
-                onChanged: (v) => status = v ?? status,
               ),
-            ],
-          )),
-        ),
-        actions: [
-          TextButton(
+            ),
+          ),
+          actions: [
+            TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text(context.tr('Cancel', 'إلغاء'))),
-          FilledButton(
+              child: Text(context.tr('Cancel', 'إلغاء')),
+            ),
+            FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text(context.tr('Save', 'حفظ'))),
-        ],
+              child: Text(context.tr('Save', 'حفظ')),
+            ),
+          ],
+        ),
       ),
     ),
   );
   if (result == true && titleCtrl.text.trim().isNotEmpty) {
     if (existing == null) {
       await repo.addContribution(
-          memberId: member.id,
-          title: titleCtrl.text.trim(),
-          description: descCtrl.text.trim(),
-          date: date,
-          status: status);
+        memberId: member.id,
+        title: titleCtrl.text.trim(),
+        description: descCtrl.text.trim(),
+        date: date,
+        status: status,
+      );
     } else {
-      await repo.updateContribution(existing.id,
-          title: titleCtrl.text.trim(),
-          description: descCtrl.text.trim(),
-          date: date,
-          status: status);
+      await repo.updateContribution(
+        existing.id,
+        title: titleCtrl.text.trim(),
+        description: descCtrl.text.trim(),
+        date: date,
+        status: status,
+      );
     }
   }
-  titleCtrl.dispose();
-  descCtrl.dispose();
 }
 
 // ════════════════════════════ Organizational Roles ════════════════════════════
 
 class OrgRolesCard extends StatelessWidget {
-  const OrgRolesCard({super.key, required this.member, required this.canManage});
+  const OrgRolesCard({
+    super.key,
+    required this.member,
+    required this.canManage,
+  });
   final Member member;
   final bool canManage;
 
@@ -1523,8 +1806,10 @@ class OrgRolesCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (roles.isEmpty)
-                Text(context.tr('No roles recorded', 'لا توجد أدوار'),
-                    style: Theme.of(context).textTheme.bodySmall),
+                Text(
+                  context.tr('No roles recorded', 'لا توجد أدوار'),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               for (final r in roles)
                 Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -1535,14 +1820,17 @@ class OrgRolesCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(r.positionTitle,
-                                style: Theme.of(context).textTheme.titleSmall),
+                            Text(
+                              r.positionTitle,
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
                             Text(
                               [
                                 r.department,
-                                [r.startDate, r.endDate]
-                                    .where((s) => s.isNotEmpty)
-                                    .join(' – ')
+                                [
+                                  r.startDate,
+                                  r.endDate,
+                                ].where((s) => s.isNotEmpty).join(' – '),
                               ].where((s) => s.isNotEmpty).join(' · '),
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
@@ -1559,13 +1847,20 @@ class OrgRolesCard extends StatelessWidget {
                         ),
                         IconButton(
                           visualDensity: VisualDensity.compact,
-                          icon: const Icon(Icons.delete_outline,
-                              size: 18, color: AppColors.error),
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            size: 18,
+                            color: AppColors.error,
+                          ),
                           onPressed: () async {
-                            final ok = await confirmDialog(context,
-                                title: context.trRead(
-                                    'Delete role?', 'حذف الدور؟'),
-                                message: r.positionTitle);
+                            final ok = await confirmDialog(
+                              context,
+                              title: context.trRead(
+                                'Delete role?',
+                                'حذف الدور؟',
+                              ),
+                              message: r.positionTitle,
+                            );
                             if (ok) await repo.deleteRole(r.id);
                           },
                         ),
@@ -1586,8 +1881,12 @@ class OrgRolesCard extends StatelessWidget {
   }
 }
 
-Future<void> _showRoleDialog(BuildContext context, MemberRepository repo,
-    Member member, MemberRole? existing) async {
+Future<void> _showRoleDialog(
+  BuildContext context,
+  MemberRepository repo,
+  Member member,
+  MemberRole? existing,
+) async {
   final titleCtrl = TextEditingController(text: existing?.positionTitle ?? '');
   final deptCtrl = TextEditingController(text: existing?.department ?? '');
   String startDate = existing?.startDate ?? '';
@@ -1595,104 +1894,134 @@ Future<void> _showRoleDialog(BuildContext context, MemberRepository repo,
   String status = existing?.status ?? 'active';
   final result = await showDialog<bool>(
     context: context,
-    builder: (context) => StatefulBuilder(
-      builder: (context, setLocal) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Text(existing == null
-            ? context.tr('Add Role', 'إضافة دور')
-            : context.tr('Edit Role', 'تعديل الدور')),
-        content: SizedBox(
-          width: 380,
-          child: SingleChildScrollView(child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                  controller: titleCtrl,
-                  decoration: InputDecoration(
-                      labelText: context.tr('Position Title', 'المسمى الوظيفي'))),
-              const SizedBox(height: AppSpacing.md),
-              TextField(
-                  controller: deptCtrl,
-                  decoration: InputDecoration(
-                      labelText: context.tr('Department', 'القسم'))),
-              const SizedBox(height: AppSpacing.md),
-              Row(
+    builder: (context) => _ControllerScope(
+      controllers: [titleCtrl, deptCtrl],
+      child: StatefulBuilder(
+        builder: (context, setLocal) => AlertDialog(
+          backgroundColor: AppColors.surface,
+          title: Text(
+            existing == null
+                ? context.tr('Add Role', 'إضافة دور')
+                : context.tr('Edit Role', 'تعديل الدور'),
+          ),
+          content: SizedBox(
+            width: 380,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: () async {
-                        final picked = await _pickDate(context, startDate);
-                        if (picked != null) setLocal(() => startDate = picked);
-                      },
-                      child: InputDecorator(
-                        decoration: InputDecoration(
-                            labelText: context.tr('Start Date', 'تاريخ البدء')),
-                        child: Text(startDate.isEmpty ? '—' : startDate),
-                      ),
+                  TextField(
+                    controller: titleCtrl,
+                    decoration: InputDecoration(
+                      labelText: context.tr('Position Title', 'المسمى الوظيفي'),
                     ),
                   ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: InkWell(
-                      onTap: () async {
-                        final picked = await _pickDate(context, endDate);
-                        if (picked != null) setLocal(() => endDate = picked);
-                      },
-                      child: InputDecorator(
-                        decoration: InputDecoration(
-                            labelText: context.tr('End Date', 'تاريخ الانتهاء')),
-                        child: Text(endDate.isEmpty ? '—' : endDate),
-                      ),
+                  const SizedBox(height: AppSpacing.md),
+                  TextField(
+                    controller: deptCtrl,
+                    decoration: InputDecoration(
+                      labelText: context.tr('Department', 'القسم'),
                     ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: () async {
+                            final picked = await _pickDate(context, startDate);
+                            if (picked != null) {
+                              setLocal(() => startDate = picked);
+                            }
+                          },
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              labelText: context.tr(
+                                'Start Date',
+                                'تاريخ البدء',
+                              ),
+                            ),
+                            child: Text(startDate.isEmpty ? '—' : startDate),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () async {
+                            final picked = await _pickDate(context, endDate);
+                            if (picked != null) {
+                              setLocal(() => endDate = picked);
+                            }
+                          },
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              labelText: context.tr(
+                                'End Date',
+                                'تاريخ الانتهاء',
+                              ),
+                            ),
+                            child: Text(endDate.isEmpty ? '—' : endDate),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  DropdownButtonFormField<String>(
+                    initialValue: status,
+                    decoration: InputDecoration(
+                      labelText: context.tr('Status', 'الحالة'),
+                    ),
+                    items: [
+                      DropdownMenuItem(
+                        value: 'active',
+                        child: Text(context.tr('Active', 'نشط')),
+                      ),
+                      DropdownMenuItem(
+                        value: 'completed',
+                        child: Text(context.tr('Completed', 'منتهٍ')),
+                      ),
+                    ],
+                    onChanged: (v) => status = v ?? status,
                   ),
                 ],
               ),
-              const SizedBox(height: AppSpacing.md),
-              DropdownButtonFormField<String>(
-                initialValue: status,
-                decoration:
-                    InputDecoration(labelText: context.tr('Status', 'الحالة')),
-                items: [
-                  DropdownMenuItem(
-                      value: 'active', child: Text(context.tr('Active', 'نشط'))),
-                  DropdownMenuItem(
-                      value: 'completed',
-                      child: Text(context.tr('Completed', 'منتهٍ'))),
-                ],
-                onChanged: (v) => status = v ?? status,
-              ),
-            ],
-          )),
-        ),
-        actions: [
-          TextButton(
+            ),
+          ),
+          actions: [
+            TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text(context.tr('Cancel', 'إلغاء'))),
-          FilledButton(
+              child: Text(context.tr('Cancel', 'إلغاء')),
+            ),
+            FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text(context.tr('Save', 'حفظ'))),
-        ],
+              child: Text(context.tr('Save', 'حفظ')),
+            ),
+          ],
+        ),
       ),
     ),
   );
   if (result == true && titleCtrl.text.trim().isNotEmpty) {
     if (existing == null) {
       await repo.addRole(
-          memberId: member.id,
-          positionTitle: titleCtrl.text.trim(),
-          department: deptCtrl.text.trim(),
-          startDate: startDate,
-          endDate: endDate,
-          status: status);
+        memberId: member.id,
+        positionTitle: titleCtrl.text.trim(),
+        department: deptCtrl.text.trim(),
+        startDate: startDate,
+        endDate: endDate,
+        status: status,
+      );
     } else {
-      await repo.updateRole(existing.id,
-          positionTitle: titleCtrl.text.trim(),
-          department: deptCtrl.text.trim(),
-          startDate: startDate,
-          endDate: endDate,
-          status: status);
+      await repo.updateRole(
+        existing.id,
+        positionTitle: titleCtrl.text.trim(),
+        department: deptCtrl.text.trim(),
+        startDate: startDate,
+        endDate: endDate,
+        status: status,
+      );
     }
   }
-  titleCtrl.dispose();
-  deptCtrl.dispose();
 }

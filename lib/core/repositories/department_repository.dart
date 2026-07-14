@@ -1,13 +1,14 @@
 import 'package:drift/drift.dart';
 
 import '../data/app_database.dart';
+import '../data/models.dart';
 
 /// Departments and their activities.
 class DepartmentRepository {
   DepartmentRepository(this._db);
   final AppDatabase _db;
 
-  String _id(String p) => '${p}_${DateTime.now().microsecondsSinceEpoch}';
+  String _id(String p) => newId(p);
 
   // ── Departments ──────────────────────────────────────────────────────────
   Stream<List<Department>> watchAll() => (_db.select(_db.departments)
@@ -52,52 +53,10 @@ class DepartmentRepository {
   Future<void> update(String id, DepartmentsCompanion data) =>
       (_db.update(_db.departments)..where((d) => d.id.equals(id))).write(data);
 
-  // ── Head of Department (an assigned existing member) ──────────────────────
-  /// Assigns (or clears, with null) the member who heads a department.
-  Future<void> assignHead(String departmentId, String? memberId) =>
-      (_db.update(_db.departments)..where((d) => d.id.equals(departmentId)))
-          .write(DepartmentsCompanion(headMemberId: Value(memberId)));
-
-  /// The member currently heading [departmentId], or null when unassigned.
-  Stream<Member?> watchHead(String departmentId) {
-    final query = _db.select(_db.members).join([
-      innerJoin(_db.departments,
-          _db.departments.headMemberId.equalsExp(_db.members.id)),
-    ])
-      ..where(_db.departments.id.equals(departmentId));
-    return query.watchSingleOrNull().map((row) => row?.readTable(_db.members));
-  }
-
-  // ── Department staff (existing members) ───────────────────────────────────
-  /// Members assigned as staff of [departmentId], by name.
-  Stream<List<Member>> watchStaff(String departmentId) {
-    final query = _db.select(_db.departmentStaff).join([
-      innerJoin(_db.members,
-          _db.members.id.equalsExp(_db.departmentStaff.memberId)),
-    ])
-      ..where(_db.departmentStaff.departmentId.equals(departmentId))
-      ..orderBy([OrderingTerm(expression: _db.members.firstName)]);
-    return query
-        .watch()
-        .map((rows) => rows.map((r) => r.readTable(_db.members)).toList());
-  }
-
-  Future<void> addStaff(String departmentId, String memberId) =>
-      _db.into(_db.departmentStaff).insert(
-            DepartmentStaffCompanion.insert(
-              id: _id('staff'),
-              departmentId: departmentId,
-              memberId: memberId,
-            ),
-            mode: InsertMode.insertOrIgnore,
-          );
-
-  Future<void> removeStaff(String departmentId, String memberId) =>
-      (_db.delete(_db.departmentStaff)
-            ..where((s) =>
-                s.departmentId.equals(departmentId) &
-                s.memberId.equals(memberId)))
-          .go();
+  // Heads and staff are manually entered position holders stored in the
+  // Leaders table under `dept_head_<id>` / `dept_staff_<id>` category codes —
+  // see LeaderRepository. The legacy headMemberId column and DepartmentStaff
+  // table remain in the schema but are no longer written.
 
   Future<void> delete(String id) async {
     await _db.transaction(() async {

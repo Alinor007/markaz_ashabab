@@ -4,21 +4,32 @@ import 'package:provider/provider.dart';
 
 import '../../core/auth/session_controller.dart';
 import '../../core/data/app_database.dart';
-import '../../core/data/models.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/repositories/audit_repository.dart';
 import '../../core/repositories/leader_repository.dart';
-import '../../core/repositories/member_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_typography.dart';
-import '../../widgets/common/member_picker.dart';
 import '../../widgets/feedback/empty_state.dart';
 import '../../widgets/feedback/loading_state.dart';
 import '../../widgets/layout/module_page.dart';
 import '../tarbiya/widgets/confirm_dialog.dart';
 import '../tarbiya/widgets/name_form_dialog.dart';
+import 'leadership_assign_dialog.dart';
 import 'widgets/leader_medallion.dart';
+
+/// Initials from a free-text holder name: first + last word, or the first two
+/// letters of a single word.
+String _initialsOf(String name) {
+  final parts = name.replaceAll('.', '').trim().split(RegExp(r'\s+'));
+  if (parts.isEmpty || parts.first.isEmpty) return '';
+  if (parts.length == 1) {
+    return parts.first
+        .substring(0, parts.first.length >= 2 ? 2 : 1)
+        .toUpperCase();
+  }
+  return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
+}
 
 /// A leadership positions screen for one category [code] — Office of the
 /// President (`office_president`), Board of Trustees (`board`), or one of the
@@ -249,21 +260,34 @@ class _PositionsGroup extends StatelessWidget {
   }
 
   Future<void> _assign(BuildContext context, Leader p) async {
-    final repo = context.read<MemberRepository>();
-    final picked = await pickMember(context, repo,
-        title: context.trRead('Assign a Member', 'تعيين عضو'));
-    if (picked == null || !context.mounted) return;
-    await _leaders(context).assignMember(p.id, picked.id);
+    final leaders = _leaders(context);
+    final assigned = p.name.trim().isNotEmpty;
+    PositionHolderResult? existing;
+    if (assigned) {
+      final sections = await leaders.watchLeaderSections(p.id).first;
+      if (!context.mounted) return;
+      existing = (
+        name: p.name,
+        photoPath: p.photoPath,
+        sections: [for (final s in sections) (title: s.title, body: s.body)],
+      );
+    }
+    final r = await showAssignPersonDialog(context,
+        positionTitle: p.position, existing: existing);
+    if (r == null || !context.mounted) return;
+    await leaders.setPositionHolder(p.id,
+        name: r.name, photoPath: r.photoPath.trim().isEmpty ? '' : r.photoPath);
+    await leaders.setLeaderSections(p.id, r.sections);
     if (!context.mounted) return;
     await _audit(context).log(
       username: _actor(context),
-      action: 'Assigned "${picked.fullName}" as ${p.position}',
+      action: 'Assigned "${r.name}" as ${p.position}',
       module: 'Leadership',
     );
   }
 
   Future<void> _clear(BuildContext context, Leader p) async {
-    await _leaders(context).assignMember(p.id, null);
+    await _leaders(context).clearPositionHolder(p.id);
     if (!context.mounted) return;
     await _audit(context).log(
       username: _actor(context),
@@ -534,45 +558,39 @@ class _PositionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final repo = context.read<LeaderRepository>();
-    return StreamBuilder<Member?>(
-      stream: repo.watchAssignedMember(position.id),
-      builder: (context, snap) {
-        final member = snap.data;
-        return Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: AppRadius.panel,
-            border: Border.all(
-                color: AppColors.border, width: prominent ? 1.5 : 1),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.charcoal.withValues(alpha: 0.05),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: AppRadius.panel,
+        border:
+            Border.all(color: AppColors.border, width: prominent ? 1.5 : 1),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.charcoal.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _cover(context, member),
-              _body(context, member),
-            ],
-          ),
-        );
-      },
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _cover(context),
+          _body(context),
+        ],
+      ),
     );
   }
 
   /// The full-bleed portrait cover that fades into the white body, with the gold
   /// office tag and (for managers) a discreet actions menu.
-  Widget _cover(BuildContext context, Member? member) {
+  Widget _cover(BuildContext context) {
+    final assigned = position.name.trim().isNotEmpty;
     final cover = LeaderCover(
-      assigned: member != null,
-      initials: member?.initials ?? '',
-      imagePath: member?.photoPath,
+      assigned: assigned,
+      initials: _initialsOf(position.name),
+      imagePath: position.photoPath,
       accent: AppColors.emerald,
     );
     return AspectRatio(
@@ -581,9 +599,9 @@ class _PositionCard extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           // Tapping a filled portrait opens the view-only leader profile.
-          if (member != null)
+          if (assigned)
             InkWell(
-              onTap: () => context.push('/leadership/member/${member.id}'),
+              onTap: () => context.push('/leadership/position/${position.id}'),
               child: cover,
             )
           else
@@ -593,7 +611,7 @@ class _PositionCard extends StatelessWidget {
               top: AppSpacing.sm,
               start: AppSpacing.sm,
               child: _ManageMenu(
-                member: member,
+                assigned: assigned,
                 onAssign: onAssign,
                 onClear: onClear,
                 onEdit: onEdit,
@@ -610,12 +628,13 @@ class _PositionCard extends StatelessWidget {
     );
   }
 
-  /// The white lower section: name (serif), Arabic name (gold), office, and the
+  /// The white lower section: the holder's name (serif), the office, and the
   /// optional term line.
-  Widget _body(BuildContext context, Member? member) {
+  Widget _body(BuildContext context) {
     final office = position.position;
-    final name = member?.displayName() ??
-        context.tr('Vacant Position', 'منصب شاغر');
+    final name = position.name.trim().isNotEmpty
+        ? position.name
+        : context.tr('Vacant Position', 'منصب شاغر');
     return Padding(
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.lg, AppSpacing.xs, AppSpacing.lg, AppSpacing.lg),
@@ -672,14 +691,14 @@ class _PositionCard extends StatelessWidget {
 /// assign/reassign, edit, unassign, and delete.
 class _ManageMenu extends StatelessWidget {
   const _ManageMenu({
-    required this.member,
+    required this.assigned,
     required this.onAssign,
     required this.onClear,
     required this.onEdit,
     required this.onDelete,
   });
 
-  final Member? member;
+  final bool assigned;
   final VoidCallback onAssign;
   final VoidCallback onClear;
   final VoidCallback onEdit;
@@ -704,13 +723,13 @@ class _ManageMenu extends StatelessWidget {
         itemBuilder: (_) => [
           PopupMenuItem(
               value: 'assign',
-              child: Text(member == null
-                  ? context.trRead('Assign member', 'تعيين عضو')
-                  : context.trRead('Reassign member', 'إعادة تعيين عضو'))),
+              child: Text(assigned
+                  ? context.trRead('Reassign', 'إعادة تعيين')
+                  : context.trRead('Assign', 'تعيين'))),
           PopupMenuItem(
               value: 'edit',
               child: Text(context.trRead('Edit position', 'تعديل المنصب'))),
-          if (member != null)
+          if (assigned)
             PopupMenuItem(
                 value: 'clear',
                 child: Text(context.trRead('Unassign', 'إلغاء التعيين'))),

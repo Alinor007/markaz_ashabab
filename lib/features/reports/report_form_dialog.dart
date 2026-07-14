@@ -527,7 +527,6 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
   }
 
   List<Widget> _sections(BuildContext context, bool locked) {
-    final leadOffice = _leadOfficeName(context.isArabic);
     return [
       _section('A', context.tr('Basic Information', 'المعلومات الأساسية')),
       if (!locked) ...[
@@ -546,21 +545,10 @@ class _ReportFormDialogState extends State<_ReportFormDialog> {
       ],
       _field(_programTitle, '${context.tr('Program Title', 'عنوان البرنامج')} *',
           required: true, focusNode: _titleFocus),
-      _row2(
-        // Lead Office is auto-filled with the (locked/selected) department.
-        Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.md),
-          child: InputDecorator(
-            decoration: _dec(context.tr('Lead Office', 'المكتب الرئيسي')),
-            child: Text(
-              leadOffice.isEmpty ? '—' : leadOffice,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ),
-        ),
+      
         _field(_supportOffices,
             context.tr('Support Offices', 'المكاتب المساندة')),
-      ),
+    
       _row2(
         _dateField(context),
         _field(_venue, context.tr('Venue / Location', 'المكان / الموقع')),

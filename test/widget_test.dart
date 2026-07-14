@@ -239,7 +239,7 @@ void main() {
       expect(await tarbiya.watchMasul(shubaId).first, isNull);
     });
 
-    test('wives, naqib & usra members', () async {
+    test('wives, naqib & derived usra members', () async {
       final id1 = await seedMember();
       final area = await testArea();
       final shuba = (await tarbiya.watchShubas(area.id).first).single;
@@ -263,19 +263,21 @@ void main() {
       final all = await members.searchMembers('');
       expect(all.map((m) => m.id), containsAll([id1, id2]));
 
-      // Usra members are explicit links to existing members.
-      await members.addUsraMember(id1, id2);
-      expect((await members.watchUsraMembers(id1).first).single.id, id2);
-
-      // Naqib is a self-reference stored on the member.
+      // Naqib is a self-reference stored on the member; the class students
+      // are derived from everyone who shares the same Naqib.
       await members.updateMember(
           id1, MembersCompanion(naqibMemberId: Value(id2)));
       expect((await members.getMember(id1))!.naqibMemberId, id2);
+      expect((await members.watchMembersOfNaqib(id2).first).single.id, id1);
+      // A classmate query excludes the member being viewed.
+      expect(
+          await members.watchMembersOfNaqib(id2, excludeId: id1).first,
+          isEmpty);
 
-      // Deleting the linked member cascades the usra link and nulls the naqib.
+      // Deleting the Naqib nulls the reference and empties the class.
       await members.deleteMember(id2);
-      expect(await members.watchUsraMembers(id1).first, isEmpty);
       expect((await members.getMember(id1))!.naqibMemberId, isNull);
+      expect(await members.watchMembersOfNaqib(id2).first, isEmpty);
     });
   });
 
@@ -373,45 +375,51 @@ void main() {
       expect(await repo.count(), 0);
     });
 
-    test('department head member + staff assignment', () async {
-      final tarbiya = TarbiyaRepository(db);
-      final members = MemberRepository(db);
-      final depts = DepartmentRepository(db);
-      await tarbiya.createArea(name: 'Dept Area');
-      final area =
-          (await tarbiya.getAreas()).firstWhere((a) => a.name == 'Dept Area');
-      await tarbiya.createShuba(areaId: area.id, name: 'S');
-      final shuba = (await tarbiya.watchShubas(area.id).first).single;
-      final m1 = await members.insertMember(MembersCompanion(
-          shubaId: Value(shuba.id),
-          firstName: const Value('Omar'),
-          lastName: const Value('A')));
-      final m2 = await members.insertMember(MembersCompanion(
-          shubaId: Value(shuba.id),
-          firstName: const Value('Bilal'),
-          lastName: const Value('B')));
+    test('department head/staff holders: assign, edit, remove', () async {
+      final leaders = LeaderRepository(db);
+      // Heads/staff are manually entered holders stored in the Leaders table
+      // under per-department category codes (dawah is a seeded department).
+      const headCode = 'dept_head_dawah';
+      const staffCode = 'dept_staff_dawah';
 
-      // Head assignment fills then vacates (dawah is a seeded department).
-      // Read back via getById (a Future) rather than a stream, so the
-      // assertion is deterministic in the full suite.
-      await depts.assignHead('dawah', m1);
-      expect((await depts.getById('dawah'))!.headMemberId, m1);
-      await depts.assignHead('dawah', null);
-      expect((await depts.getById('dawah'))!.headMemberId, isNull);
+      // Assign a head with a biography section; reassigning edits in place.
+      final headId = await leaders.createHolder(
+        categoryCode: headCode,
+        positionTitle: 'Head of Dawah',
+        name: 'Omar A',
+        sections: const [(title: 'Bio', body: 'Serves the community.')],
+      );
+      var head = (await leaders.watchByCategoryCode(headCode).first).single;
+      expect(head.name, 'Omar A');
+      expect((await leaders.watchLeaderSections(headId).first).single.title,
+          'Bio');
 
-      // Staff: add (dedup), then remove.
-      Future<List<String>> staffIds() async => (await db
-              .select(db.departmentStaff)
-              .get())
-          .where((s) => s.departmentId == 'dawah')
-          .map((s) => s.memberId)
-          .toList();
-      await depts.addStaff('dawah', m1);
-      await depts.addStaff('dawah', m2);
-      await depts.addStaff('dawah', m1); // duplicate is ignored
-      expect(await staffIds(), unorderedEquals([m1, m2]));
-      await depts.removeStaff('dawah', m1);
-      expect(await staffIds(), [m2]);
+      await leaders.setPositionHolder(headId, name: 'Bilal B', photoPath: '');
+      await leaders.setLeaderSections(headId, const [
+        (title: 'Education', body: 'BA'),
+        (title: 'Service', body: 'Volunteer'),
+      ]);
+      head = (await leaders.watchByCategoryCode(headCode).first).single;
+      expect(head.name, 'Bilal B');
+      expect(await leaders.watchLeaderSections(headId).first, hasLength(2));
+
+      // Staff rows accumulate independently of the head.
+      await leaders.createHolder(
+          categoryCode: staffCode, positionTitle: 'Dawah Staff', name: 'S1');
+      final s2 = await leaders.createHolder(
+          categoryCode: staffCode, positionTitle: 'Dawah Staff', name: 'S2');
+      expect(await leaders.watchByCategoryCode(staffCode).first, hasLength(2));
+
+      // Removing one staff row leaves the rest; deleting both categories (as
+      // department deletion does) clears everything, sections included.
+      await leaders.delete(s2);
+      expect((await leaders.watchByCategoryCode(staffCode).first).single.name,
+          'S1');
+      await leaders.deleteCategory(headCode);
+      await leaders.deleteCategory(staffCode);
+      expect(await leaders.watchByCategoryCode(headCode).first, isEmpty);
+      expect(await leaders.watchByCategoryCode(staffCode).first, isEmpty);
+      expect(await leaders.watchLeaderSections(headId).first, isEmpty);
     });
   });
 
@@ -714,6 +722,54 @@ void main() {
 
       // The new shu'ba appears in the list.
       expect(find.text('Unit Alpha'), findsOneWidget);
+
+      await db.close();
+      await tester.pump();
+    });
+
+    testWidgets('assigning a department head shows in tab and card',
+        (tester) async {
+      useTabletSurface(tester);
+      final db = AppDatabase.memory();
+
+      await tester.pumpWidget(MarkazApp(database: db));
+      await tester.pumpAndSettle();
+      await signIn(tester);
+
+      // Departments → Education → Staffs tab.
+      await tester.tap(find.text('Departments'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Education'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Staffs'));
+      await tester.pumpAndSettle();
+      expect(find.text('Unassigned'), findsOneWidget);
+
+      // Assign a head by typing a name (bounded pumps: the dialog's text
+      // field cursor animation never settles).
+      await tester.tap(find.text('Assign'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.enterText(
+        find
+            .descendant(
+                of: find.byType(AlertDialog), matching: find.byType(TextField))
+            .first,
+        'Sheikh Ali Musa',
+      );
+      await tester.pump();
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      // The head shows in the Staffs tab (with the office as subtitle).
+      expect(find.text('Sheikh Ali Musa'), findsOneWidget);
+      expect(find.text('Unassigned'), findsNothing);
+
+      // And on the departments overview, the Education card footer shows the
+      // typed head name instead of "No head assigned".
+      await tester.tap(find.text('Back to Departments'));
+      await tester.pumpAndSettle();
+      expect(find.text('Sheikh Ali Musa'), findsOneWidget);
 
       await db.close();
       await tester.pump();

@@ -539,9 +539,68 @@ class PreviousLeaderSections extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// The hand-curated "Leadership Legacy" cards on the History page. Unlike
+/// [PreviousLeaders], these are NOT linked to a member — the name and photo are
+/// entered directly — so past leaders who were never in the member registry can
+/// still be honored.
+@DataClassName('HistoryLegacyLeader')
+@TableIndex(name: 'idx_history_legacy_leaders_sort', columns: {#sortOrder})
+class HistoryLegacyLeaders extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text().withDefault(const Constant(''))();
+  TextColumn get position => text().withDefault(const Constant(''))();
+  TextColumn get termYears => text().withDefault(const Constant(''))();
+
+  /// Absolute path to the stored portrait ('' when none).
+  TextColumn get photoPath => text().withDefault(const Constant(''))();
+  IntColumn get accent => integer().withDefault(const Constant(0xFF16243D))();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+  DateTimeColumn get createdAt =>
+      dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Repeatable biography sections (title + body) attached to a hand-curated
+/// [HistoryLegacyLeaders] entry — mirrors [PreviousLeaderSections] for the
+/// member-linked registry. Cascade-deleted with the owning leader.
+@DataClassName('HistoryLegacyLeaderSection')
+@TableIndex(
+    name: 'idx_history_legacy_sections_leader', columns: {#legacyLeaderId})
+class HistoryLegacyLeaderSections extends Table {
+  TextColumn get id => text()();
+  TextColumn get legacyLeaderId => text()
+      .references(HistoryLegacyLeaders, #id, onDelete: KeyAction.cascade)();
+  TextColumn get title => text().withDefault(const Constant(''))();
+  TextColumn get body => text().withDefault(const Constant(''))();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Repeatable biography sections (title + body) attached to a leadership
+/// position's current holder — the manually entered name + photo stored on the
+/// owning [Leaders] row. Cascade-deleted when the position is removed.
+@DataClassName('LeaderSection')
+@TableIndex(name: 'idx_leader_sections_leader', columns: {#leaderId})
+class LeaderSections extends Table {
+  TextColumn get id => text()();
+  TextColumn get leaderId =>
+      text().references(Leaders, #id, onDelete: KeyAction.cascade)();
+  TextColumn get title => text().withDefault(const Constant(''))();
+  TextColumn get body => text().withDefault(const Constant(''))();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 @DriftDatabase(tables: [
   Users,
   Leaders,
+  LeaderSections,
   AuditLogs,
   TarbiyaAreas,
   Shubas,
@@ -566,6 +625,8 @@ class PreviousLeaderSections extends Table {
   HistoryMilestones,
   PreviousLeaders,
   PreviousLeaderSections,
+  HistoryLegacyLeaders,
+  HistoryLegacyLeaderSections,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openOnDevice());
@@ -574,7 +635,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.memory() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 24;
+  int get schemaVersion => 27;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -733,6 +794,47 @@ class AppDatabase extends _$AppDatabase {
             // Children gain optional occupation / profession fields.
             await m.addColumn(memberChildren, memberChildren.occupation);
             await m.addColumn(memberChildren, memberChildren.profession);
+          }
+          if (from < 25) {
+            // A hand-curated Leadership Legacy (name + photo, no member link)
+            // backs the History page showcase in schema v25.
+            await m.createTable(historyLegacyLeaders);
+          }
+          if (from < 26) {
+            // Legacy leaders gain repeatable biography sections in schema v26.
+            await m.createTable(historyLegacyLeaderSections);
+          }
+          if (from < 27) {
+            // Leadership positions are now filled by a manually entered name +
+            // photo (with biography sections) rather than linking an existing
+            // member. Add the sections table, convert any existing member-linked
+            // assignments to the manual model, and reset the placeholder name on
+            // vacant positions so "vacant" reads as an empty name.
+            await m.createTable(leaderSections);
+            final rows = await select(leaders).get();
+            for (final l in rows) {
+              final mid = l.memberId;
+              if (mid != null) {
+                final mem = await (select(members)
+                      ..where((x) => x.id.equals(mid)))
+                    .getSingleOrNull();
+                final holderName = mem == null
+                    ? ''
+                    : [mem.firstName, mem.middleName, mem.lastName, mem.suffix]
+                        .where((s) => s.trim().isNotEmpty)
+                        .join(' ');
+                await (update(leaders)..where((x) => x.id.equals(l.id))).write(
+                  LeadersCompanion(
+                    name: Value(holderName),
+                    photoPath: Value(mem?.photoPath ?? ''),
+                    memberId: const Value(null),
+                  ),
+                );
+              } else if (l.name.trim() == l.position.trim()) {
+                await (update(leaders)..where((x) => x.id.equals(l.id)))
+                    .write(const LeadersCompanion(name: Value('')));
+              }
+            }
           }
         },
       );
@@ -974,8 +1076,10 @@ class AppDatabase extends _$AppDatabase {
     for (final (id, title, category, order) in seed) {
       await into(leaders).insert(
         LeadersCompanion.insert(
+          // Positions start vacant: the holder's name is entered manually when
+          // the position is filled, so the seeded name is empty.
           id: id,
-          name: title,
+          name: '',
           position: title,
           category: category,
           sortOrder: Value(order),

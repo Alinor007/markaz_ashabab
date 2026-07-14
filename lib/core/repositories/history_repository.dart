@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 
 import '../data/app_database.dart';
+import '../data/models.dart';
+import '../util/photo_service.dart';
 
 /// A story paragraph parsed from the History content's narrative.
 typedef HistoryParagraph = ({String en});
@@ -18,12 +20,13 @@ typedef HistoryFact = ({
 /// Reads and edits the History page content (a singleton row) and its
 /// milestones timeline. Executives edit; everyone reads.
 class HistoryRepository {
-  HistoryRepository(this._db);
+  HistoryRepository(this._db, [this._photos = const PhotoService()]);
   final AppDatabase _db;
+  final PhotoService _photos;
 
   static const _rowId = 'history';
 
-  String _id(String p) => '${p}_${DateTime.now().microsecondsSinceEpoch}';
+  String _id(String p) => newId(p);
 
   // ── Singleton content ──────────────────────────────────────────────────────
   Stream<HistoryContent?> watchContent() =>
@@ -144,4 +147,99 @@ class HistoryRepository {
 
   Future<void> deleteMilestone(String id) =>
       (_db.delete(_db.historyMilestones)..where((m) => m.id.equals(id))).go();
+
+  // ── Leadership Legacy (hand-curated, not member-linked) ─────────────────────
+  Stream<List<HistoryLegacyLeader>> watchLegacyLeaders() =>
+      (_db.select(_db.historyLegacyLeaders)
+            ..orderBy([
+              (l) => OrderingTerm(expression: l.sortOrder),
+              (l) => OrderingTerm(expression: l.createdAt),
+            ]))
+          .watch();
+
+  Stream<HistoryLegacyLeader?> watchLegacyLeader(String id) =>
+      (_db.select(_db.historyLegacyLeaders)..where((l) => l.id.equals(id)))
+          .watchSingleOrNull();
+
+  Future<String> addLegacyLeader({
+    required String name,
+    required String position,
+    required String termYears,
+    required String photoPath,
+    required int accent,
+  }) async {
+    final all = await _db.select(_db.historyLegacyLeaders).get();
+    final nextSort =
+        all.fold<int>(0, (m, e) => e.sortOrder >= m ? e.sortOrder + 1 : m);
+    final id = _id('legacyleader');
+    await _db.into(_db.historyLegacyLeaders).insert(
+          HistoryLegacyLeadersCompanion.insert(
+            id: id,
+            name: Value(name),
+            position: Value(position),
+            termYears: Value(termYears),
+            photoPath: Value(photoPath),
+            accent: Value(accent),
+            sortOrder: Value(nextSort),
+          ),
+        );
+    return id;
+  }
+
+  Future<void> updateLegacyLeader(
+    String id, {
+    required String name,
+    required String position,
+    required String termYears,
+    required int accent,
+    // Only overwrite the photo when a new value is supplied.
+    String? photoPath,
+  }) =>
+      (_db.update(_db.historyLegacyLeaders)..where((l) => l.id.equals(id)))
+          .write(HistoryLegacyLeadersCompanion(
+        name: Value(name),
+        position: Value(position),
+        termYears: Value(termYears),
+        accent: Value(accent),
+        photoPath:
+            photoPath == null ? const Value.absent() : Value(photoPath),
+      ));
+
+  Future<void> deleteLegacyLeader(String id) async {
+    final row = await (_db.select(_db.historyLegacyLeaders)
+          ..where((l) => l.id.equals(id)))
+        .getSingleOrNull();
+    // Biography sections cascade-delete with the owning leader (FK).
+    await (_db.delete(_db.historyLegacyLeaders)..where((l) => l.id.equals(id)))
+        .go();
+    await _photos.deleteStored(row?.photoPath);
+  }
+
+  // ── Legacy leader biography sections (repeatable title + body) ──────────────
+  Stream<List<HistoryLegacyLeaderSection>> watchLegacySections(
+          String legacyLeaderId) =>
+      (_db.select(_db.historyLegacyLeaderSections)
+            ..where((s) => s.legacyLeaderId.equals(legacyLeaderId))
+            ..orderBy([(s) => OrderingTerm(expression: s.sortOrder)]))
+          .watch();
+
+  Future<void> addLegacySection({
+    required String legacyLeaderId,
+    required String title,
+    required String body,
+    required int sortOrder,
+  }) =>
+      _db.into(_db.historyLegacyLeaderSections).insert(
+            HistoryLegacyLeaderSectionsCompanion.insert(
+              id: _id('legacysection'),
+              legacyLeaderId: legacyLeaderId,
+              title: Value(title),
+              body: Value(body),
+              sortOrder: Value(sortOrder),
+            ),
+          );
+
+  Future<void> deleteLegacySection(String id) =>
+      (_db.delete(_db.historyLegacyLeaderSections)..where((s) => s.id.equals(id)))
+          .go();
 }

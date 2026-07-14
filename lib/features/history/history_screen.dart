@@ -7,11 +7,9 @@ import 'package:provider/provider.dart';
 
 import '../../core/auth/session_controller.dart';
 import '../../core/data/app_database.dart';
-import '../../core/data/models.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/patterns/geometric_pattern.dart';
 import '../../core/repositories/history_repository.dart';
-import '../../core/repositories/leader_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_typography.dart';
@@ -114,9 +112,9 @@ class HistoryScreen extends StatelessWidget {
                     isArabic: isArabic, canManage: canManage),
               ),
               const SizedBox(height: AppSpacing.xxl),
-              const DocReveal(
+              DocReveal(
                 delayMs: 400,
-                child: _PreviousLeadershipSection(),
+                child: _PreviousLeadershipSection(canManage: canManage),
               ),
               const SizedBox(height: AppSpacing.xl),
             ],
@@ -1128,28 +1126,92 @@ class _MilestoneCard extends StatelessWidget {
 
 // ════════════════════════════ Leadership Legacy ════════════════════════
 
-/// "Leadership Legacy" — the President from each previous term shown as premium
-/// cards, with a link to the full Previous Leadership screen.
+/// "Leadership Legacy" — a hand-curated showcase of former leaders. Each entry
+/// is entered directly (a typed name + attached photo, no member link), so past
+/// leaders who were never in the member registry can still be honored.
+/// Executives (manageContent) add / edit / remove; everyone reads.
 class _PreviousLeadershipSection extends StatelessWidget {
-  const _PreviousLeadershipSection();
+  const _PreviousLeadershipSection({required this.canManage});
+  final bool canManage;
+
+  Future<void> _add(BuildContext context, HistoryRepository repo) async {
+    final r = await editLegacyLeader(context);
+    if (r == null) return;
+    final id = await repo.addLegacyLeader(
+      name: r.name,
+      position: r.position,
+      termYears: r.termYears,
+      photoPath: r.photoPath,
+      accent: r.accent,
+    );
+    for (var i = 0; i < r.sections.length; i++) {
+      await repo.addLegacySection(
+        legacyLeaderId: id,
+        title: r.sections[i].title,
+        body: r.sections[i].body,
+        sortOrder: i,
+      );
+    }
+  }
+
+  Future<void> _edit(BuildContext context, HistoryRepository repo,
+      HistoryLegacyLeader leader) async {
+    final existingSections = await repo.watchLegacySections(leader.id).first;
+    if (!context.mounted) return;
+    final r = await editLegacyLeader(context,
+        existing: (
+          name: leader.name,
+          position: leader.position,
+          termYears: leader.termYears,
+          photoPath: leader.photoPath,
+          accent: leader.accent,
+          sections: [
+            for (final s in existingSections)
+              (title: s.title, body: s.body),
+          ],
+        ));
+    if (r == null) return;
+    await repo.updateLegacyLeader(
+      leader.id,
+      name: r.name,
+      position: r.position,
+      termYears: r.termYears,
+      accent: r.accent,
+      photoPath: r.photoPath,
+    );
+    // Reconcile sections: drop the old rows, then re-insert from the form.
+    for (final s in await repo.watchLegacySections(leader.id).first) {
+      await repo.deleteLegacySection(s.id);
+    }
+    for (var i = 0; i < r.sections.length; i++) {
+      await repo.addLegacySection(
+        legacyLeaderId: leader.id,
+        title: r.sections[i].title,
+        body: r.sections[i].body,
+        sortOrder: i,
+      );
+    }
+  }
+
+  Future<void> _delete(BuildContext context, HistoryRepository repo,
+      HistoryLegacyLeader leader) async {
+    final ok = await confirmDialog(context,
+        title: context.trRead('Remove entry?', 'إزالة المُدخل؟'),
+        message: leader.name);
+    if (ok) await repo.deleteLegacyLeader(leader.id);
+  }
+
+  void _openDetail(BuildContext context, HistoryLegacyLeader leader) {
+    context.push('/history/legacy/${leader.id}');
+  }
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
-    final repo = context.read<LeaderRepository>();
-    return StreamBuilder<List<PreviousLeaderView>>(
-      stream: repo.watchPreviousLeaders(),
+    final repo = context.read<HistoryRepository>();
+    return StreamBuilder<List<HistoryLegacyLeader>>(
+      stream: repo.watchLegacyLeaders(),
       builder: (context, snap) {
-        final all = snap.data ?? const <PreviousLeaderView>[];
-        // Keep only Presidents, one per term (terms arrive newest-first).
-        final seen = <String>{};
-        final presidents = <PreviousLeaderView>[];
-        for (final v in all) {
-          final isPresident =
-              v.entry.position.toLowerCase().contains('president');
-          if (!isPresident) continue;
-          if (seen.add(v.entry.termYears.trim())) presidents.add(v);
-        }
+        final leaders = snap.data ?? const <HistoryLegacyLeader>[];
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1159,9 +1221,17 @@ class _PreviousLeadershipSection extends StatelessWidget {
               subtitle: context.tr(
                   'Honoring the leaders who guided the organization throughout its history.',
                   'تكريمًا للقادة الذين قادوا المنظمة عبر تاريخها.'),
+              action: canManage
+                  ? FilledButton.icon(
+                      onPressed: () => _add(context, repo),
+                      icon: const Icon(Icons.add, size: 18),
+                      label: Text(context.tr(
+                          'Add Former Leader', 'إضافة قائد سابق')),
+                    )
+                  : null,
             ),
             const SizedBox(height: AppSpacing.lg),
-            if (presidents.isEmpty)
+            if (leaders.isEmpty)
               _PlaceholderText(
                   text: context.tr('No previous leaders recorded yet.',
                       'لم يُسجَّل قادة سابقون بعد.'))
@@ -1170,57 +1240,74 @@ class _PreviousLeadershipSection extends StatelessWidget {
                 builder: (context, box) {
                   final wide = box.maxWidth >= 820;
                   if (wide) {
-                    return Wrap(
-                      spacing: AppSpacing.lg,
-                      runSpacing: AppSpacing.lg,
-                      children: [
-                        for (final v in presidents)
-                          SizedBox(
-                            width: 260,
-                            child: _HoverLift(
-                              radius: AppRadius.panel,
-                              child: _LegacyCard(view: v, isArabic: isArabic),
+                    const spacing = AppSpacing.lg;
+                    const cols = 4;
+                    final itemW = (box.maxWidth - spacing * (cols - 1)) / cols;
+
+                    // The first card sits alone on the top row; the rest fill
+                    // right-aligned rows of four. For seven cards this yields
+                    // the 1 / 4 / 2 stagger.
+                    final rows = <List<HistoryLegacyLeader>>[
+                      [leaders.first],
+                      for (var i = 1; i < leaders.length; i += cols)
+                        leaders.sublist(i, (i + cols).clamp(0, leaders.length)),
+                    ];
+
+                    Widget cardFor(HistoryLegacyLeader l) => SizedBox(
+                          width: itemW,
+                          child: _HoverLift(
+                            radius: AppRadius.panel,
+                            child: _LegacyCard(
+                              leader: l,
+                              canManage: canManage,
+                              onTap: () => _openDetail(context, l),
+                              onEdit: () => _edit(context, repo, l),
+                              onDelete: () => _delete(context, repo, l),
                             ),
                           ),
+                        );
+
+                    return Column(
+                      children: [
+                        for (var r = 0; r < rows.length; r++) ...[
+                          if (r > 0) const SizedBox(height: spacing),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              for (var c = 0; c < rows[r].length; c++) ...[
+                                if (c > 0) const SizedBox(width: spacing),
+                                cardFor(rows[r][c]),
+                              ],
+                            ],
+                          ),
+                        ],
                       ],
                     );
                   }
                   // Mobile / tablet: a horizontally scrollable carousel.
                   return SizedBox(
-                    height: 340,
+                    height: 320,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
-                      itemCount: presidents.length,
+                      itemCount: leaders.length,
                       separatorBuilder: (_, _) =>
                           const SizedBox(width: AppSpacing.lg),
                       itemBuilder: (context, i) => SizedBox(
                         width: 240,
                         child: _LegacyCard(
-                            view: presidents[i], isArabic: isArabic),
+                          leader: leaders[i],
+                          canManage: canManage,
+                          onTap: () => _openDetail(context, leaders[i]),
+                          onEdit: () => _edit(context, repo, leaders[i]),
+                          onDelete: () => _delete(context, repo, leaders[i]),
+                        ),
                       ),
                     ),
                   );
                 },
               ),
             const SizedBox(height: AppSpacing.xl),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: OutlinedButton.icon(
-                onPressed: () => context.go('/leadership/previous'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.emerald,
-                  side: const BorderSide(color: AppColors.emerald),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.xl, vertical: AppSpacing.md),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                  ),
-                ),
-                icon: const Icon(Icons.arrow_forward, size: 18),
-                label: Text(context.tr('View Complete Leadership History',
-                    'عرض سجل القيادة الكامل')),
-              ),
-            ),
           ],
         );
       },
@@ -1229,47 +1316,70 @@ class _PreviousLeadershipSection extends StatelessWidget {
 }
 
 class _LegacyCard extends StatelessWidget {
-  const _LegacyCard({required this.view, required this.isArabic});
-  final PreviousLeaderView view;
-  final bool isArabic;
+  const _LegacyCard({
+    required this.leader,
+    required this.canManage,
+    required this.onTap,
+    required this.onEdit,
+    required this.onDelete,
+  });
+  final HistoryLegacyLeader leader;
+  final bool canManage;
+  final VoidCallback onTap;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  /// Initials derived from the free-text name (first + last word, or the first
+  /// two letters of a single word).
+  String get _initials {
+    final parts = leader.name.replaceAll('.', '').trim().split(RegExp(r'\s+'));
+    if (parts.isEmpty || parts.first.isEmpty) return '?';
+    if (parts.length == 1) {
+      return parts.first
+          .substring(0, parts.first.length >= 2 ? 2 : 1)
+          .toUpperCase();
+    }
+    return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: AppRadius.panel,
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.charcoal.withValues(alpha: 0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _cover(context),
-          _body(context),
-        ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: AppRadius.panel,
+          border: Border.all(color: AppColors.border),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.charcoal.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _cover(context),
+            _body(context),
+          ],
+        ),
       ),
     );
   }
 
-  /// The portrait cover with an accent wash, the term pill, and the name +
-  /// Arabic name overlaid along the bottom.
+  /// The portrait cover with an accent wash, an optional manage menu, and the
+  /// name overlaid along the bottom.
   Widget _cover(BuildContext context) {
-    final m = view.member;
-    final e = view.entry;
-    final color = Color(e.accent);
-    final hasPhoto =
-        m.photoPath.trim().isNotEmpty && File(m.photoPath).existsSync();
+    final color = Color(leader.accent);
+    final hasPhoto = leader.photoPath.trim().isNotEmpty &&
+        File(leader.photoPath).existsSync();
 
     final base = hasPhoto
-        ? Image.file(File(m.photoPath), fit: BoxFit.cover)
+        ? Image.file(File(leader.photoPath), fit: BoxFit.cover)
         : DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -1284,7 +1394,7 @@ class _LegacyCard extends StatelessWidget {
             child: Align(
               alignment: const Alignment(0, -0.35),
               child: Text(
-                m.initials,
+                _initials,
                 style: TextStyle(
                   fontFamily: AppTypography.serif,
                   fontSize: 56,
@@ -1300,10 +1410,7 @@ class _LegacyCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          InkWell(
-            onTap: () => context.push('/leadership/member/${m.id}'),
-            child: base,
-          ),
+          base,
           // Accent wash + a darker foot so the overlaid name stays legible.
           IgnorePointer(
             child: DecoratedBox(
@@ -1321,44 +1428,27 @@ class _LegacyCard extends StatelessWidget {
               ),
             ),
           ),
-          if (e.termYears.trim().isNotEmpty)
+          if (canManage)
             PositionedDirectional(
-              top: AppSpacing.md,
-              end: AppSpacing.md,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md, vertical: AppSpacing.xs),
-                decoration: BoxDecoration(
-                  color: AppColors.goldDeep,
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                ),
-                child: Text(e.termYears,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: AppColors.onGold,
-                          fontWeight: FontWeight.w700,
-                        )),
-              ),
+              top: AppSpacing.sm,
+              start: AppSpacing.sm,
+              child: _manageMenu(context),
             ),
           PositionedDirectional(
             start: AppSpacing.lg,
             end: AppSpacing.lg,
             bottom: AppSpacing.md,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  m.displayName(isArabic),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontFamily: AppTypography.serif,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.onEmerald,
-                    height: 1.2,
-                  ),
-                ),
-              ],
+            child: Text(
+              leader.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontFamily: AppTypography.serif,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: AppColors.onEmerald,
+                height: 1.2,
+              ),
             ),
           ),
         ],
@@ -1366,36 +1456,62 @@ class _LegacyCard extends StatelessWidget {
     );
   }
 
-  /// The white body: office (small-caps) and a View profile action.
+  /// The white body: office (small-caps) and term/year, both centered.
   Widget _body(BuildContext context) {
-    final e = view.entry;
+    final hasPosition = leader.position.trim().isNotEmpty;
+    final hasTerm = leader.termYears.trim().isNotEmpty;
+    // Nothing to show below the portrait — skip the body entirely.
+    if (!hasPosition && !hasTerm) return const SizedBox(height: AppSpacing.lg);
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            e.position.toUpperCase(),
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: AppColors.textMuted,
-                  letterSpacing: 0.8,
-                ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          OutlinedButton(
-            onPressed: () =>
-                context.push('/leadership/member/${view.member.id}'),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
-              side: const BorderSide(color: AppColors.goldDeep),
-              foregroundColor: AppColors.emeraldDark,
+          if (hasPosition)
+            Text(
+              leader.position.toUpperCase(),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: AppColors.textMuted,
+                    letterSpacing: 0.8,
+                  ),
             ),
-            child: Text(context.tr('View profile', 'عرض الملف')),
-          ),
+          if (hasTerm) ...[
+            if (hasPosition) const SizedBox(height: AppSpacing.xs),
+            Text(
+              leader.termYears,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: AppColors.emeraldDark,
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _manageMenu(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface.withValues(alpha: 0.85),
+        shape: BoxShape.circle,
+      ),
+      child: PopupMenuButton<String>(
+        tooltip: context.trRead('Manage', 'إدارة'),
+        icon: const Icon(Icons.more_vert, size: 18, color: AppColors.charcoal),
+        onSelected: (v) {
+          if (v == 'edit') onEdit();
+          if (v == 'delete') onDelete();
+        },
+        itemBuilder: (_) => [
+          PopupMenuItem(
+              value: 'edit', child: Text(context.trRead('Edit', 'تعديل'))),
+          PopupMenuItem(
+              value: 'delete', child: Text(context.trRead('Delete', 'حذف'))),
         ],
       ),
     );

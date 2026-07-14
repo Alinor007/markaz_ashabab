@@ -338,11 +338,6 @@ class _LeadershipNavGroupState extends State<_LeadershipNavGroup> {
               ),
             ],
           ),
-          _LeadershipSubTile(
-            label: 'Previous Leadership',
-            route: '/leadership/previous',
-            selected: widget.currentRoute == '/leadership/previous',
-          ),
         ],
       ],
     );

@@ -9,7 +9,7 @@ import '../../core/data/models.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/repositories/department_repository.dart';
 import '../../core/repositories/gallery_repository.dart';
-import '../../core/repositories/member_repository.dart';
+import '../../core/repositories/leader_repository.dart';
 import '../../core/repositories/report_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
@@ -17,7 +17,6 @@ import '../../core/theme/app_typography.dart';
 import '../../widgets/cards/report_card.dart';
 import '../../widgets/common/hover_lift.dart';
 import '../../widgets/common/info_panel.dart';
-import '../../widgets/common/member_picker.dart';
 import '../../widgets/common/portrait_avatar.dart';
 import '../../widgets/common/profile_header.dart';
 import '../../widgets/common/search_field.dart';
@@ -25,6 +24,7 @@ import '../../widgets/common/stat_card.dart';
 import '../../widgets/feedback/app_snackbar.dart';
 import '../../widgets/feedback/empty_state.dart';
 import '../../widgets/feedback/loading_state.dart';
+import '../leadership/leadership_assign_dialog.dart';
 import '../reports/report_form_dialog.dart';
 import '../tarbiya/widgets/confirm_dialog.dart';
 import 'department_activity_dialog.dart';
@@ -213,47 +213,89 @@ class _OverviewTab extends StatelessWidget {
 
 // ════════════════════════════ Staffs ════════════════════════════
 
-/// Head of Department + Department Staffs — both filled by assigning existing
-/// members (no separate creation). Admins/executives manage; others read-only.
+/// Head of Department + Department Staffs — both filled by manually entering
+/// the holder's name, photo, and biography sections (stored as [Leaders] rows
+/// under per-department category codes), like the Leadership positions.
+/// Admins/executives manage; others read-only. Tapping a row opens the
+/// holder's view-only leader profile.
 class _StaffsTab extends StatelessWidget {
   const _StaffsTab({required this.department});
   final Department department;
 
-  Future<void> _assignHead(BuildContext context) async {
-    final deptRepo = context.read<DepartmentRepository>();
-    final memberRepo = context.read<MemberRepository>();
-    final picked = await pickMember(context, memberRepo,
-        title: context.trRead('Assign Head', 'تعيين رئيس القسم'));
-    if (picked == null || !context.mounted) return;
-    await deptRepo.assignHead(department.id, picked.id);
+  String get _headCode => 'dept_head_${department.id}';
+  String get _staffCode => 'dept_staff_${department.id}';
+
+  /// Opens the assign/edit form, prefilled from [existing] (loading its
+  /// biography sections first) when reassigning or editing.
+  Future<PositionHolderResult?> _openForm(
+      BuildContext context, String positionTitle, Leader? existing) async {
+    final leaders = context.read<LeaderRepository>();
+    PositionHolderResult? prefill;
+    if (existing != null) {
+      final sections = await leaders.watchLeaderSections(existing.id).first;
+      if (!context.mounted) return null;
+      prefill = (
+        name: existing.name,
+        photoPath: existing.photoPath,
+        sections: [for (final s in sections) (title: s.title, body: s.body)],
+      );
+    }
+    return showAssignPersonDialog(context,
+        positionTitle: positionTitle, existing: prefill);
   }
 
-  Future<void> _clearHead(BuildContext context) =>
-      context.read<DepartmentRepository>().assignHead(department.id, null);
+  Future<void> _assignHead(BuildContext context, Leader? current) async {
+    final leaders = context.read<LeaderRepository>();
+    final title = 'Head of ${department.name}';
+    final r = await _openForm(context, title, current);
+    if (r == null || !context.mounted) return;
+    if (current == null) {
+      await leaders.createHolder(
+        categoryCode: _headCode,
+        positionTitle: title,
+        name: r.name,
+        photoPath: r.photoPath,
+        sections: r.sections,
+      );
+    } else {
+      await leaders.setPositionHolder(current.id,
+          name: r.name, photoPath: r.photoPath);
+      await leaders.setLeaderSections(current.id, r.sections);
+    }
+  }
+
+  Future<void> _clearHead(BuildContext context, Leader current) =>
+      context.read<LeaderRepository>().delete(current.id);
 
   Future<void> _addStaff(BuildContext context) async {
-    final deptRepo = context.read<DepartmentRepository>();
-    final memberRepo = context.read<MemberRepository>();
-    // Exclude the current head and anyone already on staff.
-    final staff = await deptRepo.watchStaff(department.id).first;
-    final head = await deptRepo.watchHead(department.id).first;
-    if (!context.mounted) return;
-    final exclude = {
-      for (final m in staff) m.id,
-      if (head != null) head.id,
-    };
-    final picked = await pickMember(context, memberRepo,
-        title: context.trRead('Add Staff', 'إضافة عضو'), excludeIds: exclude);
-    if (picked == null || !context.mounted) return;
-    await deptRepo.addStaff(department.id, picked.id);
+    final leaders = context.read<LeaderRepository>();
+    final title = '${department.name} Staff';
+    final r = await _openForm(context, title, null);
+    if (r == null || !context.mounted) return;
+    await leaders.createHolder(
+      categoryCode: _staffCode,
+      positionTitle: title,
+      name: r.name,
+      photoPath: r.photoPath,
+      sections: r.sections,
+    );
   }
 
-  Future<void> _removeStaff(BuildContext context, Member m) =>
-      context.read<DepartmentRepository>().removeStaff(department.id, m.id);
+  Future<void> _editStaff(BuildContext context, Leader staff) async {
+    final leaders = context.read<LeaderRepository>();
+    final r = await _openForm(context, staff.position, staff);
+    if (r == null || !context.mounted) return;
+    await leaders.setPositionHolder(staff.id,
+        name: r.name, photoPath: r.photoPath);
+    await leaders.setLeaderSections(staff.id, r.sections);
+  }
+
+  Future<void> _removeStaff(BuildContext context, Leader staff) =>
+      context.read<LeaderRepository>().delete(staff.id);
 
   @override
   Widget build(BuildContext context) {
-    final repo = context.read<DepartmentRepository>();
+    final repo = context.read<LeaderRepository>();
     final canManage =
         context.watch<SessionController>().can?.manageContent ?? false;
 
@@ -261,37 +303,39 @@ class _StaffsTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          InfoPanel(
-            icon: Icons.workspace_premium_outlined,
-            title: context.tr('Head of Department', 'رئيس القسم'),
-            action: canManage
-                ? _StaffActionButton(
-                    icon: Icons.person_search_outlined,
-                    label: context.tr('Assign', 'تعيين'),
-                    onPressed: () => _assignHead(context),
-                  )
-                : null,
-            child: StreamBuilder<Member?>(
-              stream: repo.watchHead(department.id),
-              builder: (context, snap) {
-                final head = snap.data;
-                if (head == null) {
-                  return _UnassignedRow(
-                      label: context.tr('Unassigned', 'غير معيّن'));
-                }
-                return _MemberRow(
-                  member: head,
-                  trailing: canManage
-                      ? IconButton(
-                          tooltip: context.tr('Clear', 'مسح'),
-                          icon: const Icon(Icons.person_remove_outlined,
-                              size: 18),
-                          onPressed: () => _clearHead(context),
-                        )
-                      : null,
-                );
-              },
-            ),
+          StreamBuilder<List<Leader>>(
+            stream: repo.watchByCategoryCode(_headCode),
+            builder: (context, snap) {
+              final rows = snap.data ?? const <Leader>[];
+              final head = rows.isEmpty ? null : rows.first;
+              return InfoPanel(
+                icon: Icons.workspace_premium_outlined,
+                title: context.tr('Head of Department', 'رئيس القسم'),
+                action: canManage
+                    ? _StaffActionButton(
+                        icon: Icons.person_search_outlined,
+                        label: head == null
+                            ? context.tr('Assign', 'تعيين')
+                            : context.tr('Reassign', 'إعادة تعيين'),
+                        onPressed: () => _assignHead(context, head),
+                      )
+                    : null,
+                child: head == null
+                    ? _UnassignedRow(
+                        label: context.tr('Unassigned', 'غير معيّن'))
+                    : _HolderRow(
+                        holder: head,
+                        trailing: canManage
+                            ? IconButton(
+                                tooltip: context.tr('Clear', 'مسح'),
+                                icon: const Icon(Icons.person_remove_outlined,
+                                    size: 18),
+                                onPressed: () => _clearHead(context, head),
+                              )
+                            : null,
+                      ),
+              );
+            },
           ),
           const SizedBox(height: AppSpacing.lg),
           InfoPanel(
@@ -304,10 +348,10 @@ class _StaffsTab extends StatelessWidget {
                     onPressed: () => _addStaff(context),
                   )
                 : null,
-            child: StreamBuilder<List<Member>>(
-              stream: repo.watchStaff(department.id),
+            child: StreamBuilder<List<Leader>>(
+              stream: repo.watchByCategoryCode(_staffCode),
               builder: (context, snap) {
-                final staff = snap.data ?? const <Member>[];
+                final staff = snap.data ?? const <Leader>[];
                 if (staff.isEmpty) {
                   return Text(
                     context.tr('No staff added yet', 'لم تتم إضافة طاقم بعد'),
@@ -321,15 +365,30 @@ class _StaffsTab extends StatelessWidget {
                   children: [
                     for (var i = 0; i < staff.length; i++) ...[
                       if (i > 0) const Divider(height: AppSpacing.lg),
-                      _MemberRow(
-                        member: staff[i],
+                      _HolderRow(
+                        holder: staff[i],
                         trailing: canManage
-                            ? IconButton(
-                                tooltip: context.tr('Remove', 'إزالة'),
-                                icon: const Icon(Icons.delete_outline,
-                                    size: 18, color: AppColors.error),
-                                onPressed: () =>
-                                    _removeStaff(context, staff[i]),
+                            ? PopupMenuButton<String>(
+                                padding: EdgeInsets.zero,
+                                icon: const Icon(Icons.more_vert, size: 18),
+                                onSelected: (v) {
+                                  if (v == 'edit') {
+                                    _editStaff(context, staff[i]);
+                                  }
+                                  if (v == 'remove') {
+                                    _removeStaff(context, staff[i]);
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                      value: 'edit',
+                                      child: Text(
+                                          context.trRead('Edit', 'تعديل'))),
+                                  PopupMenuItem(
+                                      value: 'remove',
+                                      child: Text(
+                                          context.trRead('Remove', 'إزالة'))),
+                                ],
                               )
                             : null,
                       ),
@@ -363,26 +422,38 @@ class _StaffActionButton extends StatelessWidget {
   }
 }
 
-/// A member row (avatar + name + level) used in the Staffs tab; tapping opens
-/// the member's profile.
-class _MemberRow extends StatelessWidget {
-  const _MemberRow({required this.member, this.trailing});
-  final Member member;
+/// Initials from a free-text holder name: first + last word, or the first two
+/// letters of a single word.
+String _initialsOf(String name) {
+  final parts = name.replaceAll('.', '').trim().split(RegExp(r'\s+'));
+  if (parts.isEmpty || parts.first.isEmpty) return '';
+  if (parts.length == 1) {
+    return parts.first
+        .substring(0, parts.first.length >= 2 ? 2 : 1)
+        .toUpperCase();
+  }
+  return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
+}
+
+/// A position-holder row (photo + name + office) used in the Staffs tab;
+/// tapping opens the holder's view-only leader profile.
+class _HolderRow extends StatelessWidget {
+  const _HolderRow({required this.holder, this.trailing});
+  final Leader holder;
   final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.isArabic;
     return InkWell(
       borderRadius: BorderRadius.circular(AppRadius.sm),
-      onTap: () => context.go('/tarbiya/member/${member.id}'),
+      onTap: () => context.push('/leadership/position/${holder.id}'),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
         child: Row(
           children: [
             PortraitAvatar(
-                initials: member.initials,
-                imagePath: member.photoPath,
+                initials: _initialsOf(holder.name),
+                imagePath: holder.photoPath,
                 size: 44,
                 ring: false),
             const SizedBox(width: AppSpacing.md),
@@ -390,9 +461,9 @@ class _MemberRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(member.displayName(isArabic),
+                  Text(holder.name,
                       style: Theme.of(context).textTheme.titleSmall),
-                  Text(member.levelLabel(isArabic),
+                  Text(holder.position,
                       style: Theme.of(context)
                           .textTheme
                           .bodySmall

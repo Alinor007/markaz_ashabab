@@ -4180,6 +4180,355 @@ class LeadersCompanion extends UpdateCompanion<Leader> {
   }
 }
 
+class $LeaderSectionsTable extends LeaderSections
+    with TableInfo<$LeaderSectionsTable, LeaderSection> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LeaderSectionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _leaderIdMeta = const VerificationMeta(
+    'leaderId',
+  );
+  @override
+  late final GeneratedColumn<String> leaderId = GeneratedColumn<String>(
+    'leader_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES leaders (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, leaderId, title, body, sortOrder];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'leader_sections';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LeaderSection> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('leader_id')) {
+      context.handle(
+        _leaderIdMeta,
+        leaderId.isAcceptableOrUnknown(data['leader_id']!, _leaderIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_leaderIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LeaderSection map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LeaderSection(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      leaderId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}leader_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+    );
+  }
+
+  @override
+  $LeaderSectionsTable createAlias(String alias) {
+    return $LeaderSectionsTable(attachedDatabase, alias);
+  }
+}
+
+class LeaderSection extends DataClass implements Insertable<LeaderSection> {
+  final String id;
+  final String leaderId;
+  final String title;
+  final String body;
+  final int sortOrder;
+  const LeaderSection({
+    required this.id,
+    required this.leaderId,
+    required this.title,
+    required this.body,
+    required this.sortOrder,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['leader_id'] = Variable<String>(leaderId);
+    map['title'] = Variable<String>(title);
+    map['body'] = Variable<String>(body);
+    map['sort_order'] = Variable<int>(sortOrder);
+    return map;
+  }
+
+  LeaderSectionsCompanion toCompanion(bool nullToAbsent) {
+    return LeaderSectionsCompanion(
+      id: Value(id),
+      leaderId: Value(leaderId),
+      title: Value(title),
+      body: Value(body),
+      sortOrder: Value(sortOrder),
+    );
+  }
+
+  factory LeaderSection.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LeaderSection(
+      id: serializer.fromJson<String>(json['id']),
+      leaderId: serializer.fromJson<String>(json['leaderId']),
+      title: serializer.fromJson<String>(json['title']),
+      body: serializer.fromJson<String>(json['body']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'leaderId': serializer.toJson<String>(leaderId),
+      'title': serializer.toJson<String>(title),
+      'body': serializer.toJson<String>(body),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+    };
+  }
+
+  LeaderSection copyWith({
+    String? id,
+    String? leaderId,
+    String? title,
+    String? body,
+    int? sortOrder,
+  }) => LeaderSection(
+    id: id ?? this.id,
+    leaderId: leaderId ?? this.leaderId,
+    title: title ?? this.title,
+    body: body ?? this.body,
+    sortOrder: sortOrder ?? this.sortOrder,
+  );
+  LeaderSection copyWithCompanion(LeaderSectionsCompanion data) {
+    return LeaderSection(
+      id: data.id.present ? data.id.value : this.id,
+      leaderId: data.leaderId.present ? data.leaderId.value : this.leaderId,
+      title: data.title.present ? data.title.value : this.title,
+      body: data.body.present ? data.body.value : this.body,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LeaderSection(')
+          ..write('id: $id, ')
+          ..write('leaderId: $leaderId, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('sortOrder: $sortOrder')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, leaderId, title, body, sortOrder);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LeaderSection &&
+          other.id == this.id &&
+          other.leaderId == this.leaderId &&
+          other.title == this.title &&
+          other.body == this.body &&
+          other.sortOrder == this.sortOrder);
+}
+
+class LeaderSectionsCompanion extends UpdateCompanion<LeaderSection> {
+  final Value<String> id;
+  final Value<String> leaderId;
+  final Value<String> title;
+  final Value<String> body;
+  final Value<int> sortOrder;
+  final Value<int> rowid;
+  const LeaderSectionsCompanion({
+    this.id = const Value.absent(),
+    this.leaderId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LeaderSectionsCompanion.insert({
+    required String id,
+    required String leaderId,
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       leaderId = Value(leaderId);
+  static Insertable<LeaderSection> custom({
+    Expression<String>? id,
+    Expression<String>? leaderId,
+    Expression<String>? title,
+    Expression<String>? body,
+    Expression<int>? sortOrder,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (leaderId != null) 'leader_id': leaderId,
+      if (title != null) 'title': title,
+      if (body != null) 'body': body,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LeaderSectionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? leaderId,
+    Value<String>? title,
+    Value<String>? body,
+    Value<int>? sortOrder,
+    Value<int>? rowid,
+  }) {
+    return LeaderSectionsCompanion(
+      id: id ?? this.id,
+      leaderId: leaderId ?? this.leaderId,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      sortOrder: sortOrder ?? this.sortOrder,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (leaderId.present) {
+      map['leader_id'] = Variable<String>(leaderId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LeaderSectionsCompanion(')
+          ..write('id: $id, ')
+          ..write('leaderId: $leaderId, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $AuditLogsTable extends AuditLogs
     with TableInfo<$AuditLogsTable, AuditLog> {
   @override
@@ -12798,6 +13147,875 @@ class PreviousLeaderSectionsCompanion
   }
 }
 
+class $HistoryLegacyLeadersTable extends HistoryLegacyLeaders
+    with TableInfo<$HistoryLegacyLeadersTable, HistoryLegacyLeader> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HistoryLegacyLeadersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<String> position = GeneratedColumn<String>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _termYearsMeta = const VerificationMeta(
+    'termYears',
+  );
+  @override
+  late final GeneratedColumn<String> termYears = GeneratedColumn<String>(
+    'term_years',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _photoPathMeta = const VerificationMeta(
+    'photoPath',
+  );
+  @override
+  late final GeneratedColumn<String> photoPath = GeneratedColumn<String>(
+    'photo_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _accentMeta = const VerificationMeta('accent');
+  @override
+  late final GeneratedColumn<int> accent = GeneratedColumn<int>(
+    'accent',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0xFF16243D),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    position,
+    termYears,
+    photoPath,
+    accent,
+    sortOrder,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'history_legacy_leaders';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<HistoryLegacyLeader> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
+    if (data.containsKey('term_years')) {
+      context.handle(
+        _termYearsMeta,
+        termYears.isAcceptableOrUnknown(data['term_years']!, _termYearsMeta),
+      );
+    }
+    if (data.containsKey('photo_path')) {
+      context.handle(
+        _photoPathMeta,
+        photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
+      );
+    }
+    if (data.containsKey('accent')) {
+      context.handle(
+        _accentMeta,
+        accent.isAcceptableOrUnknown(data['accent']!, _accentMeta),
+      );
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  HistoryLegacyLeader map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return HistoryLegacyLeader(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}position'],
+      )!,
+      termYears: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}term_years'],
+      )!,
+      photoPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}photo_path'],
+      )!,
+      accent: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}accent'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $HistoryLegacyLeadersTable createAlias(String alias) {
+    return $HistoryLegacyLeadersTable(attachedDatabase, alias);
+  }
+}
+
+class HistoryLegacyLeader extends DataClass
+    implements Insertable<HistoryLegacyLeader> {
+  final String id;
+  final String name;
+  final String position;
+  final String termYears;
+
+  /// Absolute path to the stored portrait ('' when none).
+  final String photoPath;
+  final int accent;
+  final int sortOrder;
+  final DateTime createdAt;
+  const HistoryLegacyLeader({
+    required this.id,
+    required this.name,
+    required this.position,
+    required this.termYears,
+    required this.photoPath,
+    required this.accent,
+    required this.sortOrder,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['position'] = Variable<String>(position);
+    map['term_years'] = Variable<String>(termYears);
+    map['photo_path'] = Variable<String>(photoPath);
+    map['accent'] = Variable<int>(accent);
+    map['sort_order'] = Variable<int>(sortOrder);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  HistoryLegacyLeadersCompanion toCompanion(bool nullToAbsent) {
+    return HistoryLegacyLeadersCompanion(
+      id: Value(id),
+      name: Value(name),
+      position: Value(position),
+      termYears: Value(termYears),
+      photoPath: Value(photoPath),
+      accent: Value(accent),
+      sortOrder: Value(sortOrder),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory HistoryLegacyLeader.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return HistoryLegacyLeader(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      position: serializer.fromJson<String>(json['position']),
+      termYears: serializer.fromJson<String>(json['termYears']),
+      photoPath: serializer.fromJson<String>(json['photoPath']),
+      accent: serializer.fromJson<int>(json['accent']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'position': serializer.toJson<String>(position),
+      'termYears': serializer.toJson<String>(termYears),
+      'photoPath': serializer.toJson<String>(photoPath),
+      'accent': serializer.toJson<int>(accent),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  HistoryLegacyLeader copyWith({
+    String? id,
+    String? name,
+    String? position,
+    String? termYears,
+    String? photoPath,
+    int? accent,
+    int? sortOrder,
+    DateTime? createdAt,
+  }) => HistoryLegacyLeader(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    position: position ?? this.position,
+    termYears: termYears ?? this.termYears,
+    photoPath: photoPath ?? this.photoPath,
+    accent: accent ?? this.accent,
+    sortOrder: sortOrder ?? this.sortOrder,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  HistoryLegacyLeader copyWithCompanion(HistoryLegacyLeadersCompanion data) {
+    return HistoryLegacyLeader(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      position: data.position.present ? data.position.value : this.position,
+      termYears: data.termYears.present ? data.termYears.value : this.termYears,
+      photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
+      accent: data.accent.present ? data.accent.value : this.accent,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HistoryLegacyLeader(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('position: $position, ')
+          ..write('termYears: $termYears, ')
+          ..write('photoPath: $photoPath, ')
+          ..write('accent: $accent, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    position,
+    termYears,
+    photoPath,
+    accent,
+    sortOrder,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is HistoryLegacyLeader &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.position == this.position &&
+          other.termYears == this.termYears &&
+          other.photoPath == this.photoPath &&
+          other.accent == this.accent &&
+          other.sortOrder == this.sortOrder &&
+          other.createdAt == this.createdAt);
+}
+
+class HistoryLegacyLeadersCompanion
+    extends UpdateCompanion<HistoryLegacyLeader> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> position;
+  final Value<String> termYears;
+  final Value<String> photoPath;
+  final Value<int> accent;
+  final Value<int> sortOrder;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const HistoryLegacyLeadersCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.position = const Value.absent(),
+    this.termYears = const Value.absent(),
+    this.photoPath = const Value.absent(),
+    this.accent = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  HistoryLegacyLeadersCompanion.insert({
+    required String id,
+    this.name = const Value.absent(),
+    this.position = const Value.absent(),
+    this.termYears = const Value.absent(),
+    this.photoPath = const Value.absent(),
+    this.accent = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id);
+  static Insertable<HistoryLegacyLeader> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? position,
+    Expression<String>? termYears,
+    Expression<String>? photoPath,
+    Expression<int>? accent,
+    Expression<int>? sortOrder,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (position != null) 'position': position,
+      if (termYears != null) 'term_years': termYears,
+      if (photoPath != null) 'photo_path': photoPath,
+      if (accent != null) 'accent': accent,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  HistoryLegacyLeadersCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? position,
+    Value<String>? termYears,
+    Value<String>? photoPath,
+    Value<int>? accent,
+    Value<int>? sortOrder,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return HistoryLegacyLeadersCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      position: position ?? this.position,
+      termYears: termYears ?? this.termYears,
+      photoPath: photoPath ?? this.photoPath,
+      accent: accent ?? this.accent,
+      sortOrder: sortOrder ?? this.sortOrder,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<String>(position.value);
+    }
+    if (termYears.present) {
+      map['term_years'] = Variable<String>(termYears.value);
+    }
+    if (photoPath.present) {
+      map['photo_path'] = Variable<String>(photoPath.value);
+    }
+    if (accent.present) {
+      map['accent'] = Variable<int>(accent.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HistoryLegacyLeadersCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('position: $position, ')
+          ..write('termYears: $termYears, ')
+          ..write('photoPath: $photoPath, ')
+          ..write('accent: $accent, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $HistoryLegacyLeaderSectionsTable extends HistoryLegacyLeaderSections
+    with
+        TableInfo<
+          $HistoryLegacyLeaderSectionsTable,
+          HistoryLegacyLeaderSection
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HistoryLegacyLeaderSectionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _legacyLeaderIdMeta = const VerificationMeta(
+    'legacyLeaderId',
+  );
+  @override
+  late final GeneratedColumn<String> legacyLeaderId = GeneratedColumn<String>(
+    'legacy_leader_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES history_legacy_leaders (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    legacyLeaderId,
+    title,
+    body,
+    sortOrder,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'history_legacy_leader_sections';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<HistoryLegacyLeaderSection> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('legacy_leader_id')) {
+      context.handle(
+        _legacyLeaderIdMeta,
+        legacyLeaderId.isAcceptableOrUnknown(
+          data['legacy_leader_id']!,
+          _legacyLeaderIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_legacyLeaderIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  HistoryLegacyLeaderSection map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return HistoryLegacyLeaderSection(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      legacyLeaderId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}legacy_leader_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+    );
+  }
+
+  @override
+  $HistoryLegacyLeaderSectionsTable createAlias(String alias) {
+    return $HistoryLegacyLeaderSectionsTable(attachedDatabase, alias);
+  }
+}
+
+class HistoryLegacyLeaderSection extends DataClass
+    implements Insertable<HistoryLegacyLeaderSection> {
+  final String id;
+  final String legacyLeaderId;
+  final String title;
+  final String body;
+  final int sortOrder;
+  const HistoryLegacyLeaderSection({
+    required this.id,
+    required this.legacyLeaderId,
+    required this.title,
+    required this.body,
+    required this.sortOrder,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['legacy_leader_id'] = Variable<String>(legacyLeaderId);
+    map['title'] = Variable<String>(title);
+    map['body'] = Variable<String>(body);
+    map['sort_order'] = Variable<int>(sortOrder);
+    return map;
+  }
+
+  HistoryLegacyLeaderSectionsCompanion toCompanion(bool nullToAbsent) {
+    return HistoryLegacyLeaderSectionsCompanion(
+      id: Value(id),
+      legacyLeaderId: Value(legacyLeaderId),
+      title: Value(title),
+      body: Value(body),
+      sortOrder: Value(sortOrder),
+    );
+  }
+
+  factory HistoryLegacyLeaderSection.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return HistoryLegacyLeaderSection(
+      id: serializer.fromJson<String>(json['id']),
+      legacyLeaderId: serializer.fromJson<String>(json['legacyLeaderId']),
+      title: serializer.fromJson<String>(json['title']),
+      body: serializer.fromJson<String>(json['body']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'legacyLeaderId': serializer.toJson<String>(legacyLeaderId),
+      'title': serializer.toJson<String>(title),
+      'body': serializer.toJson<String>(body),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+    };
+  }
+
+  HistoryLegacyLeaderSection copyWith({
+    String? id,
+    String? legacyLeaderId,
+    String? title,
+    String? body,
+    int? sortOrder,
+  }) => HistoryLegacyLeaderSection(
+    id: id ?? this.id,
+    legacyLeaderId: legacyLeaderId ?? this.legacyLeaderId,
+    title: title ?? this.title,
+    body: body ?? this.body,
+    sortOrder: sortOrder ?? this.sortOrder,
+  );
+  HistoryLegacyLeaderSection copyWithCompanion(
+    HistoryLegacyLeaderSectionsCompanion data,
+  ) {
+    return HistoryLegacyLeaderSection(
+      id: data.id.present ? data.id.value : this.id,
+      legacyLeaderId: data.legacyLeaderId.present
+          ? data.legacyLeaderId.value
+          : this.legacyLeaderId,
+      title: data.title.present ? data.title.value : this.title,
+      body: data.body.present ? data.body.value : this.body,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HistoryLegacyLeaderSection(')
+          ..write('id: $id, ')
+          ..write('legacyLeaderId: $legacyLeaderId, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('sortOrder: $sortOrder')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, legacyLeaderId, title, body, sortOrder);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is HistoryLegacyLeaderSection &&
+          other.id == this.id &&
+          other.legacyLeaderId == this.legacyLeaderId &&
+          other.title == this.title &&
+          other.body == this.body &&
+          other.sortOrder == this.sortOrder);
+}
+
+class HistoryLegacyLeaderSectionsCompanion
+    extends UpdateCompanion<HistoryLegacyLeaderSection> {
+  final Value<String> id;
+  final Value<String> legacyLeaderId;
+  final Value<String> title;
+  final Value<String> body;
+  final Value<int> sortOrder;
+  final Value<int> rowid;
+  const HistoryLegacyLeaderSectionsCompanion({
+    this.id = const Value.absent(),
+    this.legacyLeaderId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  HistoryLegacyLeaderSectionsCompanion.insert({
+    required String id,
+    required String legacyLeaderId,
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       legacyLeaderId = Value(legacyLeaderId);
+  static Insertable<HistoryLegacyLeaderSection> custom({
+    Expression<String>? id,
+    Expression<String>? legacyLeaderId,
+    Expression<String>? title,
+    Expression<String>? body,
+    Expression<int>? sortOrder,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (legacyLeaderId != null) 'legacy_leader_id': legacyLeaderId,
+      if (title != null) 'title': title,
+      if (body != null) 'body': body,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  HistoryLegacyLeaderSectionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? legacyLeaderId,
+    Value<String>? title,
+    Value<String>? body,
+    Value<int>? sortOrder,
+    Value<int>? rowid,
+  }) {
+    return HistoryLegacyLeaderSectionsCompanion(
+      id: id ?? this.id,
+      legacyLeaderId: legacyLeaderId ?? this.legacyLeaderId,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      sortOrder: sortOrder ?? this.sortOrder,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (legacyLeaderId.present) {
+      map['legacy_leader_id'] = Variable<String>(legacyLeaderId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HistoryLegacyLeaderSectionsCompanion(')
+          ..write('id: $id, ')
+          ..write('legacyLeaderId: $legacyLeaderId, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -12807,6 +14025,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $DepartmentsTable departments = $DepartmentsTable(this);
   late final $UsersTable users = $UsersTable(this);
   late final $LeadersTable leaders = $LeadersTable(this);
+  late final $LeaderSectionsTable leaderSections = $LeaderSectionsTable(this);
   late final $AuditLogsTable auditLogs = $AuditLogsTable(this);
   late final $MemberChildrenTable memberChildren = $MemberChildrenTable(this);
   late final $MemberWivesTable memberWives = $MemberWivesTable(this);
@@ -12845,6 +14064,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $PreviousLeaderSectionsTable previousLeaderSections =
       $PreviousLeaderSectionsTable(this);
+  late final $HistoryLegacyLeadersTable historyLegacyLeaders =
+      $HistoryLegacyLeadersTable(this);
+  late final $HistoryLegacyLeaderSectionsTable historyLegacyLeaderSections =
+      $HistoryLegacyLeaderSectionsTable(this);
   late final Index idxUsersDepartment = Index(
     'idx_users_department',
     'CREATE INDEX idx_users_department ON users (department_id)',
@@ -12852,6 +14075,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final Index idxLeadersCategory = Index(
     'idx_leaders_category',
     'CREATE INDEX idx_leaders_category ON leaders (category, sort_order)',
+  );
+  late final Index idxLeaderSectionsLeader = Index(
+    'idx_leader_sections_leader',
+    'CREATE INDEX idx_leader_sections_leader ON leader_sections (leader_id)',
   );
   late final Index idxAuditTimestamp = Index(
     'idx_audit_timestamp',
@@ -12929,6 +14156,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_previous_leader_sections_leader',
     'CREATE INDEX idx_previous_leader_sections_leader ON previous_leader_sections (previous_leader_id)',
   );
+  late final Index idxHistoryLegacyLeadersSort = Index(
+    'idx_history_legacy_leaders_sort',
+    'CREATE INDEX idx_history_legacy_leaders_sort ON history_legacy_leaders (sort_order)',
+  );
+  late final Index idxHistoryLegacySectionsLeader = Index(
+    'idx_history_legacy_sections_leader',
+    'CREATE INDEX idx_history_legacy_sections_leader ON history_legacy_leader_sections (legacy_leader_id)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -12940,6 +14175,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     departments,
     users,
     leaders,
+    leaderSections,
     auditLogs,
     memberChildren,
     memberWives,
@@ -12960,8 +14196,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     historyMilestones,
     previousLeaders,
     previousLeaderSections,
+    historyLegacyLeaders,
+    historyLegacyLeaderSections,
     idxUsersDepartment,
     idxLeadersCategory,
+    idxLeaderSectionsLeader,
     idxAuditTimestamp,
     idxShubasArea,
     idxMembersShubaLevel,
@@ -12981,6 +14220,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     idxHistoryMilestonesSort,
     idxPreviousLeadersSort,
     idxPreviousLeaderSectionsLeader,
+    idxHistoryLegacyLeadersSort,
+    idxHistoryLegacySectionsLeader,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -13011,6 +14252,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('leaders', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'leaders',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('leader_sections', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -13138,6 +14386,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       ),
       result: [
         TableUpdate('previous_leader_sections', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'history_legacy_leaders',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('history_legacy_leader_sections', kind: UpdateKind.delete),
       ],
     ),
   ]);
@@ -17268,6 +18525,24 @@ final class $$LeadersTableReferences
       manager.$state.copyWith(prefetchedData: [item]),
     );
   }
+
+  static MultiTypedResultKey<$LeaderSectionsTable, List<LeaderSection>>
+  _leaderSectionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.leaderSections,
+    aliasName: 'leaders__id__leader_sections__leader_id',
+  );
+
+  $$LeaderSectionsTableProcessedTableManager get leaderSectionsRefs {
+    final manager = $$LeaderSectionsTableTableManager(
+      $_db,
+      $_db.leaderSections,
+    ).filter((f) => f.leaderId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_leaderSectionsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$LeadersTableFilterComposer
@@ -17370,6 +18645,31 @@ class $$LeadersTableFilterComposer
           ),
     );
     return composer;
+  }
+
+  Expression<bool> leaderSectionsRefs(
+    Expression<bool> Function($$LeaderSectionsTableFilterComposer f) f,
+  ) {
+    final $$LeaderSectionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.leaderSections,
+      getReferencedColumn: (t) => t.leaderId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LeaderSectionsTableFilterComposer(
+            $db: $db,
+            $table: $db.leaderSections,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 }
 
@@ -17555,6 +18855,31 @@ class $$LeadersTableAnnotationComposer
     );
     return composer;
   }
+
+  Expression<T> leaderSectionsRefs<T extends Object>(
+    Expression<T> Function($$LeaderSectionsTableAnnotationComposer a) f,
+  ) {
+    final $$LeaderSectionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.leaderSections,
+      getReferencedColumn: (t) => t.leaderId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LeaderSectionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.leaderSections,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$LeadersTableTableManager
@@ -17570,7 +18895,7 @@ class $$LeadersTableTableManager
           $$LeadersTableUpdateCompanionBuilder,
           (Leader, $$LeadersTableReferences),
           Leader,
-          PrefetchHooks Function({bool memberId})
+          PrefetchHooks Function({bool memberId, bool leaderSectionsRefs})
         > {
   $$LeadersTableTableManager(_$AppDatabase db, $LeadersTable table)
     : super(
@@ -17663,7 +18988,355 @@ class $$LeadersTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({memberId = false}) {
+          prefetchHooksCallback:
+              ({memberId = false, leaderSectionsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (leaderSectionsRefs) db.leaderSections,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (memberId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.memberId,
+                                    referencedTable: $$LeadersTableReferences
+                                        ._memberIdTable(db),
+                                    referencedColumn: $$LeadersTableReferences
+                                        ._memberIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (leaderSectionsRefs)
+                        await $_getPrefetchedData<
+                          Leader,
+                          $LeadersTable,
+                          LeaderSection
+                        >(
+                          currentTable: table,
+                          referencedTable: $$LeadersTableReferences
+                              ._leaderSectionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$LeadersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).leaderSectionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.leaderId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$LeadersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LeadersTable,
+      Leader,
+      $$LeadersTableFilterComposer,
+      $$LeadersTableOrderingComposer,
+      $$LeadersTableAnnotationComposer,
+      $$LeadersTableCreateCompanionBuilder,
+      $$LeadersTableUpdateCompanionBuilder,
+      (Leader, $$LeadersTableReferences),
+      Leader,
+      PrefetchHooks Function({bool memberId, bool leaderSectionsRefs})
+    >;
+typedef $$LeaderSectionsTableCreateCompanionBuilder =
+    LeaderSectionsCompanion Function({
+      required String id,
+      required String leaderId,
+      Value<String> title,
+      Value<String> body,
+      Value<int> sortOrder,
+      Value<int> rowid,
+    });
+typedef $$LeaderSectionsTableUpdateCompanionBuilder =
+    LeaderSectionsCompanion Function({
+      Value<String> id,
+      Value<String> leaderId,
+      Value<String> title,
+      Value<String> body,
+      Value<int> sortOrder,
+      Value<int> rowid,
+    });
+
+final class $$LeaderSectionsTableReferences
+    extends BaseReferences<_$AppDatabase, $LeaderSectionsTable, LeaderSection> {
+  $$LeaderSectionsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $LeadersTable _leaderIdTable(_$AppDatabase db) =>
+      db.leaders.createAlias('leader_sections__leader_id__leaders__id');
+
+  $$LeadersTableProcessedTableManager get leaderId {
+    final $_column = $_itemColumn<String>('leader_id')!;
+
+    final manager = $$LeadersTableTableManager(
+      $_db,
+      $_db.leaders,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_leaderIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$LeaderSectionsTableFilterComposer
+    extends Composer<_$AppDatabase, $LeaderSectionsTable> {
+  $$LeaderSectionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$LeadersTableFilterComposer get leaderId {
+    final $$LeadersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.leaderId,
+      referencedTable: $db.leaders,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LeadersTableFilterComposer(
+            $db: $db,
+            $table: $db.leaders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LeaderSectionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $LeaderSectionsTable> {
+  $$LeaderSectionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$LeadersTableOrderingComposer get leaderId {
+    final $$LeadersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.leaderId,
+      referencedTable: $db.leaders,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LeadersTableOrderingComposer(
+            $db: $db,
+            $table: $db.leaders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LeaderSectionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LeaderSectionsTable> {
+  $$LeaderSectionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  $$LeadersTableAnnotationComposer get leaderId {
+    final $$LeadersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.leaderId,
+      referencedTable: $db.leaders,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LeadersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.leaders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LeaderSectionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LeaderSectionsTable,
+          LeaderSection,
+          $$LeaderSectionsTableFilterComposer,
+          $$LeaderSectionsTableOrderingComposer,
+          $$LeaderSectionsTableAnnotationComposer,
+          $$LeaderSectionsTableCreateCompanionBuilder,
+          $$LeaderSectionsTableUpdateCompanionBuilder,
+          (LeaderSection, $$LeaderSectionsTableReferences),
+          LeaderSection,
+          PrefetchHooks Function({bool leaderId})
+        > {
+  $$LeaderSectionsTableTableManager(
+    _$AppDatabase db,
+    $LeaderSectionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LeaderSectionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LeaderSectionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LeaderSectionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> leaderId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LeaderSectionsCompanion(
+                id: id,
+                leaderId: leaderId,
+                title: title,
+                body: body,
+                sortOrder: sortOrder,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String leaderId,
+                Value<String> title = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LeaderSectionsCompanion.insert(
+                id: id,
+                leaderId: leaderId,
+                title: title,
+                body: body,
+                sortOrder: sortOrder,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$LeaderSectionsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({leaderId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -17683,16 +19356,17 @@ class $$LeadersTableTableManager
                       dynamic
                     >
                   >(state) {
-                    if (memberId) {
+                    if (leaderId) {
                       state =
                           state.withJoin(
                                 currentTable: table,
-                                currentColumn: table.memberId,
-                                referencedTable: $$LeadersTableReferences
-                                    ._memberIdTable(db),
-                                referencedColumn: $$LeadersTableReferences
-                                    ._memberIdTable(db)
-                                    .id,
+                                currentColumn: table.leaderId,
+                                referencedTable: $$LeaderSectionsTableReferences
+                                    ._leaderIdTable(db),
+                                referencedColumn:
+                                    $$LeaderSectionsTableReferences
+                                        ._leaderIdTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -17708,19 +19382,19 @@ class $$LeadersTableTableManager
       );
 }
 
-typedef $$LeadersTableProcessedTableManager =
+typedef $$LeaderSectionsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $LeadersTable,
-      Leader,
-      $$LeadersTableFilterComposer,
-      $$LeadersTableOrderingComposer,
-      $$LeadersTableAnnotationComposer,
-      $$LeadersTableCreateCompanionBuilder,
-      $$LeadersTableUpdateCompanionBuilder,
-      (Leader, $$LeadersTableReferences),
-      Leader,
-      PrefetchHooks Function({bool memberId})
+      $LeaderSectionsTable,
+      LeaderSection,
+      $$LeaderSectionsTableFilterComposer,
+      $$LeaderSectionsTableOrderingComposer,
+      $$LeaderSectionsTableAnnotationComposer,
+      $$LeaderSectionsTableCreateCompanionBuilder,
+      $$LeaderSectionsTableUpdateCompanionBuilder,
+      (LeaderSection, $$LeaderSectionsTableReferences),
+      LeaderSection,
+      PrefetchHooks Function({bool leaderId})
     >;
 typedef $$AuditLogsTableCreateCompanionBuilder =
     AuditLogsCompanion Function({
@@ -24812,6 +26486,753 @@ typedef $$PreviousLeaderSectionsTableProcessedTableManager =
       PreviousLeaderSection,
       PrefetchHooks Function({bool previousLeaderId})
     >;
+typedef $$HistoryLegacyLeadersTableCreateCompanionBuilder =
+    HistoryLegacyLeadersCompanion Function({
+      required String id,
+      Value<String> name,
+      Value<String> position,
+      Value<String> termYears,
+      Value<String> photoPath,
+      Value<int> accent,
+      Value<int> sortOrder,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$HistoryLegacyLeadersTableUpdateCompanionBuilder =
+    HistoryLegacyLeadersCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> position,
+      Value<String> termYears,
+      Value<String> photoPath,
+      Value<int> accent,
+      Value<int> sortOrder,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$HistoryLegacyLeadersTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $HistoryLegacyLeadersTable,
+          HistoryLegacyLeader
+        > {
+  $$HistoryLegacyLeadersTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<
+    $HistoryLegacyLeaderSectionsTable,
+    List<HistoryLegacyLeaderSection>
+  >
+  _historyLegacyLeaderSectionsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.historyLegacyLeaderSections,
+    aliasName:
+        'history_legacy_leaders__id__history_legacy_leader_sections__legacy_leader_id',
+  );
+
+  $$HistoryLegacyLeaderSectionsTableProcessedTableManager
+  get historyLegacyLeaderSectionsRefs {
+    final manager = $$HistoryLegacyLeaderSectionsTableTableManager(
+      $_db,
+      $_db.historyLegacyLeaderSections,
+    ).filter((f) => f.legacyLeaderId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _historyLegacyLeaderSectionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$HistoryLegacyLeadersTableFilterComposer
+    extends Composer<_$AppDatabase, $HistoryLegacyLeadersTable> {
+  $$HistoryLegacyLeadersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get termYears => $composableBuilder(
+    column: $table.termYears,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get accent => $composableBuilder(
+    column: $table.accent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> historyLegacyLeaderSectionsRefs(
+    Expression<bool> Function(
+      $$HistoryLegacyLeaderSectionsTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$HistoryLegacyLeaderSectionsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.historyLegacyLeaderSections,
+          getReferencedColumn: (t) => t.legacyLeaderId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$HistoryLegacyLeaderSectionsTableFilterComposer(
+                $db: $db,
+                $table: $db.historyLegacyLeaderSections,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$HistoryLegacyLeadersTableOrderingComposer
+    extends Composer<_$AppDatabase, $HistoryLegacyLeadersTable> {
+  $$HistoryLegacyLeadersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get termYears => $composableBuilder(
+    column: $table.termYears,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get accent => $composableBuilder(
+    column: $table.accent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$HistoryLegacyLeadersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $HistoryLegacyLeadersTable> {
+  $$HistoryLegacyLeadersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<String> get termYears =>
+      $composableBuilder(column: $table.termYears, builder: (column) => column);
+
+  GeneratedColumn<String> get photoPath =>
+      $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
+  GeneratedColumn<int> get accent =>
+      $composableBuilder(column: $table.accent, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  Expression<T> historyLegacyLeaderSectionsRefs<T extends Object>(
+    Expression<T> Function(
+      $$HistoryLegacyLeaderSectionsTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$HistoryLegacyLeaderSectionsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.historyLegacyLeaderSections,
+          getReferencedColumn: (t) => t.legacyLeaderId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$HistoryLegacyLeaderSectionsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.historyLegacyLeaderSections,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$HistoryLegacyLeadersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $HistoryLegacyLeadersTable,
+          HistoryLegacyLeader,
+          $$HistoryLegacyLeadersTableFilterComposer,
+          $$HistoryLegacyLeadersTableOrderingComposer,
+          $$HistoryLegacyLeadersTableAnnotationComposer,
+          $$HistoryLegacyLeadersTableCreateCompanionBuilder,
+          $$HistoryLegacyLeadersTableUpdateCompanionBuilder,
+          (HistoryLegacyLeader, $$HistoryLegacyLeadersTableReferences),
+          HistoryLegacyLeader,
+          PrefetchHooks Function({bool historyLegacyLeaderSectionsRefs})
+        > {
+  $$HistoryLegacyLeadersTableTableManager(
+    _$AppDatabase db,
+    $HistoryLegacyLeadersTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$HistoryLegacyLeadersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$HistoryLegacyLeadersTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$HistoryLegacyLeadersTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> position = const Value.absent(),
+                Value<String> termYears = const Value.absent(),
+                Value<String> photoPath = const Value.absent(),
+                Value<int> accent = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HistoryLegacyLeadersCompanion(
+                id: id,
+                name: name,
+                position: position,
+                termYears: termYears,
+                photoPath: photoPath,
+                accent: accent,
+                sortOrder: sortOrder,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String> name = const Value.absent(),
+                Value<String> position = const Value.absent(),
+                Value<String> termYears = const Value.absent(),
+                Value<String> photoPath = const Value.absent(),
+                Value<int> accent = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HistoryLegacyLeadersCompanion.insert(
+                id: id,
+                name: name,
+                position: position,
+                termYears: termYears,
+                photoPath: photoPath,
+                accent: accent,
+                sortOrder: sortOrder,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$HistoryLegacyLeadersTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({historyLegacyLeaderSectionsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (historyLegacyLeaderSectionsRefs)
+                  db.historyLegacyLeaderSections,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (historyLegacyLeaderSectionsRefs)
+                    await $_getPrefetchedData<
+                      HistoryLegacyLeader,
+                      $HistoryLegacyLeadersTable,
+                      HistoryLegacyLeaderSection
+                    >(
+                      currentTable: table,
+                      referencedTable: $$HistoryLegacyLeadersTableReferences
+                          ._historyLegacyLeaderSectionsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$HistoryLegacyLeadersTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).historyLegacyLeaderSectionsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.legacyLeaderId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$HistoryLegacyLeadersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $HistoryLegacyLeadersTable,
+      HistoryLegacyLeader,
+      $$HistoryLegacyLeadersTableFilterComposer,
+      $$HistoryLegacyLeadersTableOrderingComposer,
+      $$HistoryLegacyLeadersTableAnnotationComposer,
+      $$HistoryLegacyLeadersTableCreateCompanionBuilder,
+      $$HistoryLegacyLeadersTableUpdateCompanionBuilder,
+      (HistoryLegacyLeader, $$HistoryLegacyLeadersTableReferences),
+      HistoryLegacyLeader,
+      PrefetchHooks Function({bool historyLegacyLeaderSectionsRefs})
+    >;
+typedef $$HistoryLegacyLeaderSectionsTableCreateCompanionBuilder =
+    HistoryLegacyLeaderSectionsCompanion Function({
+      required String id,
+      required String legacyLeaderId,
+      Value<String> title,
+      Value<String> body,
+      Value<int> sortOrder,
+      Value<int> rowid,
+    });
+typedef $$HistoryLegacyLeaderSectionsTableUpdateCompanionBuilder =
+    HistoryLegacyLeaderSectionsCompanion Function({
+      Value<String> id,
+      Value<String> legacyLeaderId,
+      Value<String> title,
+      Value<String> body,
+      Value<int> sortOrder,
+      Value<int> rowid,
+    });
+
+final class $$HistoryLegacyLeaderSectionsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $HistoryLegacyLeaderSectionsTable,
+          HistoryLegacyLeaderSection
+        > {
+  $$HistoryLegacyLeaderSectionsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $HistoryLegacyLeadersTable _legacyLeaderIdTable(
+    _$AppDatabase db,
+  ) => db.historyLegacyLeaders.createAlias(
+    'history_legacy_leader_sections__legacy_leader_id__history_legacy_leaders__id',
+  );
+
+  $$HistoryLegacyLeadersTableProcessedTableManager get legacyLeaderId {
+    final $_column = $_itemColumn<String>('legacy_leader_id')!;
+
+    final manager = $$HistoryLegacyLeadersTableTableManager(
+      $_db,
+      $_db.historyLegacyLeaders,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_legacyLeaderIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$HistoryLegacyLeaderSectionsTableFilterComposer
+    extends Composer<_$AppDatabase, $HistoryLegacyLeaderSectionsTable> {
+  $$HistoryLegacyLeaderSectionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$HistoryLegacyLeadersTableFilterComposer get legacyLeaderId {
+    final $$HistoryLegacyLeadersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.legacyLeaderId,
+      referencedTable: $db.historyLegacyLeaders,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$HistoryLegacyLeadersTableFilterComposer(
+            $db: $db,
+            $table: $db.historyLegacyLeaders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$HistoryLegacyLeaderSectionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $HistoryLegacyLeaderSectionsTable> {
+  $$HistoryLegacyLeaderSectionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$HistoryLegacyLeadersTableOrderingComposer get legacyLeaderId {
+    final $$HistoryLegacyLeadersTableOrderingComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.legacyLeaderId,
+          referencedTable: $db.historyLegacyLeaders,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$HistoryLegacyLeadersTableOrderingComposer(
+                $db: $db,
+                $table: $db.historyLegacyLeaders,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$HistoryLegacyLeaderSectionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $HistoryLegacyLeaderSectionsTable> {
+  $$HistoryLegacyLeaderSectionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  $$HistoryLegacyLeadersTableAnnotationComposer get legacyLeaderId {
+    final $$HistoryLegacyLeadersTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.legacyLeaderId,
+          referencedTable: $db.historyLegacyLeaders,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$HistoryLegacyLeadersTableAnnotationComposer(
+                $db: $db,
+                $table: $db.historyLegacyLeaders,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$HistoryLegacyLeaderSectionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $HistoryLegacyLeaderSectionsTable,
+          HistoryLegacyLeaderSection,
+          $$HistoryLegacyLeaderSectionsTableFilterComposer,
+          $$HistoryLegacyLeaderSectionsTableOrderingComposer,
+          $$HistoryLegacyLeaderSectionsTableAnnotationComposer,
+          $$HistoryLegacyLeaderSectionsTableCreateCompanionBuilder,
+          $$HistoryLegacyLeaderSectionsTableUpdateCompanionBuilder,
+          (
+            HistoryLegacyLeaderSection,
+            $$HistoryLegacyLeaderSectionsTableReferences,
+          ),
+          HistoryLegacyLeaderSection,
+          PrefetchHooks Function({bool legacyLeaderId})
+        > {
+  $$HistoryLegacyLeaderSectionsTableTableManager(
+    _$AppDatabase db,
+    $HistoryLegacyLeaderSectionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$HistoryLegacyLeaderSectionsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$HistoryLegacyLeaderSectionsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$HistoryLegacyLeaderSectionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> legacyLeaderId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HistoryLegacyLeaderSectionsCompanion(
+                id: id,
+                legacyLeaderId: legacyLeaderId,
+                title: title,
+                body: body,
+                sortOrder: sortOrder,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String legacyLeaderId,
+                Value<String> title = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HistoryLegacyLeaderSectionsCompanion.insert(
+                id: id,
+                legacyLeaderId: legacyLeaderId,
+                title: title,
+                body: body,
+                sortOrder: sortOrder,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$HistoryLegacyLeaderSectionsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({legacyLeaderId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (legacyLeaderId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.legacyLeaderId,
+                                referencedTable:
+                                    $$HistoryLegacyLeaderSectionsTableReferences
+                                        ._legacyLeaderIdTable(db),
+                                referencedColumn:
+                                    $$HistoryLegacyLeaderSectionsTableReferences
+                                        ._legacyLeaderIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$HistoryLegacyLeaderSectionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $HistoryLegacyLeaderSectionsTable,
+      HistoryLegacyLeaderSection,
+      $$HistoryLegacyLeaderSectionsTableFilterComposer,
+      $$HistoryLegacyLeaderSectionsTableOrderingComposer,
+      $$HistoryLegacyLeaderSectionsTableAnnotationComposer,
+      $$HistoryLegacyLeaderSectionsTableCreateCompanionBuilder,
+      $$HistoryLegacyLeaderSectionsTableUpdateCompanionBuilder,
+      (
+        HistoryLegacyLeaderSection,
+        $$HistoryLegacyLeaderSectionsTableReferences,
+      ),
+      HistoryLegacyLeaderSection,
+      PrefetchHooks Function({bool legacyLeaderId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -24828,6 +27249,8 @@ class $AppDatabaseManager {
       $$UsersTableTableManager(_db, _db.users);
   $$LeadersTableTableManager get leaders =>
       $$LeadersTableTableManager(_db, _db.leaders);
+  $$LeaderSectionsTableTableManager get leaderSections =>
+      $$LeaderSectionsTableTableManager(_db, _db.leaderSections);
   $$AuditLogsTableTableManager get auditLogs =>
       $$AuditLogsTableTableManager(_db, _db.auditLogs);
   $$MemberChildrenTableTableManager get memberChildren =>
@@ -24870,5 +27293,13 @@ class $AppDatabaseManager {
       $$PreviousLeaderSectionsTableTableManager(
         _db,
         _db.previousLeaderSections,
+      );
+  $$HistoryLegacyLeadersTableTableManager get historyLegacyLeaders =>
+      $$HistoryLegacyLeadersTableTableManager(_db, _db.historyLegacyLeaders);
+  $$HistoryLegacyLeaderSectionsTableTableManager
+  get historyLegacyLeaderSections =>
+      $$HistoryLegacyLeaderSectionsTableTableManager(
+        _db,
+        _db.historyLegacyLeaderSections,
       );
 }

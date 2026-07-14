@@ -6,6 +6,7 @@ import '../../core/auth/session_controller.dart';
 import '../../core/data/app_database.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/repositories/department_repository.dart';
+import '../../core/repositories/leader_repository.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../widgets/cards/department_card.dart';
 import '../../widgets/feedback/empty_state.dart';
@@ -110,12 +111,19 @@ class DepartmentsScreen extends StatelessWidget {
 
   Future<void> _delete(
       BuildContext context, DepartmentRepository repo, Department dept) async {
+    final leaderRepo = context.read<LeaderRepository>();
     final ok = await confirmDialog(
       context,
       title: context.trRead('Delete “${dept.name}”?'),
       message: context.trRead('Its activities will also be removed.',
           'ستُحذف أنشطته أيضًا.'),
     );
-    if (ok) await repo.delete(dept.id);
+    if (!ok) return;
+    // Remove the department's head/staff holder rows (and their stored photos)
+    // first; they live in the Leaders table under per-department codes, so the
+    // department delete alone would orphan them.
+    await leaderRepo.deleteCategory('dept_head_${dept.id}');
+    await leaderRepo.deleteCategory('dept_staff_${dept.id}');
+    await repo.delete(dept.id);
   }
 }

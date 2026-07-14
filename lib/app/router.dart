@@ -9,9 +9,9 @@ import '../features/departments/department_detail_screen.dart';
 import '../features/departments/departments_screen.dart';
 import '../features/gallery/gallery_screen.dart';
 import '../features/history/history_screen.dart';
+import '../features/history/legacy_leader_profile_screen.dart';
 import '../features/leadership/leader_profile_screen.dart';
 import '../features/leadership/leadership_screen.dart';
-import '../features/leadership/previous_leadership_screen.dart';
 import '../features/login/login_screen.dart';
 import '../features/members/members_management_screen.dart';
 import '../features/reports/department_report_view_screen.dart';
@@ -83,6 +83,12 @@ GoRouter createRouter(SessionController session) {
             builder: (context, state) => const HistoryScreen(),
           ),
           GoRoute(
+            path: '/history/legacy/:id',
+            builder: (context, state) => LegacyLeaderProfileScreen(
+              legacyLeaderId: state.pathParameters['id']!,
+            ),
+          ),
+          GoRoute(
             path: '/leadership',
             redirect: (_, _) => '/leadership/office-president',
           ),
@@ -131,13 +137,9 @@ GoRouter createRouter(SessionController session) {
             ),
           ),
           GoRoute(
-            path: '/leadership/previous',
-            builder: (context, state) => const PreviousLeadershipScreen(),
-          ),
-          GoRoute(
-            path: '/leadership/member/:memberId',
+            path: '/leadership/position/:leaderId',
             builder: (context, state) => LeaderProfileScreen(
-              memberId: state.pathParameters['memberId']!,
+              leaderId: state.pathParameters['leaderId']!,
             ),
           ),
           GoRoute(

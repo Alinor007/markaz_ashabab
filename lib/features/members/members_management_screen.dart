@@ -37,6 +37,7 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
   int _statusFilter = 0; // 0 all, 1 active, 2 inactive
   String? _areaFilter; // area id, null = all
   int? _levelFilter; // null = all
+  int _genderFilter = 0; // 0 all, 1 male, 2 female
   int _page = 0;
 
   bool _ready = false;
@@ -88,7 +89,10 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
           (_statusFilter == 2 && !m.isActive);
       final matchesArea = _areaFilter == null || _areaIdFor(m) == _areaFilter;
       final matchesLevel = _levelFilter == null || m.level == _levelFilter;
-      return matchesQuery && matchesStatus && matchesArea && matchesLevel;
+      final matchesGender = _genderFilter == 0 ||
+          (_genderFilter == 1 && m.gender == 'M') ||
+          (_genderFilter == 2 && m.gender == 'F');
+      return matchesQuery && matchesStatus && matchesArea && matchesLevel && matchesGender;
     }).toList()
       ..sort((a, b) =>
           a.lastName.toLowerCase().compareTo(b.lastName.toLowerCase()));
@@ -158,6 +162,11 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
                 levelFilter: _levelFilter,
                 onLevel: (v) => setState(() {
                   _levelFilter = v;
+                  _resetPage();
+                }),
+                genderFilter: _genderFilter,
+                onGender: (v) => setState(() {
+                  _genderFilter = v;
                   _resetPage();
                 }),
               ),
@@ -257,6 +266,8 @@ class _FilterRow extends StatelessWidget {
     required this.onArea,
     required this.levelFilter,
     required this.onLevel,
+    required this.genderFilter,
+    required this.onGender,
   });
 
   final int total;
@@ -268,6 +279,8 @@ class _FilterRow extends StatelessWidget {
   final ValueChanged<String?> onArea;
   final int? levelFilter;
   final ValueChanged<int?> onLevel;
+  final int genderFilter; // 0 all, 1 male, 2 female
+  final ValueChanged<int> onGender;
 
   @override
   Widget build(BuildContext context) {
@@ -307,6 +320,16 @@ class _FilterRow extends StatelessWidget {
               l: context.tr('Level $l', 'المستوى $l'),
           },
           onChanged: onLevel,
+        ),
+        AppDropdown<int>(
+          label: context.tr('Gender', 'الجنس'),
+          value: genderFilter,
+          items: {
+            0: context.tr('All Genders', 'كل الأجناس'),
+            1: context.tr('Male', 'ذكر'),
+            2: context.tr('Female', 'أنثى'),
+          },
+          onChanged: onGender,
         ),
       ],
     );

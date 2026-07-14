@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../data/app_database.dart';
+import '../data/models.dart';
 
 /// Member counts for a tarbiya level (or shu'ba).
 class LevelCounts {
@@ -154,6 +155,5 @@ class TarbiyaRepository {
     });
   }
 
-  String _id(String prefix) =>
-      '${prefix}_${DateTime.now().microsecondsSinceEpoch}';
+  String _id(String prefix) => newId(prefix);
 }

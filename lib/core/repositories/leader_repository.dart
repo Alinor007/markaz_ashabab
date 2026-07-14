@@ -113,7 +113,8 @@ class LeaderRepository {
     return _db.into(_db.leaders).insert(
           LeadersCompanion.insert(
             id: newId('position'),
-            name: title,
+            // A new position starts vacant; the holder's name is entered later.
+            name: '',
             position: title,
             category: code,
             sortOrder: const Value(100),
@@ -121,11 +122,11 @@ class LeaderRepository {
         );
   }
 
-  /// Renames a position.
+  /// Renames a position. Only the office title changes — the assigned holder's
+  /// name (stored in [Leaders.name]) is left untouched.
   Future<void> editPosition(String id, String title) {
     return (_db.update(_db.leaders)..where((l) => l.id.equals(id))).write(
       LeadersCompanion(
-        name: Value(title),
         position: Value(title),
       ),
     );
@@ -144,6 +145,103 @@ class LeaderRepository {
     ])
       ..where(_db.leaders.id.equals(positionId));
     return query.watchSingleOrNull().map((row) => row?.readTable(_db.members));
+  }
+
+  // ── Position holders (manually entered name + photo, no member link) ────────
+  /// Watches a single leadership position/leader row.
+  Stream<Leader?> watchById(String id) =>
+      (_db.select(_db.leaders)..where((l) => l.id.equals(id)))
+          .watchSingleOrNull();
+
+  /// Fills [positionId] with a manually entered holder: a free-text [name] and
+  /// an optional stored [photoPath]. Clears any member link.
+  Future<void> setPositionHolder(
+    String positionId, {
+    required String name,
+    String? photoPath,
+  }) {
+    return (_db.update(_db.leaders)..where((l) => l.id.equals(positionId)))
+        .write(LeadersCompanion(
+      name: Value(name),
+      photoPath: photoPath == null ? const Value.absent() : Value(photoPath),
+      memberId: const Value(null),
+    ));
+  }
+
+  /// Creates a filled position in one step: a new [Leaders] row in
+  /// [categoryCode] titled [positionTitle], held by the manually entered
+  /// [name] with an optional [photoPath] and biography [sections]. Returns the
+  /// new row's id. Used for department heads/staff, whose positions are
+  /// created on assignment rather than ahead of time.
+  Future<String> createHolder({
+    required String categoryCode,
+    required String positionTitle,
+    required String name,
+    String photoPath = '',
+    List<({String title, String body})> sections = const [],
+  }) async {
+    final id = newId('leader');
+    await _db.into(_db.leaders).insert(
+          LeadersCompanion.insert(
+            id: id,
+            name: name,
+            position: positionTitle,
+            category: categoryCode,
+            photoPath: Value(photoPath),
+          ),
+        );
+    await setLeaderSections(id, sections);
+    return id;
+  }
+
+  /// Deletes every position in a category (including stored photos and, via
+  /// cascade, biography sections). Used when the owning entity — e.g. a
+  /// department with `dept_head_<id>` / `dept_staff_<id>` codes — is deleted.
+  Future<void> deleteCategory(String code) async {
+    final rows = await (_db.select(_db.leaders)
+          ..where((l) => l.category.equals(code)))
+        .get();
+    for (final row in rows) {
+      await delete(row.id);
+    }
+  }
+
+  /// Vacates [positionId]: clears the holder name/photo and biography sections,
+  /// and removes the stored photo file.
+  Future<void> clearPositionHolder(String positionId) async {
+    final leader = await getById(positionId);
+    await (_db.delete(_db.leaderSections)
+          ..where((s) => s.leaderId.equals(positionId)))
+        .go();
+    await (_db.update(_db.leaders)..where((l) => l.id.equals(positionId)))
+        .write(const LeadersCompanion(name: Value(''), photoPath: Value('')));
+    await _photos.deleteStored(leader?.photoPath);
+  }
+
+  // ── Biography sections attached to a position holder ────────────────────────
+  Stream<List<LeaderSection>> watchLeaderSections(String leaderId) =>
+      (_db.select(_db.leaderSections)
+            ..where((s) => s.leaderId.equals(leaderId))
+            ..orderBy([(s) => OrderingTerm(expression: s.sortOrder)]))
+          .watch();
+
+  /// Replaces all biography sections for [leaderId] with [sections] (in order).
+  Future<void> setLeaderSections(
+      String leaderId, List<({String title, String body})> sections) async {
+    await (_db.delete(_db.leaderSections)
+          ..where((s) => s.leaderId.equals(leaderId)))
+        .go();
+    for (var i = 0; i < sections.length; i++) {
+      await _db.into(_db.leaderSections).insert(
+            LeaderSectionsCompanion.insert(
+              id: newId('leadersection'),
+              leaderId: leaderId,
+              title: Value(sections[i].title),
+              body: Value(sections[i].body),
+              sortOrder: Value(i),
+            ),
+          );
+    }
   }
 
   // ── Group descriptions (Office of the President, Board, Assembly groups) ──

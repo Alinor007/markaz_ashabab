@@ -4,9 +4,14 @@ import '../auth/roles.dart';
 import '../util/icon_catalog.dart';
 import 'app_database.dart';
 
+int _newIdSeq = 0;
+
 /// Generates a reasonably-unique id with a type prefix (no uuid dependency).
+/// A process-wide counter is appended because back-to-back calls can land on
+/// the same microsecond (the Windows clock resolution is ~1ms, so rapid
+/// inserts would otherwise collide on the timestamp alone).
 String newId(String prefix) =>
-    '${prefix}_${DateTime.now().microsecondsSinceEpoch}';
+    '${prefix}_${DateTime.now().microsecondsSinceEpoch}_${_newIdSeq++}';
 
 /// Leadership groupings (the three Leadership sub-pages).
 enum LeadershipCategory {
