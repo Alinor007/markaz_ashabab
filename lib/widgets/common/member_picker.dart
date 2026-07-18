@@ -21,6 +21,8 @@ Future<Member?> pickMember(
   required String title,
   String? excludeId,
   Set<String> excludeIds = const {},
+  String? shubaId,
+  int? level,
 }) {
   return showDialog<Member>(
     context: context,
@@ -29,6 +31,8 @@ Future<Member?> pickMember(
       title: title,
       excludeId: excludeId,
       excludeIds: excludeIds,
+      shubaId: shubaId,
+      level: level,
     ),
   );
 }
@@ -40,12 +44,18 @@ class MemberPickerDialog extends StatefulWidget {
     required this.title,
     this.excludeId,
     this.excludeIds = const {},
+    this.shubaId,
+    this.level,
   });
 
   final MemberRepository repo;
   final String title;
   final String? excludeId;
   final Set<String> excludeIds;
+
+  /// When set, the searchable pool is restricted to this shu'ba / level.
+  final String? shubaId;
+  final int? level;
 
   @override
   State<MemberPickerDialog> createState() => _MemberPickerDialogState();
@@ -65,8 +75,10 @@ class _MemberPickerDialogState extends State<MemberPickerDialog> {
   Future<void> _run(String query) async {
     setState(() => _loading = true);
     try {
-      final results =
-          await widget.repo.searchMembers(query, excludeId: widget.excludeId);
+      final results = await widget.repo.searchMembers(query,
+          excludeId: widget.excludeId,
+          shubaId: widget.shubaId,
+          level: widget.level);
       if (!mounted) return;
       setState(() {
         _results =

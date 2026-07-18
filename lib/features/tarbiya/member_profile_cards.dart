@@ -450,14 +450,16 @@ class NaqibUsraCard extends StatelessWidget {
             style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: AppSpacing.sm),
-          // Students are derived: every member who shares this member's Naqib
-          // belongs to the same tutorial class.
+          // Students are derived: every member who shares this member's Naqib,
+          // section (usraName), AND level belongs to the same tutorial class.
           StreamBuilder<List<Member>>(
             stream: member.naqibMemberId == null
                 ? Stream.value(const <Member>[])
                 : repo.watchMembersOfNaqib(
                     member.naqibMemberId!,
                     excludeId: member.id,
+                    section: member.usraName,
+                    level: member.level,
                   ),
             builder: (context, snap) {
               final members = snap.data ?? const [];

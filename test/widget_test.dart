@@ -279,6 +279,143 @@ void main() {
       expect((await members.getMember(id1))!.naqibMemberId, isNull);
       expect(await members.watchMembersOfNaqib(id2).first, isEmpty);
     });
+
+    test('tutorial classes derive from shared naqib + section', () async {
+      final t1 = await seedMember(); // Yusuf, level 1 — also a teacher here.
+      final area = await testArea();
+      final shuba = (await tarbiya.watchShubas(area.id).first).single;
+
+      Future<String> add(String first,
+              {String? naqib, String section = '', int level = 1}) =>
+          members.insertMember(MembersCompanion(
+            shubaId: Value(shuba.id),
+            level: Value(level),
+            firstName: Value(first),
+            lastName: const Value('Test'),
+            naqibMemberId: Value(naqib),
+            usraName: Value(section),
+          ));
+
+      final t2 = await add('Aisha');
+      final s1 = await add('Ahmad', naqib: t1, section: 'A');
+      final s2 = await add('Bilal', naqib: t1, section: 'A');
+      final s3 = await add('Omar', naqib: t1, section: 'B');
+      final s4 = await add('Zayd', naqib: t2, section: 'A');
+      await add('Idris'); // no naqib → belongs to no class
+
+      // Same teacher + same section = one class; sections split a teacher.
+      final classes = await tarbiya.watchClasses(shuba.id, 1).first;
+      expect(classes, hasLength(3));
+      final t1a = classes
+          .firstWhere((c) => c.teacher.id == t1 && c.section == 'A');
+      expect(t1a.students.map((m) => m.id), unorderedEquals([s1, s2]));
+      final t1b = classes
+          .firstWhere((c) => c.teacher.id == t1 && c.section == 'B');
+      expect(t1b.students.single.id, s3);
+      final t2a = classes
+          .firstWhere((c) => c.teacher.id == t2 && c.section == 'A');
+      expect(t2a.students.single.id, s4);
+
+      // watchMembersOfNaqib: the section param narrows to one class; without
+      // it, all of the teacher's students across sections are returned.
+      expect(
+          (await members.watchMembersOfNaqib(t1, section: 'A').first)
+              .map((m) => m.id),
+          unorderedEquals([s1, s2]));
+      expect(await members.watchMembersOfNaqib(t1).first, hasLength(3));
+      // The empty string is a valid section of its own (t2 has none set).
+      expect((await members.watchMembersOfNaqib(t2, section: '').first),
+          isEmpty);
+
+      // A class is scoped to (Naqib, section, level): same teacher + section
+      // text in a different level is a different class, not the same one.
+      final s5 = await add('Level2Ahmad', naqib: t1, section: 'A', level: 2);
+      expect(
+          (await members.watchMembersOfNaqib(t1, section: 'A').first)
+              .map((m) => m.id),
+          contains(s5));
+      expect(
+          (await members
+                  .watchMembersOfNaqib(t1, section: 'A', level: 1)
+                  .first)
+              .map((m) => m.id),
+          isNot(contains(s5)));
+      expect(
+          (await tarbiya.watchClasses(shuba.id, 1).first)
+              .firstWhere((c) => c.teacher.id == t1 && c.section == 'A')
+              .students
+              .map((m) => m.id),
+          isNot(contains(s5)));
+
+      // The Add Class student picker pool restricts to a shu'ba level.
+      final hafsa = await add('Hafsa', level: 2);
+      final lvl2Pool =
+          await members.searchMembers('', shubaId: shuba.id, level: 2);
+      expect(lvl2Pool.map((m) => m.id), unorderedEquals([s5, hafsa]));
+
+      // Add Class save semantics: reassignment overwrites the old class and
+      // lands all three usra fields.
+      await members.updateMember(
+          s4,
+          MembersCompanion(
+            naqibMemberId: Value(t1),
+            usraName: const Value('B'),
+            usraEstablishedYear: const Value('2026'),
+            usraMeetingSchedule: const Value('Friday 4pm'),
+          ));
+      final moved = (await members.getMember(s4))!;
+      expect(moved.naqibMemberId, t1);
+      expect(moved.usraName, 'B');
+      expect(moved.usraEstablishedYear, '2026');
+      expect(moved.usraMeetingSchedule, 'Friday 4pm');
+      final after = await tarbiya.watchClasses(shuba.id, 1).first;
+      expect(after, hasLength(2)); // t2's class dissolved, s4 joined t1|B.
+      expect(
+          after
+              .firstWhere((c) => c.teacher.id == t1 && c.section == 'B')
+              .students
+              .map((m) => m.id),
+          unorderedEquals([s3, s4]));
+
+      // Removing a student from a class (the editable Tutorial Class screen)
+      // clears their whole assignment; classmates keep the class.
+      await members.updateMember(
+          s2,
+          const MembersCompanion(
+            naqibMemberId: Value(null),
+            usraName: Value(''),
+            usraEstablishedYear: Value(''),
+            usraMeetingSchedule: Value(''),
+          ));
+      expect(
+          (await tarbiya.watchClasses(shuba.id, 1).first)
+              .firstWhere((c) => c.teacher.id == t1 && c.section == 'A')
+              .students
+              .single
+              .id,
+          s1);
+      expect((await members.watchMembersOfNaqib(t1, section: 'A').first)
+          .map((m) => m.id), isNot(contains(s2)));
+
+      // Renaming the section on every student moves the class to a new key.
+      await members.updateMember(
+          s1, const MembersCompanion(usraName: Value('A2')));
+      final renamed = await tarbiya.watchClasses(shuba.id, 1).first;
+      expect(renamed.where((c) => c.teacher.id == t1 && c.section == 'A'),
+          isEmpty);
+      expect(
+          renamed
+              .firstWhere((c) => c.teacher.id == t1 && c.section == 'A2')
+              .students
+              .single
+              .id,
+          s1);
+
+      // Deleting a teacher SET NULLs the students and dissolves the classes.
+      await members.deleteMember(t1);
+      expect(await tarbiya.watchClasses(shuba.id, 1).first, isEmpty);
+      expect((await members.getMember(s1))!.naqibMemberId, isNull);
+    });
   });
 
   group('departments & reports data layer', () {

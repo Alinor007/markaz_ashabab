@@ -21,6 +21,8 @@ import '../features/settings/settings_screen.dart';
 import '../features/tarbiya/member_form_screen.dart';
 import '../features/tarbiya/member_profile_screen.dart';
 import '../features/tarbiya/tarbiya_areas_screen.dart';
+import '../features/tarbiya/class_info_screen.dart';
+import '../features/tarbiya/tarbiya_classes_screen.dart';
 import '../features/tarbiya/tarbiya_levels_screen.dart';
 import '../features/tarbiya/tarbiya_member_list_screen.dart';
 import '../features/tarbiya/tarbiya_shubas_screen.dart';
@@ -189,6 +191,26 @@ GoRouter createRouter(SessionController session) {
               areaId: state.pathParameters['areaId']!,
               shubaId: state.pathParameters['shubaId']!,
               level: int.tryParse(state.pathParameters['level'] ?? '1') ?? 1,
+            ),
+          ),
+          GoRoute(
+            path: '/tarbiya/area/:areaId/shuba/:shubaId/level/:level/classes',
+            builder: (context, state) => TarbiyaClassesScreen(
+              areaId: state.pathParameters['areaId']!,
+              shubaId: state.pathParameters['shubaId']!,
+              level: int.tryParse(state.pathParameters['level'] ?? '1') ?? 1,
+            ),
+          ),
+          GoRoute(
+            // Section is free text, so the class identity (naqib + section)
+            // travels in query parameters rather than path segments.
+            path: '/tarbiya/area/:areaId/shuba/:shubaId/level/:level/class-info',
+            builder: (context, state) => ClassInfoScreen(
+              areaId: state.pathParameters['areaId']!,
+              shubaId: state.pathParameters['shubaId']!,
+              level: int.tryParse(state.pathParameters['level'] ?? '1') ?? 1,
+              naqibId: state.uri.queryParameters['naqib'] ?? '',
+              section: state.uri.queryParameters['section'] ?? '',
             ),
           ),
           GoRoute(

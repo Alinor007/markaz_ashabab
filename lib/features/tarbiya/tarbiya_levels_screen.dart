@@ -74,6 +74,8 @@ class TarbiyaLevelsScreen extends StatelessWidget {
                       counts: counts[level] ?? const LevelCounts(),
                       onTap: () => context.go(
                           '/tarbiya/area/$areaId/shuba/$shubaId/level/$level'),
+                      onClasses: () => context.go(
+                          '/tarbiya/area/$areaId/shuba/$shubaId/level/$level/classes'),
                     ),
                 ],
               );
@@ -96,10 +98,12 @@ class _LevelCard extends StatelessWidget {
     required this.level,
     required this.counts,
     required this.onTap,
+    required this.onClasses,
   });
   final int level;
   final LevelCounts counts;
   final VoidCallback onTap;
+  final VoidCallback onClasses;
 
   static const _accents = [
     AppColors.emerald,
@@ -118,7 +122,7 @@ class _LevelCard extends StatelessWidget {
       borderRadius: AppRadius.card,
       child: InkWell(
         borderRadius: AppRadius.card,
-        onTap: onTap,
+        // onTap: onTap,
         child: Ink(
           decoration: BoxDecoration(
             borderRadius: AppRadius.card,
@@ -167,6 +171,32 @@ class _LevelCard extends StatelessWidget {
                       color: AppColors.textFaint,
                       label: context.tr('Inactive', 'غير نشط'),
                       value: counts.inactive),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: onTap,
+                      style: OutlinedButton.styleFrom(
+                          visualDensity: VisualDensity.compact),
+                      icon: const Icon(Icons.people_outline, size: 16),
+                      label: Text(context.tr('View members', 'عرض الطلاب'),
+                          overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: onClasses,
+                      style: OutlinedButton.styleFrom(
+                          visualDensity: VisualDensity.compact),
+                      icon: const Icon(Icons.school_outlined, size: 16),
+                      label: Text(context.tr('View Classes', 'عرض الفصول'),
+                          overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                 ],
               ),
             ],

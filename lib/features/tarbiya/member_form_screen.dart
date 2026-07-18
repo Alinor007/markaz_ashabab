@@ -735,10 +735,14 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
                 style: Theme.of(context).textTheme.bodySmall)
           else
             StreamBuilder<List<Member>>(
-              key: ValueKey(_naqib!.id),
+              // Re-keyed on the section too — the class is (Naqib, section,
+              // level).
+              key: ValueKey('${_naqib!.id}|${_usraName.text.trim()}|$_level'),
               stream: context.read<MemberRepository>().watchMembersOfNaqib(
                   _naqib!.id,
-                  excludeId: widget.memberId),
+                  excludeId: widget.memberId,
+                  section: _usraName.text.trim(),
+                  level: _level),
               builder: (context, snap) {
                 final members = snap.data ?? const <Member>[];
                 if (members.isEmpty) {
@@ -815,8 +819,13 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
       textDirection: textDirection,
       decoration: InputDecoration(labelText: label, isDense: true),
       onChanged: (_) {
-        // Refresh avatar initials live.
-        if (controller == _first || controller == _last) setState(() {});
+        // Refresh avatar initials (name fields) and the derived student
+        // chips (section field, part of the class identity) live.
+        if (controller == _first ||
+            controller == _last ||
+            controller == _usraName) {
+          setState(() {});
+        }
       },
     );
   }

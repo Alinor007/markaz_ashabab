@@ -347,25 +347,37 @@ class MemberRepository {
   // ── Usra members (derived from a shared Naqib) ─────────────────────────────
   /// Members whose Naqib is [naqibId] — i.e. the students of that Naqib's
   /// tutorial class. Pass [excludeId] to leave out the member being viewed.
+  /// Pass [section] to restrict to one class (same Naqib AND same usraName —
+  /// the empty string is a valid section of its own); null spans all sections.
+  /// Pass [level] to also require the same tarbiya level — a class is scoped
+  /// to (Naqib, section, level), so two members in different levels never
+  /// share a class even if their Naqib/section text happen to match.
   Stream<List<Member>> watchMembersOfNaqib(String naqibId,
-      {String? excludeId}) {
+      {String? excludeId, String? section, int? level}) {
     return (_db.select(_db.members)
           ..where((m) {
             final sameNaqib = m.naqibMemberId.equals(naqibId);
             final notSelf = excludeId == null
                 ? const Constant(true)
                 : m.id.equals(excludeId).not();
-            return sameNaqib & notSelf;
+            final sameSection = section == null
+                ? const Constant(true)
+                : m.usraName.equals(section);
+            final sameLevel =
+                level == null ? const Constant(true) : m.level.equals(level);
+            return sameNaqib & notSelf & sameSection & sameLevel;
           })
           ..orderBy([(m) => OrderingTerm(expression: m.firstName)]))
         .watch();
   }
 
-  // ── Member search (for the Naqib picker) ──────────────────────────────────
+  // ── Member search (for the Naqib / student pickers) ───────────────────────
   /// Members whose name matches [query] (first/middle/last), excluding
-  /// [excludeId]. Returns up to [limit] results ordered by first name.
+  /// [excludeId]. Pass [shubaId] and/or [level] to restrict the pool (e.g.
+  /// the Add Class student picker only offers members of that shu'ba level).
+  /// Returns up to [limit] results ordered by first name.
   Future<List<Member>> searchMembers(String query,
-      {String? excludeId, int limit = 25}) {
+      {String? excludeId, int limit = 25, String? shubaId, int? level}) {
     final q = query.trim();
     final like = '%$q%';
     return (_db.select(_db.members)
@@ -378,7 +390,12 @@ class MemberRepository {
             final notSelf = excludeId == null
                 ? const Constant(true)
                 : m.id.equals(excludeId).not();
-            return matches & notSelf;
+            final inShuba = shubaId == null
+                ? const Constant(true)
+                : m.shubaId.equals(shubaId);
+            final inLevel =
+                level == null ? const Constant(true) : m.level.equals(level);
+            return matches & notSelf & inShuba & inLevel;
           })
           ..orderBy([(m) => OrderingTerm(expression: m.firstName)])
           ..limit(limit))

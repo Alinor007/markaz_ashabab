@@ -11,6 +11,27 @@ class LevelCounts {
   int get inactive => total - active;
 }
 
+/// A derived tutorial class: the members of one shu'ba level who share the
+/// same Naqib (teacher) AND the same section (usraName). There is no Classes
+/// table — classes exist only as this grouping over member rows.
+class TutorialClass {
+  const TutorialClass({
+    required this.teacher,
+    required this.section,
+    required this.students,
+  });
+
+  final Member teacher;
+  final String section;
+  final List<Member> students;
+
+  /// Year/schedule are per-student columns; a class shows the first student's
+  /// values (individually edited students could diverge — derived-view limit).
+  String get year => students.isEmpty ? '' : students.first.usraEstablishedYear;
+  String get schedule =>
+      students.isEmpty ? '' : students.first.usraMeetingSchedule;
+}
+
 /// Areas → Shu'bas → Members (by level) for the Tarbiya Al-Kawadeer module.
 class TarbiyaRepository {
   TarbiyaRepository(this._db);
@@ -152,6 +173,47 @@ class TarbiyaRepository {
         );
       }
       return counts;
+    });
+  }
+
+  // ── Tutorial classes (derived: same Naqib + same section) ────────────────
+  /// The tutorial classes of one shu'ba level: members with a Naqib, grouped
+  /// by (naqibMemberId, trimmed usraName). A join (rather than a second
+  /// lookup) keeps the stream reactive to teacher-row edits too. Deleted
+  /// teachers cannot dangle — naqibMemberId is SET NULL on delete, so their
+  /// former students simply drop out of every class.
+  Stream<List<TutorialClass>> watchClasses(String shubaId, int level) {
+    final teacher = _db.alias(_db.members, 'teacher');
+    final query = _db.select(_db.members).join([
+      innerJoin(teacher, teacher.id.equalsExp(_db.members.naqibMemberId)),
+    ])
+      ..where(_db.members.shubaId.equals(shubaId) &
+          _db.members.level.equals(level) &
+          _db.members.naqibMemberId.isNotNull());
+    return query.watch().map((rows) {
+      final groups = <String, TutorialClass>{};
+      for (final row in rows) {
+        final student = row.readTable(_db.members);
+        final naqib = row.readTable(teacher);
+        final section = student.usraName.trim();
+        final key = '${naqib.id}|$section';
+        final existing = groups[key];
+        if (existing == null) {
+          groups[key] =
+              TutorialClass(teacher: naqib, section: section, students: [student]);
+        } else {
+          existing.students.add(student);
+        }
+      }
+      final classes = groups.values.toList();
+      for (final c in classes) {
+        c.students.sort((a, b) => a.firstName.compareTo(b.firstName));
+      }
+      classes.sort((a, b) {
+        final byTeacher = a.teacher.firstName.compareTo(b.teacher.firstName);
+        return byTeacher != 0 ? byTeacher : a.section.compareTo(b.section);
+      });
+      return classes;
     });
   }
 
