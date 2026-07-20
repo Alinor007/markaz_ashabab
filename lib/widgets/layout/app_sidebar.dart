@@ -5,15 +5,19 @@ import '../../core/theme/app_typography.dart';
 import '../../app/nav_items.dart';
 import '../../core/auth/session_controller.dart';
 import '../../core/data/models.dart';
+import '../../core/i18n/localized.dart';
 import '../../core/i18n/strings.dart';
 import '../../core/repositories/member_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../core/ui/sidebar_controller.dart';
 import '../common/brand_emblem.dart';
 import '../common/role_badge.dart';
 
 /// The permanent left sidebar: brand header, primary navigation, an
-/// admin-only section, and a bottom user profile card with logout.
+/// admin-only section, and a bottom user profile card with logout. Can be
+/// collapsed to an icon-only rail via [SidebarController] — the state is
+/// global (persists across navigation and app restarts).
 class AppSidebar extends StatelessWidget {
   const AppSidebar({super.key});
 
@@ -21,95 +25,152 @@ class AppSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final session = context.watch<SessionController>();
-    final currentRoute =
-        GoRouterState.of(context).uri.path;
+    final collapsed = context.watch<SidebarController>().collapsed;
+    final currentRoute = GoRouterState.of(context).uri.path;
 
-    return Container(
-      width: AppLayout.sidebarWidth,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+      width: collapsed
+          ? AppLayout.sidebarCollapsedWidth
+          : AppLayout.sidebarWidth,
       decoration: const BoxDecoration(
         color: AppColors.navy,
         border: Border(
           right: BorderSide(color: AppColors.emeraldDark, width: 1),
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _BrandHeader(strings: s),
-          const Divider(color: Colors.white12, height: 1),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(
-                vertical: AppSpacing.lg,
-                horizontal: AppSpacing.md,
-              ),
-              children: [
-                for (final item in kPrimaryNav) ...[
-                  if ((!item.requiresTarbiya ||
-                          (session.can?.accessTarbiya ?? false)) &&
-                      (!item.requiresExecutive ||
-                          (session.can?.manageMembers ?? false)))
-                    if (item.route == '/members/pending')
-                      FutureBuilder<int>(
-                        // A one-shot query re-run on every sidebar rebuild
-                        // (e.g. navigation) — see [MemberRepository.getPendingCount].
-                        future:
-                            context.read<MemberRepository>().getPendingCount(),
-                        builder: (context, snapshot) => _NavTile(
+      // Content decisions (labels vs. icon-only) are driven by the actual
+      // *current* animated width, not the target [collapsed] flag. The
+      // target flips instantly, but AnimatedContainer's width takes 200ms to
+      // catch up — using the target directly would render the full labeled
+      // layout inside a still-narrow box mid-transition, overflowing.
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final midpoint =
+              (AppLayout.sidebarWidth + AppLayout.sidebarCollapsedWidth) / 2;
+          final rail = constraints.maxWidth < midpoint;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _BrandHeader(strings: s, collapsed: rail),
+              const Divider(color: Colors.white12, height: 1),
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.symmetric(
+                    vertical: AppSpacing.lg,
+                    horizontal: rail ? AppSpacing.sm : AppSpacing.md,
+                  ),
+                  children: [
+                    for (final item in kPrimaryNav) ...[
+                      if ((!item.requiresTarbiya ||
+                              (session.can?.accessTarbiya ?? false)) &&
+                          (!item.requiresExecutive ||
+                              (session.can?.manageMembers ?? false)))
+                        if (item.route == '/members/pending')
+                          FutureBuilder<int>(
+                            // A one-shot query re-run on every sidebar
+                            // rebuild (e.g. navigation) — see
+                            // [MemberRepository.getPendingCount].
+                            future: context
+                                .read<MemberRepository>()
+                                .getPendingCount(),
+                            builder: (context, snapshot) => _NavTile(
+                              item: item,
+                              strings: s,
+                              selected: currentRoute == item.route,
+                              badgeCount: snapshot.data ?? 0,
+                              collapsed: rail,
+                            ),
+                          )
+                        else
+                          _NavTile(
+                            item: item,
+                            strings: s,
+                            // Exact-match only for /members so
+                            // /members/pending doesn't also light up the
+                            // Members tile.
+                            selected:
+                                currentRoute == item.route ||
+                                (item.route != '/members' &&
+                                    currentRoute.startsWith('${item.route}/')),
+                            collapsed: rail,
+                          ),
+                      // Insert the Leadership group right after History.
+                      if (item.route == '/history')
+                        _LeadershipNavGroup(
+                          currentRoute: currentRoute,
+                          collapsed: rail,
+                        ),
+                    ],
+                    if (session.isAdmin) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      if (!rail) ...[
+                        _SectionLabel(text: s.administration),
+                        const SizedBox(height: AppSpacing.sm),
+                      ],
+                      for (final item in kAdminNav)
+                        _NavTile(
                           item: item,
                           strings: s,
-                          selected: currentRoute == item.route,
-                          badgeCount: snapshot.data ?? 0,
+                          selected:
+                              currentRoute == item.route ||
+                              currentRoute.startsWith('${item.route}/'),
+                          collapsed: rail,
                         ),
-                      )
-                    else
-                      _NavTile(
-                        item: item,
-                        strings: s,
-                        // Exact-match only for /members so /members/pending
-                        // doesn't also light up the Members tile.
-                        selected: currentRoute == item.route ||
-                            (item.route != '/members' &&
-                                currentRoute.startsWith('${item.route}/')),
-                      ),
-                  // Insert the Leadership group right after History.
-                  if (item.route == '/history')
-                    _LeadershipNavGroup(currentRoute: currentRoute),
-                ],
-                if (session.isAdmin) ...[
-                  const SizedBox(height: AppSpacing.lg),
-                  _SectionLabel(text: s.administration),
-                  const SizedBox(height: AppSpacing.sm),
-                  for (final item in kAdminNav)
-                    _NavTile(
-                      item: item,
-                      strings: s,
-                      selected: currentRoute == item.route ||
-                        currentRoute.startsWith('${item.route}/'),
-                    ),
-                ],
-              ],
-            ),
-          ),
-          const Divider(color: Colors.white12, height: 1),
-          _ProfileCard(strings: s),
-        ],
+                    ],
+                  ],
+                ),
+              ),
+              const Divider(color: Colors.white12, height: 1),
+              _ProfileCard(strings: s, collapsed: rail),
+            ],
+          );
+        },
       ),
     );
   }
 }
 
 class _BrandHeader extends StatelessWidget {
-  const _BrandHeader({required this.strings});
+  const _BrandHeader({required this.strings, required this.collapsed});
   final AppStrings strings;
+  final bool collapsed;
 
   @override
   Widget build(BuildContext context) {
+    final toggle = IconButton(
+      onPressed: () => context.read<SidebarController>().toggle(),
+      tooltip: collapsed
+          ? context.tr('Expand sidebar', 'توسيع الشريط الجانبي')
+          : context.tr('Collapse sidebar', 'طي الشريط الجانبي'),
+      icon: Icon(
+        collapsed ? Icons.chevron_right : Icons.chevron_left,
+        color: Colors.white70,
+      ),
+    );
+
+    if (collapsed) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.lg,
+          horizontal: AppSpacing.sm,
+        ),
+        child: Column(
+          children: [
+            const BrandEmblem(size: 36, onLight: false),
+            const SizedBox(height: AppSpacing.sm),
+            toggle,
+          ],
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.lg,
         AppSpacing.xl,
-        AppSpacing.lg,
+        AppSpacing.sm,
         AppSpacing.lg,
       ),
       child: Row(
@@ -125,11 +186,11 @@ class _BrandHeader extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: AppColors.onNavy,
-                        height: 1.2,
-                      ),
+                    color: AppColors.onNavy,
+                    height: 1.2,
+                  ),
                 ),
-                 const SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
                   strings.orgNameArabic,
                   textDirection: TextDirection.rtl,
@@ -145,6 +206,7 @@ class _BrandHeader extends StatelessWidget {
               ],
             ),
           ),
+          toggle,
         ],
       ),
     );
@@ -162,9 +224,9 @@ class _SectionLabel extends StatelessWidget {
       child: Text(
         text.toUpperCase(),
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: Colors.white38,
-              letterSpacing: 1.2,
-            ),
+          color: Colors.white38,
+          letterSpacing: 1.2,
+        ),
       ),
     );
   }
@@ -176,93 +238,139 @@ class _NavTile extends StatelessWidget {
     required this.strings,
     required this.selected,
     this.badgeCount = 0,
+    this.collapsed = false,
   });
 
   final NavItem item;
   final AppStrings strings;
   final bool selected;
 
-  /// When > 0, a small count pill is rendered after the label.
+  /// When > 0, a small count pill is rendered after the label (or a dot
+  /// marker on the icon when [collapsed]).
   final int badgeCount;
+
+  /// Icon-only rail rendering — no label, wrapped in a [Tooltip].
+  final bool collapsed;
 
   @override
   Widget build(BuildContext context) {
     final label = item.labelBuilder(strings);
+    final content = collapsed
+        ? Stack(
+            alignment: Alignment.center,
+            children: [
+              Icon(
+                selected ? item.activeIcon : item.icon,
+                size: 20,
+                color: selected ? AppColors.onEmerald : Colors.white70,
+              ),
+              if (badgeCount > 0)
+                const Positioned(top: 0, right: 10, child: _BadgeDot()),
+            ],
+          )
+        : Row(
+            children: [
+              // Gold active indicator.
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                width: 3,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: selected ? AppColors.gold : Colors.transparent,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Icon(
+                selected ? item.activeIcon : item.icon,
+                size: 20,
+                color: selected ? AppColors.onEmerald : Colors.white70,
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Text(
+                  label,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: selected ? AppColors.onEmerald : Colors.white70,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                ),
+              ),
+              if (badgeCount > 0) ...[
+                const SizedBox(width: AppSpacing.sm),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.gold,
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                  ),
+                  child: Text(
+                    badgeCount > 99 ? '99+' : '$badgeCount',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: AppColors.onGold,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          );
+
+    final tile = Material(
+      color: selected ? AppColors.emerald : Colors.transparent,
+      borderRadius: BorderRadius.circular(AppRadius.sm),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        onTap: () => context.go(item.route),
+        child: Padding(
+          padding: collapsed
+              ? const EdgeInsets.symmetric(vertical: AppSpacing.md)
+              : const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.md,
+                ),
+          child: content,
+        ),
+      ),
+    );
+
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-      child: Material(
-        color: selected ? AppColors.emerald : Colors.transparent,
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(AppRadius.sm),
-          onTap: () => context.go(item.route),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.md,
-            ),
-            child: Row(
-              children: [
-                // Gold active indicator.
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  width: 3,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: selected ? AppColors.gold : Colors.transparent,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Icon(
-                  selected ? item.activeIcon : item.icon,
-                  size: 20,
-                  color: selected ? AppColors.onEmerald : Colors.white70,
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Text(
-                    label,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color:
-                              selected ? AppColors.onEmerald : Colors.white70,
-                          fontWeight:
-                              selected ? FontWeight.w700 : FontWeight.w500,
-                        ),
-                  ),
-                ),
-                if (badgeCount > 0) ...[
-                  const SizedBox(width: AppSpacing.sm),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.sm, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppColors.gold,
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                    ),
-                    child: Text(
-                      badgeCount > 99 ? '99+' : '$badgeCount',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: AppColors.onGold,
-                            fontWeight: FontWeight.w700,
-                          ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
+      child: collapsed ? Tooltip(message: label, child: tile) : tile,
+    );
+  }
+}
+
+class _BadgeDot extends StatelessWidget {
+  const _BadgeDot();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 8,
+      height: 8,
+      decoration: const BoxDecoration(
+        color: AppColors.gold,
+        shape: BoxShape.circle,
       ),
     );
   }
 }
 
-/// An expandable Leadership group with three dedicated sub-pages.
+/// An expandable Leadership group with three dedicated sub-pages. When the
+/// sidebar is collapsed, this renders as a single inert icon — dropdowns
+/// aren't reachable in the collapsed rail; the user must expand first.
 class _LeadershipNavGroup extends StatefulWidget {
-  const _LeadershipNavGroup({required this.currentRoute});
+  const _LeadershipNavGroup({
+    required this.currentRoute,
+    this.collapsed = false,
+  });
   final String currentRoute;
+  final bool collapsed;
 
   @override
   State<_LeadershipNavGroup> createState() => _LeadershipNavGroupState();
@@ -279,6 +387,31 @@ class _LeadershipNavGroupState extends State<_LeadershipNavGroup> {
     final s = AppStrings.of(context);
     final theme = Theme.of(context);
 
+    if (widget.collapsed) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+        child: Tooltip(
+          message: s.leadership,
+          child: Material(
+            color: _isOnLeadership ? AppColors.emerald : Colors.transparent,
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+              child: Center(
+                child: Icon(
+                  _isOnLeadership
+                      ? Icons.workspace_premium
+                      : Icons.workspace_premium_outlined,
+                  size: 20,
+                  color: _isOnLeadership ? AppColors.gold : Colors.white70,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -291,11 +424,12 @@ class _LeadershipNavGroupState extends State<_LeadershipNavGroup> {
             borderRadius: BorderRadius.circular(AppRadius.sm),
             child: InkWell(
               borderRadius: BorderRadius.circular(AppRadius.sm),
-              onTap: () =>
-                  setState(() => _expandedOverride = !_expanded),
+              onTap: () => setState(() => _expandedOverride = !_expanded),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md, vertical: AppSpacing.md),
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.md,
+                ),
                 child: Row(
                   children: [
                     const SizedBox(width: 3),
@@ -305,9 +439,7 @@ class _LeadershipNavGroupState extends State<_LeadershipNavGroup> {
                           ? Icons.workspace_premium
                           : Icons.workspace_premium_outlined,
                       size: 20,
-                      color: _isOnLeadership
-                          ? AppColors.gold
-                          : Colors.white70,
+                      color: _isOnLeadership ? AppColors.gold : Colors.white70,
                     ),
                     const SizedBox(width: AppSpacing.md),
                     Expanded(
@@ -350,27 +482,29 @@ class _LeadershipNavGroupState extends State<_LeadershipNavGroup> {
               _LeadershipSubTile(
                 label: 'General Membership',
                 route: '/leadership/assembly/general',
-                selected:
-                    widget.currentRoute == '/leadership/assembly/general',
+                selected: widget.currentRoute == '/leadership/assembly/general',
                 indent: 2,
               ),
               _ExpandableSubGroup(
                 label: 'Committees',
                 indent: 2,
-                autoExpand: widget.currentRoute
-                    .startsWith('/leadership/assembly/committee'),
+                autoExpand: widget.currentRoute.startsWith(
+                  '/leadership/assembly/committee',
+                ),
                 children: [
                   _LeadershipSubTile(
                     label: "Hay-ah Shar'iyyah",
                     route: '/leadership/assembly/committee/hayah',
-                    selected: widget.currentRoute ==
+                    selected:
+                        widget.currentRoute ==
                         '/leadership/assembly/committee/hayah',
                     indent: 3,
                   ),
                   _LeadershipSubTile(
                     label: 'Audit',
                     route: '/leadership/assembly/committee/audit',
-                    selected: widget.currentRoute ==
+                    selected:
+                        widget.currentRoute ==
                         '/leadership/assembly/committee/audit',
                     indent: 3,
                   ),
@@ -415,7 +549,9 @@ class _ExpandableSubGroupState extends State<_ExpandableSubGroup> {
       children: [
         Padding(
           padding: EdgeInsets.only(
-              bottom: AppSpacing.xs, left: AppSpacing.lg * widget.indent),
+            bottom: AppSpacing.xs,
+            left: AppSpacing.lg * widget.indent,
+          ),
           child: Material(
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -424,28 +560,36 @@ class _ExpandableSubGroupState extends State<_ExpandableSubGroup> {
               onTap: () => setState(() => _override = !_expanded),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
                 child: Row(
                   children: [
                     Container(
                       width: 6,
                       height: 6,
                       decoration: const BoxDecoration(
-                          color: Colors.white38, shape: BoxShape.circle),
+                        color: Colors.white38,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                     const SizedBox(width: AppSpacing.md),
                     Expanded(
                       child: Text(
                         widget.label,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(
                               color: Colors.white60,
                               fontWeight: FontWeight.w500,
                             ),
                       ),
                     ),
-                    Icon(_expanded ? Icons.expand_less : Icons.expand_more,
-                        size: 18, color: Colors.white54),
+                    Icon(
+                      _expanded ? Icons.expand_less : Icons.expand_more,
+                      size: 18,
+                      color: Colors.white54,
+                    ),
                   ],
                 ),
               ),
@@ -476,7 +620,9 @@ class _LeadershipSubTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-          bottom: AppSpacing.xs, left: AppSpacing.lg * indent),
+        bottom: AppSpacing.xs,
+        left: AppSpacing.lg * indent,
+      ),
       child: Material(
         color: selected ? AppColors.emerald : Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -485,7 +631,9 @@ class _LeadershipSubTile extends StatelessWidget {
           onTap: () => context.go(route),
           child: Padding(
             padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
             child: Row(
               children: [
                 Container(
@@ -502,11 +650,9 @@ class _LeadershipSubTile extends StatelessWidget {
                     label,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color:
-                              selected ? AppColors.onEmerald : Colors.white60,
-                          fontWeight:
-                              selected ? FontWeight.w700 : FontWeight.w500,
-                        ),
+                      color: selected ? AppColors.onEmerald : Colors.white60,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
@@ -519,14 +665,51 @@ class _LeadershipSubTile extends StatelessWidget {
 }
 
 class _ProfileCard extends StatelessWidget {
-  const _ProfileCard({required this.strings});
+  const _ProfileCard({required this.strings, this.collapsed = false});
   final AppStrings strings;
+  final bool collapsed;
 
   @override
   Widget build(BuildContext context) {
     final session = context.watch<SessionController>();
     final user = session.user;
     if (user == null) return const SizedBox.shrink();
+
+    void signOut() {
+      context.read<SessionController>().signOut();
+      context.go('/login');
+    }
+
+    if (collapsed) {
+      return Padding(
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        child: Column(
+          children: [
+            Tooltip(
+              message: user.displayName(),
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: AppColors.gold,
+                child: Text(
+                  user.avatarInitials.toUpperCase(),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelMedium?.copyWith(color: AppColors.onGold),
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Tooltip(
+              message: strings.logout,
+              child: IconButton(
+                onPressed: signOut,
+                icon: const Icon(Icons.logout, size: 18, color: Colors.white70),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -547,9 +730,9 @@ class _ProfileCard extends StatelessWidget {
                   backgroundColor: AppColors.gold,
                   child: Text(
                     user.avatarInitials.toUpperCase(),
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: AppColors.onGold,
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(color: AppColors.onGold),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.md),
@@ -558,9 +741,9 @@ class _ProfileCard extends StatelessWidget {
                     user.displayName(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: AppColors.onNavy,
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(color: AppColors.onNavy),
                   ),
                 ),
               ],
@@ -574,17 +757,13 @@ class _ProfileCard extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: () {
-                  context.read<SessionController>().signOut();
-                  context.go('/login');
-                },
+                onPressed: signOut,
                 icon: const Icon(Icons.logout, size: 18),
                 label: Text(strings.logout),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.onNavy,
                   side: const BorderSide(color: Colors.white24),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                 ),
               ),
             ),

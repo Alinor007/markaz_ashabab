@@ -53,6 +53,7 @@ dependencies:
 
   # Member profile photo selection (uses the Android system photo picker).
   image_picker: ^1.1.2
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:

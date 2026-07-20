@@ -52,6 +52,9 @@ abstract final class AppLayout {
   /// Permanent left sidebar (expanded) width.
   static const double sidebarWidth = 280;
 
+  /// Collapsed sidebar width — an icon-only rail.
+  static const double sidebarCollapsedWidth = 72;
+
   /// Top navigation bar height.
   static const double topBarHeight = 72;
 
