@@ -32,6 +32,25 @@ class TutorialClass {
       students.isEmpty ? '' : students.first.usraMeetingSchedule;
 }
 
+/// Per-area rollup (shu'ba count, member count, gender split) for the Areas
+/// directory cards.
+class AreaStats {
+  const AreaStats(
+      {this.shubaCount = 0, this.memberCount = 0, this.female = 0, this.male = 0});
+  final int shubaCount;
+  final int memberCount;
+  final int female;
+  final int male;
+}
+
+/// Per-shu'ba member count and gender split for the Shu'bas directory cards.
+class ShubaStats {
+  const ShubaStats({this.memberCount = 0, this.female = 0, this.male = 0});
+  final int memberCount;
+  final int female;
+  final int male;
+}
+
 /// Areas → Shu'bas → Members (by level) for the Tarbiya Al-Kawadeer module.
 class TarbiyaRepository {
   TarbiyaRepository(this._db);
@@ -47,6 +66,44 @@ class TarbiyaRepository {
   Future<TarbiyaArea?> getArea(String id) =>
       (_db.select(_db.tarbiyaAreas)..where((a) => a.id.equals(id)))
           .getSingleOrNull();
+
+  /// Per-area rollup (shu'ba count, member count, gender split) for the
+  /// Areas directory cards. A left-outer join so areas/shu'bas with zero
+  /// members still get an entry.
+  Stream<Map<String, AreaStats>> watchAreaStats() {
+    final query = _db.select(_db.shubas).join([
+      leftOuterJoin(
+          _db.members, _db.members.shubaId.equalsExp(_db.shubas.id)),
+    ]);
+    return query.watch().map((rows) {
+      final shubaIds = <String, Set<String>>{};
+      final member = <String, int>{};
+      final female = <String, int>{};
+      final male = <String, int>{};
+      for (final row in rows) {
+        final shuba = row.readTable(_db.shubas);
+        (shubaIds[shuba.areaId] ??= {}).add(shuba.id);
+        final m = row.readTableOrNull(_db.members);
+        if (m != null) {
+          member[shuba.areaId] = (member[shuba.areaId] ?? 0) + 1;
+          if (m.gender == 'F') {
+            female[shuba.areaId] = (female[shuba.areaId] ?? 0) + 1;
+          } else {
+            male[shuba.areaId] = (male[shuba.areaId] ?? 0) + 1;
+          }
+        }
+      }
+      return {
+        for (final areaId in shubaIds.keys)
+          areaId: AreaStats(
+            shubaCount: shubaIds[areaId]!.length,
+            memberCount: member[areaId] ?? 0,
+            female: female[areaId] ?? 0,
+            male: male[areaId] ?? 0,
+          ),
+      };
+    });
+  }
 
   Future<void> createArea({
     required String name,
@@ -102,6 +159,28 @@ class TarbiyaRepository {
 
   /// Every shu'ba across all areas (used by the Members Management directory).
   Future<List<Shuba>> getAllShubas() => _db.select(_db.shubas).get();
+
+  /// Per-shu'ba member count and gender split, scoped to one area — for the
+  /// Shu'bas directory cards.
+  Stream<Map<String, ShubaStats>> watchShubaStats(String areaId) {
+    final query = _db.select(_db.members).join([
+      innerJoin(_db.shubas, _db.shubas.id.equalsExp(_db.members.shubaId)),
+    ])
+      ..where(_db.shubas.areaId.equals(areaId));
+    return query.watch().map((rows) {
+      final counts = <String, ShubaStats>{};
+      for (final row in rows) {
+        final m = row.readTable(_db.members);
+        final existing = counts[m.shubaId] ?? const ShubaStats();
+        counts[m.shubaId] = ShubaStats(
+          memberCount: existing.memberCount + 1,
+          female: existing.female + (m.gender == 'F' ? 1 : 0),
+          male: existing.male + (m.gender == 'F' ? 0 : 1),
+        );
+      }
+      return counts;
+    });
+  }
 
   /// Assigns (or clears, with null) the Shu'ba's Mas'ul (Person-in-Charge).
   Future<void> assignMasul(String shubaId, String? memberId) =>

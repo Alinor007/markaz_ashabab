@@ -36,6 +36,7 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
   String _query = '';
   int _statusFilter = 0; // 0 all, 1 active, 2 inactive
   String? _areaFilter; // area id, null = all
+  String? _shubaFilter; // shuba id, null = all
   int? _levelFilter; // null = all
   int _genderFilter = 0; // 0 all, 1 male, 2 female
   int _page = 0;
@@ -88,11 +89,17 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
           (_statusFilter == 1 && m.isActive) ||
           (_statusFilter == 2 && !m.isActive);
       final matchesArea = _areaFilter == null || _areaIdFor(m) == _areaFilter;
+      final matchesShuba = _shubaFilter == null || m.shubaId == _shubaFilter;
       final matchesLevel = _levelFilter == null || m.level == _levelFilter;
       final matchesGender = _genderFilter == 0 ||
           (_genderFilter == 1 && m.gender == 'M') ||
           (_genderFilter == 2 && m.gender == 'F');
-      return matchesQuery && matchesStatus && matchesArea && matchesLevel && matchesGender;
+      return matchesQuery &&
+          matchesStatus &&
+          matchesArea &&
+          matchesShuba &&
+          matchesLevel &&
+          matchesGender;
     }).toList()
       ..sort((a, b) =>
           a.lastName.toLowerCase().compareTo(b.lastName.toLowerCase()));
@@ -157,6 +164,20 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
                 areaFilter: _areaFilter,
                 onArea: (v) => setState(() {
                   _areaFilter = v;
+                  if (_shubaFilter != null &&
+                      _shubaById[_shubaFilter]?.areaId != v) {
+                    _shubaFilter = null;
+                  }
+                  _resetPage();
+                }),
+                shubas: _areaFilter == null
+                    ? _shubaById.values.toList()
+                    : _shubaById.values
+                        .where((s) => s.areaId == _areaFilter)
+                        .toList(),
+                shubaFilter: _shubaFilter,
+                onShuba: (v) => setState(() {
+                  _shubaFilter = v;
                   _resetPage();
                 }),
                 levelFilter: _levelFilter,
@@ -264,6 +285,9 @@ class _FilterRow extends StatelessWidget {
     required this.areas,
     required this.areaFilter,
     required this.onArea,
+    required this.shubas,
+    required this.shubaFilter,
+    required this.onShuba,
     required this.levelFilter,
     required this.onLevel,
     required this.genderFilter,
@@ -277,6 +301,9 @@ class _FilterRow extends StatelessWidget {
   final List<TarbiyaArea> areas;
   final String? areaFilter;
   final ValueChanged<String?> onArea;
+  final List<Shuba> shubas;
+  final String? shubaFilter;
+  final ValueChanged<String?> onShuba;
   final int? levelFilter;
   final ValueChanged<int?> onLevel;
   final int genderFilter; // 0 all, 1 male, 2 female
@@ -310,6 +337,15 @@ class _FilterRow extends StatelessWidget {
             for (final a in areas) a.id: a.name,
           },
           onChanged: onArea,
+        ),
+        AppDropdown<String?>(
+          label: context.tr("Shu'ba", 'الشُّعبة'),
+          value: shubaFilter,
+          items: {
+            null: context.tr("All Shu'bas", 'كل الشُّعب'),
+            for (final s in shubas) s.id: s.name,
+          },
+          onChanged: onShuba,
         ),
         AppDropdown<int?>(
           label: context.tr('Level', 'المستوى'),

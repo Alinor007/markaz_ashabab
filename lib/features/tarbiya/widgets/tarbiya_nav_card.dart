@@ -4,37 +4,16 @@ import '../../../core/i18n/localized.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
 
-/// A tappable hierarchy card (Area / Shu'ba) with optional edit/delete actions
-/// and a stats footer.
+/// A tappable hierarchy card (Area / Shu'ba) — chrome only. Each screen
+/// composes its own header/stats/footer layout inside [child].
 class TarbiyaNavCard extends StatelessWidget {
-  const TarbiyaNavCard({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.onTap,
-    this.subtitle,
-    this.accent = AppColors.emerald,
-    this.stats = const [],
-    this.onEdit,
-    this.onDelete,
-    this.footer,
-  });
+  const TarbiyaNavCard({super.key, required this.onTap, required this.child});
 
-  final IconData icon;
-  final String title;
-  final String? subtitle;
-  final Color accent;
   final VoidCallback onTap;
-  final List<({IconData icon, String value, String label})> stats;
-  final VoidCallback? onEdit;
-  final VoidCallback? onDelete;
-
-  /// Optional footer below the stats (e.g. a Shu'ba's Mas'ul row).
-  final Widget? footer;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Material(
       color: AppColors.surface,
       borderRadius: AppRadius.card,
@@ -47,84 +26,46 @@ class TarbiyaNavCard extends StatelessWidget {
             border: Border.all(color: AppColors.border),
           ),
           padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      color: accent.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                    ),
-                    child: Icon(icon, color: accent, size: 24),
-                  ),
-                  const Spacer(),
-                  if (onEdit != null || onDelete != null)
-                    PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert,
-                          color: AppColors.textMuted, size: 20),
-                      tooltip: context.tr('Actions', 'إجراءات'),
-                      onSelected: (v) {
-                        if (v == 'edit') onEdit?.call();
-                        if (v == 'delete') onDelete?.call();
-                      },
-                      itemBuilder: (context) => [
-                        if (onEdit != null)
-                          PopupMenuItem(
-                            value: 'edit',
-                            child: Text(context.trRead('Edit', 'تعديل')),
-                          ),
-                        if (onDelete != null)
-                          PopupMenuItem(
-                            value: 'delete',
-                            child: Text(context.trRead('Delete', 'حذف')),
-                          ),
-                      ],
-                    )
-                  else
-                    Icon(Icons.arrow_forward,
-                        size: 18, color: AppColors.textFaint),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleLarge,
-              ),
-              if (subtitle != null)
-                Text(subtitle!, style: theme.textTheme.bodySmall),
-              if (stats.isNotEmpty) ...[
-                const SizedBox(height: AppSpacing.md),
-                const Divider(height: 1),
-                const SizedBox(height: AppSpacing.md),
-                Row(
-                  children: [
-                    for (final s in stats) ...[
-                      Icon(s.icon, size: 16, color: accent),
-                      const SizedBox(width: AppSpacing.xs),
-                      Text(s.value, style: theme.textTheme.titleSmall),
-                      const SizedBox(width: AppSpacing.xs),
-                      Text(s.label, style: theme.textTheme.bodySmall),
-                      const SizedBox(width: AppSpacing.lg),
-                    ],
-                  ],
-                ),
-              ],
-              if (footer != null) ...[
-                const SizedBox(height: AppSpacing.md),
-                const Divider(height: 1),
-                const SizedBox(height: AppSpacing.sm),
-                footer!,
-              ],
-            ],
-          ),
+          child: child,
         ),
       ),
+    );
+  }
+}
+
+/// The three-dot actions menu shared by the Area/Shu'ba cards. Falls back to
+/// a plain forward arrow when neither action is available.
+class TarbiyaCardMenu extends StatelessWidget {
+  const TarbiyaCardMenu({super.key, this.onEdit, this.onDelete});
+
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    if (onEdit == null && onDelete == null) {
+      return const Icon(Icons.arrow_forward,
+          size: 18, color: AppColors.textFaint);
+    }
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert, color: AppColors.textMuted, size: 20),
+      tooltip: context.tr('Actions', 'إجراءات'),
+      onSelected: (v) {
+        if (v == 'edit') onEdit?.call();
+        if (v == 'delete') onDelete?.call();
+      },
+      itemBuilder: (context) => [
+        if (onEdit != null)
+          PopupMenuItem(
+            value: 'edit',
+            child: Text(context.trRead('Edit', 'تعديل')),
+          ),
+        if (onDelete != null)
+          PopupMenuItem(
+            value: 'delete',
+            child: Text(context.trRead('Delete', 'حذف')),
+          ),
+      ],
     );
   }
 }

@@ -13,6 +13,7 @@ import '../../core/theme/app_dimens.dart';
 import '../../widgets/common/hierarchy_breadcrumb.dart';
 import '../../widgets/common/member_picker.dart';
 import '../../widgets/common/portrait_avatar.dart';
+import '../../widgets/common/stat_chip.dart';
 import '../../widgets/feedback/empty_state.dart';
 import '../../widgets/feedback/loading_state.dart';
 import '../../widgets/layout/module_page.dart';
@@ -84,23 +85,29 @@ class TarbiyaShubasScreen extends StatelessWidget {
                       : null,
                 );
               }
-              return TarbiyaCardGrid(
-                children: [
-                  for (final shuba in shubas)
-                    TarbiyaNavCard(
-                      icon: Icons.location_city_outlined,
-                      title: shuba.name,
-                      onTap: () => context.go(
-                          '/tarbiya/area/$areaId/shuba/${shuba.id}'),
-                      onEdit: canManage
-                          ? () => _editShuba(context, repo, shuba)
-                          : null,
-                      onDelete: canManage
-                          ? () => _deleteShuba(context, repo, shuba)
-                          : null,
-                      footer: _MasulFooter(shuba: shuba, canManage: canManage),
-                    ),
-                ],
+              return StreamBuilder<Map<String, ShubaStats>>(
+                stream: repo.watchShubaStats(areaId),
+                builder: (context, statsSnap) {
+                  final stats = statsSnap.data ?? const {};
+                  return TarbiyaCardGrid(
+                    children: [
+                      for (final shuba in shubas)
+                        _ShubaCard(
+                          shuba: shuba,
+                          stats: stats[shuba.id] ?? const ShubaStats(),
+                          canManage: canManage,
+                          onTap: () => context.go(
+                              '/tarbiya/area/$areaId/shuba/${shuba.id}'),
+                          onEdit: canManage
+                              ? () => _editShuba(context, repo, shuba)
+                              : null,
+                          onDelete: canManage
+                              ? () => _deleteShuba(context, repo, shuba)
+                              : null,
+                        ),
+                    ],
+                  );
+                },
               );
             },
           ),
@@ -140,9 +147,81 @@ class TarbiyaShubasScreen extends StatelessWidget {
   }
 }
 
-/// The Mas'ul (Person-in-Charge) row shown at the bottom of a Shu'ba card:
-/// the assigned member's photo + name, or an "Unassigned" placeholder, with an
-/// Assign/Change action for managers.
+/// A Shu'ba directory card: icon + member count + menu, shu'ba name, the
+/// Mas'ul row, and female/male stat chips.
+class _ShubaCard extends StatelessWidget {
+  const _ShubaCard({
+    required this.shuba,
+    required this.stats,
+    required this.canManage,
+    required this.onTap,
+    this.onEdit,
+    this.onDelete,
+  });
+
+  final Shuba shuba;
+  final ShubaStats stats;
+  final bool canManage;
+  final VoidCallback onTap;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return TarbiyaNavCard(
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.emerald.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+                child: const Icon(Icons.apartment,
+                    color: AppColors.emerald, size: 22),
+              ),
+              const Spacer(),
+              Text('${stats.memberCount}', style: theme.textTheme.titleLarge),
+              const SizedBox(width: AppSpacing.sm),
+              TarbiyaCardMenu(onEdit: onEdit, onDelete: onDelete),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(shuba.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleLarge),
+          const SizedBox(height: AppSpacing.sm),
+          _MasulFooter(shuba: shuba, canManage: canManage),
+          const SizedBox(height: AppSpacing.md),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: [
+              StatChip(
+                label:
+                    context.tr('${stats.female} female', '${stats.female} إناث'),
+              ),
+              StatChip(
+                label: context.tr('${stats.male} male', '${stats.male} ذكور'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The Mas'ul (Person-in-Charge) row shown on a Shu'ba card: the assigned
+/// member's photo + name, or an "Unassigned" placeholder, with an
+/// Assign/Reassign action for managers.
 class _MasulFooter extends StatelessWidget {
   const _MasulFooter({required this.shuba, required this.canManage});
   final Shuba shuba;
@@ -188,7 +267,7 @@ class _MasulFooter extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: masul == null
                           ? AppColors.textMuted
-                          : AppColors.charcoal,
+                          : AppColors.emerald,
                     ),
               ),
             ),
@@ -198,7 +277,7 @@ class _MasulFooter extends StatelessWidget {
                 icon: const Icon(Icons.person_search_outlined, size: 16),
                 label: Text(masul == null
                     ? context.tr('Assign', 'تعيين')
-                    : context.tr('Change', 'تغيير')),
+                    : context.tr('Reassign', 'إعادة تعيين')),
               ),
               if (masul != null)
                 IconButton(

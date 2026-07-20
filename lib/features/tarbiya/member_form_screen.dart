@@ -15,6 +15,7 @@ import '../../core/util/photo_service.dart';
 import '../../widgets/common/info_panel.dart';
 import '../../widgets/common/member_picker.dart';
 import '../../widgets/common/portrait_avatar.dart';
+import '../../widgets/feedback/app_snackbar.dart';
 import '../../widgets/feedback/loading_state.dart';
 import '../../widgets/layout/module_page.dart';
 
@@ -261,8 +262,22 @@ class _MemberFormScreenState extends State<MemberFormScreen> {
       _toast(context.trRead('Missing Shu\'ba context.', 'سياق الشُّعبة مفقود.'));
       return;
     }
-    setState(() => _saving = true);
     final repo = context.read<MemberRepository>();
+    final duplicate = await repo.fullNameExists(
+      _first.text, _middle.text, _last.text, _suffix.text,
+      excludeId: widget.memberId, // null on add; excludes self on edit
+    );
+    if (!mounted) return;
+    if (duplicate) {
+      showAppSnackBar(
+        context,
+        context.trRead('A member with this name already exists.',
+            'يوجد عضو بهذا الاسم بالفعل.'),
+        tone: SnackTone.error,
+      );
+      return;
+    }
+    setState(() => _saving = true);
 
     final companion = MembersCompanion(
       shubaId: Value(_shubaId),

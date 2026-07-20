@@ -6,6 +6,9 @@ import '../../core/auth/session_controller.dart';
 import '../../core/data/app_database.dart';
 import '../../core/i18n/localized.dart';
 import '../../core/repositories/tarbiya_repository.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_dimens.dart';
+import '../../widgets/common/stat_chip.dart';
 import '../../widgets/feedback/empty_state.dart';
 import '../../widgets/feedback/loading_state.dart';
 import '../../widgets/layout/module_page.dart';
@@ -36,20 +39,26 @@ class TarbiyaAreasScreen extends StatelessWidget {
               title: context.tr('No areas yet', 'لا توجد مناطق بعد'),
             );
           }
-          return TarbiyaCardGrid(
-            children: [
-              for (final area in areas)
-                TarbiyaNavCard(
-                  icon: Icons.map_outlined,
-                  accent: Color(area.accent),
-                  title: area.name,
-                  subtitle: area.region.isEmpty ? null : area.region,
-                  onTap: () => context.go('/tarbiya/area/${area.id}'),
-                  onEdit: canManage ? () => _editArea(context, repo, area) : null,
-                  onDelete:
-                      canManage ? () => _deleteArea(context, repo, area) : null,
-                ),
-            ],
+          return StreamBuilder<Map<String, AreaStats>>(
+            stream: repo.watchAreaStats(),
+            builder: (context, statsSnap) {
+              final stats = statsSnap.data ?? const {};
+              return TarbiyaCardGrid(
+                children: [
+                  for (final area in areas)
+                    _AreaCard(
+                      area: area,
+                      stats: stats[area.id] ?? const AreaStats(),
+                      onTap: () => context.go('/tarbiya/area/${area.id}'),
+                      onEdit:
+                          canManage ? () => _editArea(context, repo, area) : null,
+                      onDelete: canManage
+                          ? () => _deleteArea(context, repo, area)
+                          : null,
+                    ),
+                ],
+              );
+            },
           );
         },
       ),
@@ -75,5 +84,74 @@ class TarbiyaAreasScreen extends StatelessWidget {
           'ستُحذف الشُّعب والأعضاء التابعون لها نهائيًا.'),
     );
     if (ok) await repo.deleteArea(area.id);
+  }
+}
+
+/// An Area directory card: "Area" label + menu, area name, and a 2×2 grid of
+/// stat chips (shu'ba count, member count, female, male).
+class _AreaCard extends StatelessWidget {
+  const _AreaCard({
+    required this.area,
+    required this.stats,
+    required this.onTap,
+    this.onEdit,
+    this.onDelete,
+  });
+
+  final TarbiyaArea area;
+  final AreaStats stats;
+  final VoidCallback onTap;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return TarbiyaNavCard(
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                context.tr('Area', 'المنطقة'),
+                style: theme.textTheme.labelLarge?.copyWith(
+                    color: AppColors.emerald, fontWeight: FontWeight.w700),
+              ),
+              const Spacer(),
+              TarbiyaCardMenu(onEdit: onEdit, onDelete: onDelete),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(area.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleLarge),
+          const SizedBox(height: AppSpacing.md),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: [
+              StatChip(
+                label: context.tr(
+                    '${stats.shubaCount} shuba', '${stats.shubaCount} شعبة'),
+              ),
+              StatChip(
+                label: context.tr('${stats.memberCount} members',
+                    '${stats.memberCount} أعضاء'),
+              ),
+              StatChip(
+                label:
+                    context.tr('${stats.female} female', '${stats.female} إناث'),
+              ),
+              StatChip(
+                label: context.tr('${stats.male} male', '${stats.male} ذكور'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

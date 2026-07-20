@@ -156,18 +156,20 @@ class _TarbiyaClassesScreenState extends State<TarbiyaClassesScreen> {
               if (!snapshot.hasData) return const LoadingState();
               final all = snapshot.data!;
               final filtered = _apply(all);
-              final sections =
+              final sectionOptions =
                   all.map((c) => c.section).toSet().toList()..sort();
-              final totalStudents =
-                  all.fold<int>(0, (sum, c) => sum + c.students.length);
+              final filteredSections =
+                  filtered.map((c) => c.section).toSet().length;
+              final filteredStudents = filtered.fold<int>(
+                  0, (sum, c) => sum + c.students.length);
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _Toolbar(
-                    classes: all.length,
-                    students: totalStudents,
-                    sections: sections.length,
-                    sectionOptions: sections,
+                    classes: filtered.length,
+                    students: filteredStudents,
+                    sections: filteredSections,
+                    sectionOptions: sectionOptions,
                     sectionFilter: _sectionFilter,
                     onSection: (s) => setState(() => _sectionFilter = s),
                     genderFilter: _genderFilter,

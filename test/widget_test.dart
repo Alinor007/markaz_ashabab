@@ -230,6 +230,27 @@ void main() {
       expect((await members.getMember(id))!.level, 0);
     });
 
+    test('duplicate full name is detected case- and whitespace-insensitively',
+        () async {
+      final id = await seedMember(); // Yusuf Dimaporo
+
+      // Exact match exists.
+      expect(await members.fullNameExists('Yusuf', '', 'Dimaporo', ''), isTrue);
+      // Case + extra whitespace still matches.
+      expect(await members.fullNameExists('  yusuf ', '', 'DIMAPORO', ''),
+          isTrue);
+      // A different name does not.
+      expect(await members.fullNameExists('Omar', '', 'Dimaporo', ''), isFalse);
+      // Adding a middle/suffix makes it a distinct full name.
+      expect(await members.fullNameExists('Yusuf', 'Ali', 'Dimaporo', ''),
+          isFalse);
+      // Excluding the member itself (edit case) reports no collision.
+      expect(
+          await members.fullNameExists('Yusuf', '', 'Dimaporo', '',
+              excludeId: id),
+          isFalse);
+    });
+
     test("Shu'ba Mas'ul can be assigned and cleared", () async {
       final id = await seedMember();
       final shubaId = (await members.getMember(id))!.shubaId;

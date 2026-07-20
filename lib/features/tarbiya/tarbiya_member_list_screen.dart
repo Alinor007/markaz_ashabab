@@ -126,8 +126,8 @@ class _TarbiyaMemberListScreenState extends State<TarbiyaMemberListScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _Toolbar(
-                    total: all.length,
-                    active: all.where((m) => m.isActive).length,
+                    total: filtered.length,
+                    active: filtered.where((m) => m.isActive).length,
                     statusFilter: _statusFilter,
                     onStatus: (i) => setState(() => _statusFilter = i),
                     genderFilter: _genderFilter,

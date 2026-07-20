@@ -29,6 +29,30 @@ class MemberRepository {
       (_db.select(_db.members)..where((m) => m.id.equals(id)))
           .getSingleOrNull();
 
+  /// Whether another member already has this full name (case-insensitive,
+  /// whitespace-collapsed; first + middle + last + suffix, matching
+  /// [MemberX.fullName]). Pass [excludeId] to ignore the member being edited.
+  Future<bool> fullNameExists(
+    String firstName,
+    String middleName,
+    String lastName,
+    String suffix, {
+    String? excludeId,
+  }) async {
+    String norm(String f, String m, String l, String s) => [f, m, l, s]
+        .map((x) => x.trim())
+        .where((x) => x.isNotEmpty)
+        .join(' ')
+        .toLowerCase()
+        .replaceAll(RegExp(r'\s+'), ' ');
+    final target = norm(firstName, middleName, lastName, suffix);
+    if (target.isEmpty) return false;
+    final rows = await _db.select(_db.members).get();
+    return rows.any((m) =>
+        m.id != excludeId &&
+        norm(m.firstName, m.middleName, m.lastName, m.suffix) == target);
+  }
+
   /// Inserts a new member. Pass a companion with the desired fields; an id is
   /// generated if absent. Returns the new id.
   Future<String> insertMember(MembersCompanion data) async {
