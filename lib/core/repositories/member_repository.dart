@@ -15,11 +15,39 @@ class MemberRepository {
 
   // ── Member ───────────────────────────────────────────────────────────────
 
-  /// Every member across all shu'bas, newest first — for the Members
-  /// Management directory.
+  /// Every approved member across all shu'bas, newest first — for the
+  /// Members Management directory. Pending/declined members are excluded;
+  /// see [watchPendingMembers] / [watchDeclinedMembers].
   Stream<List<Member>> watchAllMembers() => (_db.select(_db.members)
+        ..where((m) => m.approval.equals('approved'))
         ..orderBy([(m) => OrderingTerm.desc(m.createdAt)]))
       .watch();
+
+  /// Members awaiting Admin review, newest first.
+  Stream<List<Member>> watchPendingMembers() => (_db.select(_db.members)
+        ..where((m) => m.approval.equals('pending'))
+        ..orderBy([(m) => OrderingTerm.desc(m.createdAt)]))
+      .watch();
+
+  /// Members an Admin has declined, newest first.
+  Stream<List<Member>> watchDeclinedMembers() => (_db.select(_db.members)
+        ..where((m) => m.approval.equals('declined'))
+        ..orderBy([(m) => OrderingTerm.desc(m.createdAt)]))
+      .watch();
+
+  /// Count of members awaiting Admin review — drives the sidebar badge. A
+  /// one-shot query (not a live stream): the sidebar refetches it on every
+  /// rebuild (e.g. navigation), which is a simpler and sufficient refresh
+  /// cadence for a badge counter.
+  Future<int> getPendingCount() =>
+      (_db.select(_db.members)..where((m) => m.approval.equals('pending')))
+          .get()
+          .then((rows) => rows.length);
+
+  /// Sets a member's approval status ('approved' or 'declined').
+  Future<void> setApproval(String id, String approval) =>
+      (_db.update(_db.members)..where((m) => m.id.equals(id)))
+          .write(MembersCompanion(approval: Value(approval)));
 
   Stream<Member?> watchMember(String id) =>
       (_db.select(_db.members)..where((m) => m.id.equals(id)))
@@ -381,6 +409,7 @@ class MemberRepository {
     return (_db.select(_db.members)
           ..where((m) {
             final sameNaqib = m.naqibMemberId.equals(naqibId);
+            final approved = m.approval.equals('approved');
             final notSelf = excludeId == null
                 ? const Constant(true)
                 : m.id.equals(excludeId).not();
@@ -389,7 +418,7 @@ class MemberRepository {
                 : m.usraName.equals(section);
             final sameLevel =
                 level == null ? const Constant(true) : m.level.equals(level);
-            return sameNaqib & notSelf & sameSection & sameLevel;
+            return sameNaqib & approved & notSelf & sameSection & sameLevel;
           })
           ..orderBy([(m) => OrderingTerm(expression: m.firstName)]))
         .watch();
@@ -411,6 +440,7 @@ class MemberRepository {
                 : (m.firstName.like(like) |
                     m.middleName.like(like) |
                     m.lastName.like(like));
+            final approved = m.approval.equals('approved');
             final notSelf = excludeId == null
                 ? const Constant(true)
                 : m.id.equals(excludeId).not();
@@ -419,7 +449,7 @@ class MemberRepository {
                 : m.shubaId.equals(shubaId);
             final inLevel =
                 level == null ? const Constant(true) : m.level.equals(level);
-            return matches & notSelf & inShuba & inLevel;
+            return matches & approved & notSelf & inShuba & inLevel;
           })
           ..orderBy([(m) => OrderingTerm(expression: m.firstName)])
           ..limit(limit))

@@ -155,6 +155,7 @@ void main() {
         firstName: const Value('Yusuf'),
         lastName: const Value('Dimaporo'),
         status: Value(status),
+        approval: const Value('approved'),
       ));
     }
 
@@ -268,6 +269,7 @@ void main() {
         shubaId: Value(shuba.id),
         firstName: const Value('Ali'),
         lastName: const Value('Macarambon'),
+        approval: const Value('approved'),
       ));
 
       // Wives are stored as free-text rows (the 4-max cap is a UI rule).
@@ -315,6 +317,7 @@ void main() {
             lastName: const Value('Test'),
             naqibMemberId: Value(naqib),
             usraName: Value(section),
+            approval: const Value('approved'),
           ));
 
       final t2 = await add('Aisha');

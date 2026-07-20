@@ -185,6 +185,10 @@ extension MemberX on Member {
 
   bool get isActive => status == 'active';
 
+  bool get isApproved => approval == 'approved';
+  bool get isPendingApproval => approval == 'pending';
+  bool get isDeclined => approval == 'declined';
+
   /// The member's tarbiya level for display; "—" when 0 (no Tas'ed record).
   /// Level is driven by the member's Tas'ed records, not set manually.
   String levelLabel([bool _ = false]) => level <= 0 ? '—' : 'Level $level';

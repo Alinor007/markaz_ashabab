@@ -38,6 +38,7 @@ class AppStrings {
   String get gallery => _s.gallery;
   String get search => _s.search;
   String get membersManagement => _s.membersManagement;
+  String get pendingMembers => _s.pendingMembers;
   String get settings => _s.settings;
   String get userManagement => _s.userManagement;
   String get auditLogs => _s.auditLogs;
@@ -92,6 +93,7 @@ class _Strings {
     required this.gallery,
     required this.search,
     required this.membersManagement,
+    required this.pendingMembers,
     required this.settings,
     required this.userManagement,
     required this.auditLogs,
@@ -135,6 +137,7 @@ class _Strings {
   final String gallery;
   final String search;
   final String membersManagement;
+  final String pendingMembers;
   final String settings;
   final String userManagement;
   final String auditLogs;
@@ -181,6 +184,7 @@ const _Strings _englishStrings = _Strings(
   gallery: 'Gallery',
   search: 'Search',
   membersManagement: 'Members',
+  pendingMembers: 'Pending Members',
   settings: 'Settings',
   userManagement: 'User Management',
   auditLogs: 'Audit Logs',

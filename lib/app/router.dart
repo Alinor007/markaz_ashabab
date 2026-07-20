@@ -14,6 +14,7 @@ import '../features/leadership/leader_profile_screen.dart';
 import '../features/leadership/leadership_screen.dart';
 import '../features/login/login_screen.dart';
 import '../features/members/members_management_screen.dart';
+import '../features/members/pending_members_screen.dart';
 import '../features/reports/department_report_view_screen.dart';
 import '../features/reports/reports_screen.dart';
 import '../features/search/search_screen.dart';
@@ -243,6 +244,10 @@ GoRouter createRouter(SessionController session) {
           GoRoute(
             path: '/members',
             builder: (context, state) => const MembersManagementScreen(),
+          ),
+          GoRoute(
+            path: '/members/pending',
+            builder: (context, state) => const PendingMembersScreen(),
           ),
           GoRoute(
             path: '/search',

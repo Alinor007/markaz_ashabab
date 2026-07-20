@@ -73,7 +73,9 @@ class TarbiyaRepository {
   Stream<Map<String, AreaStats>> watchAreaStats() {
     final query = _db.select(_db.shubas).join([
       leftOuterJoin(
-          _db.members, _db.members.shubaId.equalsExp(_db.shubas.id)),
+          _db.members,
+          _db.members.shubaId.equalsExp(_db.shubas.id) &
+              _db.members.approval.equals('approved')),
     ]);
     return query.watch().map((rows) {
       final shubaIds = <String, Set<String>>{};
@@ -166,7 +168,8 @@ class TarbiyaRepository {
     final query = _db.select(_db.members).join([
       innerJoin(_db.shubas, _db.shubas.id.equalsExp(_db.members.shubaId)),
     ])
-      ..where(_db.shubas.areaId.equals(areaId));
+      ..where(_db.shubas.areaId.equals(areaId) &
+          _db.members.approval.equals('approved'));
     return query.watch().map((rows) {
       final counts = <String, ShubaStats>{};
       for (final row in rows) {
@@ -228,19 +231,28 @@ class TarbiyaRepository {
   }
 
   // ── Members by level ─────────────────────────────────────────────────────
-  /// All members across every shu'ba (used by unified search).
-  Future<List<Member>> getAllMembers() => _db.select(_db.members).get();
+  /// All approved members across every shu'ba (used by unified search).
+  /// Pending/declined members are excluded.
+  Future<List<Member>> getAllMembers() => (_db.select(_db.members)
+        ..where((m) => m.approval.equals('approved')))
+      .get();
 
   Stream<List<Member>> watchMembers(String shubaId, int level) {
     return (_db.select(_db.members)
-          ..where((m) => m.shubaId.equals(shubaId) & m.level.equals(level))
+          ..where((m) =>
+              m.shubaId.equals(shubaId) &
+              m.level.equals(level) &
+              m.approval.equals('approved'))
           ..orderBy([(m) => OrderingTerm(expression: m.lastName)]))
         .watch();
   }
 
-  /// Counts per level (1-5) for a shu'ba, keyed by level number.
+  /// Counts per level (1-5) for a shu'ba, keyed by level number. Only
+  /// approved members are counted.
   Stream<Map<int, LevelCounts>> watchLevelCounts(String shubaId) {
-    return (_db.select(_db.members)..where((m) => m.shubaId.equals(shubaId)))
+    return (_db.select(_db.members)
+          ..where((m) =>
+              m.shubaId.equals(shubaId) & m.approval.equals('approved')))
         .watch()
         .map((rows) {
       final counts = <int, LevelCounts>{};

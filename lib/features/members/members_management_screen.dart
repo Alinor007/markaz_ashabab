@@ -80,29 +80,36 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
 
   List<Member> _apply(List<Member> members) {
     final q = _query.trim().toLowerCase();
-    final list = members.where((m) {
-      final matchesQuery = q.isEmpty ||
-          m.fullName.toLowerCase().contains(q) ||
-          m.occupation.toLowerCase().contains(q) ||
-          m.contactNumber.contains(_query);
-      final matchesStatus = _statusFilter == 0 ||
-          (_statusFilter == 1 && m.isActive) ||
-          (_statusFilter == 2 && !m.isActive);
-      final matchesArea = _areaFilter == null || _areaIdFor(m) == _areaFilter;
-      final matchesShuba = _shubaFilter == null || m.shubaId == _shubaFilter;
-      final matchesLevel = _levelFilter == null || m.level == _levelFilter;
-      final matchesGender = _genderFilter == 0 ||
-          (_genderFilter == 1 && m.gender == 'M') ||
-          (_genderFilter == 2 && m.gender == 'F');
-      return matchesQuery &&
-          matchesStatus &&
-          matchesArea &&
-          matchesShuba &&
-          matchesLevel &&
-          matchesGender;
-    }).toList()
-      ..sort((a, b) =>
-          a.lastName.toLowerCase().compareTo(b.lastName.toLowerCase()));
+    final list =
+        members.where((m) {
+          final matchesQuery =
+              q.isEmpty ||
+              m.fullName.toLowerCase().contains(q) ||
+              m.occupation.toLowerCase().contains(q) ||
+              m.contactNumber.contains(_query);
+          final matchesStatus =
+              _statusFilter == 0 ||
+              (_statusFilter == 1 && m.isActive) ||
+              (_statusFilter == 2 && !m.isActive);
+          final matchesArea =
+              _areaFilter == null || _areaIdFor(m) == _areaFilter;
+          final matchesShuba =
+              _shubaFilter == null || m.shubaId == _shubaFilter;
+          final matchesLevel = _levelFilter == null || m.level == _levelFilter;
+          final matchesGender =
+              _genderFilter == 0 ||
+              (_genderFilter == 1 && m.gender == 'M') ||
+              (_genderFilter == 2 && m.gender == 'F');
+          return matchesQuery &&
+              matchesStatus &&
+              matchesArea &&
+              matchesShuba &&
+              matchesLevel &&
+              matchesGender;
+        }).toList()..sort(
+          (a, b) =>
+              a.lastName.toLowerCase().compareTo(b.lastName.toLowerCase()),
+        );
     return list;
   }
 
@@ -122,8 +129,10 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
       actions: [
         SearchField(
           width: 260,
-          hint: context.tr('Search name, occupation, contact…',
-              'ابحث بالاسم أو المهنة أو رقم التواصل…'),
+          hint: context.tr(
+            'Search name, occupation, contact…',
+            'ابحث بالاسم أو المهنة أو رقم التواصل…',
+          ),
           onChanged: (v) => setState(() {
             _query = v;
             _resetPage();
@@ -142,12 +151,15 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
           final all = snapshot.data!;
           final filtered = _apply(all);
 
-          final pageCount =
-              filtered.isEmpty ? 1 : (filtered.length / _pageSize).ceil();
+          final pageCount = filtered.isEmpty
+              ? 1
+              : (filtered.length / _pageSize).ceil();
           if (_page >= pageCount) _page = pageCount - 1;
           final start = _page * _pageSize;
-          final pageItems =
-              filtered.skip(start).take(_pageSize).toList(growable: false);
+          final pageItems = filtered
+              .skip(start)
+              .take(_pageSize)
+              .toList(growable: false);
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,8 +185,8 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
                 shubas: _areaFilter == null
                     ? _shubaById.values.toList()
                     : _shubaById.values
-                        .where((s) => s.areaId == _areaFilter)
-                        .toList(),
+                          .where((s) => s.areaId == _areaFilter)
+                          .toList(),
                 shubaFilter: _shubaFilter,
                 onShuba: (v) => setState(() {
                   _shubaFilter = v;
@@ -200,10 +212,14 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
                             ? context.tr('No members yet', 'لا يوجد أعضاء بعد')
                             : context.tr('No matches', 'لا توجد نتائج'),
                         message: all.isEmpty
-                            ? context.tr('Add the first member to begin.',
-                                'أضف أول عضو للبدء.')
-                            : context.tr('Try adjusting your filters.',
-                                'حاول تعديل عوامل التصفية.'),
+                            ? context.tr(
+                                'Add the first member to begin.',
+                                'أضف أول عضو للبدء.',
+                              )
+                            : context.tr(
+                                'Try adjusting your filters.',
+                                'حاول تعديل عوامل التصفية.',
+                              ),
                       )
                     : ListView.separated(
                         itemCount: pageItems.length,
@@ -211,11 +227,15 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
                             const SizedBox(height: AppSpacing.sm),
                         itemBuilder: (context, i) => _MemberRow(
                           member: pageItems[i],
-                          location: _locationLabel(pageItems[i], context.isArabic),
+                          location: _locationLabel(
+                            pageItems[i],
+                            context.isArabic,
+                          ),
                           onView: () =>
                               context.go('/tarbiya/member/${pageItems[i].id}'),
-                          onEdit: () => context
-                              .go('/tarbiya/member/${pageItems[i].id}/edit'),
+                          onEdit: () => context.go(
+                            '/tarbiya/member/${pageItems[i].id}/edit',
+                          ),
                           onDelete: () => _deleteMember(pageItems[i]),
                         ),
                       ),
@@ -228,8 +248,7 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
                   start: start + 1,
                   end: start + pageItems.length,
                   total: filtered.length,
-                  onPrev:
-                      _page > 0 ? () => setState(() => _page--) : null,
+                  onPrev: _page > 0 ? () => setState(() => _page--) : null,
                   onNext: _page < pageCount - 1
                       ? () => setState(() => _page++)
                       : null,
@@ -254,7 +273,8 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
     if (picked == null) return;
     if (!mounted) return;
     context.go(
-        '/tarbiya/add-member?shuba=${picked.shubaId}&level=${picked.level}');
+      '/tarbiya/add-member?shuba=${picked.shubaId}&level=${picked.level}',
+    );
   }
 
   Future<void> _deleteMember(Member m) async {
@@ -270,8 +290,11 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
     if (!ok) return;
     await repo.deleteMember(m.id);
     if (mounted) {
-      showAppSnackBar(context, context.trRead('Member deleted.', 'تم حذف العضو.'),
-          tone: SnackTone.info);
+      showAppSnackBar(
+        context,
+        context.trRead('Member deleted.', 'تم حذف العضو.'),
+        tone: SnackTone.info,
+      );
     }
   }
 }
@@ -311,61 +334,75 @@ class _FilterRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: AppSpacing.md,
-      runSpacing: AppSpacing.sm,
-      crossAxisAlignment: WrapCrossAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _CountChip(
-            label: context.tr('Showing', 'المعروض'),
-            value: '$shown / $total',
-            color: AppColors.navy),
-        FilterBar(
-          options: [
-            context.tr('All', 'الكل'),
-            context.tr('Active', 'نشط'),
-            context.tr('Inactive', 'غير نشط'),
+        Wrap(
+          spacing: AppSpacing.md,
+          runSpacing: AppSpacing.sm,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            _CountChip(
+              label: context.tr('Showing', 'المعروض'),
+              value: '$shown / $total',
+              color: AppColors.navy,
+            ),
+            FilterBar(
+              options: [
+                context.tr('All', 'الكل'),
+                context.tr('Active', 'نشط'),
+                context.tr('Inactive', 'غير نشط'),
+              ],
+              selectedIndex: statusFilter,
+              onSelected: onStatus,
+            ),
           ],
-          selectedIndex: statusFilter,
-          onSelected: onStatus,
         ),
-        AppDropdown<String?>(
-          label: context.tr('Area', 'المنطقة'),
-          value: areaFilter,
-          items: {
-            null: context.tr('All Areas', 'كل المناطق'),
-            for (final a in areas) a.id: a.name,
-          },
-          onChanged: onArea,
-        ),
-        AppDropdown<String?>(
-          label: context.tr("Shu'ba", 'الشُّعبة'),
-          value: shubaFilter,
-          items: {
-            null: context.tr("All Shu'bas", 'كل الشُّعب'),
-            for (final s in shubas) s.id: s.name,
-          },
-          onChanged: onShuba,
-        ),
-        AppDropdown<int?>(
-          label: context.tr('Level', 'المستوى'),
-          value: levelFilter,
-          items: {
-            null: context.tr('All Levels', 'كل المستويات'),
-            for (final l in kTarbiyaLevels)
-              l: context.tr('Level $l', 'المستوى $l'),
-          },
-          onChanged: onLevel,
-        ),
-        AppDropdown<int>(
-          label: context.tr('Gender', 'الجنس'),
-          value: genderFilter,
-          items: {
-            0: context.tr('All Genders', 'كل الأجناس'),
-            1: context.tr('Male', 'ذكر'),
-            2: context.tr('Female', 'أنثى'),
-          },
-          onChanged: onGender,
+        const SizedBox(height: AppSpacing.sm),
+        Wrap(
+          spacing: AppSpacing.md,
+          runSpacing: AppSpacing.sm,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            AppDropdown<String?>(
+              label: context.tr('Area', 'المنطقة'),
+              value: areaFilter,
+              items: {
+                null: context.tr('All Areas', 'كل المناطق'),
+                for (final a in areas) a.id: a.name,
+              },
+              onChanged: onArea,
+            ),
+            AppDropdown<String?>(
+              label: context.tr("Shu'ba", 'الشُّعبة'),
+              value: shubaFilter,
+              items: {
+                null: context.tr("All Shu'bas", 'كل الشُّعب'),
+                for (final s in shubas) s.id: s.name,
+              },
+              onChanged: onShuba,
+            ),
+            AppDropdown<int?>(
+              label: context.tr('Level', 'المستوى'),
+              value: levelFilter,
+              items: {
+                null: context.tr('All Levels', 'كل المستويات'),
+                for (final l in kTarbiyaLevels)
+                  l: context.tr('Level $l', 'المستوى $l'),
+              },
+              onChanged: onLevel,
+            ),
+            AppDropdown<int>(
+              label: context.tr('Gender', 'الجنس'),
+              value: genderFilter,
+              items: {
+                0: context.tr('All Genders', 'كل الأجناس'),
+                1: context.tr('Male', 'ذكر'),
+                2: context.tr('Female', 'أنثى'),
+              },
+              onChanged: onGender,
+            ),
+          ],
         ),
       ],
     );
@@ -373,8 +410,11 @@ class _FilterRow extends StatelessWidget {
 }
 
 class _CountChip extends StatelessWidget {
-  const _CountChip(
-      {required this.label, required this.value, required this.color});
+  const _CountChip({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
   final String label;
   final String value;
   final Color color;
@@ -383,7 +423,9 @@ class _CountChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -391,11 +433,12 @@ class _CountChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(value,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall
-                  ?.copyWith(color: color)),
+          Text(
+            value,
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(color: color),
+          ),
           const SizedBox(width: AppSpacing.xs),
           Text(label, style: Theme.of(context).textTheme.bodySmall),
         ],
@@ -448,28 +491,35 @@ class _MemberRow extends StatelessWidget {
                       member.displayName(isArabic),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      textDirection:
-                          isArabic ? TextDirection.rtl : TextDirection.ltr,
+                      textDirection: isArabic
+                          ? TextDirection.rtl
+                          : TextDirection.ltr,
                       style: isArabic
                           ? AppTypography.arabic(
-                              fontSize: 17, fontWeight: FontWeight.w700)
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                            )
                           : theme.textTheme.titleMedium,
                     ),
                     if (member.occupation.isNotEmpty)
-                      Text(member.occupation,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodySmall),
+                      Text(
+                        member.occupation,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall,
+                      ),
                   ],
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 flex: 2,
-                child: Text(location,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall),
+                child: Text(
+                  location,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall,
+                ),
               ),
               const SizedBox(width: AppSpacing.md),
               _LevelChip(level: member.level),
@@ -493,21 +543,24 @@ class _MemberRow extends StatelessWidget {
                   PopupMenuItem(
                     value: 'view',
                     child: _MenuRow(
-                        icon: Icons.visibility_outlined,
-                        label: context.trRead('View Profile', 'عرض الملف')),
+                      icon: Icons.visibility_outlined,
+                      label: context.trRead('View Profile', 'عرض الملف'),
+                    ),
                   ),
                   PopupMenuItem(
                     value: 'edit',
                     child: _MenuRow(
-                        icon: Icons.edit_outlined,
-                        label: context.trRead('Edit', 'تعديل')),
+                      icon: Icons.edit_outlined,
+                      label: context.trRead('Edit', 'تعديل'),
+                    ),
                   ),
                   PopupMenuItem(
                     value: 'delete',
                     child: _MenuRow(
-                        icon: Icons.delete_outline,
-                        label: context.trRead('Delete', 'حذف'),
-                        danger: true),
+                      icon: Icons.delete_outline,
+                      label: context.trRead('Delete', 'حذف'),
+                      danger: true,
+                    ),
                   ),
                 ],
               ),
@@ -526,8 +579,10 @@ class _LevelChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding:
-          const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: 2,
+      ),
       decoration: BoxDecoration(
         color: AppColors.surfaceAlt,
         borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -535,10 +590,10 @@ class _LevelChip extends StatelessWidget {
       ),
       child: Text(
         level <= 0 ? '—' : context.tr('L$level', 'م$level'),
-        style: Theme.of(context)
-            .textTheme
-            .labelSmall
-            ?.copyWith(color: AppColors.textMuted, fontWeight: FontWeight.w700),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: AppColors.textMuted,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
@@ -552,26 +607,33 @@ class _StatusPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = active ? AppColors.emerald : AppColors.textFaint;
     return Container(
-      padding:
-          const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: 2,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Text(
-        active ? context.tr('Active', 'نشط') : context.tr('Inactive', 'غير نشط'),
-        style: Theme.of(context)
-            .textTheme
-            .labelSmall
-            ?.copyWith(color: color, fontWeight: FontWeight.w700),
+        active
+            ? context.tr('Active', 'نشط')
+            : context.tr('Inactive', 'غير نشط'),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: color,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
 }
 
 class _MenuRow extends StatelessWidget {
-  const _MenuRow(
-      {required this.icon, required this.label, this.danger = false});
+  const _MenuRow({
+    required this.icon,
+    required this.label,
+    this.danger = false,
+  });
   final IconData icon;
   final String label;
   final bool danger;
@@ -621,17 +683,23 @@ class _Pagination extends StatelessWidget {
         IconButton(
           onPressed: onPrev,
           tooltip: context.tr('Previous', 'السابق'),
-          icon: Icon(context.isArabic ? Icons.chevron_right : Icons.chevron_left),
+          icon: Icon(
+            context.isArabic ? Icons.chevron_right : Icons.chevron_left,
+          ),
         ),
         Text(
-          context.tr('Page ${page + 1} of $pageCount',
-              'صفحة ${page + 1} من $pageCount'),
+          context.tr(
+            'Page ${page + 1} of $pageCount',
+            'صفحة ${page + 1} من $pageCount',
+          ),
           style: theme.textTheme.labelMedium,
         ),
         IconButton(
           onPressed: onNext,
           tooltip: context.tr('Next', 'التالي'),
-          icon: Icon(context.isArabic ? Icons.chevron_left : Icons.chevron_right),
+          icon: Icon(
+            context.isArabic ? Icons.chevron_left : Icons.chevron_right,
+          ),
         ),
       ],
     );
@@ -669,16 +737,19 @@ class _AddLocationDialogState extends State<_AddLocationDialog> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              context.tr('Choose where this member belongs.',
-                  'اختر الموقع الذي ينتمي إليه هذا العضو.'),
+              context.tr(
+                'Choose where this member belongs.',
+                'اختر الموقع الذي ينتمي إليه هذا العضو.',
+              ),
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: AppSpacing.lg),
             DropdownButtonFormField<String>(
               initialValue: _areaId,
               isExpanded: true,
-              decoration:
-                  InputDecoration(labelText: context.tr('Area', 'المنطقة')),
+              decoration: InputDecoration(
+                labelText: context.tr('Area', 'المنطقة'),
+              ),
               items: [
                 for (final a in widget.areas)
                   DropdownMenuItem(value: a.id, child: Text(a.name)),
@@ -692,8 +763,9 @@ class _AddLocationDialogState extends State<_AddLocationDialog> {
             DropdownButtonFormField<String>(
               initialValue: _shubaId,
               isExpanded: true,
-              decoration:
-                  InputDecoration(labelText: context.tr("Shu'ba", 'الشُّعبة')),
+              decoration: InputDecoration(
+                labelText: context.tr("Shu'ba", 'الشُّعبة'),
+              ),
               items: [
                 for (final s in shubas)
                   DropdownMenuItem(value: s.id, child: Text(s.name)),
@@ -706,13 +778,15 @@ class _AddLocationDialogState extends State<_AddLocationDialog> {
             DropdownButtonFormField<int>(
               initialValue: _level,
               isExpanded: true,
-              decoration:
-                  InputDecoration(labelText: context.tr('Level', 'المستوى')),
+              decoration: InputDecoration(
+                labelText: context.tr('Level', 'المستوى'),
+              ),
               items: [
                 for (final l in kTarbiyaLevels)
                   DropdownMenuItem(
-                      value: l,
-                      child: Text(context.tr('Level $l', 'المستوى $l'))),
+                    value: l,
+                    child: Text(context.tr('Level $l', 'المستوى $l')),
+                  ),
               ],
               onChanged: (v) => setState(() => _level = v ?? 1),
             ),
@@ -727,8 +801,9 @@ class _AddLocationDialogState extends State<_AddLocationDialog> {
         FilledButton(
           onPressed: _shubaId == null
               ? null
-              : () => Navigator.of(context)
-                  .pop((shubaId: _shubaId!, level: _level)),
+              : () => Navigator.of(
+                  context,
+                ).pop((shubaId: _shubaId!, level: _level)),
           child: Text(context.tr('Continue', 'متابعة')),
         ),
       ],

@@ -537,8 +537,7 @@ class TasedCard extends StatelessWidget {
                 context.tr('Level', 'المستوى'),
                 context.tr('Year', 'السنة'),
                 context.tr('Status', 'الحالة'),
-                '',
-              ]),
+              ], actionsWidth: canManage ? _tasedActionsWidth : 0),
               if (records.isEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
@@ -577,7 +576,14 @@ class TasedCard extends StatelessWidget {
   }
 }
 
-Widget _tableHeader(BuildContext context, List<String> cols) {
+/// Width reserved for the trailing per-row menu column in [TasedCard]'s
+/// table — a single [PopupMenuButton] (not two separate icon buttons) so the
+/// row never overflows even in the narrow right-column layout of the member
+/// profile screen.
+const double _tasedActionsWidth = 32;
+
+Widget _tableHeader(BuildContext context, List<String> cols,
+    {double actionsWidth = 0}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: AppSpacing.xs),
     child: Row(
@@ -586,6 +592,7 @@ Widget _tableHeader(BuildContext context, List<String> cols) {
           Expanded(
             child: Text(c, style: Theme.of(context).textTheme.labelSmall),
           ),
+        if (actionsWidth > 0) SizedBox(width: actionsWidth),
       ],
     ),
   );
@@ -614,40 +621,68 @@ class _TasedRow extends StatelessWidget {
           Expanded(
             child: Text(
               context.tr('Level ${record.level}', 'المستوى ${record.level}'),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          Expanded(child: Text(record.year.isEmpty ? '—' : record.year)),
+          Expanded(
+            child: Text(
+              record.year.isEmpty ? '—' : record.year,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
           Expanded(
             child: Text(
               active
                   ? context.tr('Active', 'نشط')
                   : context.tr('Inactive', 'غير نشط'),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(color: color, fontWeight: FontWeight.w600),
             ),
           ),
-          Expanded(
-            child: canManage
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        visualDensity: VisualDensity.compact,
-                        icon: const Icon(Icons.edit_outlined, size: 18),
-                        onPressed: onEdit,
-                      ),
-                      IconButton(
-                        visualDensity: VisualDensity.compact,
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          size: 18,
-                          color: AppColors.error,
-                        ),
-                        onPressed: onDelete,
-                      ),
-                    ],
-                  )
-                : const SizedBox.shrink(),
-          ),
+          if (canManage)
+            SizedBox(
+              width: _tasedActionsWidth,
+              child: PopupMenuButton<String>(
+                padding: EdgeInsets.zero,
+                icon: const Icon(Icons.more_vert, size: 18),
+                tooltip: context.tr('Actions', 'إجراءات'),
+                onSelected: (v) {
+                  switch (v) {
+                    case 'edit':
+                      onEdit();
+                    case 'delete':
+                      onDelete();
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.edit_outlined, size: 18),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(context.tr('Edit', 'تعديل')),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.delete_outline,
+                            size: 18, color: AppColors.error),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(context.tr('Delete', 'حذف'),
+                            style: const TextStyle(color: AppColors.error)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -698,8 +733,8 @@ Future<void> _showTasedDialog(
           backgroundColor: AppColors.surface,
           title: Text(
             existing == null
-                ? context.tr('Add Tas\'ed Record', 'إضافة سجل تصعيد')
-                : context.tr('Edit Tas\'ed Record', 'تعديل سجل التصعيد'),
+                ? context.tr('Add Promotional Record', 'إضافة سجل تصعيد')
+                : context.tr('Edit Promotional Record', 'تعديل سجل التصعيد'),
           ),
           content: SizedBox(
             width: 360,

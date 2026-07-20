@@ -153,6 +153,11 @@ class Members extends Table {
   TextColumn get status => text().withDefault(const Constant('active'))();
   TextColumn get dateJoined => text().withDefault(const Constant(''))();
 
+  /// Approval workflow, independent of [status]: 'pending' (new member,
+  /// awaiting Admin review), 'approved', or 'declined'. Only 'approved'
+  /// members are visible in search, lists, and pickers across the app.
+  TextColumn get approval => text().withDefault(const Constant('pending'))();
+
   // Naqib-Usra information.
   TextColumn get usraName => text().withDefault(const Constant(''))();
   TextColumn get usraEstablishedYear =>
@@ -635,7 +640,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.memory() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 27;
+  int get schemaVersion => 28;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -835,6 +840,14 @@ class AppDatabase extends _$AppDatabase {
                     .write(const LeadersCompanion(name: Value('')));
               }
             }
+          }
+          if (from < 28) {
+            // Member approval workflow added in schema v28. Every member
+            // already in the database predates the workflow and is already
+            // fully visible, so backfill them as 'approved' — only newly
+            // inserted members get the 'pending' default.
+            await m.addColumn(members, members.approval);
+            await customStatement("UPDATE members SET approval = 'approved'");
           }
         },
       );

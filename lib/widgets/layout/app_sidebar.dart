@@ -6,6 +6,7 @@ import '../../app/nav_items.dart';
 import '../../core/auth/session_controller.dart';
 import '../../core/data/models.dart';
 import '../../core/i18n/strings.dart';
+import '../../core/repositories/member_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../common/brand_emblem.dart';
@@ -48,12 +49,29 @@ class AppSidebar extends StatelessWidget {
                           (session.can?.accessTarbiya ?? false)) &&
                       (!item.requiresExecutive ||
                           (session.can?.manageMembers ?? false)))
-                    _NavTile(
-                      item: item,
-                      strings: s,
-                      selected: currentRoute == item.route ||
-                          currentRoute.startsWith('${item.route}/'),
-                    ),
+                    if (item.route == '/members/pending')
+                      FutureBuilder<int>(
+                        // A one-shot query re-run on every sidebar rebuild
+                        // (e.g. navigation) — see [MemberRepository.getPendingCount].
+                        future:
+                            context.read<MemberRepository>().getPendingCount(),
+                        builder: (context, snapshot) => _NavTile(
+                          item: item,
+                          strings: s,
+                          selected: currentRoute == item.route,
+                          badgeCount: snapshot.data ?? 0,
+                        ),
+                      )
+                    else
+                      _NavTile(
+                        item: item,
+                        strings: s,
+                        // Exact-match only for /members so /members/pending
+                        // doesn't also light up the Members tile.
+                        selected: currentRoute == item.route ||
+                            (item.route != '/members' &&
+                                currentRoute.startsWith('${item.route}/')),
+                      ),
                   // Insert the Leadership group right after History.
                   if (item.route == '/history')
                     _LeadershipNavGroup(currentRoute: currentRoute),
@@ -157,11 +175,15 @@ class _NavTile extends StatelessWidget {
     required this.item,
     required this.strings,
     required this.selected,
+    this.badgeCount = 0,
   });
 
   final NavItem item;
   final AppStrings strings;
   final bool selected;
+
+  /// When > 0, a small count pill is rendered after the label.
+  final int badgeCount;
 
   @override
   Widget build(BuildContext context) {
@@ -210,6 +232,24 @@ class _NavTile extends StatelessWidget {
                         ),
                   ),
                 ),
+                if (badgeCount > 0) ...[
+                  const SizedBox(width: AppSpacing.sm),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.gold,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Text(
+                      badgeCount > 99 ? '99+' : '$badgeCount',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: AppColors.onGold,
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

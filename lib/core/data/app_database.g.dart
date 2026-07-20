@@ -958,6 +958,18 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
+  static const VerificationMeta _approvalMeta = const VerificationMeta(
+    'approval',
+  );
+  @override
+  late final GeneratedColumn<String> approval = GeneratedColumn<String>(
+    'approval',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
   static const VerificationMeta _usraNameMeta = const VerificationMeta(
     'usraName',
   );
@@ -1043,6 +1055,7 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
     spouseDate,
     status,
     dateJoined,
+    approval,
     usraName,
     usraEstablishedYear,
     usraMeetingSchedule,
@@ -1201,6 +1214,12 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
         dateJoined.isAcceptableOrUnknown(data['date_joined']!, _dateJoinedMeta),
       );
     }
+    if (data.containsKey('approval')) {
+      context.handle(
+        _approvalMeta,
+        approval.isAcceptableOrUnknown(data['approval']!, _approvalMeta),
+      );
+    }
     if (data.containsKey('usra_name')) {
       context.handle(
         _usraNameMeta,
@@ -1333,6 +1352,10 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
         DriftSqlType.string,
         data['${effectivePrefix}date_joined'],
       )!,
+      approval: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}approval'],
+      )!,
       usraName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}usra_name'],
@@ -1384,6 +1407,11 @@ class Member extends DataClass implements Insertable<Member> {
   final String spouseDate;
   final String status;
   final String dateJoined;
+
+  /// Approval workflow, independent of [status]: 'pending' (new member,
+  /// awaiting Admin review), 'approved', or 'declined'. Only 'approved'
+  /// members are visible in search, lists, and pickers across the app.
+  final String approval;
   final String usraName;
   final String usraEstablishedYear;
   final String usraMeetingSchedule;
@@ -1414,6 +1442,7 @@ class Member extends DataClass implements Insertable<Member> {
     required this.spouseDate,
     required this.status,
     required this.dateJoined,
+    required this.approval,
     required this.usraName,
     required this.usraEstablishedYear,
     required this.usraMeetingSchedule,
@@ -1444,6 +1473,7 @@ class Member extends DataClass implements Insertable<Member> {
     map['spouse_date'] = Variable<String>(spouseDate);
     map['status'] = Variable<String>(status);
     map['date_joined'] = Variable<String>(dateJoined);
+    map['approval'] = Variable<String>(approval);
     map['usra_name'] = Variable<String>(usraName);
     map['usra_established_year'] = Variable<String>(usraEstablishedYear);
     map['usra_meeting_schedule'] = Variable<String>(usraMeetingSchedule);
@@ -1477,6 +1507,7 @@ class Member extends DataClass implements Insertable<Member> {
       spouseDate: Value(spouseDate),
       status: Value(status),
       dateJoined: Value(dateJoined),
+      approval: Value(approval),
       usraName: Value(usraName),
       usraEstablishedYear: Value(usraEstablishedYear),
       usraMeetingSchedule: Value(usraMeetingSchedule),
@@ -1514,6 +1545,7 @@ class Member extends DataClass implements Insertable<Member> {
       spouseDate: serializer.fromJson<String>(json['spouseDate']),
       status: serializer.fromJson<String>(json['status']),
       dateJoined: serializer.fromJson<String>(json['dateJoined']),
+      approval: serializer.fromJson<String>(json['approval']),
       usraName: serializer.fromJson<String>(json['usraName']),
       usraEstablishedYear: serializer.fromJson<String>(
         json['usraEstablishedYear'],
@@ -1550,6 +1582,7 @@ class Member extends DataClass implements Insertable<Member> {
       'spouseDate': serializer.toJson<String>(spouseDate),
       'status': serializer.toJson<String>(status),
       'dateJoined': serializer.toJson<String>(dateJoined),
+      'approval': serializer.toJson<String>(approval),
       'usraName': serializer.toJson<String>(usraName),
       'usraEstablishedYear': serializer.toJson<String>(usraEstablishedYear),
       'usraMeetingSchedule': serializer.toJson<String>(usraMeetingSchedule),
@@ -1580,6 +1613,7 @@ class Member extends DataClass implements Insertable<Member> {
     String? spouseDate,
     String? status,
     String? dateJoined,
+    String? approval,
     String? usraName,
     String? usraEstablishedYear,
     String? usraMeetingSchedule,
@@ -1607,6 +1641,7 @@ class Member extends DataClass implements Insertable<Member> {
     spouseDate: spouseDate ?? this.spouseDate,
     status: status ?? this.status,
     dateJoined: dateJoined ?? this.dateJoined,
+    approval: approval ?? this.approval,
     usraName: usraName ?? this.usraName,
     usraEstablishedYear: usraEstablishedYear ?? this.usraEstablishedYear,
     usraMeetingSchedule: usraMeetingSchedule ?? this.usraMeetingSchedule,
@@ -1654,6 +1689,7 @@ class Member extends DataClass implements Insertable<Member> {
       dateJoined: data.dateJoined.present
           ? data.dateJoined.value
           : this.dateJoined,
+      approval: data.approval.present ? data.approval.value : this.approval,
       usraName: data.usraName.present ? data.usraName.value : this.usraName,
       usraEstablishedYear: data.usraEstablishedYear.present
           ? data.usraEstablishedYear.value
@@ -1692,6 +1728,7 @@ class Member extends DataClass implements Insertable<Member> {
           ..write('spouseDate: $spouseDate, ')
           ..write('status: $status, ')
           ..write('dateJoined: $dateJoined, ')
+          ..write('approval: $approval, ')
           ..write('usraName: $usraName, ')
           ..write('usraEstablishedYear: $usraEstablishedYear, ')
           ..write('usraMeetingSchedule: $usraMeetingSchedule, ')
@@ -1724,6 +1761,7 @@ class Member extends DataClass implements Insertable<Member> {
     spouseDate,
     status,
     dateJoined,
+    approval,
     usraName,
     usraEstablishedYear,
     usraMeetingSchedule,
@@ -1755,6 +1793,7 @@ class Member extends DataClass implements Insertable<Member> {
           other.spouseDate == this.spouseDate &&
           other.status == this.status &&
           other.dateJoined == this.dateJoined &&
+          other.approval == this.approval &&
           other.usraName == this.usraName &&
           other.usraEstablishedYear == this.usraEstablishedYear &&
           other.usraMeetingSchedule == this.usraMeetingSchedule &&
@@ -1784,6 +1823,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
   final Value<String> spouseDate;
   final Value<String> status;
   final Value<String> dateJoined;
+  final Value<String> approval;
   final Value<String> usraName;
   final Value<String> usraEstablishedYear;
   final Value<String> usraMeetingSchedule;
@@ -1812,6 +1852,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
     this.spouseDate = const Value.absent(),
     this.status = const Value.absent(),
     this.dateJoined = const Value.absent(),
+    this.approval = const Value.absent(),
     this.usraName = const Value.absent(),
     this.usraEstablishedYear = const Value.absent(),
     this.usraMeetingSchedule = const Value.absent(),
@@ -1841,6 +1882,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
     this.spouseDate = const Value.absent(),
     this.status = const Value.absent(),
     this.dateJoined = const Value.absent(),
+    this.approval = const Value.absent(),
     this.usraName = const Value.absent(),
     this.usraEstablishedYear = const Value.absent(),
     this.usraMeetingSchedule = const Value.absent(),
@@ -1873,6 +1915,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
     Expression<String>? spouseDate,
     Expression<String>? status,
     Expression<String>? dateJoined,
+    Expression<String>? approval,
     Expression<String>? usraName,
     Expression<String>? usraEstablishedYear,
     Expression<String>? usraMeetingSchedule,
@@ -1902,6 +1945,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
       if (spouseDate != null) 'spouse_date': spouseDate,
       if (status != null) 'status': status,
       if (dateJoined != null) 'date_joined': dateJoined,
+      if (approval != null) 'approval': approval,
       if (usraName != null) 'usra_name': usraName,
       if (usraEstablishedYear != null)
         'usra_established_year': usraEstablishedYear,
@@ -1935,6 +1979,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
     Value<String>? spouseDate,
     Value<String>? status,
     Value<String>? dateJoined,
+    Value<String>? approval,
     Value<String>? usraName,
     Value<String>? usraEstablishedYear,
     Value<String>? usraMeetingSchedule,
@@ -1964,6 +2009,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
       spouseDate: spouseDate ?? this.spouseDate,
       status: status ?? this.status,
       dateJoined: dateJoined ?? this.dateJoined,
+      approval: approval ?? this.approval,
       usraName: usraName ?? this.usraName,
       usraEstablishedYear: usraEstablishedYear ?? this.usraEstablishedYear,
       usraMeetingSchedule: usraMeetingSchedule ?? this.usraMeetingSchedule,
@@ -2039,6 +2085,9 @@ class MembersCompanion extends UpdateCompanion<Member> {
     if (dateJoined.present) {
       map['date_joined'] = Variable<String>(dateJoined.value);
     }
+    if (approval.present) {
+      map['approval'] = Variable<String>(approval.value);
+    }
     if (usraName.present) {
       map['usra_name'] = Variable<String>(usraName.value);
     }
@@ -2088,6 +2137,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
           ..write('spouseDate: $spouseDate, ')
           ..write('status: $status, ')
           ..write('dateJoined: $dateJoined, ')
+          ..write('approval: $approval, ')
           ..write('usraName: $usraName, ')
           ..write('usraEstablishedYear: $usraEstablishedYear, ')
           ..write('usraMeetingSchedule: $usraMeetingSchedule, ')
@@ -15123,6 +15173,7 @@ typedef $$MembersTableCreateCompanionBuilder =
       Value<String> spouseDate,
       Value<String> status,
       Value<String> dateJoined,
+      Value<String> approval,
       Value<String> usraName,
       Value<String> usraEstablishedYear,
       Value<String> usraMeetingSchedule,
@@ -15153,6 +15204,7 @@ typedef $$MembersTableUpdateCompanionBuilder =
       Value<String> spouseDate,
       Value<String> status,
       Value<String> dateJoined,
+      Value<String> approval,
       Value<String> usraName,
       Value<String> usraEstablishedYear,
       Value<String> usraMeetingSchedule,
@@ -15539,6 +15591,11 @@ class $$MembersTableFilterComposer
 
   ColumnFilters<String> get dateJoined => $composableBuilder(
     column: $table.dateJoined,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get approval => $composableBuilder(
+    column: $table.approval,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -16018,6 +16075,11 @@ class $$MembersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get approval => $composableBuilder(
+    column: $table.approval,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get usraName => $composableBuilder(
     column: $table.usraName,
     builder: (column) => ColumnOrderings(column),
@@ -16169,6 +16231,9 @@ class $$MembersTableAnnotationComposer
     column: $table.dateJoined,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get approval =>
+      $composableBuilder(column: $table.approval, builder: (column) => column);
 
   GeneratedColumn<String> get usraName =>
       $composableBuilder(column: $table.usraName, builder: (column) => column);
@@ -16598,6 +16663,7 @@ class $$MembersTableTableManager
                 Value<String> spouseDate = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String> dateJoined = const Value.absent(),
+                Value<String> approval = const Value.absent(),
                 Value<String> usraName = const Value.absent(),
                 Value<String> usraEstablishedYear = const Value.absent(),
                 Value<String> usraMeetingSchedule = const Value.absent(),
@@ -16626,6 +16692,7 @@ class $$MembersTableTableManager
                 spouseDate: spouseDate,
                 status: status,
                 dateJoined: dateJoined,
+                approval: approval,
                 usraName: usraName,
                 usraEstablishedYear: usraEstablishedYear,
                 usraMeetingSchedule: usraMeetingSchedule,
@@ -16656,6 +16723,7 @@ class $$MembersTableTableManager
                 Value<String> spouseDate = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String> dateJoined = const Value.absent(),
+                Value<String> approval = const Value.absent(),
                 Value<String> usraName = const Value.absent(),
                 Value<String> usraEstablishedYear = const Value.absent(),
                 Value<String> usraMeetingSchedule = const Value.absent(),
@@ -16684,6 +16752,7 @@ class $$MembersTableTableManager
                 spouseDate: spouseDate,
                 status: status,
                 dateJoined: dateJoined,
+                approval: approval,
                 usraName: usraName,
                 usraEstablishedYear: usraEstablishedYear,
                 usraMeetingSchedule: usraMeetingSchedule,

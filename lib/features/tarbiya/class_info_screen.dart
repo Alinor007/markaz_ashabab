@@ -11,6 +11,7 @@ import '../../core/repositories/member_repository.dart';
 import '../../core/repositories/tarbiya_repository.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../core/util/validators.dart';
 import '../../widgets/common/info_panel.dart';
 import '../../widgets/common/member_picker.dart';
 import '../../widgets/common/portrait_avatar.dart';
@@ -188,6 +189,120 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
     }
   }
 
+  /// Records a new Tas'ed entry for one student — always a new promotion
+  /// event, never an edit of an existing record. `members.level` re-syncs
+  /// automatically from the newest Tas'ed record inside [addTased].
+  Future<void> _promoteStudent(Member student) async {
+    var level = student.level > 0 ? student.level : 1;
+    var year = '';
+    var status = 'active';
+    final formKey = GlobalKey<FormState>();
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) => AlertDialog(
+          backgroundColor: AppColors.surface,
+          title: Text(dialogContext.tr('Promote Student', 'ترقية الطالب')),
+          content: SizedBox(
+            width: 360,
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<int>(
+                    initialValue: level,
+                    decoration: InputDecoration(
+                      labelText: dialogContext.tr('Level', 'المستوى'),
+                    ),
+                    items: [
+                      for (final l in kTarbiyaLevels)
+                        DropdownMenuItem(value: l, child: Text('Level $l')),
+                    ],
+                    onChanged: (v) => setDialogState(() => level = v ?? level),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  TextFormField(
+                    initialValue: year,
+                    keyboardType: TextInputType.number,
+                    validator: (v) => Validators.optionalYear(dialogContext, v),
+                    decoration: InputDecoration(
+                      labelText: dialogContext.tr('Year', 'السنة'),
+                    ),
+                    onChanged: (v) => year = v,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  DropdownButtonFormField<String>(
+                    initialValue: status,
+                    decoration: InputDecoration(
+                      labelText: dialogContext.tr('Status', 'الحالة'),
+                    ),
+                    items: [
+                      DropdownMenuItem(
+                        value: 'active',
+                        child: Text(dialogContext.tr('Active', 'نشط')),
+                      ),
+                      DropdownMenuItem(
+                        value: 'inactive',
+                        child: Text(dialogContext.tr('Inactive', 'غير نشط')),
+                      ),
+                    ],
+                    onChanged: (v) => setDialogState(() => status = v ?? status),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(dialogContext.tr('Cancel', 'إلغاء')),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (!formKey.currentState!.validate()) return;
+                Navigator.pop(dialogContext, true);
+              },
+              child: Text(dialogContext.tr('Promote', 'ترقية')),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (result != true || !mounted) return;
+    final repo = context.read<MemberRepository>();
+    await repo.addTased(
+      memberId: student.id,
+      level: level,
+      year: year.trim(),
+      status: status,
+    );
+    // Promotion graduates the student out of this class — clear their Naqib
+    // and class fields so they don't linger in a class for the level they
+    // just left.
+    await repo.updateMember(
+      student.id,
+      const MembersCompanion(
+        naqibMemberId: Value(null),
+        usraName: Value(''),
+        usraEstablishedYear: Value(''),
+        usraMeetingSchedule: Value(''),
+      ),
+    );
+    if (mounted) {
+      setState(() {
+        _students.removeWhere((m) => m.id == student.id);
+        // Also drop from the Cancel-restore snapshot so a later Cancel can't
+        // resurrect a student whose Naqib link is already cleared in the DB.
+        _loadedStudents.removeWhere((m) => m.id == student.id);
+        _originalStudentIds.remove(student.id);
+      });
+      _toast(context.trRead(
+          '${student.fullName} promoted to Level $level.',
+          'تمت ترقية ${student.displayName(true)} إلى المستوى $level.'));
+    }
+  }
+
   Future<void> _save() async {
     final teacher = _teacher;
     if (teacher == null) return;
@@ -227,6 +342,51 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
     _toast(context.trRead('Class updated.', 'تم تحديث الفصل.'));
     // The class identity in this screen's URL (naqib + section) is stale if
     // the section was renamed, so always return to the live Class Screen.
+    _back();
+  }
+
+  /// Deletes the whole class — clears every current student's Naqib and
+  /// class fields, dissolving the class. Members themselves are never
+  /// deleted, only their link to this class.
+  Future<void> _deleteClass() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text(dialogContext.tr('Delete class?', 'حذف الفصل؟')),
+        content: Text(dialogContext.tr(
+          'Are you sure you want to delete this class? This action cannot be undone.',
+          'هل أنت متأكد أنك تريد حذف هذا الفصل؟ لا يمكن التراجع عن هذا الإجراء.',
+        )),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(dialogContext.tr('Cancel', 'إلغاء')),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(dialogContext.tr('Delete', 'حذف')),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => _saving = true);
+    final repo = context.read<MemberRepository>();
+    for (final s in _students) {
+      await repo.updateMember(
+        s.id,
+        const MembersCompanion(
+          naqibMemberId: Value(null),
+          usraName: Value(''),
+          usraEstablishedYear: Value(''),
+          usraMeetingSchedule: Value(''),
+        ),
+      );
+    }
+    if (!mounted) return;
+    _toast(context.trRead('Class deleted.', 'تم حذف الفصل.'));
     _back();
   }
 
@@ -274,6 +434,16 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
             onPressed: _startEdit,
             icon: const Icon(Icons.edit_outlined, size: 18),
             label: Text(context.tr('Edit', 'تعديل')),
+          ),
+        if (canManage && !editing && _teacher != null)
+          OutlinedButton.icon(
+            onPressed: _saving ? null : _deleteClass,
+            icon: const Icon(Icons.delete_outline, size: 18),
+            label: Text(context.tr('Delete', 'حذف')),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.error,
+              side: const BorderSide(color: AppColors.error),
+            ),
           ),
         if (editing)
           FilledButton.icon(
@@ -413,7 +583,7 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(context.tr('NAQIB', 'النقيب'),
+                        Text(context.tr('Teacher', 'النقيب'),
                             style: theme.textTheme.labelSmall?.copyWith(
                                 color: AppColors.textFaint,
                                 letterSpacing: 0.6)),
@@ -589,7 +759,16 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
                   ],
                 ),
               ),
-              if (editing)
+              OutlinedButton.icon(
+                onPressed: () => _promoteStudent(student),
+                icon: const Icon(Icons.trending_up, size: 16),
+                label: Text(context.tr('Promote', 'ترقية')),
+                style: OutlinedButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+              if (editing) ...[
+                const SizedBox(width: AppSpacing.sm),
                 OutlinedButton(
                   onPressed: _saving ? null : () => _removeStudent(student),
                   style: OutlinedButton.styleFrom(
@@ -598,9 +777,11 @@ class _ClassInfoScreenState extends State<ClassInfoScreen> {
                     visualDensity: VisualDensity.compact,
                   ),
                   child: Text(context.tr('Remove', 'إزالة')),
-                )
-              else
+                ),
+              ] else ...[
+                const SizedBox(width: AppSpacing.sm),
                 const Icon(Icons.chevron_right, color: AppColors.textFaint),
+              ],
             ],
           ),
         ),

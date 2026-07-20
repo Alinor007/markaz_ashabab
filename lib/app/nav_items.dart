@@ -74,6 +74,13 @@ const List<NavItem> kPrimaryNav = [
     labelBuilder: _members,
     requiresExecutive: true,
   ),
+  NavItem(
+    route: '/members/pending',
+    icon: Icons.how_to_reg_outlined,
+    activeIcon: Icons.how_to_reg,
+    labelBuilder: _pendingMembers,
+    requiresExecutive: true,
+  ),
 ];
 
 /// Administrator-only navigation.
@@ -108,6 +115,7 @@ String _departments(AppStrings s) => s.departments;
 String _reports(AppStrings s) => s.reports;
 String _gallery(AppStrings s) => s.gallery;
 String _members(AppStrings s) => s.membersManagement;
+String _pendingMembers(AppStrings s) => s.pendingMembers;
 String _settings(AppStrings s) => s.settings;
 String _userManagement(AppStrings s) => s.userManagement;
 String _auditLogs(AppStrings s) => s.auditLogs;

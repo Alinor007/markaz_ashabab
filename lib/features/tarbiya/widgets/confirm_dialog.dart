@@ -8,6 +8,7 @@ Future<bool> confirmDialog(
   BuildContext context, {
   required String title,
   required String message,
+  String? confirmLabel,
 }) async {
   final result = await showDialog<bool>(
     context: context,
@@ -26,7 +27,7 @@ Future<bool> confirmDialog(
         FilledButton(
           style: FilledButton.styleFrom(backgroundColor: AppColors.error),
           onPressed: () => Navigator.pop(dialogContext, true),
-          child: Text(dialogContext.tr('Delete', 'حذف')),
+          child: Text(confirmLabel ?? dialogContext.tr('Delete', 'حذف')),
         ),
       ],
     ),
