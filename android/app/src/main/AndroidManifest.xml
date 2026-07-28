@@ -1,7 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Saving generated PDF reports into the shared Download/ folder.
+         Android 11+ (API 30+) allows an app to create files there with the
+         File API without any permission, so this is only needed for API <= 28;
+         requestLegacyExternalStorage covers the API 29 gap in between. -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
     <application
         android:label="مؤسسة مركز الشباب المسلم في الفلبين"
         android:name="${applicationName}"
+        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

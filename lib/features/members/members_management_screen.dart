@@ -1,7 +1,10 @@
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/auth/session_controller.dart';
 import '../../core/data/app_database.dart';
 import '../../core/data/models.dart';
 import '../../core/i18n/localized.dart';
@@ -18,6 +21,15 @@ import '../../widgets/feedback/empty_state.dart';
 import '../../widgets/feedback/loading_state.dart';
 import '../../widgets/layout/module_page.dart';
 import '../tarbiya/widgets/confirm_dialog.dart';
+import 'report/class_report_data.dart';
+import 'report/class_report_pdf.dart';
+import 'report/member_report_data.dart';
+import 'report/member_report_pdf.dart';
+import 'report/report_saver.dart';
+
+enum _Sort { nameAsc, nameDesc, statusFirst }
+
+enum _ReportKind { members, classes }
 
 /// Members Management — a directory of every member across all shu'bas with
 /// search, filtering, pagination, and full CRUD. Executive-only (the route is
@@ -40,11 +52,17 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
   int? _levelFilter; // null = all
   int _genderFilter = 0; // 0 all, 1 male, 2 female
   int _page = 0;
+  _Sort _sort = _Sort.nameAsc;  
 
   bool _ready = false;
   List<TarbiyaArea> _areas = const [];
   Map<String, TarbiyaArea> _areaById = const {};
   Map<String, Shuba> _shubaById = const {};
+
+  // Cached from the StreamBuilder's latest frame so "Generate Report" (an
+  // event handler, outside build) can act on exactly what's on screen.
+  List<Member> _lastAll = const [];
+  List<Member> _lastFiltered = const [];
 
   @override
   void initState() {
@@ -106,10 +124,18 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
               matchesShuba &&
               matchesLevel &&
               matchesGender;
-        }).toList()..sort(
-          (a, b) =>
-              a.lastName.toLowerCase().compareTo(b.lastName.toLowerCase()),
-        );
+        }).toList();
+    list.sort((a, b) {
+      switch (_sort) {
+        case _Sort.nameAsc:
+          return a.firstName.toLowerCase().compareTo(b.firstName.toLowerCase());
+        case _Sort.nameDesc:
+          return b.firstName.toLowerCase().compareTo(a.firstName.toLowerCase());
+        case _Sort.statusFirst:
+          if (a.isActive == b.isActive) return a.firstName.compareTo(b.firstName);
+          return a.isActive ? -1 : 1;
+      }
+    });
     return list;
   }
 
@@ -122,6 +148,8 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
         child: const LoadingState(),
       );
     }
+
+    final isAdmin = context.watch<SessionController>().isAdmin;
 
     return ModulePage(
       english: 'Members Management',
@@ -138,6 +166,7 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
             _resetPage();
           }),
         ),
+        if (isAdmin) _GenerateReportButton(onSelected: _generateReport),
         FilledButton.icon(
           onPressed: _addMember,
           icon: const Icon(Icons.person_add_alt_1, size: 18),
@@ -150,6 +179,8 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
           if (!snapshot.hasData) return const LoadingState();
           final all = snapshot.data!;
           final filtered = _apply(all);
+          _lastAll = all;
+          _lastFiltered = filtered;
 
           final pageCount = filtered.isEmpty
               ? 1
@@ -202,6 +233,8 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
                   _genderFilter = v;
                   _resetPage();
                 }),
+                sort: _sort,
+                onSort: (s) => setState(() => _sort = s),
               ),
               const SizedBox(height: AppSpacing.lg),
               Expanded(
@@ -261,6 +294,63 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
     );
   }
 
+  /// Builds and downloads the requested report PDF for whatever is
+  /// currently on screen — the same `_lastFiltered` list the table shows,
+  /// so every report always matches the applied search/area/shu'ba/level/
+  /// gender/status filters (all members, if none are applied).
+  Future<void> _generateReport(_ReportKind kind) async {
+    final allMembersById = {for (final m in _lastAll) m.id: m};
+    switch (kind) {
+      case _ReportKind.members:
+        final data = buildMemberReportData(
+          filteredMembers: _lastFiltered,
+          areas: _areas,
+          shubas: _shubaById.values.toList(),
+          allMembersById: allMembersById,
+          filterSummary: _filterSummaryText(),
+        );
+        await downloadReport(
+          context,
+          filenamePrefix: 'Member_List_Report',
+          build: (logo) => Isolate.run(() => buildMemberReportPdf(data, logo)),
+        );
+      case _ReportKind.classes:
+        final data = buildClassReportData(
+          filteredMembers: _lastFiltered,
+          areas: _areas,
+          shubas: _shubaById.values.toList(),
+          allMembersById: allMembersById,
+          filterSummary: _filterSummaryText(),
+        );
+        await downloadReport(
+          context,
+          filenamePrefix: 'Class_Tutorial_Report',
+          build: (logo) => Isolate.run(() => buildClassReportPdf(data, logo)),
+        );
+    }
+  }
+
+  String _filterSummaryText() {
+    final parts = <String>[];
+    if (_query.trim().isNotEmpty) parts.add('Search: "${_query.trim()}"');
+    if (_statusFilter == 1) parts.add('Status: Active');
+    if (_statusFilter == 2) parts.add('Status: Inactive');
+    if (_areaFilter != null) {
+      parts.add('Area: ${_areaById[_areaFilter]?.name ?? _areaFilter}');
+    }
+    if (_shubaFilter != null) {
+      parts.add("Shu'ba: ${_shubaById[_shubaFilter]?.name ?? _shubaFilter}");
+    }
+    if (_levelFilter != null) {
+      // Plain text, not an em-dash — the report PDFs' built-in Helvetica font
+      // has no glyph for U+2014 (see report_pdf_common.dart).
+      parts.add('Level: ${_levelFilter! <= 0 ? 'No Level' : _levelFilter}');
+    }
+    if (_genderFilter == 1) parts.add('Gender: Male');
+    if (_genderFilter == 2) parts.add('Gender: Female');
+    return parts.isEmpty ? 'All members' : parts.join(' · ');
+  }
+
   Future<void> _addMember() async {
     final picked = await showDialog<({String shubaId, int level})>(
       context: context,
@@ -299,6 +389,63 @@ class _MembersManagementScreenState extends State<MembersManagementScreen> {
   }
 }
 
+/// The admin-only "Generate Report" action: an outlined button that expands
+/// into a dropdown offering the two report kinds on tap.
+class _GenerateReportButton extends StatelessWidget {
+  const _GenerateReportButton({required this.onSelected});
+  final ValueChanged<_ReportKind> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<_ReportKind>(
+      tooltip: context.tr('Generate Report', 'إنشاء تقرير'),
+      onSelected: onSelected,
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: _ReportKind.members,
+          child: _MenuRow(
+            icon: Icons.groups_outlined,
+            label: context.trRead('Members Report', 'تقرير الأعضاء'),
+          ),
+        ),
+        PopupMenuItem(
+          value: _ReportKind.classes,
+          child: _MenuRow(
+            icon: Icons.school_outlined,
+            label: context.trRead('Class Tutorial Report', 'تقرير الفصول الدراسية'),
+          ),
+        ),
+      ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.xl,
+          vertical: AppSpacing.lg,
+        ),
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.borderStrong),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.picture_as_pdf_outlined, size: 18, color: AppColors.emerald),
+            const SizedBox(width: AppSpacing.sm),
+            Text(
+              context.tr('Generate Report', 'إنشاء تقرير'),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge
+                  ?.copyWith(color: AppColors.emerald),
+            ),
+            const SizedBox(width: AppSpacing.xs),
+            const Icon(Icons.arrow_drop_down, size: 18, color: AppColors.emerald),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _FilterRow extends StatelessWidget {
   const _FilterRow({
     required this.total,
@@ -315,6 +462,8 @@ class _FilterRow extends StatelessWidget {
     required this.onLevel,
     required this.genderFilter,
     required this.onGender,
+    required this.sort,
+    required this.onSort,
   });
 
   final int total;
@@ -331,9 +480,12 @@ class _FilterRow extends StatelessWidget {
   final ValueChanged<int?> onLevel;
   final int genderFilter; // 0 all, 1 male, 2 female
   final ValueChanged<int> onGender;
+  final _Sort sort;
+  final ValueChanged<_Sort> onSort;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -402,8 +554,43 @@ class _FilterRow extends StatelessWidget {
               },
               onChanged: onGender,
             ),
+            _sortButton(context, theme),
           ],
         ),
+      ],
+    );
+  }
+
+  Widget _sortButton(BuildContext context, ThemeData theme) {
+    return PopupMenuButton<_Sort>(
+      initialValue: sort,
+      onSelected: onSort,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.border),
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.sort, size: 16, color: AppColors.textMuted),
+            const SizedBox(width: AppSpacing.xs),
+            Text(context.tr('Sort', 'ترتيب'), style: theme.textTheme.labelMedium),
+          ],
+        ),
+      ),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+            value: _Sort.nameAsc,
+            child: Text(context.trRead('Name A–Z', 'الاسم أ–ي'))),
+        PopupMenuItem(
+            value: _Sort.nameDesc,
+            child: Text(context.trRead('Name Z–A', 'الاسم ي–أ'))),
+        PopupMenuItem(
+            value: _Sort.statusFirst,
+            child: Text(context.trRead('Active first', 'النشط أولاً'))),
       ],
     );
   }

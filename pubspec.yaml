@@ -55,6 +55,10 @@ dependencies:
   image_picker: ^1.1.2
   shared_preferences: ^2.5.5
 
+  # PDF report generation (Members Management → Generate Report). The file is
+  # written straight to the Downloads folder, so no preview/print package.
+  pdf: ^3.11.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

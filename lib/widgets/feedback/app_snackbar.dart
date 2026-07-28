@@ -13,6 +13,7 @@ void showAppSnackBar(
   BuildContext context,
   String message, {
   SnackTone tone = SnackTone.success,
+  Duration duration = const Duration(seconds: 3),
 }) {
   final (icon, accent) = switch (tone) {
     SnackTone.success => (Icons.check_circle_outline, AppColors.emerald),
@@ -28,7 +29,7 @@ void showAppSnackBar(
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.navy,
         elevation: AppElevation.high,
-        duration: const Duration(seconds: 3),
+        duration: duration,
         shape: RoundedRectangleBorder(borderRadius: AppRadius.card),
         content: Row(
           children: [

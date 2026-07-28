@@ -19,6 +19,8 @@ import '../../widgets/feedback/loading_state.dart';
 import '../../widgets/layout/module_page.dart';
 import '../tarbiya/widgets/confirm_dialog.dart';
 
+enum _Sort { nameAsc, nameDesc, newestFirst, oldestFirst }
+
 /// Pending Members — new members await Admin review here before they become
 /// visible anywhere else in the app (search, lists, pickers). Executives can
 /// view the queue; only Admin can approve, decline, or delete.
@@ -36,6 +38,7 @@ class _PendingMembersScreenState extends State<PendingMembersScreen> {
   String? _shubaFilter; // shuba id, null = all
   int? _levelFilter; // null = all
   int _genderFilter = 0; // 0 all, 1 male, 2 female
+  _Sort _sort = _Sort.newestFirst;
 
   bool _ready = false;
   List<TarbiyaArea> _areas = const [];
@@ -87,7 +90,19 @@ class _PendingMembersScreenState extends State<PendingMembersScreen> {
           matchesShuba &&
           matchesLevel &&
           matchesGender;
-    }).toList()..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    }).toList();
+    list.sort((a, b) {
+      switch (_sort) {
+        case _Sort.nameAsc:
+          return a.lastName.toLowerCase().compareTo(b.lastName.toLowerCase());
+        case _Sort.nameDesc:
+          return b.lastName.toLowerCase().compareTo(a.lastName.toLowerCase());
+        case _Sort.newestFirst:
+          return b.createdAt.compareTo(a.createdAt);
+        case _Sort.oldestFirst:
+          return a.createdAt.compareTo(b.createdAt);
+      }
+    });
     return list;
   }
 
@@ -162,6 +177,8 @@ class _PendingMembersScreenState extends State<PendingMembersScreen> {
                     onLevel: (v) => setState(() => _levelFilter = v),
                     genderFilter: _genderFilter,
                     onGender: (v) => setState(() => _genderFilter = v),
+                    sort: _sort,
+                    onSort: (s) => setState(() => _sort = s),
                   );
                 },
               );
@@ -459,6 +476,8 @@ class _FilterRow extends StatelessWidget {
     required this.onLevel,
     required this.genderFilter,
     required this.onGender,
+    required this.sort,
+    required this.onSort,
   });
 
   final int shown;
@@ -475,9 +494,12 @@ class _FilterRow extends StatelessWidget {
   final ValueChanged<int?> onLevel;
   final int genderFilter; // 0 all, 1 male, 2 female
   final ValueChanged<int> onGender;
+  final _Sort sort;
+  final ValueChanged<_Sort> onSort;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -545,8 +567,46 @@ class _FilterRow extends StatelessWidget {
               },
               onChanged: onGender,
             ),
+            _sortButton(context, theme),
           ],
         ),
+      ],
+    );
+  }
+
+  Widget _sortButton(BuildContext context, ThemeData theme) {
+    return PopupMenuButton<_Sort>(
+      initialValue: sort,
+      onSelected: onSort,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.border),
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.sort, size: 16, color: AppColors.textMuted),
+            const SizedBox(width: AppSpacing.xs),
+            Text(context.tr('Sort', 'ترتيب'), style: theme.textTheme.labelMedium),
+          ],
+        ),
+      ),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+            value: _Sort.nameAsc,
+            child: Text(context.trRead('Name A–Z', 'الاسم أ–ي'))),
+        PopupMenuItem(
+            value: _Sort.nameDesc,
+            child: Text(context.trRead('Name Z–A', 'الاسم ي–أ'))),
+        PopupMenuItem(
+            value: _Sort.newestFirst,
+            child: Text(context.trRead('Newest first', 'الأحدث أولاً'))),
+        PopupMenuItem(
+            value: _Sort.oldestFirst,
+            child: Text(context.trRead('Oldest first', 'الأقدم أولاً'))),
       ],
     );
   }
