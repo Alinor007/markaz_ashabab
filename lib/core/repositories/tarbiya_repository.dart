@@ -51,6 +51,23 @@ class ShubaStats {
   final int male;
 }
 
+/// A Shu'ba that can be moved into another area, paired with the area it
+/// currently belongs to. [area] is null only for a true orphan — impossible
+/// through the app itself (the area_id foreign key is enforced), but
+/// surfaced defensively rather than hidden if external data corruption ever
+/// produces one.
+typedef MovableShuba = ({Shuba shuba, TarbiyaArea? area});
+
+/// Thrown by [TarbiyaRepository.deleteArea] when the area still has Shu'bas.
+class AreaNotEmptyException implements Exception {
+  const AreaNotEmptyException(this.shubaCount);
+  final int shubaCount;
+
+  @override
+  String toString() =>
+      'AreaNotEmptyException: area still has $shubaCount shu\'ba(s)';
+}
+
 /// Areas → Shu'bas → Members (by level) for the Tarbiya Al-Kawadeer module.
 class TarbiyaRepository {
   TarbiyaRepository(this._db);
@@ -130,24 +147,27 @@ class TarbiyaRepository {
     );
   }
 
-  /// Deletes an area and everything beneath it. The shuba→area and
-  /// member→shuba foreign keys are RESTRICT, so the descendants are cleared
-  /// explicitly (member sub-records then cascade off the member rows).
+  /// Deletes an **empty** area. Areas that still have Shu'bas are refused —
+  /// throws [AreaNotEmptyException] — so the caller can prompt to move or
+  /// delete those Shu'bas first.
+  ///
+  /// This used to cascade: it deleted every Shu'ba under the area and every
+  /// member inside those Shu'bas in one transaction (the shuba→area FK is
+  /// RESTRICT, so the descendants had to be cleared explicitly). That made an
+  /// accidental area deletion silently destroy an entire membership roster
+  /// with no way back — moving Shu'bas out via [reassignShubas] first is the
+  /// only path now.
   Future<void> deleteArea(String id) async {
-    await _db.transaction(() async {
-      final shubaIds = (await (_db.select(_db.shubas)
-                ..where((s) => s.areaId.equals(id)))
-              .get())
-          .map((s) => s.id)
-          .toList();
-      if (shubaIds.isNotEmpty) {
-        await (_db.delete(_db.members)..where((m) => m.shubaId.isIn(shubaIds)))
-            .go();
-        await (_db.delete(_db.shubas)..where((s) => s.areaId.equals(id))).go();
-      }
-      await (_db.delete(_db.tarbiyaAreas)..where((a) => a.id.equals(id))).go();
-    });
+    final count = await shubaCount(id);
+    if (count > 0) throw AreaNotEmptyException(count);
+    await (_db.delete(_db.tarbiyaAreas)..where((a) => a.id.equals(id))).go();
   }
+
+  /// How many Shu'bas sit under [areaId] — used to guard area deletion.
+  Future<int> shubaCount(String areaId) async =>
+      (await (_db.select(_db.shubas)..where((s) => s.areaId.equals(areaId)))
+              .get())
+          .length;
 
   // ── Shu'bas ────────────────────────────────────────────────────────────
   Stream<List<Shuba>> watchShubas(String areaId) => (_db.select(_db.shubas)
@@ -161,6 +181,41 @@ class TarbiyaRepository {
 
   /// Every shu'ba across all areas (used by the Members Management directory).
   Future<List<Shuba>> getAllShubas() => _db.select(_db.shubas).get();
+
+  /// Every Shu'ba **not** already under [excludeAreaId], each paired with the
+  /// area it currently belongs to — the pool offered by the "Add Existing
+  /// Shu'ba" picker on an area's detail screen. Sorted by name.
+  Future<List<MovableShuba>> getMovableShubas(String excludeAreaId) async {
+    final query = _db.select(_db.shubas).join([
+      leftOuterJoin(
+          _db.tarbiyaAreas, _db.tarbiyaAreas.id.equalsExp(_db.shubas.areaId)),
+    ])
+      ..where(_db.shubas.areaId.equals(excludeAreaId).not());
+    final rows = await query.get();
+    final result = [
+      for (final row in rows)
+        (
+          shuba: row.readTable(_db.shubas),
+          area: row.readTableOrNull(_db.tarbiyaAreas),
+        ),
+    ];
+    result.sort(
+        (a, b) => a.shuba.name.toLowerCase().compareTo(b.shuba.name.toLowerCase()));
+    return result;
+  }
+
+  /// Reassigns each Shu'ba in [shubaIds] to [areaId], in one transaction so a
+  /// partial move can't happen. (`updateShuba` can't do this — it takes a
+  /// required `name` and writes only that column.)
+  Future<void> reassignShubas(List<String> shubaIds, String areaId) async {
+    if (shubaIds.isEmpty) return;
+    await _db.transaction(() async {
+      for (final id in shubaIds) {
+        await (_db.update(_db.shubas)..where((s) => s.id.equals(id)))
+            .write(ShubasCompanion(areaId: Value(areaId)));
+      }
+    });
+  }
 
   /// Per-shu'ba member count and gender split, scoped to one area — for the
   /// Shu'bas directory cards.
