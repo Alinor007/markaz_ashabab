@@ -14,11 +14,13 @@ import '../../widgets/common/hierarchy_breadcrumb.dart';
 import '../../widgets/common/member_picker.dart';
 import '../../widgets/common/portrait_avatar.dart';
 import '../../widgets/common/stat_chip.dart';
+import '../../widgets/feedback/app_snackbar.dart';
 import '../../widgets/feedback/empty_state.dart';
 import '../../widgets/feedback/loading_state.dart';
 import '../../widgets/layout/module_page.dart';
 import 'widgets/confirm_dialog.dart';
 import 'widgets/name_form_dialog.dart';
+import 'widgets/shuba_picker_dialog.dart';
 import 'widgets/tarbiya_nav_card.dart';
 
 /// Level 2 — Shu'ba directory for an area (DB-backed, with CRUD).
@@ -30,7 +32,11 @@ class TarbiyaShubasScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final repo = context.read<TarbiyaRepository>();
-    final canManage = context.read<SessionController>().can?.manageTarbiya ?? false;
+    final session = context.read<SessionController>();
+    final canManage = session.can?.manageTarbiya ?? false;
+    // Narrower than canManage (which covers all executives) — moving Shu'bas
+    // between areas is an administrator-only repair/reorganization tool.
+    final isAdmin = session.isAdmin;
 
     return FutureBuilder<TarbiyaArea?>(
       future: repo.getArea(areaId),
@@ -63,6 +69,13 @@ class TarbiyaShubasScreen extends StatelessWidget {
             ],
           ),
           actions: [
+            if (isAdmin)
+              OutlinedButton.icon(
+                onPressed: () => _addExistingShuba(context, repo, area.name),
+                icon: const Icon(Icons.drive_file_move_outline, size: 18),
+                label: Text(
+                    context.tr("Add Existing Shu'ba", 'إضافة شُعبة موجودة')),
+              ),
             if (canManage)
               FilledButton.icon(
                 onPressed: () => _addShuba(context, repo),
@@ -123,6 +136,26 @@ class TarbiyaShubasScreen extends StatelessWidget {
         title: context.trRead("Add Shu'ba", 'إضافة شُعبة'));
     if (result == null) return;
     await repo.createShuba(areaId: areaId, name: result.name);
+  }
+
+  /// Moves one or more Shu'bas from another area into this one. The Shu'ba
+  /// grid is a `StreamBuilder` over `watchShubas(areaId)`, so reassigned
+  /// Shu'bas appear immediately — no manual refresh needed.
+  Future<void> _addExistingShuba(
+      BuildContext context, TarbiyaRepository repo, String areaName) async {
+    final ids = await pickShubasToMove(context, repo,
+        targetAreaId: areaId, targetAreaName: areaName);
+    if (ids == null || ids.isEmpty || !context.mounted) return;
+    await repo.reassignShubas(ids, areaId);
+    if (!context.mounted) return;
+    showAppSnackBar(
+      context,
+      context.trRead(
+        '${ids.length} shu\'ba(s) moved to $areaName.',
+        'تم نقل ${ids.length} شُعبة إلى $areaName.',
+      ),
+      tone: SnackTone.success,
+    );
   }
 
   Future<void> _editShuba(

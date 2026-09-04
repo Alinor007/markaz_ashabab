@@ -261,6 +261,75 @@ void main() {
       expect(await tarbiya.watchMasul(shubaId).first, isNull);
     });
 
+    test("reassignShubas moves a shu'ba (and its members) between areas",
+        () async {
+      await tarbiya.createArea(name: 'Source Area');
+      await tarbiya.createArea(name: 'Dest Area');
+      final source =
+          (await tarbiya.getAreas()).firstWhere((a) => a.name == 'Source Area');
+      final dest =
+          (await tarbiya.getAreas()).firstWhere((a) => a.name == 'Dest Area');
+      await tarbiya.createShuba(areaId: source.id, name: 'Movable Shuba');
+      final shuba = (await tarbiya.watchShubas(source.id).first).single;
+      final memberId = await members.insertMember(MembersCompanion(
+        shubaId: Value(shuba.id),
+        firstName: const Value('Amina'),
+        lastName: const Value('Test'),
+        approval: const Value('approved'),
+      ));
+
+      await tarbiya.reassignShubas([shuba.id], dest.id);
+
+      expect(await tarbiya.watchShubas(source.id).first, isEmpty);
+      final moved = (await tarbiya.watchShubas(dest.id).first).single;
+      expect(moved.id, shuba.id);
+      expect(moved.name, 'Movable Shuba');
+      // The member row itself is untouched — it still belongs to the same
+      // shuba, which now simply lives under a different area.
+      expect((await members.getMember(memberId))!.shubaId, shuba.id);
+    });
+
+    test(
+        "getMovableShubas excludes the target area and reports each shu'ba's "
+        'current area', () async {
+      await tarbiya.createArea(name: 'Area X');
+      final areaX =
+          (await tarbiya.getAreas()).firstWhere((a) => a.name == 'Area X');
+      await tarbiya.createShuba(areaId: areaX.id, name: 'Shuba In X');
+
+      final target =
+          (await tarbiya.getAreas()).firstWhere((a) => a.name == 'Area 1');
+      final movable = await tarbiya.getMovableShubas(target.id);
+
+      // Contains the shuba just created under Area X, with its area name...
+      final entry = movable.firstWhere((m) => m.shuba.name == 'Shuba In X');
+      expect(entry.area?.name, 'Area X');
+      // ...and excludes anything already under the target area itself.
+      expect(movable.any((m) => m.shuba.areaId == target.id), isFalse);
+    });
+
+    test('deleteArea refuses a non-empty area and succeeds once emptied',
+        () async {
+      await tarbiya.createArea(name: 'Populated Area');
+      final area = (await tarbiya.getAreas())
+          .firstWhere((a) => a.name == 'Populated Area');
+      await tarbiya.createShuba(areaId: area.id, name: 'Only Shuba');
+      final shuba = (await tarbiya.watchShubas(area.id).first).single;
+
+      expect(await tarbiya.shubaCount(area.id), 1);
+      await expectLater(tarbiya.deleteArea(area.id),
+          throwsA(isA<AreaNotEmptyException>()));
+      // Refused, not partially applied — both rows survive.
+      expect(await tarbiya.getArea(area.id), isNotNull);
+      expect(await tarbiya.getShuba(shuba.id), isNotNull);
+
+      final elsewhere =
+          (await tarbiya.getAreas()).firstWhere((a) => a.name == 'Area 1');
+      await tarbiya.reassignShubas([shuba.id], elsewhere.id);
+      await tarbiya.deleteArea(area.id);
+      expect(await tarbiya.getArea(area.id), isNull);
+    });
+
     test('wives, naqib & derived usra members', () async {
       final id1 = await seedMember();
       final area = await testArea();
